@@ -1,0 +1,32 @@
+{
+  "countryId": "COUNTRY_JP_001",
+  "countryCode": "JP",
+  "countryName": "Japan",
+  "visaTypes": [
+    {
+      "id": "VISA_JP_TOURIST_001",
+      "code": "TOURIST",
+      "name": "Tourist Visa",
+      "category": "SHORT_STAY",
+      "variants": [
+        {
+          "id": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
+          "type": "SINGLE_ENTRY",
+          "maxStayDays": 90,
+          "validityMonths": 3
+        }
+      ],
+      "process": {
+        "default": {
+          "applicationMode": "OFFLINE",
+          "biometricRequired": false,
+          "interviewRequired": false
+        }
+      },
+      "metadata": {
+        "status": "active",
+        "lastUpdated": "2026-04-25"
+      }
+    }
+  ]
+}
