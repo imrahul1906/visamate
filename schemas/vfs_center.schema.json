@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VfsCenter",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string"},
+    "code": {"type": "string"},
+    "name": {"type": "string"},
+    "state": {"type": "string"},
+    "vfsCenter": {"type": "object"},
+    "metadata": {"type": "object"}
+  },
+  "required": ["id","code","name","vfsCenter"],
+  "additionalProperties": false
+}

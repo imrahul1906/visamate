@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CountryInfo",
+  "type": "object",
+  "properties": {
+    "id": {"type": "string"},
+    "code": {"type": "string", "minLength": 2, "maxLength": 3},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "officialWebsite": {"type": "string", "format": "uri"},
+    "vfs": {
+      "type": "object",
+      "properties": {
+        "website": {"type": "string", "format": "uri"},
+        "appointmentUrl": {"type": "string", "format": "uri"},
+        "appointmentVerificationUrl": {"type": "string", "format": "uri"}
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "createdAt": {"type": "string", "format": "date"},
+        "lastUpdated": {"type": "string", "format": "date"},
+        "status": {"type": "string"}
+      },
+      "required": ["createdAt", "lastUpdated", "status"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["id", "code", "name", "metadata"],
+  "additionalProperties": false
+}

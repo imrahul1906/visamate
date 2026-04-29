@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Requirements",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {"type": "integer"},
+    "id": {"type": "string"},
+    "countryId": {"type": "string"},
+    "countryCode": {"type": "string"},
+    "visaTypeId": {"type": "string"},
+    "visaTypeCode": {"type": "string"},
+    "visaVariantId": {"type": "string"},
+    "locationId": {"type": "string"},
+    "locationCode": {"type": "string"},
+    "processingDays": {"type": ["integer","null"]},
+    "processingDaysExpress": {"type": ["integer","null"]},
+    "fees": {"type": "object"},
+    "photoSpecifications": {"type": "object"},
+    "documentSections": {"type": "array"},
+    "importantNotes": {"type": "array"},
+    "metadata": {"type": "object"}
+  },
+  "required": ["id","countryId","visaTypeId","locationId","documentSections"],
+  "additionalProperties": false
+}
