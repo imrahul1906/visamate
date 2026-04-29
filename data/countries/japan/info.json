@@ -1,0 +1,17 @@
+{
+  "id": "COUNTRY_JP_001",
+  "code": "JP",
+  "name": "Japan",
+  "description": "Japan visa information for Indian applicants",
+  "officialWebsite": "https://www.mofa.go.jp",
+  "vfs":{
+    "website": "https://visa.vfsglobal.com/ind/en/jpn",
+    "appointmentUrl": "https://visa.vfsglobal.com/ind/en/jpn/login",
+    "appointmentVerificationUrl": "https://visa.vfsglobal.com/ind/en/jpn/appointment-verification"
+  },
+  "metadata": {
+    "createdAt": "2026-04-25",
+    "lastUpdated": "2026-04-25",
+    "status": "active"
+  }
+}

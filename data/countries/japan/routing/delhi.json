@@ -1,0 +1,34 @@
+{
+    "id": "ROUTE_JP_IN_DELHI_001",
+    "locationId" : "VFS_CENTER_DELHI_001",
+    "locationCode" : "DELHI",
+    "destinationCountryId":"COUNTRY_JP_001",
+    "authorityLable" : "Embassy of Japan, New Delhi",
+    "states": [
+      "Andaman & Nicobar Islands",
+      "Arunachal Pradesh",
+      "Assam",
+      "Chandigarh",
+      "Delhi",
+      "Haryana",
+      "Himachal Pradesh",
+      "Jammu & Kashmir",
+      "Lakshadweep",
+      "Manipur",
+      "Meghalaya",
+      "Mizoram",
+      "Nagaland",
+      "Punjab",
+      "Rajasthan",
+      "Sikkim",
+      "Tripura",
+      "Uttaranchal",
+      "Uttar Pradesh"
+    ],
+    "description": "Covers northern and north-eastern India regions under Embassy of Japan, New Delhi",
+   "metadata": {
+    "createdAt": "2026-04-27",
+    "lastUpdated": "2026-04-27",
+    "status": "active"
+  }
+}
