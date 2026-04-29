@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VisaTypes",
+  "type": "object",
+  "properties": {
+    "countryId": {"type": "string"},
+    "countryCode": {"type": "string"},
+    "countryName": {"type": "string"},
+    "visaTypes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "code": {"type": "string"},
+          "name": {"type": "string"},
+          "category": {"type": "string"},
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {"type": "string"},
+                "type": {"type": "string"},
+                "maxStayDays": {"type": "integer"},
+                "validityMonths": {"type": "integer"}
+              },
+              "required": ["id","type"]
+            }
+          },
+          "process": {"type": "object"},
+          "metadata": {"type": "object"}
+        },
+        "required": ["id","code","name"]
+      }
+    }
+  },
+  "required": ["countryId","visaTypes"],
+  "additionalProperties": false
+}
