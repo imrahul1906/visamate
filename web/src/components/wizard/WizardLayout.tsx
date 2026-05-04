@@ -1,26 +1,39 @@
 "use client";
 
-import React, { ReactNode } from 'react';
-import WizardStepper from './WizardStepper';
-import WizardNav from './WizardNav';
+import React from "react";
+import WizardStepper from "./WizardStepper";
+import WizardNav from "./WizardNav";
 
 interface Props {
-  children: ReactNode;
-  currentStep: number;
+  step: number;
   canContinue: boolean;
-  onContinue?: () => void;
+  onStepChange: (step: number) => void;
+  children: React.ReactNode;
 }
 
-export default function WizardLayout({ children, currentStep, canContinue, onContinue }: Props) {
+export default function WizardLayout({
+  step,
+  canContinue,
+  onStepChange,
+  children,
+}: Props) {
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col items-center py-8">
-      <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow">
-        <WizardStepper currentStep={currentStep} />
-        <div className="my-8">{children}</div>
+    <div className="min-h-screen bg-[#f3f4f6] pt-16 pb-10">
+      <div className="max-w-5xl mx-auto px-4">
+
+        {/* Stepper */}
+        <WizardStepper currentStep={step} />
+
+        {/* Card */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          {children}
+        </div>
+
+        {/* Navigation (outside card like POC) */}
         <WizardNav
-          currentStep={currentStep}
+          currentStep={step}
           canContinue={canContinue}
-          onContinue={onContinue}
+          onStepChange={onStepChange}
         />
       </div>
     </div>

@@ -1,55 +1,45 @@
 "use client";
 
-import React from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React from "react";
 
 interface Props {
   currentStep: number;
   canContinue: boolean;
-  onContinue?: () => void;
+  onStepChange: (step: number) => void;
 }
 
-export default function WizardNav({ currentStep, canContinue, onContinue }: Props) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const params = new URLSearchParams(Array.from(searchParams.entries()));
+export default function WizardNav({
+  currentStep,
+  canContinue,
+  onStepChange,
+}: Props) {
+  const updateStep = (step: number) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("step", step.toString());
 
-  const goToStep = (step: number) => {
-    params.set('step', step.toString());
-    router.replace(`?${params.toString()}`);
-  };
+    // ✅ FIX: no navigation → no scroll reset
+    window.history.replaceState(null, "", `?${params.toString()}`);
 
-  const handleBack = () => {
-    if (currentStep > 1) {
-      goToStep(currentStep - 1);
-    }
-  };
-
-  const handleContinue = () => {
-    if (onContinue) onContinue();
-    if (currentStep < 6) {
-      goToStep(currentStep + 1);
-    }
+    onStepChange(step);
   };
 
   return (
-    <div className="flex justify-between mt-4">
+    <div className="flex justify-between mt-6">
       {currentStep > 1 ? (
         <button
-          type="button"
-          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
-          onClick={handleBack}
+          onClick={() => updateStep(currentStep - 1)}
+          className="px-5 py-2 text-sm rounded-md border border-gray-300 text-gray-600 bg-white transition-colors duration-150 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-800"
         >
           Back
         </button>
       ) : (
         <div />
       )}
+
       <button
-        type="button"
-        className={`px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-indigo-300`}
-        onClick={handleContinue}
+        onClick={() => updateStep(currentStep + 1)}
         disabled={!canContinue}
+        className="px-6 py-2.5 text-sm font-medium text-white rounded-md bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-300"
       >
         Continue
       </button>
