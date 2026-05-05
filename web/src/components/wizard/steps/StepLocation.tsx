@@ -1,53 +1,75 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getLocationsForCountry, getVfsCenterInfo } from "@/lib/data/repository";
+import type { LocationCatalogEntry } from "@/lib/data/repository";
+import type { VfsCenterInfo } from "@/lib/data/types";
 
 interface Props {
+  countryCode: string | null;
   selectedLocation: string | null;
-  onSelect: (location: string | null) => void;
+  onSelect: (locationCode: string | null) => void;
   compact?: boolean;
 }
 
-const LOCATIONS = [
-  {
-    city: "New Delhi",
-    center: "VFS Global Center",
-    address: "12A, Ring Road, Lajpat Nagar - III, New Delhi - 110034",
-    photo: "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=800",
-  },
-  {
-    city: "Mumbai",
-    center: "VFS Global Center",
-    address: "2nd Floor, A Wing, Marathon Futurex, N M Joshi Marg, Lower Parel, Mumbai - 400013",
-    photo: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=800",
-  },
-  {
-    city: "Bengaluru",
-    center: "VFS Global Center",
-    address: "418, 1st Floor, 80 Feet Road, 4th Block, Koramangala, Bengaluru - 560034",
-    photo: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?q=80&w=800",
-  },
-  {
-    city: "Chennai",
-    center: "VFS Global Center",
-    address: "159/1, Kodambakkam High Road, Nungambakkam, Chennai - 600034",
-    photo: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=800",
-  },
-  {
-    city: "Kolkata",
-    center: "VFS Global Center",
-    address: "1A, Elgin Road, 5th Floor, Kolkata - 700020",
-    photo: "https://images.unsplash.com/photo-1558431382-27e303142255?q=80&w=800",
-  },
-  {
-    city: "Hyderabad",
-    center: "VFS Global Center",
-    address: "Level 5, Cyber Towers, Hitech City, Hyderabad - 500081",
-    photo: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
-  },
-];
+interface LocationWithCenter {
+  loc: LocationCatalogEntry;
+  centerName: string;
+  centerAddress: string;
+}
 
-export default function StepLocation({ selectedLocation, onSelect, compact }: Props) {
+export default function StepLocation({ countryCode, selectedLocation, onSelect, compact }: Props) {
+  const [locations, setLocations] = useState<LocationWithCenter[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!countryCode) {
+      setLocations([]);
+      return;
+    }
+
+    setLoading(true);
+
+    getLocationsForCountry(countryCode)
+      .then(async (locs) => {
+        // Fetch VFS center details for each location in parallel
+        const withCenters = await Promise.all(
+          locs.map(async (loc) => {
+            const center = await getVfsCenterInfo(loc.code);
+            return {
+              loc,
+              centerName: center?.vfsCenter?.name ?? "VFS Global Center",
+              centerAddress: center?.vfsCenter?.address ?? "",
+            };
+          })
+        );
+        setLocations(withCenters);
+      })
+      .finally(() => setLoading(false));
+  }, [countryCode]);
+
+  if (!countryCode) {
+    return (
+      <div className="py-8 text-center text-sm text-gray-400">
+        Please select a country first.
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="py-8 text-center text-sm text-gray-400">Loading locations...</div>
+    );
+  }
+
+  if (locations.length === 0) {
+    return (
+      <div className="py-8 text-center text-sm text-gray-400">
+        No application centers available for the selected country.
+      </div>
+    );
+  }
+
   return (
     <div>
       {!compact && (
@@ -73,13 +95,13 @@ export default function StepLocation({ selectedLocation, onSelect, compact }: Pr
 
       {/* City cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {LOCATIONS.map((loc) => {
-          const isSelected = selectedLocation === loc.city;
+        {locations.map(({ loc, centerName, centerAddress }) => {
+          const isSelected = selectedLocation === loc.code;
           return (
             <button
-              key={loc.city}
+              key={loc.code}
               type="button"
-              onClick={() => onSelect(isSelected ? null : loc.city)}
+              onClick={() => onSelect(isSelected ? null : loc.code)}
               className={`text-left rounded-xl overflow-hidden border transition-all duration-200 group
                 ${isSelected
                   ? "border-indigo-400 ring-2 ring-indigo-200 shadow-sm"
@@ -105,10 +127,12 @@ export default function StepLocation({ selectedLocation, onSelect, compact }: Pr
                   <span className="text-white text-xs font-semibold drop-shadow">{loc.city}</span>
                 </div>
               </div>
-              {/* Info */}
+              {/* VFS center info */}
               <div className="px-3 py-2.5 bg-white">
-                <div className="text-[11px] font-medium text-indigo-600">{loc.center}</div>
-                <div className="text-[10px] text-gray-400 mt-0.5 leading-tight">{loc.address}</div>
+                <div className="text-[11px] font-medium text-indigo-600">{centerName}</div>
+                {centerAddress && (
+                  <div className="text-[10px] text-gray-400 mt-0.5 leading-tight">{centerAddress}</div>
+                )}
               </div>
             </button>
           );
