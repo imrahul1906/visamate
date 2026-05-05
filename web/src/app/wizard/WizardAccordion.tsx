@@ -419,7 +419,6 @@ export default function WizardAccordion() {
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", paddingTop: 64, paddingBottom: 80 }}>
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 16px 0" }}>
-
         {/* Heading */}
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "#111827", margin: "0 0 6px" }}>
