@@ -493,3 +493,51 @@ export async function getRequirementsData(
 
   return result;
 }
+
+// ─────────────────────────────────────────────────────────────
+// ADD TO repository.ts
+// ─────────────────────────────────────────────────────────────
+// These are the ONLY changes needed in repository.ts.
+// Everything else in your existing file stays exactly the same.
+// ─────────────────────────────────────────────────────────────
+
+// 1. Add this import at the top of the file (with your other imports):
+import type { ItineraryPlacesData } from "./types";
+
+// 2. Add this import near your other static JSON imports:
+import japanItineraryPlaces from "../../data/countries/japan/itinerary-places.json";
+
+// 3. Add this store (near your other *_STORE arrays, e.g. after REQUIREMENTS_STORE):
+const ITINERARY_PLACES_STORE: ItineraryPlacesData[] = [
+  japanItineraryPlaces as ItineraryPlacesData,
+  // When you add France:
+  // franceItineraryPlaces as ItineraryPlacesData,
+];
+
+// 4. Add this function to the Public API section (Section 4):
+
+/**
+ * Cities and attractions for the itinerary builder, keyed by country.
+ *
+ * DB equivalent:
+ *   return await db.itineraryPlaces.findFirst({ where: { countryCode } });
+ */
+export async function getItineraryPlaces(
+  countryCode: string
+): Promise<ItineraryPlacesData | null> {
+  assertParam(countryCode, "countryCode");
+
+  const result = ITINERARY_PLACES_STORE.find(
+    (p) => normalizeCode(p.countryCode) === normalizeCode(countryCode)
+  ) ?? null;
+
+  if (!result) {
+    // Not an error — some countries may not have itinerary builder support yet.
+    console.warn(
+      `[repository] getItineraryPlaces: no data found for countryCode="${countryCode}". ` +
+      `Add an entry to ITINERARY_PLACES_STORE to enable the itinerary builder for this country.`
+    );
+  }
+
+  return result;
+}

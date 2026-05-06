@@ -9,6 +9,11 @@ import StepDetails from "../../components/wizard/steps/StepDetails";
 import { getAllCountries, type CountryCatalogEntry } from "@/lib/data/repository";
 
 // ─────────────────────────────────────────────────────────────
+// Session storage key
+// ─────────────────────────────────────────────────────────────
+const STORAGE_KEY = "visaguide_wizard_selection";
+
+// ─────────────────────────────────────────────────────────────
 // Animated collapsible body
 // ─────────────────────────────────────────────────────────────
 function AnimatedBody({ isOpen, children }: { isOpen: boolean; children: React.ReactNode }) {
@@ -70,6 +75,33 @@ interface Selection {
   profile: string | null;
 }
 
+const DEFAULT_SELECTION: Selection = {
+  country: null, countryName: null,
+  visaType: null, visaTypeName: null,
+  location: null, sponsorship: null, profile: null,
+};
+
+// ─────────────────────────────────────────────────────────────
+// Helpers — persist & rehydrate from sessionStorage
+// ─────────────────────────────────────────────────────────────
+function loadSelection(): Selection {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return DEFAULT_SELECTION;
+    return { ...DEFAULT_SELECTION, ...JSON.parse(raw) };
+  } catch {
+    return DEFAULT_SELECTION;
+  }
+}
+
+function saveSelection(sel: Selection) {
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sel));
+  } catch {
+    // ignore quota / SSR errors
+  }
+}
+
 // ─────────────────────────────────────────────────────────────
 // Summary chip
 // ─────────────────────────────────────────────────────────────
@@ -109,7 +141,6 @@ function AccordionCard({
       transition: "box-shadow 350ms ease, border-color 350ms ease, opacity 350ms ease",
       overflow: "hidden",
     }}>
-      {/* Entire header is the click target */}
       <div
         onClick={() => { if (!isLocked) onToggle?.(); }}
         style={{
@@ -156,7 +187,6 @@ function AccordionCard({
               Edit
             </button>
           )}
-          {/* Chevron — visual only, click is handled by the header div */}
           <div
             style={{
               padding: 4,
@@ -190,7 +220,7 @@ function AccordionCard({
 }
 
 // ─────────────────────────────────────────────────────────────
-// Label maps (shared by SummaryCard + collapsedSummary)
+// Label maps
 // ─────────────────────────────────────────────────────────────
 const sponsorshipLabels: Record<string, string> = {
   self: "Self-Sponsored",
@@ -203,7 +233,7 @@ const profileLabels: Record<string, string> = {
 };
 
 // ─────────────────────────────────────────────────────────────
-// Summary card — original animated entry after step 4
+// Summary card
 // ─────────────────────────────────────────────────────────────
 function SummaryCard({
   selection,
@@ -229,7 +259,6 @@ function SummaryCard({
       transform: mounted ? "translateY(0)" : "translateY(20px)",
       transition: "opacity 480ms ease, transform 480ms cubic-bezier(0.34,1.56,0.64,1)",
     }}>
-      {/* Header */}
       <div style={{
         padding: "18px 20px 16px",
         borderBottom: "1px solid #e0e7ff",
@@ -253,7 +282,6 @@ function SummaryCard({
         </div>
       </div>
 
-      {/* Chips grid */}
       <div style={{
         padding: "16px 20px",
         display: "grid",
@@ -308,7 +336,6 @@ function SummaryCard({
         />
       </div>
 
-      {/* CTA */}
       <div style={{ padding: "4px 20px 20px" }}>
         <button
           onClick={onShowDocuments}
@@ -355,18 +382,59 @@ const STEPS: { id: CardId; title: string; subtitle: string }[] = [
 
 export default function WizardAccordion() {
   const router = useRouter();
-  const [openCard, setOpenCard] = useState<CardId | null>("country");
   const [allCountries, setAllCountries] = React.useState<CountryCatalogEntry[]>([]);
+
+  // ── Rehydrate from sessionStorage on first render ──────────
+  const [selection, setSelectionRaw] = useState<Selection>(DEFAULT_SELECTION);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const saved = loadSelection();
+    setSelectionRaw(saved);
+    setHydrated(true);
+  }, []);
+
+  // Wrapper that saves to storage on every update
+  const setSelection = (updater: (prev: Selection) => Selection) => {
+    setSelectionRaw(prev => {
+      const next = updater(prev);
+      saveSelection(next);
+      return next;
+    });
+  };
+
+  // ── Derive initial open card from restored state ───────────
+  const [openCard, setOpenCard] = useState<CardId | null>(null);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const saved = loadSelection();
+    // If all steps are done, show summary (null). Otherwise open the first incomplete step.
+    const allComplete = STEPS.every(s => {
+      if (s.id === "country")  return !!saved.country;
+      if (s.id === "visaType") return !!saved.visaType;
+      if (s.id === "location") return !!saved.location;
+      if (s.id === "details")  return !!saved.sponsorship && !!saved.profile;
+      return false;
+    });
+    if (allComplete) {
+      setOpenCard(null);
+    } else {
+      const firstIncomplete = STEPS.find(s => {
+        if (s.id === "country")  return !saved.country;
+        if (s.id === "visaType") return !saved.visaType;
+        if (s.id === "location") return !saved.location;
+        if (s.id === "details")  return !saved.sponsorship || !saved.profile;
+        return false;
+      });
+      setOpenCard(firstIncomplete?.id ?? "country");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
 
   React.useEffect(() => {
     getAllCountries().then(setAllCountries);
   }, []);
-
-  const [selection, setSelection] = useState<Selection>({
-    country: null, countryName: null,
-    visaType: null, visaTypeName: null,
-    location: null, sponsorship: null, profile: null,
-  });
 
   const isComplete = (id: CardId): boolean => {
     if (id === "country")  return !!selection.country;
@@ -393,14 +461,10 @@ export default function WizardAccordion() {
     return "";
   };
 
-  // Track whether the user opened a card via "Edit" while all steps were already done.
-  // Completing that card should jump straight to summary, not chain through subsequent cards.
   const isEditingRef = useRef(false);
 
   const handleToggle = (id: CardId) => {
     if (isLocked(id)) return;
-    // If the wizard is already complete, expanding a card via header click is an "edit"
-    // — completing it should return to summary, not chain through already-filled cards.
     const willOpen = openCard !== id;
     isEditingRef.current = willOpen && allDone;
     setOpenCard((prev) => (prev === id ? null : id));
@@ -415,13 +479,15 @@ export default function WizardAccordion() {
 
   const advance = (next: CardId | null) => {
     if (isEditingRef.current) {
-      // Was editing a completed step → skip straight back to summary
       isEditingRef.current = false;
       setTimeout(() => setOpenCard(null), 300);
     } else {
       setTimeout(() => setOpenCard(next), 300);
     }
   };
+
+  // Don't render until we've rehydrated to avoid flicker
+  if (!hydrated) return null;
 
   return (
     <div style={{ minHeight: "100vh", background: "#f3f4f6", paddingTop: 64, paddingBottom: 80 }}>
@@ -514,14 +580,16 @@ export default function WizardAccordion() {
             </AccordionCard>
           ))}
 
-          {/* Summary card — appears when all 4 done and no card is open */}
+          {/* Summary card */}
           {allDone && openCard === null && (
             <SummaryCard
               selection={selection}
               onShowDocuments={() => {
                 const params = new URLSearchParams({
                   country:     selection.country     ?? "",
+                  countryName: selection.countryName ?? "",
                   visaType:    selection.visaType     ?? "",
+                  visaTypeName: selection.visaTypeName ?? "",
                   location:    selection.location     ?? "",
                   sponsorship: selection.sponsorship  ?? "",
                   profile:     selection.profile      ?? "",

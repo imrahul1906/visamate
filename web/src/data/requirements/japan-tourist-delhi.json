@@ -42,27 +42,26 @@
           "order": 1,
           "id": "JP_TOURIST_DEL_PASSPORT_001",
           "code": "PASSPORT",
-          "name": "Valid Passport",
+          "name": "Original Passport",
           "isRequired": true,
           "optionality": "required",
-          "description": "Valid passport with more than two blank pages",
-          "notes": "Submit old passports also if any. Document will not be returned (except passport).",
+          "notes": "Submit old passports also if any.",
           "requirements": [
             "More than 2 blank pages",
-            "Currently valid"
+            "Minimum 6 months validity from date of travel"
           ]
         },
         {
           "order": 2,
           "id": "JP_TOURIST_DEL_PASSPORT_BIODATA_001",
           "code": "PASSPORT_BIODATA",
-          "name": "Photocopy of Bio Data Page",
+          "name": "Passport photocopy",
           "isRequired": true,
           "optionality": "required",
           "description": "Photocopy of the Bio Data Page of current passport (First and Last Page)",
-          "notes": "A4 size only",
-          "acceptedFormats": [
-            "Photocopy on A4"
+          "requirements": [
+            "Photocopy on A4 Page",
+            "Should be self attested with signature"
           ]
         },
         {
@@ -72,11 +71,17 @@
           "name": "Visa Application Form",
           "isRequired": true,
           "optionality": "required",
-          "description": "Completely filled and signed visa application form",
-          "formUrl": "https://assets.ctfassets.net/xxg4p8gt3sg6/2vUOdRMFiIuPueU5P8yL7S/2f0952ad2f7557ffbaba055ec04e95c9/Visa-Application-Form.pdf",
-          "notes": "Download from VFS website",
+          "form": {
+            "type": "DOWNLOADABLE",
+            "downloadUrl": "https://assets.ctfassets.net/xxg4p8gt3sg6/2vUOdRMFiIuPueU5P8yL7S/2f0952ad2f7557ffbaba055ec04e95c9/Visa-Application-Form.pdf",
+            "onlineUrl": null,
+            "requiresPrint": true,
+            "formFillDataKey": "JP_TOURIST_VISA_FORM_FIELDS_V1"
+          },
+          "notes": "Download, print, fill and sign",
           "requirements": [
             "Completely filled",
+            "Photograph should pasted on form",
             "Signed by applicant"
           ]
         },
@@ -88,7 +93,6 @@
           "isRequired": true,
           "optionality": "required",
           "description": "One photograph taken within last 6 months",
-          "notes": "Passport size with white background and printed on good quality paper",
           "photoSpecRef": "default"
         },
         {

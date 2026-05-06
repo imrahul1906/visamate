@@ -149,3 +149,38 @@ export interface RequirementsData {
   importantNotes?: unknown[];
   metadata?: Record<string, unknown>;
 }
+
+// lib/data/types.ts
+// ─────────────────────────────────────────────────────────────
+// Add the four itinerary types below to your existing types.ts.
+// Everything above this comment is your existing file — unchanged.
+// ─────────────────────────────────────────────────────────────
+
+// ── Itinerary types ──────────────────────────────────────────
+// Used by ItineraryWidget (generic) and repository.getItineraryPlaces().
+// Shape mirrors what was in japanData.ts, now generic across countries.
+
+export interface ItineraryPlace {
+  id: string;
+  name: string;
+  type: string;
+  duration: string;
+}
+
+export interface ItineraryCity {
+  name: string;
+  places: ItineraryPlace[];
+}
+
+/** keyed by cityId, e.g. "tokyo", "paris" */
+export type ItineraryCityMap = Record<string, ItineraryCity>;
+
+export interface ItineraryPlacesData {
+  /** ISO country code matching COUNTRY_CATALOG, e.g. "JP" */
+  countryCode: string;
+  /** Human-readable name passed straight to ItineraryWidget as `countryName` */
+  countryName: string;
+  cities: ItineraryCityMap;
+  /** Maps place.type → hex colour, e.g. { Temple: "#8b5cf6" } */
+  typeColors: Record<string, string>;
+}
