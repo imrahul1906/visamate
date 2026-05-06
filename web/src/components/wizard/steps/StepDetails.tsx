@@ -103,15 +103,15 @@ export default function StepDetails({ sponsorship, profile, onSelect, compact }:
   const [localSponsor, setLocalSponsor] = useState<string | null>(sponsorship);
   const [localProfile, setLocalProfile] = useState<string | null>(profile);
 
-const handleSponsor = (id: string | null) => {
-  setLocalSponsor(id);
-  onSelect(id, localProfile);
-};
+  const handleSponsor = (id: string) => {
+    setLocalSponsor(id);
+    if (localProfile) onSelect(id, localProfile);
+  };
 
-const handleProfile = (id: string | null) => {
-  setLocalProfile(id);
-  onSelect(localSponsor, id);
-};
+  const handleProfile = (id: string) => {
+    setLocalProfile(id);
+    if (localSponsor) onSelect(localSponsor, id);
+  };
 
   return (
     <div className="space-y-5">

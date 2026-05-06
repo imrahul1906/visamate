@@ -6,6 +6,7 @@ import StepCountry from "../../components/wizard/steps/StepCountry";
 import StepVisaType from "../../components/wizard/steps/StepVisaType";
 import StepLocation from "../../components/wizard/steps/StepLocation";
 import StepDetails from "../../components/wizard/steps/StepDetails";
+import { getAllCountries, type CountryCatalogEntry } from "@/lib/data/repository";
 
 // ─────────────────────────────────────────────────────────────
 // Animated collapsible body
@@ -355,6 +356,12 @@ const STEPS: { id: CardId; title: string; subtitle: string }[] = [
 export default function WizardAccordion() {
   const router = useRouter();
   const [openCard, setOpenCard] = useState<CardId | null>("country");
+  const [allCountries, setAllCountries] = React.useState<CountryCatalogEntry[]>([]);
+
+  React.useEffect(() => {
+    getAllCountries().then(setAllCountries);
+  }, []);
+
   const [selection, setSelection] = useState<Selection>({
     country: null, countryName: null,
     visaType: null, visaTypeName: null,
@@ -459,6 +466,7 @@ export default function WizardAccordion() {
             >
               {step.id === "country" && (
                 <StepCountry
+                  allCountries={allCountries}
                   selectedCountry={selection.country}
                   onSelect={(code, name) => {
                     setSelection((s) => ({
@@ -518,7 +526,7 @@ export default function WizardAccordion() {
                   sponsorship: selection.sponsorship  ?? "",
                   profile:     selection.profile      ?? "",
                 });
-                router.push(`/documents?${params.toString()}`);
+                router.push(`/document?${params.toString()}`);
               }}
             />
           )}
