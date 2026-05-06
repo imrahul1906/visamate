@@ -63,11 +63,17 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
               <button
                 key={c.code}
                 type="button"
-                onClick={() => onSelect(isSelected ? null : c.code, isSelected ? null : c.name)}
+                disabled={!c.supported}
+                onClick={() => {
+                  if (!c.supported) return;
+                  onSelect(isSelected ? null : c.code, isSelected ? null : c.name);
+                }}
                 className={`relative h-[130px] rounded-xl overflow-hidden transition-all duration-200
-                  ${isSelected
-                    ? "ring-2 ring-indigo-500 shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
-                    : "ring-1 ring-gray-200 hover:ring-indigo-300 hover:shadow-md hover:scale-[1.02]"
+                  ${!c.supported
+                    ? "opacity-60 cursor-not-allowed"
+                    : isSelected
+                      ? "ring-2 ring-indigo-500 shadow-[0_0_0_4px_rgba(99,102,241,0.12)]"
+                      : "ring-1 ring-gray-200 hover:ring-indigo-300 hover:shadow-md hover:scale-[1.02]"
                   }`}
                 style={{
                   backgroundImage: `url(${c.photo})`,

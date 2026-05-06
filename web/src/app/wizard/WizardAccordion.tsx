@@ -526,7 +526,7 @@ export default function WizardAccordion() {
                   sponsorship: selection.sponsorship  ?? "",
                   profile:     selection.profile      ?? "",
                 });
-                router.push(`/document?${params.toString()}`);
+                router.push(`/documents?${params.toString()}`);
               }}
             />
           )}
