@@ -12,21 +12,38 @@ import { downloadAllFiles } from "./downloadAllFiles";
 import CategorySection from "./CategorySection";
 
 // ─────────────────────────────────────────────────────────────
-// Main component
+// Props — all optional. When provided they take priority over
+// URL search-params, so the component works both as a standalone
+// page AND embedded inside WizardAccordion without navigation.
 // ─────────────────────────────────────────────────────────────
 
-export default function DocumentsContent() {
+export interface DocumentsContentProps {
+  /** When truthy the "Edit selections" back-button is hidden */
+  embedded?: boolean;
+  // Selection values injected from the wizard
+  country?: string;
+  countryName?: string;
+  visaType?: string;
+  visaTypeName?: string;
+  location?: string;
+  locationName?: string;
+  sponsorship?: string;
+  profile?: string;
+}
+
+export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const params = useSearchParams();
   const router = useRouter();
 
-  const country      = params.get("country")      ?? "";
-  const countryName  = params.get("countryName")  ?? params.get("country") ?? "—";
-  const visaType     = params.get("visaType")     ?? "";
-  const visaTypeName = params.get("visaTypeName") ?? params.get("visaType") ?? "—";
-  const location     = params.get("location")     ?? "";
-  const locationName = params.get("locationName") ?? params.get("location") ?? "—";
-  const sponsorship  = params.get("sponsorship")  ?? "SELF";
-  const profile      = params.get("profile")      ?? "";
+  // Prefer injected props, fall back to URL params
+  const country      = props.country      ?? params.get("country")      ?? "";
+  const countryName  = props.countryName  ?? params.get("countryName")  ?? params.get("country") ?? "—";
+  const visaType     = props.visaType     ?? params.get("visaType")     ?? "";
+  const visaTypeName = props.visaTypeName ?? params.get("visaTypeName") ?? params.get("visaType") ?? "—";
+  const location     = props.location     ?? params.get("location")     ?? "";
+  const locationName = props.locationName ?? params.get("locationName") ?? params.get("location") ?? "—";
+  const sponsorship  = props.sponsorship  ?? params.get("sponsorship")  ?? "SELF";
+  const profile      = props.profile      ?? params.get("profile")      ?? "";
 
   const [data, setData]                       = useState<DocumentData | null>(null);
   const [itineraryData, setItineraryData]     = useState<ItineraryPlacesData | null>(null);
@@ -39,12 +56,14 @@ export default function DocumentsContent() {
   // ── Data fetching ────────────────────────────────────────────
   useEffect(() => {
     if (!country || !visaType || !location) {
-      setError("Missing required URL parameters (country, visaType, location).");
+      setError("Missing required parameters (country, visaType, location).");
       setLoading(false);
       return;
     }
 
-    // Fetch requirements and itinerary places in parallel
+    setLoading(true);
+    setError(null);
+
     Promise.all([
       getRequirementsData(country, visaType, location),
       getItineraryPlaces(country),
@@ -56,7 +75,7 @@ export default function DocumentsContent() {
           return;
         }
         setData(mapRequirementsToDocumentData(req, countryName, visaTypeName, locationName, sponsorship));
-        setItineraryData(itin);   // null is fine — widget simply won't render
+        setItineraryData(itin);
         setLoading(false);
       })
       .catch(err => {
@@ -100,9 +119,16 @@ export default function DocumentsContent() {
   // ── Loading state ────────────────────────────────────────────
   if (loading) {
     return (
-      <div style={{ minHeight: "calc(100vh - 56px)", background: "#f8f7f4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{
+        flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+        background: "#f8f7f4", minHeight: props.embedded ? 200 : "calc(100vh - 56px)",
+      }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ width: 48, height: 48, borderRadius: "50%", border: "3px solid #e5e7eb", borderTopColor: "#6366f1", margin: "0 auto 16px", animation: "spin 0.7s linear infinite" }} />
+          <div style={{
+            width: 40, height: 40, borderRadius: "50%",
+            border: "3px solid #e5e7eb", borderTopColor: "#6366f1",
+            margin: "0 auto 14px", animation: "spin 0.7s linear infinite",
+          }} />
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <p style={{ fontSize: 13, color: "#9ca3af" }}>Loading your document checklist…</p>
         </div>
@@ -113,14 +139,26 @@ export default function DocumentsContent() {
   // ── Error state ──────────────────────────────────────────────
   if (error) {
     return (
-      <div style={{ minHeight: "calc(100vh - 56px)", background: "#f8f7f4", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
-        <div style={{ background: "#fff", borderRadius: 16, border: "1.5px solid #fecaca", padding: "28px 24px", maxWidth: 400, textAlign: "center" }}>
+      <div style={{
+        flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+        background: "#f8f7f4", padding: 24,
+        minHeight: props.embedded ? 200 : "calc(100vh - 56px)",
+      }}>
+        <div style={{
+          background: "#fff", borderRadius: 16, border: "1.5px solid #fecaca",
+          padding: "28px 24px", maxWidth: 400, textAlign: "center",
+        }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
           <p style={{ fontSize: 14, fontWeight: 600, color: "#111827", margin: "0 0 8px" }}>Could not load documents</p>
           <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 20px" }}>{error}</p>
-          <button onClick={() => router.push("/wizard")} style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "#6366f1", border: "none", borderRadius: 10, padding: "10px 20px", cursor: "pointer" }}>
-            Go Back
-          </button>
+          {!props.embedded && (
+            <button
+              onClick={() => router.push("/wizard")}
+              style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "#6366f1", border: "none", borderRadius: 10, padding: "10px 20px", cursor: "pointer" }}
+            >
+              Go Back
+            </button>
+          )}
         </div>
       </div>
     );
@@ -128,7 +166,13 @@ export default function DocumentsContent() {
 
   // ── Main render ──────────────────────────────────────────────
   return (
-    <div style={{ minHeight: "calc(100vh - 56px)", background: "#f8f7f4", paddingTop: 72, paddingBottom: 80 }}>
+    <div style={{
+      background: "#f8f7f4",
+      paddingTop: props.embedded ? 0 : 72,
+      paddingBottom: 80,
+      // When embedded, fill the flex container properly
+      ...(props.embedded ? { flex: 1, overflowY: "auto", minHeight: 0 } : { minHeight: "calc(100vh - 56px)" }),
+    }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
         * { box-sizing: border-box; }
@@ -138,29 +182,33 @@ export default function DocumentsContent() {
         ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
       `}</style>
 
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px" }}>
+      <div style={{ maxWidth: props.embedded ? "none" : 720, margin: "0 auto", padding: "0 16px" }}>
 
-        {/* ── Back ── */}
-        <button
-          onClick={() => router.push("/wizard")}
-          style={{
-            display: "flex", alignItems: "center", gap: 6,
-            background: "transparent", border: "none", cursor: "pointer",
-            fontSize: 13, fontWeight: 500, color: "#6b7280", padding: "0 0 20px", transition: "color 150ms ease",
-          }}
-          onMouseEnter={e => (e.currentTarget.style.color = "#111827")}
-          onMouseLeave={e => (e.currentTarget.style.color = "#6b7280")}
-        >
-          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-          </svg>
-          Edit selections
-        </button>
+        {/* ── Back button — hidden when embedded ── */}
+        {!props.embedded && (
+          <button
+            onClick={() => router.push("/wizard")}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              background: "transparent", border: "none", cursor: "pointer",
+              fontSize: 13, fontWeight: 500, color: "#6b7280", padding: "0 0 20px", transition: "color 150ms ease",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = "#111827")}
+            onMouseLeave={e => (e.currentTarget.style.color = "#6b7280")}
+          >
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Edit selections
+          </button>
+        )}
 
         {/* ── Hero ── */}
         <div style={{
           background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%)",
-          borderRadius: 20, padding: "28px 28px 24px", marginBottom: 20,
+          borderRadius: props.embedded ? 14 : 20,
+          padding: props.embedded ? "20px 20px 18px" : "28px 28px 24px",
+          marginBottom: 20,
           position: "relative", overflow: "hidden",
         }}>
           <div>
@@ -180,7 +228,11 @@ export default function DocumentsContent() {
               ))}
             </div>
 
-            <h1 style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, fontWeight: 400, color: "#fff", margin: "0 0 6px", lineHeight: 1.2 }}>
+            <h1 style={{
+              fontFamily: "'DM Serif Display', serif",
+              fontSize: props.embedded ? 20 : 26,
+              fontWeight: 400, color: "#fff", margin: "0 0 6px", lineHeight: 1.2,
+            }}>
               Your Document Checklist
             </h1>
             <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: "0 0 20px", lineHeight: 1.5 }}>
@@ -243,7 +295,12 @@ export default function DocumentsContent() {
                 <span style={{ fontSize: 11, color: "#6b7280" }}>{uploadCount} of {uploadableCount} uploaded</span>
               </div>
               <div style={{ height: 4, background: "#f1f5f9", borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${(uploadCount / uploadableCount) * 100}%`, background: "linear-gradient(90deg, #22c55e, #16a34a)", borderRadius: 2, transition: "width 400ms ease" }} />
+                <div style={{
+                  height: "100%",
+                  width: `${(uploadCount / uploadableCount) * 100}%`,
+                  background: "linear-gradient(90deg, #22c55e, #16a34a)",
+                  borderRadius: 2, transition: "width 400ms ease",
+                }} />
               </div>
             </div>
             <button
@@ -291,7 +348,7 @@ export default function DocumentsContent() {
           ))}
         </div>
 
-        {/* ── Categories — itineraryData threaded down ── */}
+        {/* ── Categories ── */}
         {data?.categories.map((cat, ci) => {
           const delay = ci * (cat.documents.length * 60 + 80);
           return (
@@ -315,13 +372,17 @@ export default function DocumentsContent() {
           background: "#fff", borderRadius: 14, border: "1.5px solid #f1f1ef",
           padding: "16px 18px", display: "flex", gap: 12, alignItems: "flex-start",
         }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "#fef3c7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10, background: "#fef3c7",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
             <span style={{ fontSize: 18 }}>💡</span>
           </div>
           <div>
             <p style={{ fontSize: 12, fontWeight: 700, color: "#92400e", margin: "0 0 4px" }}>Pro Tip</p>
             <p style={{ fontSize: 12, color: "#6b7280", margin: 0, lineHeight: 1.6 }}>
-              All photocopies must be on A4 size only. The Embassy may request additional documentation depending on personal circumstances. Documents submitted will not be returned except for the passport. Upload digital copies above to create a ready-to-send document folder.
+              All photocopies must be on A4 size only. The Embassy may request additional documentation depending on personal circumstances.
+              Documents submitted will not be returned except for the passport. Upload digital copies above to create a ready-to-send document folder.
             </p>
           </div>
         </div>
