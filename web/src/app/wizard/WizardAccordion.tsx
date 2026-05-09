@@ -1,537 +1,353 @@
-"use client";
-
-import React, { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+"use client"
+import { useState, useEffect, useRef } from "react";
 import StepCountry from "../../components/wizard/steps/StepCountry";
 import StepVisaType from "../../components/wizard/steps/StepVisaType";
 import StepLocation from "../../components/wizard/steps/StepLocation";
 import StepDetails from "../../components/wizard/steps/StepDetails";
-import { getAllCountries, type CountryCatalogEntry } from "@/lib/data/repository";
+import DocumentsContent from "../../app/documents/DocumentsContent";
+import {
+  getAllCountries,
+  type CountryCatalogEntry
+} from "@/lib/data/repository";
 
-// ─────────────────────────────────────────────────────────────
-// Animated collapsible body
-// ─────────────────────────────────────────────────────────────
-function AnimatedBody({ isOpen, children }: { isOpen: boolean; children: React.ReactNode }) {
-  const innerRef = useRef<HTMLDivElement>(null);
-  const [maxH, setMaxH] = useState(0);
-  const [visible, setVisible] = useState(isOpen);
+// ─── Static data ─────────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    if (!innerRef.current) return;
-    if (isOpen) {
-      setVisible(true);
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (innerRef.current) setMaxH(innerRef.current.scrollHeight);
-        });
-      });
-    } else {
-      setMaxH(0);
-      const t = setTimeout(() => setVisible(false), 400);
-      return () => clearTimeout(t);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen || !innerRef.current) return;
-    const ro = new ResizeObserver(() => {
-      if (innerRef.current && isOpen) setMaxH(innerRef.current.scrollHeight);
-    });
-    ro.observe(innerRef.current);
-    return () => ro.disconnect();
-  }, [isOpen]);
-
-  return (
-    <div style={{ maxHeight: maxH, overflow: "hidden", transition: "max-height 400ms cubic-bezier(0.4,0,0.2,1)" }}>
-      <div
-        ref={innerRef}
-        style={{
-          opacity: isOpen ? 1 : 0,
-          transform: isOpen ? "translateY(0)" : "translateY(-10px)",
-          transition: "opacity 320ms ease 60ms, transform 320ms ease 60ms",
-        }}
-      >
-        {visible && children}
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────
-interface Selection {
-  country: string | null;
-  countryName: string | null;
-  visaType: string | null;
-  visaTypeName: string | null;
-  location: string | null;
-  sponsorship: string | null;
-  profile: string | null;
-}
-
-// ─────────────────────────────────────────────────────────────
-// Summary chip
-// ─────────────────────────────────────────────────────────────
-function SummaryChip({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-2.5 bg-white border border-gray-100 rounded-xl px-3.5 py-2.5 shadow-sm">
-      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 flex-shrink-0">
-        {icon}
-      </div>
-      <div>
-        <div className="text-[10px] text-gray-400 leading-none mb-0.5 uppercase tracking-wide">{label}</div>
-        <div className="text-sm font-semibold text-gray-800">{value}</div>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// Accordion card
-// ─────────────────────────────────────────────────────────────
-function AccordionCard({
-  step, title, subtitle, isOpen, isDone, isLocked,
-  summary, onEdit, onToggle, children,
-}: {
-  step: number; title: string; subtitle: string;
-  isOpen: boolean; isDone: boolean; isLocked: boolean;
-  summary?: string; onEdit?: () => void; onToggle?: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div style={{
-      borderRadius: 14,
-      border: isOpen ? "1.5px solid #c7d2fe" : "1.5px solid #e5e7eb",
-      boxShadow: isOpen ? "0 4px 24px rgba(99,102,241,0.09)" : "0 1px 4px rgba(0,0,0,0.04)",
-      background: isLocked ? "#fafafa" : "#fff",
-      opacity: isLocked ? 0.5 : 1,
-      transition: "box-shadow 350ms ease, border-color 350ms ease, opacity 350ms ease",
-      overflow: "hidden",
-    }}>
-      {/* Entire header is the click target */}
-      <div
-        onClick={() => { if (!isLocked) onToggle?.(); }}
-        style={{
-          padding: "15px 18px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          minHeight: 58,
-          cursor: isLocked ? "default" : "pointer",
-          userSelect: "none",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 12, fontWeight: 600,
-            background: isDone ? "#22c55e" : isOpen ? "#6366f1" : "#e5e7eb",
-            color: isDone || isOpen ? "#fff" : "#9ca3af",
-            transition: "background 350ms ease",
-          }}>
-            {isDone ? (
-              <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-              </svg>
-            ) : step}
-          </div>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#1f2937", lineHeight: 1.3 }}>{title}</div>
-            <div style={{ fontSize: 12, marginTop: 2, lineHeight: 1.3, minHeight: 16 }}>
-              {isDone && !isOpen && summary
-                ? <span style={{ color: "#6366f1", fontWeight: 500 }}>{summary}</span>
-                : !isDone && !isOpen
-                  ? <span style={{ color: "#9ca3af" }}>{subtitle}</span>
-                  : <span style={{ color: "transparent", userSelect: "none" }}>·</span>
-              }
-            </div>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, marginLeft: 12 }}>
-          {isDone && !isOpen && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit?.(); }}
-              className="text-xs font-semibold text-indigo-500 px-2.5 py-1 rounded-lg border-none bg-transparent cursor-pointer hover:bg-indigo-50 transition-colors duration-150"
-            >
-              Edit
-            </button>
-          )}
-          {/* Chevron — visual only, click is handled by the header div */}
-          <div
-            style={{
-              padding: 4,
-              color: isOpen ? "#6366f1" : "#d1d5db",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              borderRadius: 6, transition: "color 350ms ease",
-            }}
-            aria-hidden="true"
-          >
-            <svg
-              width="16" height="16" fill="none" stroke="currentColor"
-              strokeWidth={2} viewBox="0 0 24 24"
-              style={{
-                transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 380ms cubic-bezier(0.4,0,0.2,1)",
-              }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <AnimatedBody isOpen={isOpen}>
-        <div style={{ borderTop: "1px solid #f3f4f6", padding: "20px 18px 24px" }}>
-          {children}
-        </div>
-      </AnimatedBody>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// Label maps (shared by SummaryCard + collapsedSummary)
-// ─────────────────────────────────────────────────────────────
-const sponsorshipLabels: Record<string, string> = {
-  self: "Self-Sponsored",
-  sponsored: "Sponsored",
-};
-const profileLabels: Record<string, string> = {
-  employed: "Employed",
-  student: "Student",
-  "self-employed": "Self-Employed",
-};
-
-// ─────────────────────────────────────────────────────────────
-// Summary card — original animated entry after step 4
-// ─────────────────────────────────────────────────────────────
-function SummaryCard({
-  selection,
-  onShowDocuments,
-}: {
-  selection: Selection;
-  onShowDocuments: () => void;
-}) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 60);
-    return () => clearTimeout(t);
-  }, []);
-
-  return (
-    <div style={{
-      borderRadius: 14,
-      border: "1.5px solid #c7d2fe",
-      background: "linear-gradient(140deg,#eef2ff 0%,#fff 65%)",
-      boxShadow: "0 8px 32px rgba(99,102,241,0.12)",
-      overflow: "hidden",
-      opacity: mounted ? 1 : 0,
-      transform: mounted ? "translateY(0)" : "translateY(20px)",
-      transition: "opacity 480ms ease, transform 480ms cubic-bezier(0.34,1.56,0.64,1)",
-    }}>
-      {/* Header */}
-      <div style={{
-        padding: "18px 20px 16px",
-        borderBottom: "1px solid #e0e7ff",
-        display: "flex", alignItems: "center", gap: 12,
-      }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10,
-          background: "linear-gradient(135deg,#6366f1,#4f46e5)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 2px 8px rgba(99,102,241,0.3)", flexShrink: 0,
-        }}>
-          <svg width="15" height="15" fill="none" stroke="white" strokeWidth={2.5} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-          </svg>
-        </div>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937" }}>All set! Here's your summary</div>
-          <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>
-            Ready to see your personalised document checklist
-          </div>
-        </div>
-      </div>
-
-      {/* Chips grid */}
-      <div style={{
-        padding: "16px 20px",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-        gap: 10,
-      }}>
-        <SummaryChip
-          label="Destination"
-          value={selection.countryName ?? "—"}
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-            </svg>
-          }
-        />
-        <SummaryChip
-          label="Visa Type"
-          value={selection.visaTypeName ?? "—"}
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
-            </svg>
-          }
-        />
-        <SummaryChip
-          label="Applying From"
-          value={selection.location ?? "—"}
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3" />
-            </svg>
-          }
-        />
-        <SummaryChip
-          label="Sponsorship"
-          value={sponsorshipLabels[selection.sponsorship ?? ""] ?? "—"}
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
-          }
-        />
-        <SummaryChip
-          label="Profile"
-          value={profileLabels[selection.profile ?? ""] ?? "—"}
-          icon={
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
-            </svg>
-          }
-        />
-      </div>
-
-      {/* CTA */}
-      <div style={{ padding: "4px 20px 20px" }}>
-        <button
-          onClick={onShowDocuments}
-          style={{
-            width: "100%",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            padding: "14px 0",
-            fontSize: 14, fontWeight: 600, color: "#fff",
-            background: "linear-gradient(135deg,#6366f1 0%,#4f46e5 100%)",
-            boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
-            border: "none", borderRadius: 12, cursor: "pointer",
-            transition: "transform 160ms ease, box-shadow 160ms ease",
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(99,102,241,0.45)";
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(99,102,241,0.35)";
-          }}
-        >
-          See My Required Documents
-          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-          </svg>
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// Main
-// ─────────────────────────────────────────────────────────────
-type CardId = "country" | "visaType" | "location" | "details";
-
-const STEPS: { id: CardId; title: string; subtitle: string }[] = [
-  { id: "country",  title: "Select Destination Country",  subtitle: "Where are you planning to go?" },
-  { id: "visaType", title: "Select Visa Type",            subtitle: "What type of visa do you need?" },
-  { id: "location", title: "Where will you apply from?",  subtitle: "Select the city where you'll submit your application" },
-  { id: "details",  title: "Tell us about your trip",     subtitle: "A few more details to personalise your checklist" },
+const TRUST = [
+  { color: "#4ade80", label: "Embassy-verified" },
+  { color: "#a78bfa", label: "Updated May 2026" },
+  { color: "#60a5fa", label: "AI-powered" },
 ];
 
-export default function WizardAccordion() {
-  const router = useRouter();
-  const [openCard, setOpenCard] = useState<CardId | null>("country");
-  const [allCountries, setAllCountries] = React.useState<CountryCatalogEntry[]>([]);
+const STEP_LABELS = ["Country", "Visa type", "Location", "Details"];
 
-  React.useEffect(() => {
-    getAllCountries().then(setAllCountries);
-  }, []);
+// ─── WizardCard ───────────────────────────────────────────────────────────────
 
-  const [selection, setSelection] = useState<Selection>({
-    country: null, countryName: null,
-    visaType: null, visaTypeName: null,
-    location: null, sponsorship: null, profile: null,
-  });
+interface WizardSelections {
+  country: string;
+  countryName: string;
+  visaType: string;
+  visaTypeName: string;
+  location: string;
+  locationName: string;
+  sponsorship: string;
+  profile: string;
+}
 
-  const isComplete = (id: CardId): boolean => {
-    if (id === "country")  return !!selection.country;
-    if (id === "visaType") return !!selection.visaType;
-    if (id === "location") return !!selection.location;
-    if (id === "details")  return !!selection.sponsorship && !!selection.profile;
-    return false;
+function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
+const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
+
+useEffect(() => {
+  getAllCountries().then(setCountries);
+}, []);
+  const [activeStep, setActiveStep]             = useState(0);
+  const [selectedCountry, setSelectedCountry]   = useState<string | null>(null);
+  const [selectedCountryName, setSelectedCountryName] = useState<string | null>(null);
+  const [selectedVisa, setSelectedVisa]         = useState<string | null>(null);
+  const [selectedVisaName, setSelectedVisaName] = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [sponsorship, setSponsorship]           = useState<string | null>(null);
+  const [profile, setProfile]                   = useState<string | null>(null);
+
+  const canContinue =
+    activeStep === 0 ? !!selectedCountry :
+    activeStep === 1 ? !!selectedVisa :
+    activeStep === 2 ? !!selectedLocation :
+    activeStep === 3 ? !!(sponsorship && profile) :
+    true;
+
+  const continueLabels = [
+    "Continue → Choose visa type",
+    "Continue → Select location",
+    "Continue → Trip details",
+    "Show my documents",
+  ];
+  const continueLabel = continueLabels[activeStep] ?? "Continue";
+
+  const handleCountrySelect = (code: string | null, name: string | null) => {
+    setSelectedCountry(code);
+    setSelectedCountryName(name);
+    if (!code) { setSelectedVisa(null); setSelectedVisaName(null); }
   };
 
-  const isLocked = (id: CardId): boolean => {
-    const order: CardId[] = ["country", "visaType", "location", "details"];
-    const i = order.indexOf(id);
-    return i > 0 && !isComplete(order[i - 1]);
+  const handleVisaSelect = (code: string | null, name: string | null) => {
+    setSelectedVisa(code);
+    setSelectedVisaName(name);
   };
 
-  const allDone = STEPS.every((s) => isComplete(s.id));
-
-  const collapsedSummary = (id: CardId): string => {
-    if (id === "country"  && selection.countryName)  return selection.countryName;
-    if (id === "visaType" && selection.visaTypeName)  return selection.visaTypeName;
-    if (id === "location" && selection.location)      return selection.location;
-    if (id === "details"  && selection.sponsorship)
-      return `${sponsorshipLabels[selection.sponsorship] ?? selection.sponsorship} · ${profileLabels[selection.profile ?? ""] ?? selection.profile ?? ""}`;
-    return "";
+  const handleDetailsSelect = (sp: string | null, pr: string | null) => {
+    setSponsorship(sp);
+    setProfile(pr);
   };
 
-  // Track whether the user opened a card via "Edit" while all steps were already done.
-  // Completing that card should jump straight to summary, not chain through subsequent cards.
-  const isEditingRef = useRef(false);
+  const breadcrumbs = [
+    selectedCountryName,
+    selectedVisaName,
+    selectedLocation,
+  ].slice(0, activeStep).filter(Boolean);
 
-  const handleToggle = (id: CardId) => {
-    if (isLocked(id)) return;
-    // If the wizard is already complete, expanding a card via header click is an "edit"
-    // — completing it should return to summary, not chain through already-filled cards.
-    const willOpen = openCard !== id;
-    isEditingRef.current = willOpen && allDone;
-    setOpenCard((prev) => (prev === id ? null : id));
-  };
-
-  const handleEdit = (id: CardId) => {
-    if (!isLocked(id)) {
-      isEditingRef.current = allDone;
-      setOpenCard(id);
-    }
-  };
-
-  const advance = (next: CardId | null) => {
-    if (isEditingRef.current) {
-      // Was editing a completed step → skip straight back to summary
-      isEditingRef.current = false;
-      setTimeout(() => setOpenCard(null), 300);
+  const handleContinue = () => {
+    if (!canContinue) return;
+    if (activeStep === 3) {
+      // "Show my documents" — pass wizard selections and trigger animated scroll
+      onShowDocuments({
+        country:      selectedCountry      ?? "",
+        countryName:  selectedCountryName  ?? "",
+        visaType:     selectedVisa         ?? "",
+        visaTypeName: selectedVisaName     ?? "",
+        location:     selectedLocation     ?? "",
+        locationName: selectedLocation     ?? "",
+        sponsorship:  sponsorship          ?? "SELF",
+        profile:      profile              ?? "",
+      });
     } else {
-      setTimeout(() => setOpenCard(next), 300);
+      setActiveStep(s => Math.min(s + 1, STEP_LABELS.length - 1));
     }
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f3f4f6", paddingTop: 64, paddingBottom: 80 }}>
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "32px 16px 0" }}>
-
-        {/* Heading */}
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#111827", margin: "0 0 6px" }}>
-            Find Your Required Documents
-          </h1>
-          <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>
-            Answer a few quick questions to get your personalised document checklist
-          </p>
+    <div style={{
+      background: "rgba(255,255,255,0.04)",
+      border: "0.5px solid rgba(255,255,255,0.1)",
+      borderRadius: 18,
+      padding: "20px",
+    }}>
+      {/* Header row */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+        <div>
+          <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>Step {activeStep + 1} of {STEP_LABELS.length}</span>
+          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
+            {STEP_LABELS[activeStep] === "Country" ? "Select destination" : `Select ${STEP_LABELS[activeStep].toLowerCase()}`}
+          </div>
         </div>
-
-        {/* Progress pills */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 6, marginBottom: 28 }}>
-          {STEPS.map((s) => (
-            <div key={s.id} style={{
-              height: 6, borderRadius: 3,
-              width: isComplete(s.id) ? 28 : 8,
-              background: isComplete(s.id) ? "#6366f1" : openCard === s.id ? "#a5b4fc" : "#e5e7eb",
-              transition: "width 400ms ease, background 400ms ease",
+        <div style={{ display: "flex", gap: 5 }}>
+          {STEP_LABELS.map((_, i) => (
+            <div key={i} style={{
+              width: i === activeStep ? 22 : 18, height: 4, borderRadius: 2,
+              background: i < activeStep ? "#4ade80" : i === activeStep ? "#6c5ce7" : "rgba(255,255,255,0.15)",
+              transition: "all 0.3s",
             }} />
           ))}
         </div>
-
-        {/* Cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {STEPS.map((step, idx) => (
-            <AccordionCard
-              key={step.id}
-              step={idx + 1}
-              title={step.title}
-              subtitle={step.subtitle}
-              isOpen={openCard === step.id}
-              isDone={isComplete(step.id)}
-              isLocked={isLocked(step.id)}
-              summary={collapsedSummary(step.id)}
-              onEdit={() => handleEdit(step.id)}
-              onToggle={() => handleToggle(step.id)}
-            >
-              {step.id === "country" && (
-                <StepCountry
-                  allCountries={allCountries}
-                  selectedCountry={selection.country}
-                  onSelect={(code, name) => {
-                    setSelection((s) => ({
-                      ...s, country: code, countryName: name,
-                      visaType: null, visaTypeName: null, location: null,
-                    }));
-                    if (code) advance("visaType");
-                  }}
-                  compact
-                />
-              )}
-              {step.id === "visaType" && (
-                <StepVisaType
-                  countryCode={selection.country}
-                  selectedVisa={selection.visaType}
-                  onSelect={(visa, name) => {
-                    setSelection((s) => ({ ...s, visaType: visa, visaTypeName: name }));
-                    if (visa) advance("location");
-                  }}
-                  compact
-                />
-              )}
-              {step.id === "location" && (
-                <StepLocation
-                  countryCode={selection.country}
-                  selectedLocation={selection.location}
-                  onSelect={(loc) => {
-                    setSelection((s) => ({ ...s, location: loc }));
-                    if (loc) advance("details");
-                  }}
-                  compact
-                />
-              )}
-              {step.id === "details" && (
-                <StepDetails
-                  sponsorship={selection.sponsorship}
-                  profile={selection.profile}
-                  onSelect={(sponsorship, profile) => {
-                    setSelection((s) => ({ ...s, sponsorship, profile }));
-                    if (sponsorship && profile) advance(null);
-                  }}
-                  compact
-                />
-              )}
-            </AccordionCard>
-          ))}
-
-          {/* Summary card — appears when all 4 done and no card is open */}
-          {allDone && openCard === null && (
-            <SummaryCard
-              selection={selection}
-              onShowDocuments={() => {
-                const params = new URLSearchParams({
-                  country:     selection.country     ?? "",
-                  visaType:    selection.visaType     ?? "",
-                  location:    selection.location     ?? "",
-                  sponsorship: selection.sponsorship  ?? "",
-                  profile:     selection.profile      ?? "",
-                });
-                router.push(`/documents?${params.toString()}`);
-              }}
-            />
-          )}
-        </div>
       </div>
+
+      {/* Breadcrumb pills */}
+      {breadcrumbs.length > 0 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+          {breadcrumbs.map((label, i) => (
+            <div
+              key={i}
+              onClick={() => setActiveStep(i)}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 5,
+                background: "rgba(108,92,231,0.12)",
+                border: "0.5px solid rgba(108,92,231,0.35)",
+                borderRadius: 20, padding: "4px 10px 4px 8px",
+                cursor: "pointer",
+              }}
+            >
+              <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Step content */}
+      <div style={{ marginBottom: 16 }}>
+        {activeStep === 0 && (
+          <StepCountry
+  allCountries={countries}
+  selectedCountry={selectedCountry}
+  onSelect={handleCountrySelect}
+  compact
+/>
+        )}
+        {activeStep === 1 && (
+          <StepVisaType
+            countryCode={selectedCountry}
+            selectedVisa={selectedVisa}
+            onSelect={handleVisaSelect}
+            compact
+          />
+        )}
+        {activeStep === 2 && (
+          <StepLocation
+            countryCode={selectedCountry}
+            selectedLocation={selectedLocation}
+            onSelect={setSelectedLocation}
+            compact
+          />
+        )}
+        {activeStep === 3 && (
+          <StepDetails
+            sponsorship={sponsorship}
+            profile={profile}
+            onSelect={handleDetailsSelect}
+            compact
+          />
+        )}
+      </div>
+
+      {/* CTA */}
+      <button
+        onClick={handleContinue}
+        style={{
+          width: "100%",
+          background: canContinue
+            ? activeStep === 3
+              ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
+              : "#6c5ce7"
+            : "rgba(255,255,255,0.07)",
+          color: canContinue ? "#fff" : "rgba(255,255,255,0.25)",
+          border: "none", borderRadius: 10, padding: "11px",
+          fontSize: 13, fontWeight: 500,
+          cursor: canContinue ? "pointer" : "not-allowed",
+          transition: "all 0.2s",
+          boxShadow: canContinue && activeStep === 3 ? "0 4px 20px rgba(108,92,231,0.35)" : "none",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+        }}
+        onMouseEnter={e => { if (canContinue) (e.currentTarget.style.opacity = "0.88"); }}
+        onMouseLeave={e => { if (canContinue) (e.currentTarget.style.opacity = "1"); }}
+      >
+        {activeStep === 3 && canContinue && (
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
+          </svg>
+        )}
+        {continueLabel}
+      </button>
+    </div>
+  );
+}
+
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
+function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
+  return (
+    <section style={{
+      background: "#0a0718", minHeight: "100vh",
+      padding: "0 32px",
+      display: "flex", alignItems: "center",
+      position: "relative", overflow: "hidden",
+    }}>
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage: "radial-gradient(circle at 70% 40%, rgba(108,92,231,0.12) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(108,92,231,0.06) 0%, transparent 50%)",
+      }} />
+      <div className="hero-grid" style={{
+        maxWidth: 1100, margin: "0 auto", width: "100%",
+        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56,
+        alignItems: "center", paddingTop: 80, position: "relative",
+      }}>
+        {/* Left */}
+        <div>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 7,
+            background: "rgba(108,92,231,0.15)",
+            border: "0.5px solid rgba(108,92,231,0.38)",
+            color: "#a89cef", fontSize: 11, padding: "4px 12px",
+            borderRadius: 20, marginBottom: 24,
+          }}>
+            <div style={{ width: 5, height: 5, background: "#6c5ce7", borderRadius: "50%" }} />
+            Visa Document Intelligence
+          </div>
+          <h1 style={{
+            color: "#fff", fontSize: "clamp(32px, 4vw, 50px)",
+            fontWeight: 500, lineHeight: 1.15, margin: "0 0 18px",
+            letterSpacing: "-0.03em",
+          }}>
+            Your personalised<br />
+            visa checklist,<br />
+            <span style={{ color: "#a89cef" }}>in 4 steps.</span>
+          </h1>
+          <p style={{ color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.7, margin: "0 0 30px", maxWidth: 420 }}>
+            Accurate requirements sourced from official embassy data — no guesswork, no missed documents.
+          </p>
+          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+            {TRUST.map(t => (
+              <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+                <span style={{ color: "rgba(255,255,255,0.38)", fontSize: 12 }}>{t.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Right: wizard */}
+        <div><WizardCard onShowDocuments={onShowDocuments} /></div>
+      </div>
+    </section>
+  );
+}
+
+// ─── DocumentsSection ─────────────────────────────────────────────────────────
+
+function DocumentsSection({
+  sectionRef, visible, selections,
+}: {
+  sectionRef: React.RefObject<HTMLDivElement>;
+  visible: boolean;
+  selections: WizardSelections;
+}) {
+  return (
+    <section
+      ref={sectionRef}
+      style={{
+        background: "#0d0b1e",
+        borderTop: "0.5px solid rgba(255,255,255,0.07)",
+        padding: "72px 0 80px",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(32px)",
+        transition: "opacity 0.6s ease, transform 0.6s ease",
+      }}
+    >
+     
+        <DocumentsContent
+          embedded
+          country={selections.country}
+          countryName={selections.countryName}
+          visaType={selections.visaType}
+          visaTypeName={selections.visaTypeName}
+          location={selections.location}
+          locationName={selections.locationName}
+          sponsorship={selections.sponsorship}
+          profile={selections.profile}
+        />
+      
+    </section>
+  );
+}
+
+// ─── Root ─────────────────────────────────────────────────────────────────────
+
+export default function VisaMateLanding() {
+  const [docsVisible, setDocsVisible] = useState(false);
+  const [wizardSelections, setWizardSelections] = useState<WizardSelections | null>(null);
+  const docsSectionRef = useRef<HTMLDivElement>(null);
+
+  const handleShowDocuments = (selections: WizardSelections) => {
+    setWizardSelections(selections);
+    setDocsVisible(true);
+    setTimeout(() => {
+      docsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  };
+
+  return (
+    <div style={{ fontFamily: "'DM Sans', 'Inter', sans-serif", margin: 0, padding: 0 }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        input::placeholder { color: rgba(255,255,255,0.25); }
+        @media (max-width: 768px) {
+          .hero-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+      <Hero onShowDocuments={handleShowDocuments} />
+      {docsVisible && wizardSelections && (
+        <DocumentsSection sectionRef={docsSectionRef} visible={docsVisible} selections={wizardSelections} />
+      )}
     </div>
   );
 }

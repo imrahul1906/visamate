@@ -1,0 +1,86 @@
+{
+  "countryCode": "JP",
+  "countryName": "Japan",
+  "cities": {
+    "tokyo": {
+      "name": "Tokyo",
+      "places": [
+        { "id": "senso",    "name": "Senso-ji Temple, Asakusa",   "type": "Temple",   "duration": "2h"   },
+        { "id": "shibuya",  "name": "Shibuya Crossing",            "type": "Landmark", "duration": "1h"   },
+        { "id": "shinjuku", "name": "Shinjuku Gyoen Garden",       "type": "Garden",   "duration": "2h"   },
+        { "id": "akiba",    "name": "Akihabara Electric Town",     "type": "District", "duration": "2h"   },
+        { "id": "harajuku", "name": "Harajuku / Takeshita St.",    "type": "Shopping", "duration": "1.5h" },
+        { "id": "teamlab",  "name": "teamLab Borderless",          "type": "Museum",   "duration": "3h"   },
+        { "id": "ueno",     "name": "Ueno Park & Zoo",             "type": "Park",     "duration": "2h"   },
+        { "id": "meiji",    "name": "Meiji Jingu Shrine",          "type": "Shrine",   "duration": "1.5h" },
+        { "id": "odaiba",   "name": "Odaiba Seaside Park",         "type": "Park",     "duration": "2h"   },
+        { "id": "ginza",    "name": "Ginza Shopping District",     "type": "Shopping", "duration": "2h"   }
+      ]
+    },
+    "kyoto": {
+      "name": "Kyoto",
+      "places": [
+        { "id": "fushimi",     "name": "Fushimi Inari Shrine",           "type": "Shrine",   "duration": "2h"   },
+        { "id": "arashiyama",  "name": "Arashiyama Bamboo Grove",        "type": "Nature",   "duration": "1.5h" },
+        { "id": "kinkakuji",   "name": "Kinkaku-ji (Golden Pavilion)",   "type": "Temple",   "duration": "1.5h" },
+        { "id": "gion",        "name": "Gion District (Geisha town)",    "type": "District", "duration": "2h"   },
+        { "id": "nishiki",     "name": "Nishiki Market",                 "type": "Market",   "duration": "1.5h" },
+        { "id": "kiyomizu",    "name": "Kiyomizu-dera Temple",           "type": "Temple",   "duration": "2h"   },
+        { "id": "nijo",        "name": "Nijo Castle",                    "type": "Castle",   "duration": "2h"   },
+        { "id": "philosopher", "name": "Philosopher's Path",             "type": "Nature",   "duration": "1.5h" }
+      ]
+    },
+    "osaka": {
+      "name": "Osaka",
+      "places": [
+        { "id": "osaka_castle", "name": "Osaka Castle",              "type": "Castle",     "duration": "2h"   },
+        { "id": "dotonbori",    "name": "Dotonbori (food street)",   "type": "District",   "duration": "2h"   },
+        { "id": "shinsekai",    "name": "Shinsekai District",        "type": "District",   "duration": "1.5h" },
+        { "id": "usj",          "name": "Universal Studios Japan",   "type": "Theme Park", "duration": "8h"   },
+        { "id": "kuromon",      "name": "Kuromon Ichiba Market",     "type": "Market",     "duration": "1.5h" },
+        { "id": "namba",        "name": "Namba Parks",               "type": "Shopping",   "duration": "2h"   }
+      ]
+    },
+    "hiroshima": {
+      "name": "Hiroshima",
+      "places": [
+        { "id": "peace_park",  "name": "Peace Memorial Park",                  "type": "Memorial", "duration": "2h"   },
+        { "id": "atomic_dome", "name": "Atomic Bomb Dome",                     "type": "Memorial", "duration": "1h"   },
+        { "id": "miyajima",    "name": "Miyajima Island & Itsukushima Shrine", "type": "Shrine",   "duration": "4h"   },
+        { "id": "hiro_castle", "name": "Hiroshima Castle",                     "type": "Castle",   "duration": "1.5h" }
+      ]
+    },
+    "nara": {
+      "name": "Nara",
+      "places": [
+        { "id": "nara_park", "name": "Nara Park (deer feeding)", "type": "Park",   "duration": "2h"   },
+        { "id": "todaiji",   "name": "Todai-ji Temple",           "type": "Temple", "duration": "1.5h" },
+        { "id": "kasuga",    "name": "Kasuga Taisha Shrine",      "type": "Shrine", "duration": "1h"   }
+      ]
+    },
+    "hokkaido": {
+      "name": "Hokkaido (Sapporo)",
+      "places": [
+        { "id": "odori",          "name": "Odori Park",          "type": "Park",     "duration": "1h"   },
+        { "id": "sapporo_tv",     "name": "Sapporo TV Tower",    "type": "Landmark", "duration": "1h"   },
+        { "id": "moerenuma",      "name": "Moerenuma Park",      "type": "Park",     "duration": "2h"   },
+        { "id": "shiroi_koibito", "name": "Shiroi Koibito Park", "type": "Museum",   "duration": "1.5h" }
+      ]
+    }
+  },
+  "typeColors": {
+    "Temple":      "#8b5cf6",
+    "Shrine":      "#ec4899",
+    "Nature":      "#10b981",
+    "District":    "#f59e0b",
+    "Market":      "#ef4444",
+    "Museum":      "#3b82f6",
+    "Park":        "#22c55e",
+    "Shopping":    "#f97316",
+    "Castle":      "#6366f1",
+    "Landmark":    "#14b8a6",
+    "Memorial":    "#64748b",
+    "Theme Park":  "#e11d48",
+    "Garden":      "#16a34a"
+  }
+}
