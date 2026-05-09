@@ -2,14 +2,104 @@
 
 // app/documents/CategorySection.tsx
 
-import type { DocumentCategory, UploadsMap } from "./types";
+import type { DocumentCategory, DocumentItem, UploadsMap } from "./types";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import CategoryIcon from "./CategoryIcon";
 import DocumentRow from "./DocumentRow";
+import PhotoSpecWidget from "./PhotoSpecWidget";
+import VisaFormWidget from "./VisaFormWidget";
+import UploadSlot from "./UploadSlot";
+import ItineraryWidget from "./ItineraryWidget.tsx";
+
+// ─────────────────────────────────────────────────────────────
+// DocHelper — renders the appropriate helper for a single doc.
+//
+// Extracted from DocumentRow's expanded panel so the new focus
+// drawer in DocumentsContent can render it directly without
+// duplicating the conditional widget logic.
+//
+// Props use flat callbacks (no docId) so the caller controls
+// which docId these actions apply to.
+// ─────────────────────────────────────────────────────────────
+
+export interface DocHelperProps {
+  doc: DocumentItem;
+  color: string;
+  uploads: UploadsMap;
+  /** Called with the File — caller is responsible for docId binding */
+  onUpload: (file: File) => void;
+  onRemove: () => void;
+  onItineraryReady: (file: File) => void;
+  itineraryData?: ItineraryPlacesData | null;
+}
+
+export function DocHelper({
+  doc,
+  color,
+  uploads,
+  onUpload,
+  onRemove,
+  onItineraryReady,
+  itineraryData,
+}: DocHelperProps) {
+  // Wrap the flat callbacks back into the docId-keyed signatures
+  // that each widget / UploadSlot expects.
+  const wrappedUploads: UploadsMap = uploads;
+
+  const handleUploadBridge = (docId: string, file: File) => {
+    if (docId === doc.id) onUpload(file);
+  };
+  const handleRemoveBridge = (docId: string) => {
+    if (docId === doc.id) onRemove();
+  };
+
+  return (
+    <>
+      {/* Photo spec widget */}
+      {doc.specialWidget === "photo_spec" && (
+        <PhotoSpecWidget color={color} />
+      )}
+
+      {/* Visa form widget */}
+      {doc.specialWidget === "visa_form" && (
+        <VisaFormWidget doc={doc} color={color} />
+      )}
+
+      {/* Itinerary builder */}
+      {doc.specialWidget === "itinerary" && itineraryData && (
+        <ItineraryWidget
+          color={color}
+          countryName={itineraryData.countryName}
+          cities={itineraryData.cities}
+          typeColors={itineraryData.typeColors}
+          onPdfReady={file => onItineraryReady(file)}
+        />
+      )}
+
+      {/* Upload slot — not shown for hardcopy-only docs */}
+      {!doc.noUpload && (
+        <div style={{ marginTop: doc.specialWidget ? 14 : 0 }}>
+          <UploadSlot
+            docId={doc.id}
+            docName={doc.name}
+            color={color}
+            uploads={wrappedUploads}
+            onUpload={handleUploadBridge}
+            onRemove={handleRemoveBridge}
+          />
+        </div>
+      )}
+    </>
+  );
+}
 
 // ─────────────────────────────────────────────────────────────
 // CategorySection — groups DocumentRows under a labelled header
-// with a mini progress bar
+// with a mini progress bar.
+//
+// Unchanged from original — still used as a fallback / for any
+// non-drawer views. DocumentRow continues to use its own inline
+// helper rendering for the accordion expand UX.
 // ─────────────────────────────────────────────────────────────
 
 export default function CategorySection({
