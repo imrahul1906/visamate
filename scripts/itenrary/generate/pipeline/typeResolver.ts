@@ -19,10 +19,7 @@ import { LABEL_TYPE_MAP } from "../config/typeMap.js";
  * description = json.description from Wikipedia REST summary API
  * name        = article title
  */
-export function resolveType(
-  description: string,
-  name?: string
-): PlaceType {
+export function resolveType(description: string): PlaceType {
   const lower = description.toLowerCase();
 
   // ── Description keyword matching (ordered, most-specific first) ──
@@ -76,7 +73,6 @@ export function resolveType(
     ["peace",               "Memorial"],
     // Shopping
     ["shopping",            "Shopping"],
-    ["shopping mall",       "Shopping"],
     // Landmarks
     ["observation deck",    "Viewpoint"],
     ["observation tower",   "Viewpoint"],
@@ -110,9 +106,6 @@ export function resolveType(
   for (const [keyword, type] of LABEL_TYPE_MAP) {
     if (lower.includes(keyword)) return type;
   }
-
-  // ── Name-based heuristic if description didn't resolve ────────
-  if (name) return applyNameHeuristics(name, "Landmark");
 
   return "Landmark";
 }

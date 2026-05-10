@@ -47,10 +47,7 @@ const TITLE_BLACKLIST = [
 // ─────────────────────────────────────────────────────────────
 
 export async function fetchWikidataPlaces(
-  _cityQId: string,
   cityName: string,
-  _regionQId?: string,
-  _minSitelinks = 5
 ): Promise<WikidataPlace[]> {
 
   // Strip parenthetical suffix, e.g. "Hokkaido (Sapporo)" → "Sapporo"

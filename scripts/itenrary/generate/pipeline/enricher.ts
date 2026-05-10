@@ -54,7 +54,7 @@ export async function enrichPlaces(
   return withViews.slice(0, topN).map((p): EnrichedPlace => {
     // wikidataType now holds the full Wikipedia description string
     // e.g. "Buddhist temple in Asakusa, Tokyo"
-    const rawType = resolveType(p.wikidataType, p.name);
+    const rawType = resolveType(p.wikidataType);
     const mappedType = applyNameHeuristics(p.name, rawType);
     const duration = DURATIONS[mappedType];
     const id = makeId(p.name);
