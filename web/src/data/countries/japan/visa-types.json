@@ -13,7 +13,6 @@
           "id": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
           "type": "SINGLE_ENTRY",
           "maxStayDays": 90,
-          "validityMonths": 3
         }
       ],
       "process": {

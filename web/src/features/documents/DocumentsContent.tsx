@@ -3,8 +3,10 @@
 // app/documents/DocumentsContent.tsx
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { getRequirementsData, getItineraryPlaces } from "@/lib/data/repository";
+import { getRequirementsData, getItineraryPlaces, getVisaType } from "@/lib/data/repository";
 import type { ItineraryPlacesData } from "@/lib/data/types";
+import type { VisaType } from "@/lib/data/types";
+import VisaOverviewPanel from "./VisaOverviewPanel";
 
 import type { DocumentData, DocumentItem, UploadsMap } from "@/types/document";
 import { mapRequirementsToDocumentData } from "./mapRequirements";
@@ -86,6 +88,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   // ── NEW: focus drawer state ──────────────────────────────────
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
   const [isMobile, setIsMobile]       = useState(false);
+  const [visaTypeData, setVisaTypeData] = useState<VisaType | null>(null);
 
   // ── Data fetching ────────────────────────────────────────────
   useEffect(() => {
@@ -101,8 +104,9 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     Promise.all([
       getRequirementsData(country, visaType, location),
       getItineraryPlaces(country),
+      getVisaType(country, visaType),
     ])
-      .then(([req, itin]) => {
+      .then(([req, itin, vt]) => {
         if (!req) {
           setError(`No requirements found for ${countryName} · ${visaTypeName} · ${locationName}.`);
           setLoading(false);
@@ -110,6 +114,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
         }
         setData(mapRequirementsToDocumentData(req, countryName, visaTypeName, locationName, sponsorship));
         setItineraryData(itin);
+        setVisaTypeData(vt);
         setLoading(false);
       })
       .catch(err => {
@@ -128,15 +133,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  // ── Auto-open first unchecked required doc on load ────────────
-  useEffect(() => {
-    if (data && !activeDocId) {
-      const allD = data.categories.flatMap(c => c.documents);
-      const first = allD.find(d => !checked[d.id] && d.status === "required");
-      if (first) setActiveDocId(first.id);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   // ── Keyboard navigation ──────────────────────────────────────
   useEffect(() => {
@@ -875,26 +871,11 @@ minWidth: 0,          // ← prevents flex overflow
             }}
           >
             {!activeDoc ? (
-              // Empty state
-              <div style={{
-                flex: 1, display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center",
-                opacity: 0.35, padding: 24, textAlign: "center",
-              }}>
-                <div style={{ fontSize: 40, marginBottom: 14 }}>📋</div>
-                <p style={{
-                  fontSize: 15, fontWeight: 600, color: T.text, margin: "0 0 8px",
-                  fontFamily: "'DM Serif Display', serif",
-                }}>
-                  Select a document
-                </p>
-                <p style={{
-                  fontSize: 12, color: T.muted, margin: 0, lineHeight: 1.7,
-                  maxWidth: 260, fontFamily: "'DM Sans', sans-serif",
-                }}>
-                  Click any item on the left to view details, upload files, or use built-in tools like the itinerary builder.
-                </p>
-              </div>
+              <VisaOverviewPanel
+                visaType={visaTypeData}
+                countryName={countryName}
+                visaTypeName={visaTypeName}
+              />
             ) : (
               // Drawer content
               <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
