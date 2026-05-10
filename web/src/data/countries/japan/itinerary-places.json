@@ -5,82 +5,486 @@
     "tokyo": {
       "name": "Tokyo",
       "places": [
-        { "id": "senso",    "name": "Senso-ji Temple, Asakusa",   "type": "Temple",   "duration": "2h"   },
-        { "id": "shibuya",  "name": "Shibuya Crossing",            "type": "Landmark", "duration": "1h"   },
-        { "id": "shinjuku", "name": "Shinjuku Gyoen Garden",       "type": "Garden",   "duration": "2h"   },
-        { "id": "akiba",    "name": "Akihabara Electric Town",     "type": "District", "duration": "2h"   },
-        { "id": "harajuku", "name": "Harajuku / Takeshita St.",    "type": "Shopping", "duration": "1.5h" },
-        { "id": "teamlab",  "name": "teamLab Borderless",          "type": "Museum",   "duration": "3h"   },
-        { "id": "ueno",     "name": "Ueno Park & Zoo",             "type": "Park",     "duration": "2h"   },
-        { "id": "meiji",    "name": "Meiji Jingu Shrine",          "type": "Shrine",   "duration": "1.5h" },
-        { "id": "odaiba",   "name": "Odaiba Seaside Park",         "type": "Park",     "duration": "2h"   },
-        { "id": "ginza",    "name": "Ginza Shopping District",     "type": "Shopping", "duration": "2h"   }
+        {
+          "id": "akihabara",
+          "name": "Akihabara",
+          "type": "District",
+          "duration": "2h"
+        },
+        {
+          "id": "tokyo_tower",
+          "name": "Tokyo Tower",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "tsukiji_fish_market",
+          "name": "Tsukiji fish market",
+          "type": "Market",
+          "duration": "1.5h"
+        },
+        {
+          "id": "izu_islands",
+          "name": "Izu Islands",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "asakusa_shrine",
+          "name": "Asakusa Shrine",
+          "type": "Shrine",
+          "duration": "1.5h"
+        },
+        {
+          "id": "akasaka_palace",
+          "name": "Akasaka Palace",
+          "type": "Palace",
+          "duration": "2h"
+        },
+        {
+          "id": "tokyo_skytree",
+          "name": "Tokyo Skytree",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "joypolis",
+          "name": "Joypolis",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "tokyoten",
+          "name": "Tokyoten",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "tokyo_international",
+          "name": "Tokyo International Anime Fair",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "sunshine_city_tokyo",
+          "name": "Sunshine City, Tokyo",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "chinreisha",
+          "name": "Chinreisha",
+          "type": "Shrine",
+          "duration": "1.5h"
+        }
       ]
     },
     "kyoto": {
       "name": "Kyoto",
       "places": [
-        { "id": "fushimi",     "name": "Fushimi Inari Shrine",           "type": "Shrine",   "duration": "2h"   },
-        { "id": "arashiyama",  "name": "Arashiyama Bamboo Grove",        "type": "Nature",   "duration": "1.5h" },
-        { "id": "kinkakuji",   "name": "Kinkaku-ji (Golden Pavilion)",   "type": "Temple",   "duration": "1.5h" },
-        { "id": "gion",        "name": "Gion District (Geisha town)",    "type": "District", "duration": "2h"   },
-        { "id": "nishiki",     "name": "Nishiki Market",                 "type": "Market",   "duration": "1.5h" },
-        { "id": "kiyomizu",    "name": "Kiyomizu-dera Temple",           "type": "Temple",   "duration": "2h"   },
-        { "id": "nijo",        "name": "Nijo Castle",                    "type": "Castle",   "duration": "2h"   },
-        { "id": "philosopher", "name": "Philosopher's Path",             "type": "Nature",   "duration": "1.5h" }
+        {
+          "id": "jidai_matsuri",
+          "name": "Jidai Matsuri",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "arashiyama",
+          "name": "Arashiyama",
+          "type": "Nature",
+          "duration": "1.5h"
+        },
+        {
+          "id": "nij_castle",
+          "name": "Nijō Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "philosophers_walk",
+          "name": "Philosopher's Walk",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "aoi_matsuri",
+          "name": "Aoi Matsuri",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "fushimi_castle",
+          "name": "Fushimi Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "katsura_imperial_villa",
+          "name": "Katsura Imperial Villa",
+          "type": "Palace",
+          "duration": "2h"
+        },
+        {
+          "id": "three_views_japan",
+          "name": "Three Views of Japan",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "kyoto_imperial_palace",
+          "name": "Kyoto Imperial Palace",
+          "type": "Palace",
+          "duration": "2h"
+        },
+        {
+          "id": "kyoto_tower",
+          "name": "Kyoto Tower",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "fushimi_inari_taisha",
+          "name": "Fushimi Inari-taisha",
+          "type": "Shrine",
+          "duration": "1.5h"
+        },
+        {
+          "id": "gion_matsuri",
+          "name": "Gion Matsuri",
+          "type": "Shrine",
+          "duration": "1.5h"
+        }
       ]
     },
     "osaka": {
       "name": "Osaka",
       "places": [
-        { "id": "osaka_castle", "name": "Osaka Castle",              "type": "Castle",     "duration": "2h"   },
-        { "id": "dotonbori",    "name": "Dotonbori (food street)",   "type": "District",   "duration": "2h"   },
-        { "id": "shinsekai",    "name": "Shinsekai District",        "type": "District",   "duration": "1.5h" },
-        { "id": "usj",          "name": "Universal Studios Japan",   "type": "Theme Park", "duration": "8h"   },
-        { "id": "kuromon",      "name": "Kuromon Ichiba Market",     "type": "Market",     "duration": "1.5h" },
-        { "id": "namba",        "name": "Namba Parks",               "type": "Shopping",   "duration": "2h"   }
+        {
+          "id": "osaka_prefecture",
+          "name": "Osaka Prefecture",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "amerikamura",
+          "name": "Amerikamura",
+          "type": "District",
+          "duration": "2h"
+        },
+        {
+          "id": "namba",
+          "name": "Namba",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "osaka_castle",
+          "name": "Osaka Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "osaka_tower",
+          "name": "Osaka Tower",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "tstenkaku",
+          "name": "Tsūtenkaku",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "osaka_aquarium_kaiyukan",
+          "name": "Osaka Aquarium Kaiyukan",
+          "type": "Aquarium",
+          "duration": "2.5h"
+        },
+        {
+          "id": "namba_parks",
+          "name": "Namba Parks",
+          "type": "Park",
+          "duration": "2h"
+        },
+        {
+          "id": "expo_70",
+          "name": "Expo '70",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "hep",
+          "name": "HEP (shopping mall)",
+          "type": "Shopping",
+          "duration": "2h"
+        },
+        {
+          "id": "dtonbori",
+          "name": "Dōtonbori",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "umeda_sky_building",
+          "name": "Umeda Sky Building",
+          "type": "Landmark",
+          "duration": "1h"
+        }
       ]
     },
     "hiroshima": {
       "name": "Hiroshima",
       "places": [
-        { "id": "peace_park",  "name": "Peace Memorial Park",                  "type": "Memorial", "duration": "2h"   },
-        { "id": "atomic_dome", "name": "Atomic Bomb Dome",                     "type": "Memorial", "duration": "1h"   },
-        { "id": "miyajima",    "name": "Miyajima Island & Itsukushima Shrine", "type": "Shrine",   "duration": "4h"   },
-        { "id": "hiro_castle", "name": "Hiroshima Castle",                     "type": "Castle",   "duration": "1.5h" }
+        {
+          "id": "okonomiyaki",
+          "name": "Okonomiyaki",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "hiroshima_peace_memorial",
+          "name": "Hiroshima Peace Memorial",
+          "type": "Memorial",
+          "duration": "1.5h"
+        },
+        {
+          "id": "itsukushima_shrine",
+          "name": "Itsukushima Shrine",
+          "type": "Shrine",
+          "duration": "1.5h"
+        },
+        {
+          "id": "itsukushima",
+          "name": "Itsukushima",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "three_views_japan",
+          "name": "Three Views of Japan",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "hiroshima_castle",
+          "name": "Hiroshima Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "hiroshima_peace",
+          "name": "Hiroshima Peace Memorial Museum",
+          "type": "Museum",
+          "duration": "3h"
+        },
+        {
+          "id": "mitaki_dera",
+          "name": "Mitaki-dera",
+          "type": "Temple",
+          "duration": "2h"
+        },
+        {
+          "id": "childrens_peace_monument",
+          "name": "Children's Peace Monument",
+          "type": "Memorial",
+          "duration": "1.5h"
+        },
+        {
+          "id": "fukuyama_castle",
+          "name": "Fukuyama Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "sandan_ky",
+          "name": "Sandan-kyō",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "taishaku_valley",
+          "name": "Taishaku Valley",
+          "type": "Shrine",
+          "duration": "1.5h"
+        }
       ]
     },
     "nara": {
       "name": "Nara",
       "places": [
-        { "id": "nara_park", "name": "Nara Park (deer feeding)", "type": "Park",   "duration": "2h"   },
-        { "id": "todaiji",   "name": "Todai-ji Temple",           "type": "Temple", "duration": "1.5h" },
-        { "id": "kasuga",    "name": "Kasuga Taisha Shrine",      "type": "Shrine", "duration": "1h"   }
+        {
+          "id": "three_views_japan",
+          "name": "Three Views of Japan",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "heij_palace",
+          "name": "Heijō Palace",
+          "type": "Palace",
+          "duration": "2h"
+        },
+        {
+          "id": "omizutori",
+          "name": "Omizutori",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "fujinoki_tomb",
+          "name": "Fujinoki Tomb",
+          "type": "Historic Site",
+          "duration": "2h"
+        },
+        {
+          "id": "ishibutai_kofun",
+          "name": "Ishibutai Kofun",
+          "type": "Historic Site",
+          "duration": "2h"
+        },
+        {
+          "id": "katsuragisan_ropeway",
+          "name": "Katsuragisan Ropeway",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "shigisan_castle",
+          "name": "Shigisan Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "kriyama_castle",
+          "name": "Kōriyama Castle",
+          "type": "Castle",
+          "duration": "2h"
+        },
+        {
+          "id": "historic_monuments",
+          "name": "Historic Monuments of Ancient Nara",
+          "type": "Shrine",
+          "duration": "1.5h"
+        },
+        {
+          "id": "sacred_sites_pilgrimage",
+          "name": "Sacred Sites and Pilgrimage Routes in the Kii Mountain Range",
+          "type": "Nature",
+          "duration": "1.5h"
+        },
+        {
+          "id": "nara_hotel",
+          "name": "Nara Hotel",
+          "type": "Park",
+          "duration": "2h"
+        },
+        {
+          "id": "asuka_fujiwara",
+          "name": "Asuka-Fujiwara",
+          "type": "Historic Site",
+          "duration": "2h"
+        }
       ]
     },
     "hokkaido": {
       "name": "Hokkaido (Sapporo)",
       "places": [
-        { "id": "odori",          "name": "Odori Park",          "type": "Park",     "duration": "1h"   },
-        { "id": "sapporo_tv",     "name": "Sapporo TV Tower",    "type": "Landmark", "duration": "1h"   },
-        { "id": "moerenuma",      "name": "Moerenuma Park",      "type": "Park",     "duration": "2h"   },
-        { "id": "shiroi_koibito", "name": "Shiroi Koibito Park", "type": "Museum",   "duration": "1.5h" }
+        {
+          "id": "sapporo_snow_festival",
+          "name": "Sapporo Snow Festival",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "sapporo_tv_tower",
+          "name": "Sapporo TV Tower",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "former_hokkaid",
+          "name": "Former Hokkaidō Government Office",
+          "type": "Museum",
+          "duration": "3h"
+        },
+        {
+          "id": "sapporo_clock_tower",
+          "name": "Sapporo Clock Tower",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "hitsujigaoka",
+          "name": "Hitsujigaoka Observation Hill",
+          "type": "Viewpoint",
+          "duration": "1h"
+        },
+        {
+          "id": "hokkaido_marathon",
+          "name": "Hokkaido Marathon",
+          "type": "Park",
+          "duration": "2h"
+        },
+        {
+          "id": "sapporo_jr_tower",
+          "name": "Sapporo JR Tower",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "susukino",
+          "name": "Susukino",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "hokkaido_university",
+          "name": "Hokkaido University Botanical Gardens",
+          "type": "Garden",
+          "duration": "2h"
+        },
+        {
+          "id": "sapporo_beer_museum",
+          "name": "Sapporo Beer Museum",
+          "type": "Museum",
+          "duration": "3h"
+        },
+        {
+          "id": "sapporo_factory",
+          "name": "Sapporo Factory",
+          "type": "Landmark",
+          "duration": "1h"
+        },
+        {
+          "id": "hokkaid_shrine",
+          "name": "Hokkaidō Shrine",
+          "type": "Shrine",
+          "duration": "1.5h"
+        }
       ]
     }
   },
   "typeColors": {
-    "Temple":      "#8b5cf6",
-    "Shrine":      "#ec4899",
-    "Nature":      "#10b981",
-    "District":    "#f59e0b",
-    "Market":      "#ef4444",
-    "Museum":      "#3b82f6",
-    "Park":        "#22c55e",
-    "Shopping":    "#f97316",
-    "Castle":      "#6366f1",
-    "Landmark":    "#14b8a6",
-    "Memorial":    "#64748b",
-    "Theme Park":  "#e11d48",
-    "Garden":      "#16a34a"
+    "Temple": "#8b5cf6",
+    "Shrine": "#ec4899",
+    "Nature": "#10b981",
+    "District": "#f59e0b",
+    "Market": "#ef4444",
+    "Museum": "#3b82f6",
+    "Park": "#22c55e",
+    "Shopping": "#f97316",
+    "Castle": "#6366f1",
+    "Landmark": "#14b8a6",
+    "Memorial": "#64748b",
+    "Theme Park": "#e11d48",
+    "Garden": "#16a34a",
+    "Beach": "#0ea5e9",
+    "Palace": "#a855f7",
+    "Historic Site": "#78716c",
+    "Religious Site": "#f43f5e",
+    "Viewpoint": "#06b6d4",
+    "Zoo": "#84cc16",
+    "Aquarium": "#2dd4bf"
   }
 }

@@ -1,6 +1,15 @@
 {
+  "name": "VisaMate",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "generate": "tsx scripts/itenrary/generate/generate.ts"
+  },
   "dependencies": {
     "jszip": "^3.10.1",
     "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
   }
 }
