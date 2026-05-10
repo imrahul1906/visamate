@@ -2,7 +2,7 @@
 
 // app/documents/page.tsx
 import { Suspense } from "react";
-import DocumentsContent from "./DocumentsContent";
+import DocumentsContent from "../../features/documents/DocumentsContent";
 
 export default function DocumentsPage() {
   return (

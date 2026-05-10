@@ -74,7 +74,7 @@ const COUNTRY_CATALOG: CountryCatalogEntry[] = [
     photo: "https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800",
     supported: false,
   },
-   {
+  {
     code: "US",
     name: "United States",
     photo: "https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=800",
@@ -520,10 +520,10 @@ export async function getFormFillFields(
   // Flatten sections → FormFillField[]
   return record.sections.flatMap((sec) =>
     sec.fields.map((f) => ({
-      id:      f.id,
+      id: f.id,
       section: sec.label,
-      label:   f.label,
-      hint:    f.hint,
+      label: f.label,
+      hint: f.hint,
       example: f.example,
       warning: f.warning ?? null,
       formRef: f.formRef ?? null,
