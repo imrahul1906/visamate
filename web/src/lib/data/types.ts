@@ -127,7 +127,7 @@ export interface DocumentItem {
 export interface DocumentSection {
   sectionId: string;
   title: string;
-  applicableWhen?: {sponsorship?: string};
+  applicableWhen?: { sponsorship?: string };
   documents: DocumentItem[];
 }
 

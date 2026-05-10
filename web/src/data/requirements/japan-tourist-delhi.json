@@ -38,7 +38,7 @@
       "sectionId": "COMMON",
       "title": "Common Documents",
       "documents": [
-	{
+        {
           "order": 1,
           "id": "JP_TOURIST_DEL_VISA_FORM_001",
           "code": "VISA_APPLICATION_FORM",
@@ -51,13 +51,8 @@
             "onlineUrl": null,
             "requiresPrint": true,
             "formFillDataKey": "JP_TOURIST_VISA_FORM_FIELDS_V1"
-	    },
- 	  "notes": "Download, print, fill and sign",
-          "requirements": [
-            "Completely filled",
-            "Photograph should pasted on form",
-            "Signed by applicant"
-          ]
+          },
+          "notes": "Download -> fill -> print -> sign"
         },
         {
           "order": 2,
@@ -72,7 +67,7 @@
             "Minimum 6 months validity from date of travel"
           ]
         },
- 	{
+        {
           "order": 3,
           "id": "JP_TOURIST_DEL_JAPAN_ITINERARY_001",
           "code": "JAPAN_ITINERARY",
@@ -80,35 +75,20 @@
           "isRequired": true,
           "optionality": "required",
           "description": "Detailed itinerary in Japan in official format",
-          "notes": "MUST use official Japan itinerary format",
-          "formUrl": "https://www.mofa.go.jp/files/000262548.pdf",
-          "requirements": [
-            "Use official itinerary format only",
-            "Fill all required fields"
-          ]
+          "notes": "MUST use official itinerary format",
+          "formUrl": "https://www.mofa.go.jp/files/000262548.pdf"
         },
-{
-  "order": 4,
-  "id": "JP_TOURIST_DEL_COVER_LETTER_001",
-  "code": "COVER_LETTER",
-  "name": "Cover Letter",
-  "isRequired": true,
-  "optionality": "required",
-  "description": "Personal cover letter explaining purpose of travel to Japan",
-  "notes": "Strongly recommended for better clarity of application",
-  "acceptedFormats": [
-    "Printed Letter",
-    "Signed PDF"
-  ],
-  "requirements": [
-    "Mention travel dates",
-    "Explain purpose of visit",
-    "Include travel itinerary summary",
-    "Mention who will bear expenses",
-    "Should be signed by applicant"
-  ]
-},
- 	{
+        {
+          "order": 4,
+          "id": "JP_TOURIST_DEL_COVER_LETTER_001",
+          "code": "COVER_LETTER",
+          "name": "Cover Letter",
+          "isRequired": true,
+          "optionality": "required",
+          "description": "Personal cover letter explaining purpose of travel to Japan",
+          "notes": "Strongly recommended for better clarity of application"
+        },
+        {
           "order": 5,
           "id": "JP_TOURIST_DEL_PHOTOGRAPH_001",
           "code": "PHOTOGRAPH",
@@ -127,7 +107,6 @@
           "optionality": "required",
           "description": "Photocopy of the Bio Data Page of current passport (First and Last Page)",
           "requirements": [
-            "Photocopy on A4 Page",
             "Should be self attested with signature"
           ]
         },
@@ -138,36 +117,29 @@
           "name": "Flight Reservations",
           "isRequired": true,
           "optionality": "required",
-          "description": "Document to show the flight/cruise schedule to/from Japan",
-          "notes": "Can be booking confirmation or itinerary printout",
+          "description": "Document to show the flight/cruise schedule to/from Japan"
+        },
+        {
+          "order": 8,
+          "id": "JP_TOURIST_DEL_HOTEL_RESERVATION_001",
+          "code": "HOTEL_RESERVATION",
+          "name": "Hotel Reservation",
+          "isRequired": true,
+          "optionality": "required",
+          "description": "Hotel booking confirmation for the stay in Japan",
+          "notes": "Can include hotel booking confirmations, Airbnb reservations, or accommodation details for entire stay",
           "acceptedFormats": [
             "PDF",
             "Printout"
+          ],
+          "requirements": [
+            "Must cover entire duration of stay in Japan",
+            "Applicant name should match passport",
+            "Accommodation address and contact details should be visible"
           ]
-        },
-{
-  "order": 8,
-  "id": "JP_TOURIST_DEL_HOTEL_RESERVATION_001",
-  "code": "HOTEL_RESERVATION",
-  "name": "Hotel Reservation",
-  "isRequired": true,
-  "optionality": "required",
-  "description": "Hotel booking confirmation for the stay in Japan",
-  "notes": "Can include hotel booking confirmations, Airbnb reservations, or accommodation details for entire stay",
-  "acceptedFormats": [
-    "PDF",
-    "Printout"
-  ],
-  "requirements": [
-    "Must cover entire duration of stay in Japan",
-    "Applicant name should match passport",
-    "Accommodation address and contact details should be visible"
-  ]
-}
+        }
       ]
     },
-       
-
     {
       "sectionId": "SELF_SPONSORED",
       "title": "Financial Documents (Self Sponsored)",
@@ -191,45 +163,40 @@
             "Providing both ITR and bank statements are always a good idea"
           ]
         },
-{
-  "order": 10,
-  "id": "JP_TOURIST_DEL_SALARY_SLIP_001",
-  "code": "SALARY_SLIP",
-  "name": "Salary Slips (Last 3 Months)",
-  "isRequired": true,
-  "optionality": "required",
-  "description": "Latest salary slips for the last 3 months",
-  "notes": "Recommended to submit company-issued salary slips with company seal/signature if available",
-  "acceptedFormats": [
-    "Original",
-    "PDF Printout"
-  ],
-  "requirements": [
-    "Must include applicant name",
-    "Must clearly show salary credited",
-    "Should cover last 3 months"
-  ]
-},
-{
-  "order": 11,
-  "id": "JP_TOURIST_DEL_BANK_STATEMENT_001",
-  "code": "BANK_STATEMENT",
-  "name": "Bank Statement (Last 6 Months)",
-  "isRequired": true,
-  "optionality": "required",
-  "description": "Personal bank statement for the last 6 months",
-  "notes": "Should preferably be stamped and signed by the bank branch",
-  "acceptedFormats": [
-    "Original",
-    "Stamped Bank Statement"
-  ],
-  "requirements": [
-    "Should cover last 6 months",
-    "Must show sufficient balance",
-    "Should contain bank seal/stamp if possible",
-    "Online printouts without bank attestation are not preferred"
-  ]
-}
+        {
+          "order": 10,
+          "id": "JP_TOURIST_DEL_SALARY_SLIP_001",
+          "code": "SALARY_SLIP",
+          "name": "Salary Slips (Last 3 Months)",
+          "isRequired": true,
+          "optionality": "required",
+          "description": "Latest salary slips for the last 3 months",
+          "notes": "Recommended to submit company-issued salary slips with company seal/signature if available",
+          "requirements": [
+            "Must include applicant name",
+            "Must clearly show salary credited",
+            "Should cover last 3 months"
+          ]
+        },
+        {
+          "order": 11,
+          "id": "JP_TOURIST_DEL_BANK_STATEMENT_001",
+          "code": "BANK_STATEMENT",
+          "name": "Bank Statement (Last 6 Months)",
+          "isRequired": true,
+          "optionality": "required",
+          "description": "Personal bank statement for the last 6 months",
+          "notes": "Should be stamped and signed by the bank branch",
+          "acceptedFormats": [
+            "Original",
+            "Stamped Bank Statement"
+          ],
+          "requirements": [
+            "Should cover last 6 months",
+            "Must show sufficient balance",
+            "Online printouts without bank attestation are not preferred"
+          ]
+        }
       ]
     },
     {
