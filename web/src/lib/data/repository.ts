@@ -11,6 +11,18 @@
  *
  * All functions are async. Even though data is static JSON right now,
  * async signatures ensure call sites need zero changes on DB migration.
+ *
+ * ─── VisaOverviewPanel data flow ──────────────────────────────────────────────
+ *
+ * VisaOverviewPanel is a pure display component — it never touches this file.
+ * The parent (DocumentsContent or equivalent) is responsible for fetching:
+ *
+ *   const visaType = await getVisaType(countryCode, visaTypeCode);
+ *   <VisaOverviewPanel visaType={visaType} countryName={...} visaTypeName={...} />
+ *
+ * This keeps the component fully portable: it works the same whether the
+ * data comes from JSON today or a DB query tomorrow.
+ * ──────────────────────────────────────────────────────────────────────────────
  */
 
 import type {
@@ -533,7 +545,19 @@ export async function getFormFillFields(
 
 /**
  * A single visa type for a given country + visa type code.
- * Used by DocumentsContent to populate the VisaOverviewPanel.
+ *
+ * Primary data source for VisaOverviewPanel.
+ *
+ * Usage in parent component:
+ *   const visaType = await getVisaType(countryCode, visaTypeCode);
+ *   <VisaOverviewPanel visaType={visaType} countryName={...} visaTypeName={...} />
+ *
+ * Returns null when not found — panel handles this gracefully with EmptyState.
+ *
+ * DB equivalent:
+ *   return await db.visaTypes.findFirst({
+ *     where: { countryCode, code: visaTypeCode }
+ *   });
  */
 export async function getVisaType(
   countryCode: string,
@@ -560,4 +584,33 @@ export async function getVisaType(
   }
 
   return found;
+}
+
+/**
+ * All visa types for a country filtered by category.
+ *
+ * Useful for future category-filter UI (e.g. "Show only SHORT_STAY visas").
+ * Category matching is case-insensitive and normalised.
+ *
+ * Example:
+ *   const shortStay = await getVisaTypesByCategory("JP", "SHORT_STAY");
+ *
+ * DB equivalent:
+ *   return await db.visaTypes.findMany({
+ *     where: { countryCode, category }
+ *   });
+ */
+export async function getVisaTypesByCategory(
+  countryCode: string,
+  category: string
+): Promise<VisaType[]> {
+  assertParam(countryCode, "countryCode");
+  assertParam(category, "category");
+
+  const all = await getVisaTypes(countryCode);
+  const normalizedCategory = normalizeCode(category);
+
+  return all.filter(
+    (v) => normalizeCode(v.category) === normalizedCategory
+  );
 }
