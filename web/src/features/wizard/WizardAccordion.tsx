@@ -27,12 +27,17 @@ const STEP_LABELS = ["Country", "Visa type", "Location", "Details"];
 // ─── WizardCard ───────────────────────────────────────────────────────────────
 
 function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
-const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
+  const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
 
-useEffect(() => {
-  getAllCountries().then(setCountries);
-}, []);
+  useEffect(() => {
+    getAllCountries().then(setCountries);
+  }, []);
+
   const [activeStep, setActiveStep]             = useState(0);
+  const [displayStep, setDisplayStep]           = useState(0);
+  const [animState, setAnimState]               = useState<"idle" | "exit" | "enter">("idle");
+  const [direction, setDirection]               = useState<1 | -1>(1); // 1 = forward, -1 = backward
+  const animLock = useRef(false);
   const [selectedCountry, setSelectedCountry]   = useState<string | null>(null);
   const [selectedCountryName, setSelectedCountryName] = useState<string | null>(null);
   const [selectedVisa, setSelectedVisa]         = useState<string | null>(null);
@@ -40,6 +45,23 @@ useEffect(() => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [sponsorship, setSponsorship]           = useState<string | null>(null);
   const [profile, setProfile]                   = useState<string | null>(null);
+
+  const goToStep = (next: number) => {
+    if (animLock.current || next === activeStep) return;
+    const dir = next > activeStep ? 1 : -1;
+    setDirection(dir);
+    setAnimState("exit");
+    animLock.current = true;
+    setTimeout(() => {
+      setActiveStep(next);
+      setDisplayStep(next);
+      setAnimState("enter");
+      setTimeout(() => {
+        setAnimState("idle");
+        animLock.current = false;
+      }, 320);
+    }, 220);
+  };
 
   const canContinue =
     activeStep === 0 ? !!selectedCountry :
@@ -90,7 +112,6 @@ useEffect(() => {
         locationName: selectedLocation     ?? "",
         sponsorship:  sponsorship          ?? "SELF",
         profile:      profile              ?? "",
-        // Applicant context — replace with real auth/profile data when available
         applicantName:   "",
         passportNo:      "",
         travelStartDate: "",
@@ -98,125 +119,215 @@ useEffect(() => {
         cities:          [],
       });
     } else {
-      setActiveStep(s => Math.min(s + 1, STEP_LABELS.length - 1));
+      goToStep(Math.min(activeStep + 1, STEP_LABELS.length - 1));
     }
   };
 
   return (
-    <div style={{
-      background: "rgba(255,255,255,0.04)",
-      border: "0.5px solid rgba(255,255,255,0.1)",
-      borderRadius: 18,
-      padding: "20px",
-    }}>
-      {/* Header row */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <div>
-          <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 10 }}>Step {activeStep + 1} of {STEP_LABELS.length}</span>
-          <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
-            {STEP_LABELS[activeStep] === "Country" ? "Select destination" : `Select ${STEP_LABELS[activeStep].toLowerCase()}`}
+    <>
+      {/* Inject keyframes once */}
+      <style>{`
+        @keyframes cardFloat {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-6px); }
+        }
+        .wizard-card {
+          animation: cardFloat 6s ease-in-out infinite;
+        }
+        .wizard-card:hover {
+          animation-play-state: paused;
+        }
+        @keyframes stepExitForward {
+          from { opacity: 1; transform: translateX(0) scale(1); }
+          to   { opacity: 0; transform: translateX(-28px) scale(0.97); }
+        }
+        @keyframes stepExitBackward {
+          from { opacity: 1; transform: translateX(0) scale(1); }
+          to   { opacity: 0; transform: translateX(28px) scale(0.97); }
+        }
+        @keyframes stepEnterForward {
+          from { opacity: 0; transform: translateX(32px) scale(0.97); }
+          to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        @keyframes stepEnterBackward {
+          from { opacity: 0; transform: translateX(-32px) scale(0.97); }
+          to   { opacity: 1; transform: translateX(0) scale(1); }
+        }
+        .step-exit-forward   { animation: stepExitForward   0.22s cubic-bezier(0.4,0,1,1) forwards; }
+        .step-exit-backward  { animation: stepExitBackward  0.22s cubic-bezier(0.4,0,1,1) forwards; }
+        .step-enter-forward  { animation: stepEnterForward  0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
+        .step-enter-backward { animation: stepEnterBackward 0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
+      `}</style>
+
+      <div
+        className="wizard-card"
+        style={{
+          /* ── Fixed dimensions ── */
+          height: 500,
+          display: "flex",
+          flexDirection: "column",
+
+          /* ── Glass surface ── */
+          background: "rgba(255,255,255,0.035)",
+          backdropFilter: "blur(24px) saturate(160%)",
+          WebkitBackdropFilter: "blur(24px) saturate(160%)",
+
+          /* ── Border: faint top highlight + regular edge ── */
+          border: "0.5px solid rgba(255,255,255,0.1)",
+          borderTop: "0.5px solid rgba(255,255,255,0.18)",
+
+          borderRadius: 22,
+          padding: "20px 20px 16px",
+
+          /* ── Elevation ── */
+          boxShadow:
+            "0 8px 32px rgba(0,0,0,0.45), " +
+            "0 2px 8px rgba(0,0,0,0.3), " +
+            "0 0 0 0.5px rgba(108,92,231,0.12) inset, " +
+            "0 32px 64px rgba(108,92,231,0.08)",
+        }}
+      >
+        {/* Header row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexShrink: 0 }}>
+          <div>
+            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Step {activeStep + 1} of {STEP_LABELS.length}</span>
+            <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
+              {STEP_LABELS[activeStep] === "Country" ? "Select destination" : `Select ${STEP_LABELS[activeStep].toLowerCase()}`}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 5 }}>
+            {STEP_LABELS.map((_, i) => (
+              <div key={i} style={{
+                width: i === activeStep ? 22 : 18, height: 4, borderRadius: 2,
+                background: i < activeStep ? "#4ade80" : i === activeStep ? "#6c5ce7" : "rgba(255,255,255,0.12)",
+                transition: "all 0.3s",
+              }} />
+            ))}
           </div>
         </div>
-        <div style={{ display: "flex", gap: 5 }}>
-          {STEP_LABELS.map((_, i) => (
-            <div key={i} style={{
-              width: i === activeStep ? 22 : 18, height: 4, borderRadius: 2,
-              background: i < activeStep ? "#4ade80" : i === activeStep ? "#6c5ce7" : "rgba(255,255,255,0.15)",
-              transition: "all 0.3s",
-            }} />
-          ))}
-        </div>
-      </div>
 
-      {/* Breadcrumb pills */}
-      {breadcrumbs.length > 0 && (
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
-          {breadcrumbs.map((label, i) => (
-            <div
-              key={i}
-              onClick={() => setActiveStep(i)}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 5,
-                background: "rgba(108,92,231,0.12)",
-                border: "0.5px solid rgba(108,92,231,0.35)",
-                borderRadius: 20, padding: "4px 10px 4px 8px",
-                cursor: "pointer",
-              }}
-            >
-              <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-              <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
+        {/* Breadcrumb pills */}
+        <div style={{ minHeight: 28, marginBottom: breadcrumbs.length ? 10 : 0, flexShrink: 0 }}>
+          {breadcrumbs.length > 0 && (
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {breadcrumbs.map((label, i) => (
+                <div
+                  key={i}
+                  onClick={() => goToStep(i)}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 5,
+                    background: "rgba(108,92,231,0.1)",
+                    border: "0.5px solid rgba(108,92,231,0.3)",
+                    borderRadius: 20, padding: "4px 10px 4px 8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                  <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
-      )}
 
-      {/* Step content */}
-      <div style={{ marginBottom: 16 }}>
-        {activeStep === 0 && (
-          <StepCountry
-            allCountries={countries}
-            selectedCountry={selectedCountry}
-            onSelect={handleCountrySelect}
-            compact
-          />
-        )}
-        {activeStep === 1 && (
-          <StepVisaType
-            countryCode={selectedCountry}
-            selectedVisa={selectedVisa}
-            onSelect={handleVisaSelect}
-            compact
-          />
-        )}
-        {activeStep === 2 && (
-          <StepLocation
-            countryCode={selectedCountry}
-            selectedLocation={selectedLocation}
-            onSelect={setSelectedLocation}
-            compact
-          />
-        )}
-        {activeStep === 3 && (
-          <StepDetails
-            sponsorship={sponsorship}
-            profile={profile}
-            onSelect={handleDetailsSelect}
-            compact
-          />
-        )}
+        {/* Step content — scrollable, fills remaining space */}
+        <div style={{
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+          marginBottom: 14,
+          /* smooth momentum scrolling */
+          WebkitOverflowScrolling: "touch" as any,
+          scrollBehavior: "smooth",
+          /* subtle inner fade at bottom so content disappears gracefully */
+          maskImage: "linear-gradient(to bottom, black 82%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 82%, transparent 100%)",
+          /* hide scrollbar but keep it functional */
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}>
+          <style>{`.wizard-scroll::-webkit-scrollbar { display: none; }`}</style>
+          <div
+            className={
+              animState === "exit"
+                ? (direction === 1 ? "step-exit-forward" : "step-exit-backward")
+                : animState === "enter"
+                ? (direction === 1 ? "step-enter-forward" : "step-enter-backward")
+                : ""
+            }
+            style={{ height: "100%" }}
+          >
+          <div className="wizard-scroll" style={{ height: "100%" }}>
+            {activeStep === 0 && (
+              <StepCountry
+                allCountries={countries}
+                selectedCountry={selectedCountry}
+                onSelect={handleCountrySelect}
+                compact
+              />
+            )}
+            {activeStep === 1 && (
+              <StepVisaType
+                countryCode={selectedCountry}
+                selectedVisa={selectedVisa}
+                onSelect={handleVisaSelect}
+                compact
+              />
+            )}
+            {activeStep === 2 && (
+              <StepLocation
+                countryCode={selectedCountry}
+                selectedLocation={selectedLocation}
+                onSelect={setSelectedLocation}
+                compact
+              />
+            )}
+            {activeStep === 3 && (
+              <StepDetails
+                sponsorship={sponsorship}
+                profile={profile}
+                onSelect={handleDetailsSelect}
+                compact
+              />
+            )}
+          </div>{/* wizard-scroll */}
+          </div>{/* step animation wrapper */}
+        </div>
+
+        {/* CTA — always pinned to bottom */}
+        <div style={{ flexShrink: 0 }}>
+          <button
+            onClick={handleContinue}
+            style={{
+              width: "100%",
+              background: canContinue
+                ? activeStep === 3
+                  ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
+                  : "#6c5ce7"
+                : "rgba(255,255,255,0.06)",
+              color: canContinue ? "#fff" : "rgba(255,255,255,0.2)",
+              border: "none", borderRadius: 10, padding: "11px",
+              fontSize: 13, fontWeight: 500,
+              cursor: canContinue ? "pointer" : "not-allowed",
+              transition: "all 0.2s",
+              boxShadow: canContinue && activeStep === 3 ? "0 4px 20px rgba(108,92,231,0.4)" : "none",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            }}
+            onMouseEnter={e => { if (canContinue) (e.currentTarget.style.opacity = "0.88"); }}
+            onMouseLeave={e => { if (canContinue) (e.currentTarget.style.opacity = "1"); }}
+          >
+            {activeStep === 3 && canContinue && (
+              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
+              </svg>
+            )}
+            {continueLabel}
+          </button>
+        </div>
       </div>
-
-      {/* CTA */}
-      <button
-        onClick={handleContinue}
-        style={{
-          width: "100%",
-          background: canContinue
-            ? activeStep === 3
-              ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
-              : "#6c5ce7"
-            : "rgba(255,255,255,0.07)",
-          color: canContinue ? "#fff" : "rgba(255,255,255,0.25)",
-          border: "none", borderRadius: 10, padding: "11px",
-          fontSize: 13, fontWeight: 500,
-          cursor: canContinue ? "pointer" : "not-allowed",
-          transition: "all 0.2s",
-          boxShadow: canContinue && activeStep === 3 ? "0 4px 20px rgba(108,92,231,0.35)" : "none",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-        }}
-        onMouseEnter={e => { if (canContinue) (e.currentTarget.style.opacity = "0.88"); }}
-        onMouseLeave={e => { if (canContinue) (e.currentTarget.style.opacity = "1"); }}
-      >
-        {activeStep === 3 && canContinue && (
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
-          </svg>
-        )}
-        {continueLabel}
-      </button>
-    </div>
+    </>
   );
 }
 
@@ -296,8 +407,8 @@ function DocumentsSection({
         borderTop: "0.5px solid rgba(255,255,255,0.07)",
         padding: "72px 0 80px",
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(32px)",
-        transition: "opacity 0.6s ease, transform 0.6s ease",
+        transform: visible ? "translateY(0)" : "translateY(56px)",
+        transition: "opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1)",
       }}
     >
       <DocumentsContent
@@ -330,9 +441,37 @@ export default function VisaMateLanding() {
   const handleShowDocuments = (selections: WizardSelections) => {
     setWizardSelections(selections);
     setDocsVisible(true);
-    setTimeout(() => {
-      docsSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 60);
+
+    // Wait one frame for the section to mount, then smoothly scroll to it
+    // using a custom eased animation for a premium feel.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const target = docsSectionRef.current;
+        if (!target) return;
+
+        const startY   = window.scrollY;
+        const targetY  = target.getBoundingClientRect().top + window.scrollY;
+        const distance = targetY - startY;
+        const duration = 900; // ms — long enough to feel deliberate
+        let startTime: number | null = null;
+
+        // Cubic ease-out: fast start, graceful deceleration
+        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+        const step = (timestamp: number) => {
+          if (!startTime) startTime = timestamp;
+          const elapsed  = timestamp - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased    = easeOutCubic(progress);
+
+          window.scrollTo(0, startY + distance * eased);
+
+          if (progress < 1) requestAnimationFrame(step);
+        };
+
+        requestAnimationFrame(step);
+      });
+    });
   };
 
   return (

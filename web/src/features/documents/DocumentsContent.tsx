@@ -2,9 +2,11 @@
 
 // app/documents/DocumentsContent.tsx
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
-import { getRequirementsData, getItineraryPlaces } from "@/lib/data/repository";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { getRequirementsData, getItineraryPlaces, getVisaType } from "@/lib/data/repository";
 import type { ItineraryPlacesData } from "@/lib/data/types";
+import type { VisaType } from "@/lib/data/types";
+import VisaOverviewPanel from "./VisaOverviewPanel";
 
 import type { DocumentData, DocumentItem, UploadsMap } from "@/types/document";
 import { mapRequirementsToDocumentData } from "./mapRequirements";
@@ -86,6 +88,15 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   // ── NEW: focus drawer state ──────────────────────────────────
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
   const [isMobile, setIsMobile]       = useState(false);
+  const [visaTypeData, setVisaTypeData] = useState<VisaType | null>(null);
+
+  // ── Drawer animation state ───────────────────────────────────
+  // visibleDocId is what's actually rendered; activeDocId drives the target.
+  // We fade out → swap content → fade in for a smooth cross-dissolve.
+  const [visibleDocId, setVisibleDocId] = useState<string | null>(null);
+  const [drawerOpacity, setDrawerOpacity] = useState(0);
+  const [drawerTranslateY, setDrawerTranslateY] = useState(8);
+  const animFrameRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Data fetching ────────────────────────────────────────────
   useEffect(() => {
@@ -101,8 +112,9 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     Promise.all([
       getRequirementsData(country, visaType, location),
       getItineraryPlaces(country),
+      getVisaType(country, visaType),
     ])
-      .then(([req, itin]) => {
+      .then(([req, itin, vt]) => {
         if (!req) {
           setError(`No requirements found for ${countryName} · ${visaTypeName} · ${locationName}.`);
           setLoading(false);
@@ -110,6 +122,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
         }
         setData(mapRequirementsToDocumentData(req, countryName, visaTypeName, locationName, sponsorship));
         setItineraryData(itin);
+        setVisaTypeData(vt);
         setLoading(false);
       })
       .catch(err => {
@@ -128,15 +141,41 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  // ── Auto-open first unchecked required doc on load ────────────
+
+  // ── Drawer animation: cross-dissolve on doc change ──────────
   useEffect(() => {
-    if (data && !activeDocId) {
-      const allD = data.categories.flatMap(c => c.documents);
-      const first = allD.find(d => !checked[d.id] && d.status === "required");
-      if (first) setActiveDocId(first.id);
+    if (animFrameRef.current) clearTimeout(animFrameRef.current);
+
+    if (activeDocId === null) {
+      // Closing: fade out, then clear visibleDocId
+      setDrawerOpacity(0);
+      setDrawerTranslateY(8);
+      animFrameRef.current = setTimeout(() => setVisibleDocId(null), 220);
+    } else if (visibleDocId === null) {
+      // Opening fresh: set content immediately, then fade in
+      setVisibleDocId(activeDocId);
+      setDrawerOpacity(0);
+      setDrawerTranslateY(10);
+      animFrameRef.current = setTimeout(() => {
+        setDrawerOpacity(1);
+        setDrawerTranslateY(0);
+      }, 16); // next paint
+    } else {
+      // Switching docs: fade out → swap → fade in
+      setDrawerOpacity(0);
+      setDrawerTranslateY(6);
+      animFrameRef.current = setTimeout(() => {
+        setVisibleDocId(activeDocId);
+        setDrawerTranslateY(-6); // come from slightly above for direction feel
+        animFrameRef.current = setTimeout(() => {
+          setDrawerOpacity(1);
+          setDrawerTranslateY(0);
+        }, 16);
+      }, 160);
     }
+    return () => { if (animFrameRef.current) clearTimeout(animFrameRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, [activeDocId]);
 
   // ── Keyboard navigation ──────────────────────────────────────
   useEffect(() => {
@@ -212,10 +251,13 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const uploadableCount = allDocs.filter(d => !d.noUpload).length;
 
   // ── Active doc derived ───────────────────────────────────────
+  // visibleDoc drives what's rendered in the drawer (lags behind for animation)
+  // activeDoc drives the highlighted row in the list
   const activeDoc      = allDocs.find(d => d.id === activeDocId) ?? null;
+  const visibleDoc     = allDocs.find(d => d.id === visibleDocId) ?? null;
   const activeDocIndex = allDocs.findIndex(d => d.id === activeDocId);
-  const activeCategory = activeDoc
-    ? data?.categories.find(c => c.documents.some(d => d.id === activeDoc.id))
+  const activeCategory = visibleDoc
+    ? data?.categories.find(c => c.documents.some(d => d.id === visibleDoc.id))
     : null;
 
   // ── Helper to get badge label for a doc ─────────────────────
@@ -293,7 +335,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
 
   // ── Main render ──────────────────────────────────────────────
   const drawerOpen = activeDocId !== null;
-const leftWidth = isMobile ? "100%" : drawerOpen ? "280px" : "340px";
+const leftWidth = isMobile ? "100%" : "340px";
 
   return (
     <div style={{
@@ -690,7 +732,6 @@ const leftWidth = isMobile ? "100%" : drawerOpen ? "280px" : "340px";
             style={{
               width: leftWidth,
               flexShrink: 0,
-              transition: "width 0.3s cubic-bezier(.4,0,.2,1)",
               borderRight: `1px solid ${T.border}`,
               display: "flex",
               flexDirection: "column",
@@ -874,30 +915,23 @@ minWidth: 0,          // ← prevents flex overflow
               background: isMobile && drawerOpen ? T.surface : "transparent",
             }}
           >
-            {!activeDoc ? (
-              // Empty state
-              <div style={{
-                flex: 1, display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center",
-                opacity: 0.35, padding: 24, textAlign: "center",
-              }}>
-                <div style={{ fontSize: 40, marginBottom: 14 }}>📋</div>
-                <p style={{
-                  fontSize: 15, fontWeight: 600, color: T.text, margin: "0 0 8px",
-                  fontFamily: "'DM Serif Display', serif",
-                }}>
-                  Select a document
-                </p>
-                <p style={{
-                  fontSize: 12, color: T.muted, margin: 0, lineHeight: 1.7,
-                  maxWidth: 260, fontFamily: "'DM Sans', sans-serif",
-                }}>
-                  Click any item on the left to view details, upload files, or use built-in tools like the itinerary builder.
-                </p>
-              </div>
+            {!visibleDoc ? (
+              <VisaOverviewPanel
+                visaType={visaTypeData}
+                countryName={countryName}
+                visaTypeName={visaTypeName}
+              />
             ) : (
-              // Drawer content
-              <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+              // Drawer content — NO key prop; opacity+transform transition drives animation
+              <div
+                style={{
+                  display: "flex", flexDirection: "column", height: "100%",
+                  opacity: drawerOpacity,
+                  transform: `translateY(${drawerTranslateY}px)`,
+                  transition: "opacity 200ms cubic-bezier(0.4,0,0.2,1), transform 220ms cubic-bezier(0.4,0,0.2,1)",
+                  willChange: "opacity, transform",
+                }}
+              >
 
                 {/* DRAWER HEADER */}
                 <div style={{
@@ -948,24 +982,24 @@ minWidth: 0,          // ← prevents flex overflow
                         margin: "0 0 4px", lineHeight: 1.3,
                         fontFamily: "'DM Sans', sans-serif",
                       }}>
-                        {activeDoc.name}
+                        {visibleDoc.name}
                       </h2>
                       {/* Doc description */}
                       <p style={{
                         fontSize: 12, color: T.muted, margin: 0, lineHeight: 1.5,
                         fontFamily: "'DM Sans', sans-serif",
                       }}>
-                        {activeDoc.description}
+                        {visibleDoc.description}
                       </p>
                     </div>
 
                     {/* Mark done button */}
                     <button
-                      className={`vm-mark-done-btn ${checked[activeDoc.id] ? "vm-is-done" : "vm-undone"}`}
-                      onClick={() => toggleDocAndAdvance(activeDoc.id)}
+                      className={`vm-mark-done-btn ${checked[visibleDoc.id] ? "vm-is-done" : "vm-undone"}`}
+                      onClick={() => toggleDocAndAdvance(visibleDoc.id)}
                       style={{ flexShrink: 0 }}
                     >
-                      {checked[activeDoc.id] ? (
+                      {checked[visibleDoc.id] ? (
                         <>
                           <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
@@ -985,7 +1019,7 @@ minWidth: 0,          // ← prevents flex overflow
 
                   {/* Tags row */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {(activeDoc.noUpload) && (
+                    {(visibleDoc.noUpload) && (
                       <span style={{
                         fontSize: 10, fontWeight: 600, color: "#92400e",
                         background: "#fef3c708", border: "1px solid rgba(251,191,36,0.3)",
@@ -995,7 +1029,7 @@ minWidth: 0,          // ← prevents flex overflow
                         📌 Hardcopy only
                       </span>
                     )}
-                    {!activeDoc.noUpload && (
+                    {!visibleDoc.noUpload && (
                       <span style={{
                         fontSize: 10, fontWeight: 600, color: T.indigoLight,
                         background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)",
@@ -1005,7 +1039,7 @@ minWidth: 0,          // ← prevents flex overflow
                         📎 Uploadable
                       </span>
                     )}
-                    {activeDoc.status !== "required" && (
+                    {visibleDoc.status !== "required" && (
                       <span style={{
                         fontSize: 10, fontWeight: 600, color: T.muted,
                         background: "rgba(255,255,255,0.05)", border: `1px solid ${T.border}`,
@@ -1015,7 +1049,7 @@ minWidth: 0,          // ← prevents flex overflow
                         Optional
                       </span>
                     )}
-                    {uploads[activeDoc.id] && (
+                    {uploads[visibleDoc.id] && (
                       <span style={{
                         fontSize: 10, fontWeight: 600, color: T.green,
                         background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.25)",
@@ -1038,7 +1072,7 @@ minWidth: 0,          // ← prevents flex overflow
                   }}
                 >
                   {/* What you need */}
-                  {(activeDoc.notes || activeDoc.tips?.length) && (
+                  {(visibleDoc.notes || visibleDoc.tips?.length) && (
                     <div style={{
                       background: "rgba(255,255,255,0.03)",
                       border: `1px solid ${T.border}`,
@@ -1051,12 +1085,12 @@ minWidth: 0,          // ← prevents flex overflow
                       }}>
                         What you need
                       </p>
-                      {activeDoc.notes && (
+                      {visibleDoc.notes && (
                         <p style={{ fontSize: 12, color: T.muted2, margin: "0 0 8px", lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>
-                          ℹ️ {activeDoc.notes}
+                          ℹ️ {visibleDoc.notes}
                         </p>
                       )}
-                      {activeDoc.tips?.map((tip, i) => (
+                      {visibleDoc.tips?.map((tip, i) => (
                         <div key={i} style={{ display: "flex", gap: 7, marginBottom: 5, alignItems: "flex-start" }}>
                           <span style={{ color: T.indigoLight, marginTop: 1, flexShrink: 0, fontSize: 12 }}>→</span>
                           <span style={{ fontSize: 12, color: T.muted2, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
@@ -1064,13 +1098,13 @@ minWidth: 0,          // ← prevents flex overflow
                           </span>
                         </div>
                       ))}
-                      {activeDoc.acceptedFormats && activeDoc.acceptedFormats.length > 0 && (
+                      {visibleDoc.acceptedFormats && visibleDoc.acceptedFormats.length > 0 && (
                         <div style={{ marginTop: 8 }}>
                           <p style={{ fontSize: 10, fontWeight: 700, color: T.indigoLight, margin: "0 0 5px", textTransform: "uppercase", letterSpacing: "0.07em", fontFamily: "'DM Sans', sans-serif" }}>
                             Accepted formats
                           </p>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                            {activeDoc.acceptedFormats.map((fmt, i) => (
+                            {visibleDoc.acceptedFormats.map((fmt, i) => (
                               <span key={i} style={{
                                 fontSize: 11, color: T.muted2,
                                 background: "rgba(255,255,255,0.06)", border: `1px solid ${T.border}`,
@@ -1088,12 +1122,12 @@ minWidth: 0,          // ← prevents flex overflow
 
                   {/* THE HELPER — DocHelper handles all specialWidget types */}
                   <DocHelper
-                    doc={activeDoc}
+                    doc={visibleDoc}
                     color={activeCategory?.color ?? T.indigo}
                     uploads={uploads}
-                    onUpload={(file) => handleUpload(activeDoc.id, file)}
-                    onRemove={() => handleRemove(activeDoc.id)}
-                    onItineraryReady={(file) => handleItineraryReady(activeDoc.id, file)}
+                    onUpload={(file) => handleUpload(visibleDoc.id, file)}
+                    onRemove={() => handleRemove(visibleDoc.id)}
+                    onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
                     itineraryData={itineraryData}
                     applicantContext={coverLetterContext}
                   />

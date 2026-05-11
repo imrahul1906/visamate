@@ -530,3 +530,34 @@ export async function getFormFillFields(
     }))
   );
 }
+
+/**
+ * A single visa type for a given country + visa type code.
+ * Used by DocumentsContent to populate the VisaOverviewPanel.
+ */
+export async function getVisaType(
+  countryCode: string,
+  visaTypeCode: string
+): Promise<VisaType | null> {
+  assertParam(countryCode, "countryCode");
+  assertParam(visaTypeCode, "visaTypeCode");
+
+  const record = COUNTRY_VISA_TYPES_STORE.find(
+    (c) => normalizeCode(c.countryCode) === normalizeCode(countryCode)
+  );
+
+  if (!record) return null;
+
+  const found =
+    record.visaTypes.find(
+      (v) => normalizeCode(v.code) === normalizeCode(visaTypeCode)
+    ) ?? null;
+
+  if (!found) {
+    console.warn(
+      `[repository] getVisaType: no visa type "${visaTypeCode}" found for countryCode="${countryCode}"`
+    );
+  }
+
+  return found;
+}

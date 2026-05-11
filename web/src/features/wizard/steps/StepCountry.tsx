@@ -17,19 +17,39 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
   const filtered = useMemo(() => {
     if (!Array.isArray(allCountries)) return [];
     const q = search.trim().toLowerCase();
-
-    // Only show countries that exist in our data.
-    // Supported ones always sort first; within each group, alphabetical.
     return [...allCountries]
       .filter((c) => !q || c.name.toLowerCase().includes(q))
-.sort(
-  (a, b) =>
-    (b.supported === true ? 1 : 0) -
-      (a.supported === true ? 1 : 0) ||
-    a.name.localeCompare(b.name)
-)}, [search, allCountries]);
+      .sort(
+        (a, b) =>
+          (b.supported === true ? 1 : 0) -
+            (a.supported === true ? 1 : 0) ||
+          a.name.localeCompare(b.name)
+      );
+  }, [search, allCountries]);
 
   const isSearching = search.trim().length > 0;
+
+  // In compact mode the parent WizardCard scroll area handles overflow,
+  // so we remove the inner maxHeight / overflowY to avoid double-scroll.
+  const listScrollStyle: React.CSSProperties = compact
+    ? {
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        paddingRight: 1,
+        // No maxHeight / overflow — parent card scrolls
+      }
+    : {
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        maxHeight: 300,
+        overflowY: "auto",
+        // Smooth momentum scrolling (iOS + modern browsers)
+        WebkitOverflowScrolling: "touch" as any,
+        scrollBehavior: "smooth",
+        paddingRight: 1,
+      };
 
   return (
     <div>
@@ -42,7 +62,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       )}
 
       {/* Search */}
-      <div style={{ position: "relative", marginBottom: 12 }}>
+      <div style={{ position: "relative", marginBottom: 10 }}>
         <input
           type="text"
           placeholder="Search country..."
@@ -101,17 +121,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
 
       {/* Country list */}
       <style>{scrollbarCSS}</style>
-      <div
-        className="vm-scroll-hidden"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 6,
-          maxHeight: 300,
-          overflowY: "auto",
-          paddingRight: 1,
-        }}
-      >
+      <div className="vm-scroll-hidden" style={listScrollStyle}>
         {filtered.length === 0 ? (
           <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "20px 0", margin: 0 }}>
             {Array.isArray(allCountries) ? "No countries found" : "Loading..."}
@@ -134,8 +144,8 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
         )}
       </div>
 
-      {/* Scroll hint fade — purely decorative */}
-      {filtered.length > 5 && (
+      {/* Scroll-hint fade — only in non-compact (standalone) mode */}
+      {!compact && filtered.length > 5 && (
         <div style={{
           height: 20,
           background: "linear-gradient(to top, rgba(15,12,30,0.6) 0%, transparent 100%)",
@@ -197,26 +207,17 @@ function CountryRow({
       }}
     >
       {/* Thumbnail */}
-      <div
-        style={{
-          width: 38,
-          height: 38,
-          borderRadius: 7,
-          overflow: "hidden",
-          flexShrink: 0,
-          background: "rgba(255,255,255,0.08)",
-          position: "relative",
-        }}
-      >
+      <div style={{
+        width: 38, height: 38,
+        borderRadius: 7, overflow: "hidden",
+        flexShrink: 0,
+        background: "rgba(255,255,255,0.08)",
+        position: "relative",
+      }}>
         {c.photo && (
-          <img
-            src={c.photo}
-            alt={c.name}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-          />
+          <img src={c.photo} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         )}
         {!c.photo && (
-          // Fallback: country code initials
           <div style={{
             width: "100%", height: "100%",
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -246,7 +247,7 @@ function CountryRow({
         )}
       </div>
 
-      {/* Right side: checkmark or arrow */}
+      {/* Right: checkmark or arrow */}
       <div style={{ flexShrink: 0, width: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {isSelected ? (
           <div style={{
