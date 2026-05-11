@@ -6,22 +6,77 @@
     {
       "id": "VISA_JP_TOURIST_001",
       "code": "TOURIST",
-      "name": "Tourist Visa",
+      "name": "Tourism Visa",
       "category": "SHORT_STAY",
-      "variants": [
-        {
-          "id": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
-          "type": "SINGLE_ENTRY",
-          "maxStayDays": 90
+      "maxStayDays": 90,
+      "fees": 500,
+      "currency": "INR",
+      "processingTime": "5-10 days",
+
+      "note": "Visa Fee is refunded only if the visa is not approved by the Embassy.",
+
+      "vfsCharges": {
+        "serviceCharge": {
+          "charge": 800,
+          "currency": "INR",
+          "note": "Non-refundable"
+        },
+        "courierCharges": {
+          "charge": 550,
+          "currency": "INR",
+          "optional": true,
+          "note": "Charges are only applicable if you want your passport delivered."
         }
-      ],
+      },
       "process": {
         "default": {
           "applicationMode": "OFFLINE",
           "biometricRequired": false,
           "interviewRequired": false
-        }
+        },
+
+        "paymentInstructions": [
+          {
+            "applicableCenters": [
+              "GURUGRAM",
+              "CHANDIGARH",
+              "LUCKNOW"
+            ],
+
+            "paymentMode": "DEMAND_DRAFT",
+
+            "payableTo": "VFS Global Services Pvt. Ltd.",
+
+            "rules": [
+              {
+                "type": "VISA_FEE",
+                "separateDraftRequired": true
+              },
+              {
+                "type": "SERVICE_CHARGE",
+                "amount": 800,
+                "currency": "INR",
+                "separateDraftRequired": true,
+                "refundable": false
+              },
+              {
+                "type": "COURIER_CHARGE",
+                "amount": 550,
+                "currency": "INR",
+                "optional": true,
+                "separateDraftRequired": true,
+                "refundable": false
+              }
+            ],
+
+            "notes": [
+              "Each applicant must submit separate demand drafts.",
+              "Visa fee and service charges cannot be combined into one draft."
+            ]
+          }
+        ]
       },
+
       "metadata": {
         "status": "active",
         "lastUpdated": "2026-04-25"
