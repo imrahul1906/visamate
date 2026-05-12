@@ -5,6 +5,11 @@
  * No React, no hooks, no JSX — fully unit-testable.
  *
  * Consumed by: ItineraryWidget.tsx
+ *
+ * Changes vs previous version:
+ *  - Removed: wrapText, resolveRepeatedValue (pdf-lib layout helpers — no longer needed)
+ *  - Removed: downloadOfficialPdf, buildPdfFilename (moved to itineraryDocxService.ts)
+ *  - All state-mutation helpers (addPlace, moveUp/Down, etc.) are unchanged.
  */
 
 import type { ItineraryCityMap } from "@/lib/data/types";
@@ -52,7 +57,7 @@ export function dateForDay(startDate: string, dayNumber: number): string {
 }
 
 /**
- * Formats a date string as "1 March 2025" for the PDF header.
+ * Formats a date string as "1 March 2025" for document headers.
  */
 export function fmtDateLong(iso: string): string {
   return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", {
@@ -136,7 +141,7 @@ export function moveUp(
   const items = itinerary
     .filter((x) => x.day === activeDay)
     .sort((a, b) => a.order - b.order)
-    .map((x) => ({ ...x })); // deep-copy to avoid mutating state objects
+    .map((x) => ({ ...x }));
 
   const idx = items.findIndex((x) => x.placeId === placeId);
   if (idx <= 0) return itinerary;
@@ -245,59 +250,6 @@ export function validateItinerary(
 }
 
 // ─────────────────────────────────────────────────────────────
-// PDF layout helpers
-// (These are pure data-transform helpers; the actual pdf-lib calls
-//  remain in ItineraryWidget since they depend on the embedded font
-//  object returned by the async pdf-lib import.)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Word-wrap helper: splits text into lines that fit within maxWidth
- * (in PDF points) at a given font size.
- *
- * The `measureText` callback is injected so this function stays free of
- * pdf-lib imports — pass `(t) => font.widthOfTextAtSize(t, size)`.
- */
-export function wrapText(
-  text: string,
-  maxW: number,
-  measureText: (t: string) => number
-): string[] {
-  if (!text) return [""];
-  const words = text.split(" ");
-  const lines: string[] = [];
-  let cur = "";
-
-  for (const word of words) {
-    const test = cur ? cur + " " + word : word;
-    if (measureText(test) <= maxW) {
-      cur = test;
-    } else {
-      if (cur) lines.push(cur);
-      cur = word;
-    }
-  }
-  if (cur) lines.push(cur);
-
-  return lines.length ? lines : [""];
-}
-
-/**
- * "Same as above" logic for contact / accommodation cells.
- * Returns the display value, replacing with "Same as above" when
- * the value is identical to the previous day's and non-empty.
- */
-export function resolveRepeatedValue(
-  current: string,
-  previous: string | undefined
-): string {
-  if (previous !== undefined && current === previous && current.trim() !== "") {
-    return "Same as above";
-  }
-  return current;
-}
-
-// ─────────────────────────────────────────────────────────────
 // Official blank PDF download
 // ─────────────────────────────────────────────────────────────
 
@@ -312,12 +264,4 @@ export function downloadOfficialPdf(countryName: string): void {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-}
-
-// ─────────────────────────────────────────────────────────────
-// Filename helper
-// ─────────────────────────────────────────────────────────────
-
-export function buildPdfFilename(countryName: string): string {
-  return `${countryName.toLowerCase().replace(/\s+/g, "_")}_travel_itinerary.pdf`;
 }

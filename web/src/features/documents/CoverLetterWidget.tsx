@@ -12,53 +12,53 @@ import {
   today,
   validateCoverLetterInputs,
   getUnfilledFields,
-  buildIntroParag,
-  buildPurposeParag,
-  buildFinanceParag,
   buildImmigrationParag,
-  buildTiesParag,
   buildSponsorParag,
-  buildContactsParag,
-  buildLetterBody,
-  buildPlainText,
   isSponsored as isSponsoredFn,
   isEmployed as isEmployedFn,
   isStudent as isStudentFn,
 } from "@/services/coverLetterService";
 import type { CoverLetterInputs, ApplicantContext as CoverLetterCtx } from "@/services/coverLetterService";
 
-/* ─────────────────────────── PLACEHOLDER SPAN ─────────────────────────── */
-function PH({ id, value, onChange, width = 140 }) {
-  const [editing, setEditing] = useState(false);
-  const ref = useRef();
-  const isEmpty = !value || value.trim() === "";
-
-  useEffect(() => {
-    if (editing && ref.current) ref.current.focus();
-  }, [editing]);
-
-  if (editing) {
-    return (
-      <input
-        ref={ref}
-        className="cl-ph-input"
-        style={{ width }}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        onBlur={() => setEditing(false)}
-        onKeyDown={e => { if (e.key === "Enter") setEditing(false); }}
-      />
-    );
-  }
-
+/* ─────────────────────────── INLINE TEXT FIELD ─────────────────────────── */
+/** Single-line editable field that looks like plain letter text until focused */
+function InlineField({ value, onChange, placeholder = "Click to edit", style = {} }: {
+  value: string; onChange: (v: string) => void; placeholder?: string; style?: React.CSSProperties;
+}) {
   return (
-    <span
-      className={`cl-ph${isEmpty ? " cl-ph--empty" : " cl-ph--filled"}`}
-      onClick={() => setEditing(true)}
+    <input
+      className="cl-inline-field"
+      value={value}
+      placeholder={placeholder}
+      onChange={e => onChange(e.target.value)}
+      style={style}
       title="Click to edit"
-    >
-      {isEmpty ? `[${id}]` : value}
-    </span>
+    />
+  );
+}
+
+/* ─────────────────────────── INLINE TEXTAREA ─────────────────────────── */
+/** Multi-line editable paragraph — always editable, styled like letter text */
+function InlinePara({ value, onChange, rows = 4 }: {
+  value: string; onChange: (v: string) => void; rows?: number;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  // Auto-resize
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  }, [value]);
+  return (
+    <textarea
+      ref={ref}
+      className="cl-inline-para"
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      rows={rows}
+      title="Click to edit paragraph"
+    />
   );
 }
 
@@ -82,21 +82,6 @@ function ContactRow({ contact, idx, onChange, onRemove }) {
       </button>
     </div>
   );
-}
-
-/* ─────────────────────────── LETTER PARAGRAPH ─────────────────────────── */
-function LetterPara({ children, editable, value, onChange }) {
-  if (editable) {
-    return (
-      <textarea
-        className="cl-para-edit"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        rows={4}
-      />
-    );
-  }
-  return <p className="cl-para">{children}</p>;
 }
 
 /* ═══════════════════════════ MAIN WIDGET ═══════════════════════════ */
@@ -245,17 +230,186 @@ export default function CoverLetterWidget() {
     }
     setUnfilled([]);
     setDownloading(true);
-    // Simulate DOCX generation delay (replace with actual docx skill call)
     await new Promise(r => setTimeout(r, 1800));
     setDownloading(false);
-    // Trigger browser download with a placeholder
-    const blob = new Blob([buildPlainText(makeInputs(), makeCtx())], { type: "text/plain" });
+
+    // Build plain text entirely from the editable preview state (l* vars)
+    const contactsTable = lContacts.filter(c => c.name.trim()).map(c =>
+      `  ${c.name} (${c.rel || "—"}) | ${c.phone || "—"} | ${c.email || "—"}`
+    ).join("\n");
+
+    const docRowsText = lDocRows.map((r, i) => `  ${i + 1}. ${r}`).join("\n");
+    const bulletsText = lBullets.map(b => `  • ${b}`).join("\n");
+
+    const sections: string[] = [
+      lHeading,
+      "",
+      lToBlock,
+      "",
+      lDate,
+      "",
+      `Subject: ${lSubject}`,
+      "",
+      lSalutation,
+      "",
+      lIntro,
+      "",
+      bulletsText,
+      "",
+      `${lSecDocs.toUpperCase()}`,
+      lSecDocsIntro,
+      docRowsText,
+      "",
+      `${lSecPurpose.toUpperCase()}`,
+      lSecPurposeIntro,
+      lPurposeDetail,
+      lFlightPara,
+      "",
+      `${lSecOverstay.toUpperCase()}`,
+      lSecOverstayIntro,
+      "",
+      lSecImmigration,
+      lImmigration,
+      "",
+      lSecFamily,
+      lFamilyTies,
+      "",
+      lSecEconomic,
+      lEconomicTies,
+      "",
+      `${lSecFinance.toUpperCase()}`,
+      ...(!isSponsoredFn(ctx.sponsorshipType)
+        ? [lSecFinanceIntro, "", lSecIncome, lFinance]
+        : [lFinance, "", lSecSponsor, lSponsor]
+      ),
+      "",
+      `${lSecContacts.toUpperCase()}`,
+      lContactsNote,
+      contactsTable,
+      "",
+      lClosing,
+      "",
+      `${lSigName}  (Passport No. — ${lSigPassport})`,
+      "_____________________",
+      "Signature",
+    ];
+
+    const text = sections.join("\n");
+    const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `Japan_Visa_Cover_Letter_${ctx.applicantName.replace(/\s+/g, "_")}.txt`;
+    a.href = url;
+    a.download = `Japan_Visa_Cover_Letter_${(lSigName || ctx.applicantName || "applicant").replace(/\s+/g, "_")}.txt`;
     document.body.appendChild(a); a.click();
     document.body.removeChild(a); URL.revokeObjectURL(url);
+    setStep("select");
   }
+
+  /* ── Editable letter fields (seeded when entering letter step) ── */
+  const [lHeading, setLHeading] = useState("COVER LETTER");
+  const [lToBlock, setLToBlock] = useState("To,\nThe Visa Officer,\nEmbassy of Japan,\nDelhi, India");
+  const [lDate, setLDate] = useState(today());
+  const [lSubject, setLSubject] = useState("");
+  const [lSalutation, setLSalutation] = useState("To whom it may concern,");
+  const [lIntro, setLIntro] = useState("");
+  const [lPurposeDetail, setLPurposeDetail] = useState("");
+  const [lFlightPara, setLFlightPara] = useState("");
+  const [lImmigration, setLImmigration] = useState("");
+  const [lFamilyTies, setLFamilyTies] = useState("");
+  const [lEconomicTies, setLEconomicTies] = useState("");
+  const [lFinance, setLFinance] = useState("");
+  const [lSponsor, setLSponsor] = useState("");
+  const [lContactsNote, setLContactsNote] = useState(
+    "It is appreciated that you may want to contact my family and friends in order to verify my intentions. If you would like to do so, the following are some useful contact details:"
+  );
+  const [lClosing, setLClosing] = useState("Finally, I can confirm that the information provided above is true to the best of my knowledge and belief.\n\nYour faithfully,");
+  const [lSigName, setLSigName] = useState("");
+  const [lSigPassport, setLSigPassport] = useState("");
+  // Editable contacts table in preview
+  const [lContacts, setLContacts] = useState(contacts);
+  // Editable doc table rows
+  const [lDocRows, setLDocRows] = useState<string[]>([]);
+
+  // Section headings (were uncontrolled defaultValue — now fully controlled)
+  const [lSecDocs, setLSecDocs] = useState("List of Supporting Documents");
+  const [lSecDocsIntro, setLSecDocsIntro] = useState("In support of my temporary visitor visa for tourism application, I have included the following documents");
+  const [lSecPurpose, setLSecPurpose] = useState("The Purpose of my Visit");
+  const [lSecPurposeIntro, setLSecPurposeIntro] = useState("The purpose of my visit:");
+  const [lSecOverstay, setLSecOverstay] = useState("Why I will not overstay the temporary visitor visa for tourism");
+  const [lSecOverstayIntro, setLSecOverstayIntro] = useState("I fully intend to return to India before my Japan visitor visa expires. I have a good life back home and have no reason or intention to overstay. The following are the reasons that I would like you to consider when deciding my application:");
+  const [lSecImmigration, setLSecImmigration] = useState("My good immigration history");
+  const [lSecFamily, setLSecFamily] = useState("Family ties to my home country");
+  const [lSecEconomic, setLSecEconomic] = useState("Financial and economic ties to my home country");
+  const [lSecFinance, setLSecFinance] = useState("My ability to adequately maintain myself during my visit to Japan");
+  const [lSecFinanceIntro, setLSecFinanceIntro] = useState("I confirm that I can adequately maintain myself. To support this, my sources of income and financial assets are highlighted below.");
+  const [lSecIncome, setLSecIncome] = useState("My sources of income");
+  const [lSecSponsor, setLSecSponsor] = useState("My sponsor");
+  const [lSecContacts, setLSecContacts] = useState("Relevant contact details");
+
+  // Bullet overview items
+  const [lBullets, setLBullets] = useState<string[]>([]);
+
+  // Seed editable state whenever we enter the letter step
+  useEffect(() => {
+    if (step !== "letter") return;
+    const inp = makeInputs();
+    const c = makeCtx();
+    const citiesStr = (c.cities || []).join(", ") || "[Cities]";
+    setLSubject(`Application for Japan Temporary Visitor Visa (Tourism) — ${c.applicantName || "[Name]"}`);
+    setLIntro(`My name is ${c.applicantName || "[Name]"} and I am from India. I am applying from India and I am applying for a Temporary Visitor Visa for Tourism.\nIn discussing that I am a genuine and credible applicant for a Japan Tourism Visa, this letter will cover;`);
+    const flightCity = (c.cities && c.cities[0]) || "[City]";
+    setLFlightPara(
+      `I will fly from ${inp.departureCity || "[Departure City]"}, India on ${fmtDate(c.travelStartDate)} and land in ${flightCity} on ${fmtDate(c.travelStartDate)}. I will explore the country for ${c.travelDuration} days and leave on ${fmtDateEnd(c.travelStartDate, c.travelDuration)} for India.\n\nComplete travel itinerary has been attached.`
+    );
+    setLPurposeDetail(
+      `To explore the beautiful country including ${citiesStr} and visit the tourist spots. ${inp.purpose || ""}` +
+      (inp.travellingWith === "with" && inp.companion ? `\nTo accompany my ${inp.companion} who will also be travelling on the same dates and has applied for a tourist visa.` : "")
+    );
+    setLImmigration(buildImmigrationParag(inp));
+    const family: string[] = [];
+    if (inp.married === "yes") family.push("spouse");
+    if (inp.parentsInIndia === "yes") family.push("parents");
+    if (inp.hasChildren === "yes") family.push("children");
+    setLFamilyTies(
+      family.length > 0
+        ? `I have my ${family.join(", ")} back home in India, which is another indication that I will return to my home country prior to my visa expiring.`
+        : "I have family back home in India which is another indication that I will return to my home country prior to my visa expiring."
+    );
+    if (isEmployedFn(ctx.applicantProfile)) setLEconomicTies(`I am currently employed as ${inp.designation || "[Designation]"} at ${inp.companyName || "[Company Name]"}. My employment is a strong tie to India and demonstrates my intention to return. A No Objection Certificate from my employer confirming my leave approval is enclosed.`);
+    else if (isStudentFn(ctx.applicantProfile)) setLEconomicTies(`I am currently enrolled as a student at ${inp.institutionName || "[Institution Name]"}. My studies are a strong tie to India and demonstrate my intention to return. A No Objection Certificate from my institution is enclosed.`);
+    else setLEconomicTies("I have strong financial and economic ties to India which demonstrate my intention to return.");
+    if (!isSponsoredFn(ctx.sponsorshipType)) {
+      setLFinance(`My bank account reflects a balance of ${inp.bankBalance || "[₹X,XX,XXX]"}, which is sufficient to cover all travel, accommodation, and living expenses during my stay. I will be staying at ${inp.hotelName || "[Hotel Name]"} during my visit. Relevant bank statements are enclosed for your reference.`);
+    } else {
+      setLFinance(`I confirm that my ${inp.sponsorRel || "[Relationship]"} ${inp.sponsorAccompanying === "accompanying" ? "who is accompanying me in this trip " : ""}will sponsor and bear all the cost incurred in this trip. I have attached the consent letter from them. I have also attached their financial records.`);
+      setLSponsor(buildSponsorParag(inp));
+    }
+    setLSigName(c.applicantName || "[Name]");
+    setLSigPassport(c.passportNo || "[Passport No]");
+    setLContacts(contacts.length ? contacts : [{ name: "", rel: "", phone: "", email: "" }]);
+    // Build doc rows
+    const rows = [
+      "Copy of my passport",
+      "Travel itinerary",
+      `Financial evidence ${!isSponsoredFn(ctx.sponsorshipType) ? "(bank statements)" : "(sponsor's financial records)"}`,
+    ];
+    if (isEmployedFn(ctx.applicantProfile)) rows.push("No Objection Certificate (NOC) from employer");
+    if (isStudentFn(ctx.applicantProfile)) rows.push("No Objection Certificate (NOC) from institution");
+    if (isSponsoredFn(ctx.sponsorshipType)) rows.push(`Letter of consent and sponsorship from my ${inp.sponsorRel || "sponsor"} and his/her financial evidence`);
+    rows.push("Onward and Return Air tickets");
+    rows.push("Hotel Bookings");
+    setLDocRows(rows);
+    // Seed bullet overview items
+    setLBullets([
+      "A list of the supporting documents that I am submitting to support my application",
+      "The purpose of my visit",
+      "The reasons why I will comply with the terms of my visa and why I will not overstay",
+      "My ability to adequately maintain myself during my intended trip",
+      ...(isSponsoredFn(ctx.sponsorshipType) ? ["Information relating to my sponsor"] : []),
+      "Contact details of other relevant persons you may wish to contact",
+    ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
 
   /* ─────────────────────────── RENDER ─────────────────────────── */
   return (
@@ -578,11 +732,11 @@ export default function CoverLetterWidget() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
-              Back
+              Builder
             </button>
             <div className="cl-topbar-center">
               <span className="cl-topbar-title">Cover Letter Preview</span>
-              <span className="cl-topbar-sub">Step 2 of 2 — click highlighted fields to edit</span>
+              <span className="cl-topbar-sub">Click any field to edit inline</span>
             </div>
             <div className="cl-topbar-steps">
               <span className="cl-step cl-step--done">✓</span>
@@ -593,71 +747,84 @@ export default function CoverLetterWidget() {
 
           <div className="cl-letter-body">
 
-            {/* Legend */}
-            <div className="cl-legend">
-              <span className="cl-ph cl-ph--empty" style={{ pointerEvents: "none", fontSize: 11 }}>[field]</span>
-              <span style={{ fontSize: 11, color: "var(--iw-muted2)" }}>= click to fill in</span>
-              <span style={{ fontSize: 11, color: "var(--iw-muted)", marginLeft: 12 }}>·</span>
-              <span style={{ fontSize: 11, color: "var(--iw-muted2)", marginLeft: 12 }}>Paragraphs are directly editable</span>
+            {/* Info strip */}
+            <div className="cl-preview-info-strip">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              <span>
+                <strong>Click any text to edit it directly</strong> — every heading, paragraph, table cell, and contact is editable right here.
+              </span>
             </div>
 
-            {/* Unfilled warning */}
-            {unfilled.length > 0 && (
-              <div className="cl-warn-strip">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span>Please fill in before downloading: <strong>{unfilled.join(", ")}</strong></span>
-              </div>
-            )}
-
-            {/* ─── THE LETTER ─── */}
+            {/* THE LETTER */}
             <div className="cl-letter-sheet">
 
-              {/* COVER LETTER heading */}
-              <p className="cl-letter-heading">COVER LETTER</p>
+              {/* Heading */}
+              <input
+                className="cl-letter-heading-input"
+                value={lHeading}
+                onChange={e => setLHeading(e.target.value)}
+                title="Click to edit"
+              />
 
-              {/* To / Date — no border box, clean layout */}
+              {/* To / Date block */}
               <div className="cl-addr-block">
-                <div className="cl-addr-left">
-                  To,<br/>
-                  The Visa Officer,<br/>
-                  Embassy of Japan,<br/>
-                  Delhi, India
-                </div>
-                <div className="cl-addr-right">
-                  Date: {today()}
-                </div>
+                <textarea
+                  className="cl-addr-textarea"
+                  value={lToBlock}
+                  onChange={e => setLToBlock(e.target.value)}
+                  rows={4}
+                  title="Click to edit address"
+                />
+                <input
+                  className="cl-date-input"
+                  value={lDate}
+                  onChange={e => setLDate(e.target.value)}
+                  title="Click to edit date"
+                />
               </div>
 
               {/* Subject */}
-              <p className="cl-para cl-subject">
-                <strong>Subject: Application for Japan Temporary Visitor Visa (Tourism) —{" "}
-                <PH id="applicant name" value={ctx.applicantName} onChange={() => {}} width={200}/></strong>
-              </p>
+              <div className="cl-subject-row">
+                <span className="cl-subject-bold">Subject: </span>
+                <input
+                  className="cl-inline-field cl-inline-field--subject"
+                  value={lSubject}
+                  onChange={e => setLSubject(e.target.value)}
+                  title="Click to edit subject"
+                />
+              </div>
 
               {/* Salutation */}
-              <p className="cl-para">To whom it may concern,</p>
+              <input
+                className="cl-inline-field cl-inline-field--salutation"
+                value={lSalutation}
+                onChange={e => setLSalutation(e.target.value)}
+                title="Click to edit"
+              />
 
-              {/* Intro paragraph */}
-              <p className="cl-para">
-                My name is{" "}<PH id="full name" value={ctx.applicantName} onChange={() => {}} width={180}/>{" "}and I am from India. I am applying from India and I am applying for a Temporary Visitor Visa for Tourism.
-                In discussing that I am a genuine and credible applicant for a Japan Tourism Visa, this letter will cover;
-              </p>
+              {/* Intro */}
+              <InlinePara value={lIntro} onChange={setLIntro} rows={3}/>
 
-              {/* Bullet overview */}
-              <ul className="cl-bullet-list">
-                <li>A list of the supporting documents that I am submitting to support my application</li>
-                <li>The purpose of my visit</li>
-                <li>The reasons why I will comply with the terms of my visa and why I will not overstay</li>
-                <li>My ability to adequately maintain myself during my intended trip</li>
-                {isSponsored && <li>Information relating to my sponsor</li>}
-                <li>Contact details of other relevant persons you may wish to contact</li>
+              {/* Bullet overview — editable list */}
+              <ul className="cl-bullet-list cl-bullet-list--edit">
+                {lBullets.map((item, i) => (
+                  <li key={i} className="cl-bullet-edit-item">
+                    <input
+                      className="cl-inline-field cl-inline-field--bullet"
+                      value={item}
+                      onChange={e => setLBullets(prev => prev.map((b, bi) => bi === i ? e.target.value : b))}
+                      title="Click to edit"
+                    />
+                  </li>
+                ))}
               </ul>
 
-              {/* List of Supporting Documents */}
-              <p className="cl-section-heading">List of Supporting Documents</p>
-              <p className="cl-para">In support of my temporary visitor visa for tourism application, I have included the following documents</p>
+              {/* Supporting Documents section */}
+              <input className="cl-section-heading-input" value={lSecDocs} onChange={e => setLSecDocs(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lSecDocsIntro} onChange={setLSecDocsIntro} rows={2}/>
 
               <table className="cl-doc-table">
                 <thead>
@@ -667,189 +834,111 @@ export default function CoverLetterWidget() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="cl-doc-td cl-doc-td--num">1</td>
-                    <td className="cl-doc-td">Copy of my passport</td>
-                  </tr>
-                  <tr>
-                    <td className="cl-doc-td cl-doc-td--num">2</td>
-                    <td className="cl-doc-td">Travel itinerary</td>
-                  </tr>
-                  <tr>
-                    <td className="cl-doc-td cl-doc-td--num">3</td>
-                    <td className="cl-doc-td">Financial evidence {!isSponsored ? "(bank statements)" : "(sponsor's financial records)"}</td>
-                  </tr>
-                  {isEmployed && (
-                    <tr>
-                      <td className="cl-doc-td cl-doc-td--num">4</td>
-                      <td className="cl-doc-td">No Objection Certificate (NOC) from employer</td>
+                  {lDocRows.map((row, i) => (
+                    <tr key={i}>
+                      <td className="cl-doc-td cl-doc-td--num">{i + 1}</td>
+                      <td className="cl-doc-td cl-doc-td--edit">
+                        <input
+                          className="cl-cell-input-light"
+                          value={row}
+                          onChange={e => setLDocRows(rows => rows.map((r, ri) => ri === i ? e.target.value : r))}
+                          title="Click to edit"
+                        />
+                      </td>
                     </tr>
-                  )}
-                  {isStudent && (
-                    <tr>
-                      <td className="cl-doc-td cl-doc-td--num">4</td>
-                      <td className="cl-doc-td">No Objection Certificate (NOC) from institution</td>
-                    </tr>
-                  )}
-                  {isSponsored && (
-                    <tr>
-                      <td className="cl-doc-td cl-doc-td--num">{isEmployed || isStudent ? 5 : 4}</td>
-                      <td className="cl-doc-td">Letter of consent and sponsorship from my {sponsorRel || "sponsor"} and his/her financial evidence</td>
-                    </tr>
-                  )}
+                  ))}
                   <tr>
-                    <td className="cl-doc-td cl-doc-td--num">{isSponsored ? (isEmployed || isStudent ? 6 : 5) : (isEmployed || isStudent ? 5 : 4)}</td>
-                    <td className="cl-doc-td">Onward and Return Air tickets</td>
-                  </tr>
-                  <tr>
-                    <td className="cl-doc-td cl-doc-td--num">{isSponsored ? (isEmployed || isStudent ? 7 : 6) : (isEmployed || isStudent ? 6 : 5)}</td>
-                    <td className="cl-doc-td">Hotel Bookings</td>
+                    <td className="cl-doc-td cl-doc-td--num" colSpan={2}>
+                      <button className="cl-cell-add-btn-light" onClick={() => setLDocRows(r => [...r, ""])}>+ Add row</button>
+                    </td>
                   </tr>
                 </tbody>
               </table>
 
               {/* Purpose of Visit */}
-              <p className="cl-section-heading">The Purpose of my Visit</p>
-              <p className="cl-para">The purpose of my visit:</p>
-              <ul className="cl-bullet-list">
-                <li>
-                  To explore the beautiful country including{" "}
-                  {(ctx.cities || []).join(", ") || "[Cities]"} and visit the tourist spots.{" "}
-                  <PH id="additional purpose" value={purpose} onChange={setPurpose} width={280}/>
-                </li>
-                {travellingWith === "with" && companion && (
-                  <li>To accompany my {companion} who will also be travelling on the same dates and has applied for a tourist visa.</li>
-                )}
-              </ul>
-              <p className="cl-para">
-                I will fly from <strong>{departureCity || "[Departure City]"}</strong>, India on <em>{fmtDate(ctx.travelStartDate)}</em> and
-                land in {(ctx.cities && ctx.cities[0]) || "[City]"} on <em>{fmtDate(ctx.travelStartDate)}</em>. I will explore the country
-                for <strong>{ctx.travelDuration} days</strong> and leave on <em>{fmtDateEnd(ctx.travelStartDate, ctx.travelDuration)}</em> for India.
-              </p>
-              <p className="cl-para">Complete travel itinerary has been attached.</p>
+              <input className="cl-section-heading-input" value={lSecPurpose} onChange={e => setLSecPurpose(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lSecPurposeIntro} onChange={setLSecPurposeIntro} rows={1}/>
+              <InlinePara value={lPurposeDetail} onChange={setLPurposeDetail} rows={3}/>
+              <InlinePara value={lFlightPara} onChange={setLFlightPara} rows={4}/>
 
               {/* Why I will not overstay */}
-              <p className="cl-section-heading">Why I will not overstay the temporary visitor visa for tourism</p>
-              <p className="cl-para">
-                I fully intend to return to India before my Japan visitor visa expires. I have a good life back home and have no reason or
-                intention to overstay. The following are the reasons that I would like you to consider when deciding my application:
-              </p>
+              <input className="cl-section-heading-input" value={lSecOverstay} onChange={e => setLSecOverstay(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lSecOverstayIntro} onChange={setLSecOverstayIntro} rows={3}/>
 
-              <p className="cl-subsection-heading">My good immigration history</p>
-              <LetterSection
-                label="Immigration history"
-                initial={buildImmigrationParag(makeInputs())}
-              />
+              <input className="cl-subsection-heading-input" value={lSecImmigration} onChange={e => setLSecImmigration(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lImmigration} onChange={setLImmigration} rows={3}/>
 
-              <p className="cl-subsection-heading">Family ties to my home country</p>
-              <LetterSection
-                label="Family ties"
-                initial={(() => {
-                  const family = [];
-                  if (married === "yes") family.push("spouse");
-                  if (parentsInIndia === "yes") family.push("parents");
-                  if (hasChildren === "yes") family.push("children");
-                  return family.length > 0
-                    ? `I have my ${family.join(", ")} back home in India, which is another indication that I will return to my home country prior to my visa expiring.`
-                    : "I have family back home in India which is another indication that I will return to my home country prior to my visa expiring.";
-                })()}
-              />
+              <input className="cl-subsection-heading-input" value={lSecFamily} onChange={e => setLSecFamily(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lFamilyTies} onChange={setLFamilyTies} rows={3}/>
 
-              <p className="cl-subsection-heading">Financial and economic ties to my home country</p>
-              <LetterSection
-                label="Economic ties"
-                initial={(() => {
-                  if (isEmployed) return `I am currently employed as ${designation || "[Designation]"} at ${companyName || "[Company Name]"}. My employment is a strong tie to India and demonstrates my intention to return. A No Objection Certificate from my employer confirming my leave approval is enclosed.`;
-                  if (isStudent) return `I am currently enrolled as a student at ${institutionName || "[Institution Name]"}. My studies are a strong tie to India and demonstrate my intention to return. A No Objection Certificate from my institution is enclosed.`;
-                  return "I have strong financial and economic ties to India which demonstrate my intention to return.";
-                })()}
-              />
+              <input className="cl-subsection-heading-input" value={lSecEconomic} onChange={e => setLSecEconomic(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lEconomicTies} onChange={setLEconomicTies} rows={3}/>
 
               {/* Financial ability */}
-              <p className="cl-section-heading">My ability to adequately maintain myself during my visit to Japan</p>
-
-              {!isSponsored ? (
+              <input className="cl-section-heading-input" value={lSecFinance} onChange={e => setLSecFinance(e.target.value)} title="Click to edit"/>
+              {!isSponsoredFn(ctx.sponsorshipType) ? (
                 <>
-                  <p className="cl-para">I confirm that I can adequately maintain myself. To support this, my sources of income and financial assets are highlighted below.</p>
-                  <p className="cl-subsection-heading">My sources of income</p>
-                  <LetterSection
-                    label="Financial means"
-                    renderWith={({ PlaceholderSet }) => (
-                      <>
-                        My bank account reflects a balance of{" "}
-                        <PH id="bank balance e.g. ₹3,50,000" value={bankBalance} onChange={setBankBalance} width={220}/>,
-                        which is sufficient to cover all travel, accommodation, and living expenses during my stay.
-                        I will be staying at <PH id="hotel name" value={hotelName} onChange={setHotelName} width={180}/> during my visit.
-                        Relevant bank statements are enclosed for your reference.
-                      </>
-                    )}
-                  />
+                  <InlinePara value={lSecFinanceIntro} onChange={setLSecFinanceIntro} rows={2}/>
+                  <input className="cl-subsection-heading-input" value={lSecIncome} onChange={e => setLSecIncome(e.target.value)} title="Click to edit"/>
+                  <InlinePara value={lFinance} onChange={setLFinance} rows={4}/>
                 </>
               ) : (
                 <>
-                  <p className="cl-para">
-                    I confirm that my <strong>{sponsorRel || "[Relationship]"}</strong>{" "}
-                    {sponsorAccompanying === "accompanying" ? "who is accompanying me in this trip" : ""}{" "}
-                    will sponsor and bear all the cost incurred in this trip. I have attached the consent letter from them.
-                    I have also attached their financial records.
-                  </p>
-                  <p className="cl-subsection-heading">My sponsor</p>
-                  <LetterSection
-                    label="Sponsor details"
-                    initial={buildSponsorParag(makeInputs())}
-                  />
+                  <InlinePara value={lFinance} onChange={setLFinance} rows={3}/>
+                  <input className="cl-subsection-heading-input" value={lSecSponsor} onChange={e => setLSecSponsor(e.target.value)} title="Click to edit"/>
+                  <InlinePara value={lSponsor} onChange={setLSponsor} rows={3}/>
                 </>
               )}
 
-              {/* Contacts table */}
-              <p className="cl-section-heading">Relevant contact details</p>
-              <p className="cl-para">
-                It is appreciated that you may want to contact my family and friends in order to verify my intentions.
-                If you would like to do so, the following are some useful contact details:
-              </p>
+              {/* Contacts */}
+              <input className="cl-section-heading-input" value={lSecContacts} onChange={e => setLSecContacts(e.target.value)} title="Click to edit"/>
+              <InlinePara value={lContactsNote} onChange={setLContactsNote} rows={3}/>
 
               <table className="cl-contacts-table">
                 <thead>
                   <tr>
-                    <th className="cl-contacts-th">Name</th>
-                    <th className="cl-contacts-th">Relationship to me</th>
-                    <th className="cl-contacts-th">Phone number</th>
-                    <th className="cl-contacts-th">Email</th>
+                    {["Name", "Relationship to me", "Phone number", "Email"].map(h => (
+                      <th key={h} className="cl-contacts-th">{h}</th>
+                    ))}
+                    <th className="cl-contacts-th" style={{ width: 28 }}/>
                   </tr>
                 </thead>
                 <tbody>
-                  {contacts.map((c, i) => (
+                  {lContacts.map((c, i) => (
                     <tr key={i}>
-                      <td className="cl-contacts-td">{c.name || ""}</td>
-                      <td className="cl-contacts-td">{c.rel || ""}</td>
-                      <td className="cl-contacts-td">{c.phone || ""}</td>
-                      <td className="cl-contacts-td">{c.email || ""}</td>
-                    </tr>
-                  ))}
-                  {contacts.length < 3 && Array.from({ length: 3 - contacts.length }).map((_, i) => (
-                    <tr key={`empty-${i}`}>
-                      <td className="cl-contacts-td">&nbsp;</td>
-                      <td className="cl-contacts-td">&nbsp;</td>
-                      <td className="cl-contacts-td">&nbsp;</td>
-                      <td className="cl-contacts-td">&nbsp;</td>
+                      {(["name", "rel", "phone", "email"] as const).map(field => (
+                        <td key={field} className="cl-contacts-td cl-contacts-td--edit">
+                          <input
+                            className="cl-cell-input-light"
+                            value={c[field]}
+                            placeholder={field === "name" ? "Full name" : field === "rel" ? "Relationship" : field === "phone" ? "+91 XXXXX" : "email@..."}
+                            onChange={e => setLContacts(prev => prev.map((x, j) => j === i ? { ...x, [field]: e.target.value } : x))}
+                            title="Click to edit"
+                          />
+                        </td>
+                      ))}
+                      <td className="cl-contacts-td" style={{ textAlign: "center", padding: "4px" }}>
+                        <button className="cl-cell-remove-btn-light" onClick={() => setLContacts(p => p.filter((_, j) => j !== i))} title="Remove row">×</button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-
-              <p className="cl-para" style={{ marginTop: 12 }}>
-                If you would like to contact any other individuals or organisations and I have not provided their contact details,
-                please feel free to get in touch and I will be more than happy to provide them for you.
-              </p>
-
-              <p className="cl-para">Finally, I can confirm that the information provided above is true to the best of my knowledge and belief.</p>
+              {lContacts.length < 5 && (
+                <button className="cl-cell-add-btn-light" style={{ marginBottom: 12 }} onClick={() => setLContacts(p => [...p, { name: "", rel: "", phone: "", email: "" }])}>+ Add contact row</button>
+              )}
 
               {/* Closing */}
-              <p className="cl-para" style={{ marginTop: 16 }}>Your faithfully,</p>
+              <InlinePara value={lClosing} onChange={setLClosing} rows={3}/>
 
               {/* Signature block */}
               <div className="cl-sig-block">
-                <p className="cl-sig-name">{ctx.applicantName} &nbsp;&nbsp;&nbsp; (Passport No. — {ctx.passportNo})</p>
+                <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <input className="cl-inline-field cl-inline-field--sig" value={lSigName} onChange={e => setLSigName(e.target.value)} placeholder="Full name" title="Click to edit name"/>
+                  <span style={{ color: "#555", fontFamily: "'Times New Roman', serif", fontSize: 13 }}> &nbsp;(Passport No. —</span>
+                  <input className="cl-inline-field cl-inline-field--sig" value={lSigPassport} onChange={e => setLSigPassport(e.target.value)} placeholder="Passport No." title="Click to edit passport" style={{ width: 120 }}/>
+                  <span style={{ color: "#555", fontFamily: "'Times New Roman', serif", fontSize: 13 }}>)</span>
+                </div>
                 <div className="cl-sig-line"/>
                 <p className="cl-sig-sub cl-sig-italic">Signature</p>
               </div>
@@ -858,7 +947,7 @@ export default function CoverLetterWidget() {
 
             {/* Download row */}
             <div className="cl-dl-row">
-              <p className="cl-save-hint">Review all highlighted fields above, then download your .docx.</p>
+              <p className="cl-save-hint">All edits are saved automatically. Download when ready.</p>
               <button className="cl-save-btn" onClick={handleDownload} disabled={downloading}>
                 {downloading ? (
                   <span className="cl-spinner"/>
@@ -882,46 +971,7 @@ export default function CoverLetterWidget() {
   );
 }
 
-/* ─────────────────────────── LETTER SECTION (editable paragraph) ─────────────────────────── */
-function LetterSection({ label, initial, renderWith }) {
-  const [text, setText] = useState(initial || "");
-  const [editMode, setEditMode] = useState(false);
 
-  const PlaceholderSet = ({ id }) => {
-    // placeholder support inside renderWith
-    return <span className="cl-ph cl-ph--empty">[{id}]</span>;
-  };
-
-  return (
-    <div className="cl-letter-section">
-      <div className="cl-section-meta">
-        <span className="cl-section-tag">{label}</span>
-        {!renderWith && (
-          <button className="cl-edit-para-btn" onClick={() => setEditMode(e => !e)}>
-            {editMode ? (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-            ) : (
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-              </svg>
-            )}
-            {editMode ? "Done" : "Edit"}
-          </button>
-        )}
-      </div>
-      {renderWith ? (
-        <p className="cl-para">{renderWith({ PlaceholderSet })}</p>
-      ) : editMode ? (
-        <textarea className="cl-para-edit" value={text} onChange={e => setText(e.target.value)} rows={5}/>
-      ) : (
-        <p className="cl-para" onClick={() => setEditMode(true)} style={{ cursor: "text" }}>{text}</p>
-      )}
-    </div>
-  );
-}
 
 /* ═══════════════════════════ STYLES ═══════════════════════════ */
 const STYLES = `
@@ -1317,4 +1367,154 @@ const STYLES = `
     .cl-context-strip { grid-template-columns: repeat(2, 1fr); }
     .cl-letter-sheet { padding: 24px 18px; }
   }
+
+  /* ─── Inline-editable letter preview ─── */
+
+  /* Info strip */
+  .cl-preview-info-strip {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.22);
+    border-radius: 8px; padding: 11px 14px;
+    font-size: 12px; color: var(--iw-muted2); line-height: 1.55;
+  }
+  .cl-preview-info-strip strong { color: var(--iw-indigo-lt); }
+  .cl-preview-info-strip svg { color: var(--iw-indigo-lt); }
+
+  /* Shared inline edit affordance */
+  .cl-inline-edit-base {
+    border: none; outline: none; background: transparent;
+    font-family: 'Times New Roman', Times, serif; color: #1a1a1a;
+    border-radius: 4px; transition: background 110ms, box-shadow 110ms;
+    box-sizing: border-box;
+  }
+  .cl-inline-edit-base:hover { background: rgba(99,102,241,0.06); }
+  .cl-inline-edit-base:focus { background: rgba(99,102,241,0.1); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+  /* Heading input */
+  .cl-letter-heading-input {
+    font-size: 16px; font-weight: 700; text-align: center;
+    letter-spacing: .12em; text-decoration: underline;
+    margin: 0 0 18px; color: #1a1a1a; width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; padding: 4px 6px;
+    border-radius: 4px; transition: background 110ms, box-shadow 110ms;
+    box-sizing: border-box; display: block;
+  }
+  .cl-letter-heading-input:hover { background: rgba(99,102,241,0.06); }
+  .cl-letter-heading-input:focus { background: rgba(99,102,241,0.1); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+  /* Address textarea */
+  .cl-addr-textarea {
+    font-size: 13px; line-height: 1.8; color: #1a1a1a;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; resize: none;
+    padding: 3px 5px; border-radius: 4px; width: 55%;
+    transition: background 110ms, box-shadow 110ms;
+  }
+  .cl-addr-textarea:hover { background: rgba(99,102,241,0.06); }
+  .cl-addr-textarea:focus { background: rgba(99,102,241,0.1); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+  /* Date input */
+  .cl-date-input {
+    font-size: 13px; line-height: 1.8; color: #1a1a1a; text-align: right;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; padding: 3px 5px;
+    border-radius: 4px; width: 40%; transition: background 110ms, box-shadow 110ms;
+  }
+  .cl-date-input:hover { background: rgba(99,102,241,0.06); }
+  .cl-date-input:focus { background: rgba(99,102,241,0.1); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+  /* Subject row */
+  .cl-subject-row { display: flex; align-items: baseline; gap: 4px; margin-bottom: 12px; }
+  .cl-subject-bold { font-size: 13px; font-weight: 700; font-family: 'Times New Roman', serif; white-space: nowrap; color: #1a1a1a; }
+
+  /* Generic inline field */
+  .cl-inline-field {
+    font-size: 13px; color: #1a1a1a;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent;
+    border-bottom: 1.5px dashed rgba(99,102,241,0.35);
+    padding: 2px 4px; border-radius: 3px 3px 0 0;
+    transition: border-color 110ms, background 110ms;
+    min-width: 80px; width: auto;
+  }
+  .cl-inline-field:hover { border-bottom-color: #6366f1; background: rgba(99,102,241,0.05); }
+  .cl-inline-field:focus { border-bottom-color: #6366f1; background: rgba(99,102,241,0.1); outline: none; box-shadow: none; }
+  .cl-inline-field::placeholder { color: #bbb; font-style: italic; }
+  .cl-inline-field--subject { flex: 1; font-weight: 700; }
+  .cl-inline-field--salutation { display: block; width: 100%; margin-bottom: 10px; border-bottom-color: transparent; }
+  .cl-inline-field--bullet { width: 100%; border-bottom-color: transparent; }
+  .cl-inline-field--sig { font-weight: 600; min-width: 160px; }
+
+  /* Inline paragraph textarea */
+  .cl-inline-para {
+    width: 100%; font-size: 13px; line-height: 1.85; color: #1a1a1a;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; resize: none;
+    padding: 5px 6px; border-radius: 4px; margin: 0 0 10px;
+    box-sizing: border-box; overflow: hidden;
+    transition: background 110ms, box-shadow 110ms;
+    border-left: 2px solid transparent;
+  }
+  .cl-inline-para:hover { background: rgba(99,102,241,0.05); border-left-color: rgba(99,102,241,0.25); }
+  .cl-inline-para:focus { background: rgba(99,102,241,0.08); border-left-color: rgba(99,102,241,0.5); box-shadow: none; }
+
+  /* Section heading inputs */
+  .cl-section-heading-input {
+    font-size: 13px; font-weight: 700; text-decoration: underline;
+    margin: 16px 0 8px; color: #1a1a1a; display: block; width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; padding: 3px 5px;
+    border-radius: 4px; transition: background 110ms;
+    box-sizing: border-box;
+  }
+  .cl-section-heading-input:hover { background: rgba(99,102,241,0.06); }
+  .cl-section-heading-input:focus { background: rgba(99,102,241,0.1); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+  .cl-subsection-heading-input {
+    font-size: 13px; font-weight: 700; font-style: italic;
+    margin: 12px 0 6px; color: #1a1a1a; display: block; width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; padding: 3px 5px;
+    border-radius: 4px; transition: background 110ms; box-sizing: border-box;
+  }
+  .cl-subsection-heading-input:hover { background: rgba(99,102,241,0.06); }
+  .cl-subsection-heading-input:focus { background: rgba(99,102,241,0.1); box-shadow: 0 0 0 2px rgba(99,102,241,0.3); }
+
+  /* Bullet list editable */
+  .cl-bullet-list--edit { list-style: none; padding-left: 14px; }
+  .cl-bullet-edit-item { display: flex; align-items: center; margin-bottom: 3px; }
+  .cl-bullet-edit-item::before { content: "•"; color: #1a1a1a; margin-right: 6px; flex-shrink: 0; font-size: 13px; }
+
+  /* Table cell input (light, on white background) */
+  .cl-cell-input-light {
+    width: 100%; font-size: 13px; color: #1a1a1a;
+    font-family: 'Times New Roman', Times, serif;
+    border: none; outline: none; background: transparent; padding: 2px 4px;
+    border-radius: 3px; transition: background 100ms;
+    box-sizing: border-box;
+  }
+  .cl-cell-input-light:hover { background: rgba(99,102,241,0.07); }
+  .cl-cell-input-light:focus { background: rgba(99,102,241,0.12); box-shadow: 0 0 0 2px rgba(99,102,241,0.25); }
+  .cl-cell-input-light::placeholder { color: #bbb; font-style: italic; }
+  .cl-doc-td--edit { padding: 5px 8px !important; }
+  .cl-contacts-td--edit { padding: 5px 8px !important; }
+
+  /* Add/remove buttons inside tables */
+  .cl-cell-add-btn-light {
+    font-size: 11px; font-weight: 600; color: #6366f1;
+    background: rgba(99,102,241,0.07); border: 1px dashed rgba(99,102,241,0.35);
+    border-radius: 4px; padding: 3px 10px; cursor: pointer;
+    font-family: 'Times New Roman', Times, serif;
+    transition: background 100ms; margin-top: 4px;
+  }
+  .cl-cell-add-btn-light:hover { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.6); }
+
+  .cl-cell-remove-btn-light {
+    width: 20px; height: 20px; border-radius: 50%; border: 1px solid #e0e0e0;
+    background: #f5f5f5; font-size: 14px; line-height: 1; cursor: pointer;
+    color: #999; display: flex; align-items: center; justify-content: center;
+    transition: all 100ms; padding: 0;
+  }
+  .cl-cell-remove-btn-light:hover { background: #fee2e2; border-color: #fca5a5; color: #ef4444; }
 `;

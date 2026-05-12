@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "tsx": "^4.0.0"
+  },
+  "dependencies": {
+    "docx": "^9.6.1"
   }
 }
