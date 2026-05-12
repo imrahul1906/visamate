@@ -1,6 +1,6 @@
 "use client";
 
-// app/documents/CategoryIcon.tsx
+// web\src\features\documents\CategoryIcon.tsx
 
 // ─────────────────────────────────────────────────────────────
 // CategoryIcon — SVG icon switcher for document category headers

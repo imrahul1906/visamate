@@ -7,7 +7,7 @@
  * Consumed by: VisaFormWidget.tsx
  */
 
-import type { FormFillField } from "../../lib/data/repository";
+import type { FormFillField } from "../../../lib/data/repository";
 
 // ─────────────────────────────────────────────────────────────
 // Types

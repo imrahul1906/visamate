@@ -1,19 +1,19 @@
-// src/app/documents/mapRequirements.ts
+// web\src\features\documents\mapRequirements.ts
 //
 // Maps raw RequirementsData from the repository into the UI-ready DocumentData shape.
 // SPECIAL_WIDGETS now includes "cover_letter" to match the SpecialWidget union in types.ts.
 
 import type { RequirementsData } from "@/lib/data/types";
-import type { DocumentData, DocumentCategory, DocumentItem, VisaFormInfo, SpecialWidget } from "./types";
+import type { DocumentData, DocumentCategory, DocumentItem, VisaFormInfo, SpecialWidget } from "../../types/document";
 
 // ─────────────────────────────────────────────────────────────
 // Section metadata
 // ─────────────────────────────────────────────────────────────
 
 export const SECTION_META: Record<string, { icon: string; color: string }> = {
-  COMMON:         { icon: "passport", color: "#6366f1" },
-  SELF_SPONSORED: { icon: "finance",  color: "#10b981" },
-  SPONSORED:      { icon: "finance",  color: "#0ea5e9" },
+  COMMON: { icon: "passport", color: "#6366f1" },
+  SELF_SPONSORED: { icon: "finance", color: "#10b981" },
+  SPONSORED: { icon: "finance", color: "#0ea5e9" },
 };
 
 // Doc codes that must NOT have an upload slot.
@@ -28,11 +28,11 @@ export const NO_UPLOAD_CODES = new Set([
 // Doc codes → special widget type.
 // Keep this in sync with the SpecialWidget union in types.ts.
 export const SPECIAL_WIDGETS: Record<string, SpecialWidget> = {
-  PHOTOGRAPH:            "photo_spec",
+  PHOTOGRAPH: "photo_spec",
   VISA_APPLICATION_FORM: "visa_form",
-  JAPAN_ITINERARY:       "itinerary",
-  FRANCE_ITINERARY:      "itinerary",
-  COVER_LETTER:          "cover_letter",   // ← was missing; now explicit
+  JAPAN_ITINERARY: "itinerary",
+  FRANCE_ITINERARY: "itinerary",
+  COVER_LETTER: "cover_letter",   // ← was missing; now explicit
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -58,40 +58,40 @@ export function mapRequirementsToDocumentData(
 
       const documents: DocumentItem[] = section.documents.map(doc => {
         const tips: string[] = [];
-        if (doc.requirements)         tips.push(...doc.requirements);
-        if (doc.alternativeDocuments)  tips.push(...doc.alternativeDocuments);
+        if (doc.requirements) tips.push(...doc.requirements);
+        if (doc.alternativeDocuments) tips.push(...doc.alternativeDocuments);
 
         const formInfo: VisaFormInfo | undefined = doc.form
           ? {
-              type:            (doc.form.type === "ONLINE" ? "ONLINE" : "DOWNLOADABLE") as "DOWNLOADABLE" | "ONLINE",
-              downloadUrl:     doc.form.downloadUrl     ?? null,
-              onlineUrl:       doc.form.onlineUrl       ?? null,
-              requiresPrint:   doc.form.requiresPrint   ?? false,
-              formFillDataKey: doc.form.formFillDataKey ?? null,
-            }
+            type: (doc.form.type === "ONLINE" ? "ONLINE" : "DOWNLOADABLE") as "DOWNLOADABLE" | "ONLINE",
+            downloadUrl: doc.form.downloadUrl ?? null,
+            onlineUrl: doc.form.onlineUrl ?? null,
+            requiresPrint: doc.form.requiresPrint ?? false,
+            formFillDataKey: doc.form.formFillDataKey ?? null,
+          }
           : undefined;
 
         return {
-          id:             doc.id,
-          name:           doc.name,
-          description:    doc.description,
-          status:         doc.optionality === "required" ? "required" : "optional",
-          category:       section.sectionId,
-          notes:          doc.notes           ?? undefined,
-          tips:           tips.length > 0     ? tips : undefined,
-          format:         doc.acceptedFormats?.join(", ") ?? undefined,
+          id: doc.id,
+          name: doc.name,
+          description: doc.description,
+          status: doc.optionality === "required" ? "required" : "optional",
+          category: section.sectionId,
+          notes: doc.notes ?? undefined,
+          tips: tips.length > 0 ? tips : undefined,
+          format: doc.acceptedFormats?.join(", ") ?? undefined,
           acceptedFormats: doc.acceptedFormats ?? undefined,
-          form:           formInfo,
-          noUpload:       NO_UPLOAD_CODES.has(doc.code),
-          specialWidget:  SPECIAL_WIDGETS[doc.code] ?? undefined,
+          form: formInfo,
+          noUpload: NO_UPLOAD_CODES.has(doc.code),
+          specialWidget: SPECIAL_WIDGETS[doc.code] ?? undefined,
         };
       });
 
       return {
-        id:        section.sectionId,
-        label:     section.title,
-        icon:      meta.icon,
-        color:     meta.color,
+        id: section.sectionId,
+        label: section.title,
+        icon: meta.icon,
+        color: meta.color,
         documents,
       };
     });

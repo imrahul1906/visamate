@@ -1,5 +1,3 @@
-
-//
 // A single expandable document checklist item.
 // Now uses shared <Badge> from "@/app/shared/Badge" instead of
 // inline badge JSX that was duplicated across DocumentRow / DocumentsContent / CategorySection.
@@ -7,12 +5,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { DocumentItem, UploadsMap } from "./types";
+import type { DocumentItem, UploadsMap } from "../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import Badge from "@/app/shared/Badge";
 import PhotoSpecWidget from "./PhotoSpecWidget";
 import VisaFormWidget from "./visa_form/VisaFormWidget";
-import UploadSlot from "./UploadSlot";
+import UploadSlot from "./util/UploadSlot";
 import ItineraryWidget from "./itinerary/ItineraryWidget";
 
 export default function DocumentRow({
@@ -213,7 +211,7 @@ export default function DocumentRow({
               countryName={itineraryData.countryName}
               cities={itineraryData.cities}
               typeColors={itineraryData.typeColors}
-              onPdfReady={file => onItineraryReady(doc.id, file)}
+              onDocxReady={file => onItineraryReady(doc.id, file)}
             />
           )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-// app/documents/VisaOverviewPanel.tsx
+// web\src\features\documents\VisaOverviewPanel.tsx
 //
 // Shown in the RIGHT panel whenever activeDocId === null.
 // Disappears the moment a user opens any document.
@@ -36,15 +36,15 @@ interface VisaOverviewPanelProps {
 // ─── Colour palette (semantic tokens only — not visa-specific) ────────────────
 
 const PALETTE = {
-  indigo:  { text: "#818cf8", bg: "rgba(99,102,241,0.08)",  border: "rgba(99,102,241,0.2)"  },
-  violet:  { text: "#a78bfa", bg: "rgba(139,92,246,0.08)",  border: "rgba(139,92,246,0.2)"  },
-  emerald: { text: "#34d399", bg: "rgba(52,211,153,0.08)",  border: "rgba(52,211,153,0.2)"  },
-  amber:   { text: "#fb923c", bg: "rgba(251,146,60,0.08)",  border: "rgba(251,146,60,0.2)"  },
-  green:   { text: "#4ade80", bg: "rgba(74,222,128,0.06)",  border: "rgba(74,222,128,0.18)" },
-  red:     { text: "#f87171", bg: "rgba(248,113,113,0.06)", border: "rgba(248,113,113,0.18)"},
-  blue:    { text: "#60a5fa", bg: "rgba(59,130,246,0.06)",  border: "rgba(59,130,246,0.15)" },
-  yellow:  { text: "#fbbf24", bg: "rgba(251,191,36,0.06)",  border: "rgba(251,191,36,0.22)" },
-  ghost:   { text: T.muted,   bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)"},
+  indigo: { text: "#818cf8", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)" },
+  violet: { text: "#a78bfa", bg: "rgba(139,92,246,0.08)", border: "rgba(139,92,246,0.2)" },
+  emerald: { text: "#34d399", bg: "rgba(52,211,153,0.08)", border: "rgba(52,211,153,0.2)" },
+  amber: { text: "#fb923c", bg: "rgba(251,146,60,0.08)", border: "rgba(251,146,60,0.2)" },
+  green: { text: "#4ade80", bg: "rgba(74,222,128,0.06)", border: "rgba(74,222,128,0.18)" },
+  red: { text: "#f87171", bg: "rgba(248,113,113,0.06)", border: "rgba(248,113,113,0.18)" },
+  blue: { text: "#60a5fa", bg: "rgba(59,130,246,0.06)", border: "rgba(59,130,246,0.15)" },
+  yellow: { text: "#fbbf24", bg: "rgba(251,191,36,0.06)", border: "rgba(251,191,36,0.22)" },
+  ghost: { text: T.muted, bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)" },
 } as const;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -777,10 +777,10 @@ export default function VisaOverviewPanel({
 
   const lastUpdated = visaType.metadata?.lastUpdated
     ? new Date(visaType.metadata.lastUpdated).toLocaleDateString("en-IN", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      })
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
     : null;
 
   // Currency: prefer top-level, fall back to VFS service-charge currency.
@@ -789,15 +789,15 @@ export default function VisaOverviewPanel({
     visaType.currency ?? vfs?.serviceCharge?.currency ?? "—";
 
   // Fee totals
-  const visaFee    = visaType.fees ?? 0;
+  const visaFee = visaType.fees ?? 0;
   const serviceFee = vfs?.serviceCharge?.charge ?? 0;
   const courierFee = vfs?.courierCharges?.charge ?? 0;
-  const totalMin   = visaFee + serviceFee;
-  const totalMax   = totalMin + courierFee;
-  const hasFees    = visaType.fees != null;
+  const totalMin = visaFee + serviceFee;
+  const totalMax = totalMin + courierFee;
+  const hasFees = visaType.fees != null;
 
   // Refundability — derived from JSON notes / explicit boolean fields
-  const visaFeeRefundable     = parseRefundability(visaType.note);
+  const visaFeeRefundable = parseRefundability(visaType.note);
   const serviceChargeRefundable =
     (vfs?.serviceCharge as { refundable?: boolean } | undefined)?.refundable ??
     parseRefundability(vfs?.serviceCharge?.note);
@@ -814,36 +814,36 @@ export default function VisaOverviewPanel({
   const stats: StatCardProps[] = [
     ...(visaType.maxStayDays != null
       ? [{
-          icon: "🗓️",
-          label: "Max Stay",
-          value: `${visaType.maxStayDays} days`,
-          colorKey: "indigo" as const,
-        }]
+        icon: "🗓️",
+        label: "Max Stay",
+        value: `${visaType.maxStayDays} days`,
+        colorKey: "indigo" as const,
+      }]
       : []),
     ...(visaType.category
       ? [{
-          icon: "🏷️",
-          label: "Category",
-          value: toTitleCase(visaType.category),
-          colorKey: "violet" as const,
-        }]
+        icon: "🏷️",
+        label: "Category",
+        value: toTitleCase(visaType.category),
+        colorKey: "violet" as const,
+      }]
       : []),
     ...(proc?.applicationMode
       ? [{
-          icon: proc.applicationMode === "ONLINE" ? "🌐" : "🏛️",
-          label: "Mode",
-          value: toTitleCase(proc.applicationMode),
-          colorKey: "emerald" as const,
-        }]
+        icon: proc.applicationMode === "ONLINE" ? "🌐" : "🏛️",
+        label: "Mode",
+        value: toTitleCase(proc.applicationMode),
+        colorKey: "emerald" as const,
+      }]
       : []),
     // ↓ Processing time — from processingTime field in JSON
     ...(visaType.processingTime
       ? [{
-          icon: "⏱️",
-          label: "Processing",
-          value: visaType.processingTime,
-          colorKey: "amber" as const,
-        }]
+        icon: "⏱️",
+        label: "Processing",
+        value: visaType.processingTime,
+        colorKey: "amber" as const,
+      }]
       : []),
   ];
 

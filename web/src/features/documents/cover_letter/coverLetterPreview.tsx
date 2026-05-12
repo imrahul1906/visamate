@@ -8,9 +8,8 @@
  */
 
 import React from "react";
-import { Contact, InlineField, InlinePara } from "./coverLetterComponents";
+import { Contact, InlinePara } from "./coverLetterComponents";
 import { isSponsored, isEmployed, isStudent } from "@/features/documents/cover_letter/coverLetterService";
-import type { CoverLetterInputs, ApplicantContext } from "@/features/documents/cover_letter/coverLetterService";
 
 export interface CoverLetterPreviewProps {
   // Paragraph/section states

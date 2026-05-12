@@ -2,13 +2,13 @@
 
 // app/documents/CategorySection.tsx
 
-import type { DocumentCategory, DocumentItem, UploadsMap } from "./types";
+import type { DocumentCategory, DocumentItem, UploadsMap } from "../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import CategoryIcon from "./CategoryIcon";
 import DocumentRow from "./DocumentRow";
 import PhotoSpecWidget from "./PhotoSpecWidget";
 import VisaFormWidget from "./visa_form/VisaFormWidget";
-import UploadSlot from "./UploadSlot";
+import UploadSlot from "./util/UploadSlot";
 import ItineraryWidget from "./itinerary/ItineraryWidget";
 import CoverLetterWidget from "./cover_letter/CoverLetterWidget";
 
@@ -83,7 +83,7 @@ export function DocHelper({
           countryName={itineraryData.countryName}
           cities={itineraryData.cities}
           typeColors={itineraryData.typeColors}
-          onPdfReady={file => onItineraryReady(file)}
+          onDocxReady={file => onItineraryReady(file)}
         />
       )}
 

@@ -3,7 +3,7 @@
 // app/documents/UploadSlot.tsx
 
 import { useRef, useState } from "react";
-import type { UploadsMap } from "./types";
+import type { UploadsMap } from "../../../types/document";
 
 // ─────────────────────────────────────────────────────────────
 // UploadSlot — drag-and-drop / click file upload for a document

@@ -1,6 +1,6 @@
 "use client";
 
-// app/documents/DocumentsContent.tsx
+// web\src\features\documents\DocumentsContent.tsx
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getRequirementsData, getItineraryPlaces, getVisaType } from "@/lib/data/repository";
@@ -8,9 +8,9 @@ import type { ItineraryPlacesData } from "@/lib/data/types";
 import type { VisaType } from "@/lib/data/types";
 import VisaOverviewPanel from "./VisaOverviewPanel";
 
-import type { DocumentData, DocumentItem, UploadsMap } from "@/types/document";
+import type { DocumentData, DocumentItem, UploadsMap } from "../../types/document";
 import { mapRequirementsToDocumentData } from "./mapRequirements";
-import { downloadAllFiles } from "./downloadAllFiles";
+import { downloadAllFiles } from "./util/downloadAllFiles";
 import { DocHelper } from "./CategorySection";
 import Badge from "@/app/shared/Badge";
 import { T, font, scrollbarCSS } from "@/app/shared/theme";

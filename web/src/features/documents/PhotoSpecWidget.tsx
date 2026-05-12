@@ -1,15 +1,15 @@
 "use client";
 
-// web/src/app/documents/PhotoSpecWidget.tsx
+// web\src\features\documents\PhotoSpecWidget.tsx
 
 export default function PhotoSpecWidget({ color }: { color: string }) {
   const SCALE = 4.5;
   const W = Math.round(35 * SCALE);
   const H = Math.round(45 * SCALE);
-  const faceTop    = Math.round(0.12 * H);
+  const faceTop = Math.round(0.12 * H);
   const faceBottom = Math.round(0.88 * H);
-  const faceLeft   = Math.round(0.15 * W);
-  const faceRight  = Math.round(0.85 * W);
+  const faceLeft = Math.round(0.15 * W);
+  const faceRight = Math.round(0.85 * W);
 
   return (
     <div style={{ padding: "14px 16px", borderTop: `1px solid ${color}18`, background: `${color}05` }}>
