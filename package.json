@@ -1,13 +1,16 @@
 {
-  "name": "VisaMate",
+  "name": "visamate",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "web"
+  ],
   "scripts": {
-    "generate": "tsx scripts/itenrary/generate/generate.ts"
-  },
-  "dependencies": {
-    "jszip": "^3.10.1",
-    "pdf-lib": "^1.17.1"
+    "generate": "tsx scripts/itenrary/generate/generate.ts",
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=web",
+    "start": "npm run start --workspace=web",
+    "lint": "npm run lint --workspace=web"
   },
   "devDependencies": {
     "tsx": "^4.0.0"
