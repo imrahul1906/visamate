@@ -7,10 +7,10 @@ import type { ItineraryPlacesData } from "@/lib/data/types";
 import CategoryIcon from "./CategoryIcon";
 import DocumentRow from "./DocumentRow";
 import PhotoSpecWidget from "./PhotoSpecWidget";
-import VisaFormWidget from "./VisaFormWidget";
+import VisaFormWidget from "./visa_form/VisaFormWidget";
 import UploadSlot from "./UploadSlot";
-import ItineraryWidget from "./ItineraryWidget.tsx";
-import CoverLetterWidget from "./CoverLetterWidget";
+import ItineraryWidget from "./itinerary/ItineraryWidget";
+import CoverLetterWidget from "./cover_letter/CoverLetterWidget";
 
 // ─────────────────────────────────────────────────────────────
 // DocHelper — renders the appropriate helper for a single doc.
@@ -140,8 +140,8 @@ export default function CategorySection({
   itineraryData?: ItineraryPlacesData | null;
 }) {
   const total = category.documents.length;
-  const done  = category.documents.filter(d => checked[d.id]).length;
-  const pct   = total ? (done / total) * 100 : 0;
+  const done = category.documents.filter(d => checked[d.id]).length;
+  const pct = total ? (done / total) * 100 : 0;
 
   return (
     <section style={{ marginBottom: 32 }}>

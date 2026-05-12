@@ -6,8 +6,8 @@
 // font.sans → font.sans; all other T.* keys map 1-to-1.
 import { useState, useEffect, useRef } from "react";
 import type { DocumentItem } from "@/types/document";
-import { getFormFillFields } from "../../lib/data/repository";
-import type { FormFillField } from "../../lib/data/repository";
+import { getFormFillFields } from "../../../lib/data/repository";
+import type { FormFillField } from "../../../lib/data/repository";
 import { T, font } from "@/app/shared/theme";
 import {
   filterFields,
@@ -17,7 +17,7 @@ import {
   toggleDone as toggleDoneState,
   getProgressStats,
   isDownloadableForm,
-} from "@/services/visaFormService";
+} from "@/features/documents/visa_form/visaFormService";
 
 // ─────────────────────────────────────────────────────────────
 // Section icon map
@@ -72,7 +72,7 @@ export default function VisaFormWidget({
   doc: DocumentItem;
   color: string;
 }) {
-  const formInfo      = doc.form;
+  const formInfo = doc.form;
   const isDownloadable = isDownloadableForm(formInfo?.type);
 
   // ── Load fields from JSON ──────────────────────────────────
@@ -88,11 +88,11 @@ export default function VisaFormWidget({
   }, [formInfo?.formFillDataKey]);
 
   // ── UI state ───────────────────────────────────────────────
-  const [searchQuery,    setSearchQuery]    = useState("");
-  const [activeFieldId,  setActiveFieldId]  = useState<string | null>(null);
-  const [doneFields,     setDoneFields]     = useState<Set<string>>(new Set());
-  const [copiedId,       setCopiedId]       = useState<string | null>(null);
-  const [helperOpen,     setHelperOpen]     = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
+  const [doneFields, setDoneFields] = useState<Set<string>>(new Set());
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [helperOpen, setHelperOpen] = useState(true);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [sectionsInitialized, setSectionsInitialized] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -114,8 +114,8 @@ export default function VisaFormWidget({
 
   // ── Derived ────────────────────────────────────────────────
   const filteredFields = filterFields(allFields, searchQuery);
-  const sections       = groupFieldsBySection(filteredFields);
-  const activeField    = allFields.find((f) => f.id === activeFieldId) ?? null;
+  const sections = groupFieldsBySection(filteredFields);
+  const activeField = allFields.find((f) => f.id === activeFieldId) ?? null;
   const { totalFields, doneCount, donePct, allDone } = getProgressStats(allFields.length, doneFields);
 
   const toggleDone = (id: string) => {
@@ -123,7 +123,7 @@ export default function VisaFormWidget({
   };
 
   const copyExample = (example: string, id: string) => {
-    navigator.clipboard.writeText(example).catch(() => {});
+    navigator.clipboard.writeText(example).catch(() => { });
     setCopiedId(id);
     setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1800);
   };
@@ -598,172 +598,172 @@ export default function VisaFormWidget({
                     const sectionDone = fields.filter((f) => doneFields.has(f.id)).length;
                     const allSectionDone = sectionDone === fields.length;
                     return (
-                    <div key={sectionName}>
-                      {/* Section header — clickable to collapse */}
-                      <div
-                        onClick={() => toggleSection(sectionName)}
-                        style={{
-                          padding: "6px 12px",
-                          fontSize: 9,
-                          fontWeight: 700,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.1em",
-                          color: allSectionDone ? T.green : T.muted,
-                          background: T.surface2,
-                          borderBottom: `1px solid ${T.border}`,
-                          position: "sticky",
-                          top: 0,
-                          zIndex: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                          cursor: "pointer",
-                          userSelect: "none",
-                          transition: "background 120ms",
-                        }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface3; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface2; }}
-                      >
-                        <span style={{ color: allSectionDone ? T.green : T.indigoLight, opacity: 0.7 }}>
-                          <SectionIcon section={sectionName} />
-                        </span>
-                        {sectionName}
-                        <span
+                      <div key={sectionName}>
+                        {/* Section header — clickable to collapse */}
+                        <div
+                          onClick={() => toggleSection(sectionName)}
                           style={{
+                            padding: "6px 12px",
                             fontSize: 9,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.1em",
                             color: allSectionDone ? T.green : T.muted,
-                            background: allSectionDone ? T.greenBg : T.border,
-                            padding: "1px 5px",
-                            borderRadius: 10,
+                            background: T.surface2,
+                            borderBottom: `1px solid ${T.border}`,
+                            position: "sticky",
+                            top: 0,
+                            zIndex: 1,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 5,
+                            cursor: "pointer",
+                            userSelect: "none",
+                            transition: "background 120ms",
                           }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface3; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface2; }}
                         >
-                          {sectionDone}/{fields.length}
-                        </span>
-                        {/* Chevron */}
-                        <svg
-                          width="9" height="9" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
-                          style={{
-                            marginLeft: "auto",
-                            flexShrink: 0,
-                            transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
-                            transition: "transform 200ms ease",
-                            color: T.muted,
-                          }}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                      </div>
-
-                      {/* Fields — hidden when collapsed */}
-                      {!isCollapsed && fields.map((field) => {
-                        const isActive = activeFieldId === field.id;
-                        const isDone   = doneFields.has(field.id);
-                        return (
-                          <div
-                            key={field.id}
-                            onClick={() => setActiveFieldId(field.id)}
+                          <span style={{ color: allSectionDone ? T.green : T.indigoLight, opacity: 0.7 }}>
+                            <SectionIcon section={sectionName} />
+                          </span>
+                          {sectionName}
+                          <span
                             style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 8,
-                              padding: "8px 12px",
-                              cursor: "pointer",
-                              borderBottom: `1px solid ${T.border}`,
-                              background: isActive ? `${accentColor}18` : "transparent",
-                              borderLeft: isActive
-                                ? `2.5px solid ${accentColor}`
-                                : "2.5px solid transparent",
-                              transition: "all 120ms ease",
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!isActive)
-                                (e.currentTarget as HTMLElement).style.background =
-                                  T.surface3;
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!isActive)
-                                (e.currentTarget as HTMLElement).style.background =
-                                  "transparent";
+                              fontSize: 9,
+                              color: allSectionDone ? T.green : T.muted,
+                              background: allSectionDone ? T.greenBg : T.border,
+                              padding: "1px 5px",
+                              borderRadius: 10,
                             }}
                           >
-                            {/* Checkbox */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleDone(field.id);
-                              }}
-                              aria-label={isDone ? "Unmark" : "Mark as filled"}
+                            {sectionDone}/{fields.length}
+                          </span>
+                          {/* Chevron */}
+                          <svg
+                            width="9" height="9" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"
+                            style={{
+                              marginLeft: "auto",
+                              flexShrink: 0,
+                              transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
+                              transition: "transform 200ms ease",
+                              color: T.muted,
+                            }}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                          </svg>
+                        </div>
+
+                        {/* Fields — hidden when collapsed */}
+                        {!isCollapsed && fields.map((field) => {
+                          const isActive = activeFieldId === field.id;
+                          const isDone = doneFields.has(field.id);
+                          return (
+                            <div
+                              key={field.id}
+                              onClick={() => setActiveFieldId(field.id)}
                               style={{
-                                width: 15,
-                                height: 15,
-                                borderRadius: 4,
-                                flexShrink: 0,
-                                border: isDone
-                                  ? `1.5px solid ${accentColor}`
-                                  : `1.5px solid ${T.border2}`,
-                                background: isDone ? accentColor : "transparent",
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "center",
+                                gap: 8,
+                                padding: "8px 12px",
                                 cursor: "pointer",
-                                transition: "all 150ms",
-                                padding: 0,
+                                borderBottom: `1px solid ${T.border}`,
+                                background: isActive ? `${accentColor}18` : "transparent",
+                                borderLeft: isActive
+                                  ? `2.5px solid ${accentColor}`
+                                  : "2.5px solid transparent",
+                                transition: "all 120ms ease",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isActive)
+                                  (e.currentTarget as HTMLElement).style.background =
+                                    T.surface3;
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isActive)
+                                  (e.currentTarget as HTMLElement).style.background =
+                                    "transparent";
                               }}
                             >
-                              {isDone && (
-                                <svg
-                                  width="8"
-                                  height="8"
-                                  fill="none"
-                                  stroke="white"
-                                  strokeWidth={3}
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M4.5 12.75l6 6 9-13.5"
-                                  />
-                                </svg>
-                              )}
-                            </button>
+                              {/* Checkbox */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleDone(field.id);
+                                }}
+                                aria-label={isDone ? "Unmark" : "Mark as filled"}
+                                style={{
+                                  width: 15,
+                                  height: 15,
+                                  borderRadius: 4,
+                                  flexShrink: 0,
+                                  border: isDone
+                                    ? `1.5px solid ${accentColor}`
+                                    : `1.5px solid ${T.border2}`,
+                                  background: isDone ? accentColor : "transparent",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  cursor: "pointer",
+                                  transition: "all 150ms",
+                                  padding: 0,
+                                }}
+                              >
+                                {isDone && (
+                                  <svg
+                                    width="8"
+                                    height="8"
+                                    fill="none"
+                                    stroke="white"
+                                    strokeWidth={3}
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      d="M4.5 12.75l6 6 9-13.5"
+                                    />
+                                  </svg>
+                                )}
+                              </button>
 
-                            {/* Label */}
-                            <span
-                              style={{
-                                fontSize: 11,
-                                flex: 1,
-                                lineHeight: 1.4,
-                                color: isDone
-                                  ? T.muted
-                                  : isActive
-                                  ? T.text
-                                  : T.muted2,
-                                textDecoration: isDone ? "line-through" : "none",
-                                fontWeight: isActive ? 600 : 400,
-                                fontFamily: font.sans,
-                              }}
-                            >
-                              {field.label}
-                            </span>
-
-                            {/* Warning dot */}
-                            {field.warning && !isDone && (
+                              {/* Label */}
                               <span
                                 style={{
-                                  width: 5,
-                                  height: 5,
-                                  borderRadius: "50%",
-                                  background: T.amber,
-                                  flexShrink: 0,
+                                  fontSize: 11,
+                                  flex: 1,
+                                  lineHeight: 1.4,
+                                  color: isDone
+                                    ? T.muted
+                                    : isActive
+                                      ? T.text
+                                      : T.muted2,
+                                  textDecoration: isDone ? "line-through" : "none",
+                                  fontWeight: isActive ? 600 : 400,
+                                  fontFamily: font.sans,
                                 }}
-                              />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
+                              >
+                                {field.label}
+                              </span>
+
+                              {/* Warning dot */}
+                              {field.warning && !isDone && (
+                                <span
+                                  style={{
+                                    width: 5,
+                                    height: 5,
+                                    borderRadius: "50%",
+                                    background: T.amber,
+                                    flexShrink: 0,
+                                  }}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
                   })
                 )}
               </div>
@@ -1136,12 +1136,12 @@ export default function VisaFormWidget({
                             fontFamily: font.sans,
                           }}
                           onMouseEnter={(e) =>
-                            ((e.currentTarget as HTMLButtonElement).style.color =
-                              T.muted2)
+                          ((e.currentTarget as HTMLButtonElement).style.color =
+                            T.muted2)
                           }
                           onMouseLeave={(e) =>
-                            ((e.currentTarget as HTMLButtonElement).style.color =
-                              T.muted)
+                          ((e.currentTarget as HTMLButtonElement).style.color =
+                            T.muted)
                           }
                         >
                           Next unfilled field →

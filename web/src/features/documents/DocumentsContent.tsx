@@ -53,41 +53,41 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const router = useRouter();
 
   // Prefer injected props, fall back to URL params
-  const country      = props.country      ?? params.get("country")      ?? "";
-  const countryName  = props.countryName  ?? params.get("countryName")  ?? params.get("country") ?? "—";
-  const visaType     = props.visaType     ?? params.get("visaType")     ?? "";
+  const country = props.country ?? params.get("country") ?? "";
+  const countryName = props.countryName ?? params.get("countryName") ?? params.get("country") ?? "—";
+  const visaType = props.visaType ?? params.get("visaType") ?? "";
   const visaTypeName = props.visaTypeName ?? params.get("visaTypeName") ?? params.get("visaType") ?? "—";
-  const location     = props.location     ?? params.get("location")     ?? "";
+  const location = props.location ?? params.get("location") ?? "";
   const locationName = props.locationName ?? params.get("locationName") ?? params.get("location") ?? "—";
-  const sponsorship  = props.sponsorship  ?? params.get("sponsorship")  ?? "SELF";
-  const profile      = props.profile      ?? params.get("profile")      ?? "";
+  const sponsorship = props.sponsorship ?? params.get("sponsorship") ?? "SELF";
+  const profile = props.profile ?? params.get("profile") ?? "";
 
   // ── Applicant context passed down to CoverLetterWidget ───────
   const coverLetterContext = {
-    applicantName:    props.applicantName   ?? "",
-    passportNo:       props.passportNo      ?? "",
-    sponsorshipType:  sponsorship.toLowerCase() === "sponsored" ? "sponsored" as const : "self" as const,
+    applicantName: props.applicantName ?? "",
+    passportNo: props.passportNo ?? "",
+    sponsorshipType: sponsorship.toLowerCase() === "sponsored" ? "sponsored" as const : "self" as const,
     applicantProfile: (
-      profile.toLowerCase() === "student"       ? "student" :
-      profile.toLowerCase() === "self-employed" ? "self-employed" :
-      "employed"
+      profile.toLowerCase() === "student" ? "student" :
+        profile.toLowerCase() === "self-employed" ? "self-employed" :
+          "employed"
     ) as "employed" | "student" | "self-employed",
-    travelStartDate:  props.travelStartDate ?? "",
-    travelDuration:   props.travelDuration  ?? 14,
-    cities:           props.cities          ?? [],
+    travelStartDate: props.travelStartDate ?? "",
+    travelDuration: props.travelDuration ?? 14,
+    cities: props.cities ?? [],
   };
 
-  const [data, setData]                     = useState<DocumentData | null>(null);
-  const [itineraryData, setItineraryData]   = useState<ItineraryPlacesData | null>(null);
-  const [checked, setChecked]               = useState<Record<string, boolean>>({});
-  const [uploads, setUploads]               = useState<UploadsMap>({});
-  const [loading, setLoading]               = useState(true);
-  const [error, setError]                   = useState<string | null>(null);
+  const [data, setData] = useState<DocumentData | null>(null);
+  const [itineraryData, setItineraryData] = useState<ItineraryPlacesData | null>(null);
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [uploads, setUploads] = useState<UploadsMap>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [downloadingZip, setDownloadingZip] = useState(false);
 
   // ── NEW: focus drawer state ──────────────────────────────────
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
-  const [isMobile, setIsMobile]       = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [visaTypeData, setVisaTypeData] = useState<VisaType | null>(null);
 
   // ── Drawer animation state ───────────────────────────────────
@@ -174,7 +174,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
       }, 160);
     }
     return () => { if (animFrameRef.current) clearTimeout(animFrameRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeDocId]);
 
   // ── Keyboard navigation ──────────────────────────────────────
@@ -242,19 +242,19 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   };
 
   // ── Derived stats ────────────────────────────────────────────
-  const allDocs         = data?.categories.flatMap(c => c.documents) ?? [];
-  const requiredDocs    = allDocs.filter(d => d.status === "required");
-  const totalDone       = allDocs.filter(d => checked[d.id]).length;
-  const requiredDone    = requiredDocs.filter(d => checked[d.id]).length;
-  const overallPct      = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
-  const uploadCount     = Object.keys(uploads).length;
+  const allDocs = data?.categories.flatMap(c => c.documents) ?? [];
+  const requiredDocs = allDocs.filter(d => d.status === "required");
+  const totalDone = allDocs.filter(d => checked[d.id]).length;
+  const requiredDone = requiredDocs.filter(d => checked[d.id]).length;
+  const overallPct = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
+  const uploadCount = Object.keys(uploads).length;
   const uploadableCount = allDocs.filter(d => !d.noUpload).length;
 
   // ── Active doc derived ───────────────────────────────────────
   // visibleDoc drives what's rendered in the drawer (lags behind for animation)
   // activeDoc drives the highlighted row in the list
-  const activeDoc      = allDocs.find(d => d.id === activeDocId) ?? null;
-  const visibleDoc     = allDocs.find(d => d.id === visibleDocId) ?? null;
+  const activeDoc = allDocs.find(d => d.id === activeDocId) ?? null;
+  const visibleDoc = allDocs.find(d => d.id === visibleDocId) ?? null;
   const activeDocIndex = allDocs.findIndex(d => d.id === activeDocId);
   const activeCategory = visibleDoc
     ? data?.categories.find(c => c.documents.some(d => d.id === visibleDoc.id))
@@ -335,7 +335,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
 
   // ── Main render ──────────────────────────────────────────────
   const drawerOpen = activeDocId !== null;
-const leftWidth = isMobile ? "100%" : "340px";
+  const leftWidth = isMobile ? "100%" : "340px";
 
   return (
     <div style={{
@@ -507,14 +507,14 @@ const leftWidth = isMobile ? "100%" : "340px";
         }
       `}</style>
 
-<div
-  style={{
-    width: "100%",
-    maxWidth: props.embedded ? "1400px" : "1200px",
-    margin: "0 auto",
-    padding: props.embedded ? "0 32px" : "0 16px",
-  }}
->
+      <div
+        style={{
+          width: "100%",
+          maxWidth: props.embedded ? "1400px" : "1200px",
+          margin: "0 auto",
+          padding: props.embedded ? "0 32px" : "0 16px",
+        }}
+      >
 
         {/* ── Back button ── */}
         {!props.embedded && (
@@ -623,9 +623,9 @@ const leftWidth = isMobile ? "100%" : "340px";
         {/* ── Stat strip ── */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 14 }}>
           {[
-            { label: "Required", value: requiredDocs.length,                  accent: "#818cf8", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)" },
+            { label: "Required", value: requiredDocs.length, accent: "#818cf8", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)" },
             { label: "Optional", value: allDocs.length - requiredDocs.length, accent: "rgba(255,255,255,0.3)", bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)" },
-            { label: "Uploaded", value: uploadCount,                           accent: "#4ade80", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.2)" },
+            { label: "Uploaded", value: uploadCount, accent: "#4ade80", bg: "rgba(34,197,94,0.08)", border: "rgba(34,197,94,0.2)" },
           ].map(s => (
             <div key={s.label} className="vm-stat-card" style={{
               background: s.bg, borderRadius: 12, padding: "14px 16px",
@@ -713,19 +713,19 @@ const leftWidth = isMobile ? "100%" : "340px";
 
         {/* ── TWO-PANEL SHELL ── */}
         <div
-  className="vm-two-panel"
-  style={{
-    display: "flex",
-    gap: 0,
-    width: "100%",                    // ← always fill parent
-    minHeight: props.embedded ? 560 : "calc(100vh - 420px)",
-    position: "relative",
-    borderRadius: 16,
-    overflow: "hidden",
-    border: `1px solid ${T.border}`,
-    background: T.surface,
-  }}
->
+          className="vm-two-panel"
+          style={{
+            display: "flex",
+            gap: 0,
+            width: "100%",                    // ← always fill parent
+            minHeight: props.embedded ? 560 : "calc(100vh - 420px)",
+            position: "relative",
+            borderRadius: 16,
+            overflow: "hidden",
+            border: `1px solid ${T.border}`,
+            background: T.surface,
+          }}
+        >
           {/* ── LEFT PANEL — Checklist ── */}
           <div
             className="vm-left-panel"
@@ -772,7 +772,7 @@ const leftWidth = isMobile ? "100%" : "340px";
               className="vm-left-scroll"
             >
               {data?.categories.map(cat => {
-                const catDone  = cat.documents.filter(d => checked[d.id]).length;
+                const catDone = cat.documents.filter(d => checked[d.id]).length;
                 const catTotal = cat.documents.length;
                 return (
                   <div key={cat.id} style={{ marginBottom: 18 }}>
@@ -799,15 +799,15 @@ const leftWidth = isMobile ? "100%" : "340px";
                     {/* Doc rows */}
                     <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                       {cat.documents.map(doc => {
-                        const isActive  = activeDocId === doc.id;
-                        const isDone    = !!checked[doc.id];
+                        const isActive = activeDocId === doc.id;
+                        const isDone = !!checked[doc.id];
                         const isOptional = doc.status !== "required";
-                        const badge     = getDocBadge(doc);
+                        const badge = getDocBadge(doc);
                         const isUploaded = !!uploads[doc.id];
 
                         let rowClass = "vm-doc-row";
-                        if (isActive)   rowClass += " vm-active";
-                        if (isDone)     rowClass += " vm-done";
+                        if (isActive) rowClass += " vm-active";
+                        if (isDone) rowClass += " vm-done";
                         if (isOptional) rowClass += " vm-optional";
 
                         return (
@@ -831,23 +831,23 @@ const leftWidth = isMobile ? "100%" : "340px";
 
                             {/* Name */}
                             <span
-  style={{
-    flex: 1,
-    minWidth: 0,
-    fontSize: 12,
-    fontWeight: 500,
-    color: isDone ? T.muted : T.text,
-    textDecoration: isDone ? "line-through" : "none",
-    lineHeight: 1.3,
-    fontFamily: "'DM Sans', sans-serif",
-    overflow: "hidden",
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
-    wordBreak: "break-word",
-    paddingRight: 4,
-  }}
->
+                              style={{
+                                flex: 1,
+                                minWidth: 0,
+                                fontSize: 12,
+                                fontWeight: 500,
+                                color: isDone ? T.muted : T.text,
+                                textDecoration: isDone ? "line-through" : "none",
+                                lineHeight: 1.3,
+                                fontFamily: "'DM Sans', sans-serif",
+                                overflow: "hidden",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                wordBreak: "break-word",
+                                paddingRight: 4,
+                              }}
+                            >
                               {doc.name}
                             </span>
 
@@ -859,10 +859,10 @@ const leftWidth = isMobile ? "100%" : "340px";
                               {badge && !isUploaded && (
                                 <Badge
                                   variant={
-                                    badge === "Builder"   ? "builder"
-                                    : badge === "Spec"    ? "spec"
-                                    : badge === "Form"    ? "form"
-                                    : "uploadable"
+                                    badge === "Builder" ? "builder"
+                                      : badge === "Spec" ? "spec"
+                                        : badge === "Form" ? "form"
+                                          : "uploadable"
                                   }
                                   theme="dark"
                                 />
@@ -907,8 +907,8 @@ const leftWidth = isMobile ? "100%" : "340px";
             className={isMobile && drawerOpen ? "vm-right-panel-overlay" : ""}
             style={{
               flex: 1,
-minWidth: 0,          // ← prevents flex overflow
-  minHeight: 0,
+              minWidth: 0,          // ← prevents flex overflow
+              minHeight: 0,
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",

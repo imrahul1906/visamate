@@ -11,9 +11,9 @@ import type { DocumentItem, UploadsMap } from "./types";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import Badge from "@/app/shared/Badge";
 import PhotoSpecWidget from "./PhotoSpecWidget";
-import VisaFormWidget from "./VisaFormWidget";
+import VisaFormWidget from "./visa_form/VisaFormWidget";
 import UploadSlot from "./UploadSlot";
-import ItineraryWidget from "./ItineraryWidget";
+import ItineraryWidget from "./itinerary/ItineraryWidget";
 
 export default function DocumentRow({
   doc,
@@ -39,7 +39,7 @@ export default function DocumentRow({
   itineraryData?: ItineraryPlacesData | null;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [mounted, setMounted]   = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), animDelay);
@@ -60,18 +60,18 @@ export default function DocumentRow({
     <div
       onClick={() => hasDetails && setExpanded(x => !x)}
       style={{
-        opacity:    mounted ? 1 : 0,
-        transform:  mounted ? "translateY(0)" : "translateY(12px)",
+        opacity: mounted ? 1 : 0,
+        transform: mounted ? "translateY(0)" : "translateY(12px)",
         transition: `opacity 400ms ease ${animDelay}ms, transform 400ms ease ${animDelay}ms, border-color 200ms ease, background 200ms ease`,
         borderRadius: 12,
-        border:     isUploaded
+        border: isUploaded
           ? "1.5px solid #22c55e40"
           : checked
-          ? `1.5px solid ${color}22`
-          : "1.5px solid #f1f1ef",
+            ? `1.5px solid ${color}22`
+            : "1.5px solid #f1f1ef",
         background: isUploaded ? "#f0fdf408" : checked ? `${color}06` : "#fff",
-        overflow:   "hidden",
-        cursor:     hasDetails ? "pointer" : "default",
+        overflow: "hidden",
+        cursor: hasDetails ? "pointer" : "default",
       }}
     >
       {/* ── Row header ── */}
@@ -81,18 +81,18 @@ export default function DocumentRow({
           onClick={e => { e.stopPropagation(); onToggle(); }}
           aria-label={checked ? "Mark as not ready" : "Mark as ready"}
           style={{
-            width:      22,
-            height:     22,
+            width: 22,
+            height: 22,
             borderRadius: 6,
             flexShrink: 0,
-            border:     checked ? `2px solid ${color}` : "2px solid #d1d5db",
+            border: checked ? `2px solid ${color}` : "2px solid #d1d5db",
             background: checked ? color : "transparent",
-            display:    "flex",
+            display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor:     "pointer",
+            cursor: "pointer",
             transition: "all 180ms ease",
-            marginTop:  1,
+            marginTop: 1,
           }}
         >
           {checked && (
@@ -107,11 +107,11 @@ export default function DocumentRow({
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <span
               style={{
-                fontSize:       13.5,
-                fontWeight:     600,
-                color:          checked ? "#6b7280" : "#111827",
+                fontSize: 13.5,
+                fontWeight: 600,
+                color: checked ? "#6b7280" : "#111827",
                 textDecoration: checked ? "line-through" : "none",
-                transition:     "color 180ms ease",
+                transition: "color 180ms ease",
               }}
             >
               {doc.name}
@@ -183,11 +183,11 @@ export default function DocumentRow({
                       <span
                         key={i}
                         style={{
-                          fontSize:   11,
-                          color:      "#374151",
+                          fontSize: 11,
+                          color: "#374151",
                           background: "#f3f4f6",
-                          border:     "1px solid #e5e7eb",
-                          padding:    "2px 8px",
+                          border: "1px solid #e5e7eb",
+                          padding: "2px 8px",
                           borderRadius: 6,
                         }}
                       >

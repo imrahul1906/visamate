@@ -22,13 +22,13 @@ import {
   getUniqueCityNames,
   downloadOfficialPdf,
   validateItinerary,
-} from "@/services/itineraryService";
+} from "./itineraryService";
 import {
   buildItineraryRows,
   buildItineraryDocxBlob,
   downloadDocxBlob,
-} from "@/services/itineraryDocxService";
-import type { ItineraryRowData } from "@/services/itineraryDocxService";
+} from "./itineraryDocxService";
+import type { ItineraryRowData } from "./itineraryDocxService";
 
 export default function ItineraryWidget({
   color,
@@ -88,7 +88,7 @@ export default function ItineraryWidget({
   /* ── Sync unique city names → context ── */
   useEffect(() => {
     update({ cities: getUniqueCityNames(itinerary, cities) });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itinerary]);
 
   /* ── Derived ── */
@@ -140,7 +140,7 @@ export default function ItineraryWidget({
         setEditableSponsor(ctx.sponsorName ?? "");
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode]);
 
   const updateEditableRow = (idx: number, field: keyof ItineraryRowData, value: string | string[] | boolean) => {
@@ -229,12 +229,12 @@ export default function ItineraryWidget({
   /* ── Travel date range string for preview header ── */
   const travelDateRange = startDate
     ? (() => {
-        const end = new Date(startDate + "T00:00:00");
-        end.setDate(end.getDate() + days - 1);
-        return `${fmtDateLong(startDate)} – ${end.toLocaleDateString("en-GB", {
-          day: "numeric", month: "long", year: "numeric",
-        })}`;
-      })()
+      const end = new Date(startDate + "T00:00:00");
+      end.setDate(end.getDate() + days - 1);
+      return `${fmtDateLong(startDate)} – ${end.toLocaleDateString("en-GB", {
+        day: "numeric", month: "long", year: "numeric",
+      })}`;
+    })()
     : "";
 
   /* ═══════════════════════════ RENDER ═══════════════════════════ */
@@ -474,7 +474,7 @@ export default function ItineraryWidget({
                             } else {
                               setAccommodations(a => ({ ...a, [activeDay]: { ...accomForDay(activeDay), hotelName: "" } }));
                             }
-                            if (attempted) setFieldErrors(p => { const n = {...p}; delete n[`day_${activeDay}_hotel`]; return n; });
+                            if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_hotel`]; return n; });
                           }}
                         />
                         <span>Same as above</span>
@@ -484,7 +484,7 @@ export default function ItineraryWidget({
                       className={`iw-input ${attempted && fieldErrors[`day_${activeDay}_hotel`] ? "iw-input--error" : ""}`}
                       placeholder="e.g. APA Hotel Shinjuku"
                       value={accomForDay(activeDay).hotelName}
-                      onChange={(e) => { setAccom(activeDay, "hotelName", e.target.value); if (attempted) setFieldErrors(p => { const n = {...p}; delete n[`day_${activeDay}_hotel`]; return n; }); }}
+                      onChange={(e) => { setAccom(activeDay, "hotelName", e.target.value); if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_hotel`]; return n; }); }}
                     />
                   </div>
                   <div className="iw-hotel-field">
@@ -510,7 +510,7 @@ export default function ItineraryWidget({
                             } else {
                               setAccommodations(a => ({ ...a, [activeDay]: { ...accomForDay(activeDay), hotelContact: "" } }));
                             }
-                            if (attempted) setFieldErrors(p => { const n = {...p}; delete n[`day_${activeDay}_contact`]; return n; });
+                            if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_contact`]; return n; });
                           }}
                         />
                         <span>Same as above</span>
@@ -520,7 +520,7 @@ export default function ItineraryWidget({
                       className={`iw-input ${attempted && fieldErrors[`day_${activeDay}_contact`] ? "iw-input--error" : ""}`}
                       placeholder="e.g. +81 3 1234 5678"
                       value={accomForDay(activeDay).hotelContact}
-                      onChange={(e) => { setAccom(activeDay, "hotelContact", e.target.value); if (attempted) setFieldErrors(p => { const n = {...p}; delete n[`day_${activeDay}_contact`]; return n; }); }}
+                      onChange={(e) => { setAccom(activeDay, "hotelContact", e.target.value); if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_contact`]; return n; }); }}
                     />
                   </div>
                 </div>
