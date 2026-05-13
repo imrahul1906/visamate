@@ -8,6 +8,12 @@ export interface ApplicantData {
   travelDuration: number;    // days
   cities: string[];
 
+  // ── From StepCountry ──
+  country: string;
+
+  // ── From StepLocation ──
+  vfsCenter: string;
+
   // ── From StepDetails ──
   sponsorshipType: "self" | "sponsored" | null;
   applicantProfile: "employed" | "student" | "self-employed" | null;

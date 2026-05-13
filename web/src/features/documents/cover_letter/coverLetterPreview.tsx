@@ -63,12 +63,22 @@ export interface CoverLetterPreviewProps {
   setLSecFinanceIntro: (v: string) => void;
   lSecIncome: string;
   setLSecIncome: (v: string) => void;
+  lIncomeContent: string;
+  setLIncomeContent: (v: string) => void;
+  lSecAssets: string;
+  setLSecAssets: (v: string) => void;
+  lAssetsContent: string;
+  setLAssetsContent: (v: string) => void;
   lFinance: string;
   setLFinance: (v: string) => void;
   lSecSponsor: string;
   setLSecSponsor: (v: string) => void;
   lSponsor: string;
   setLSponsor: (v: string) => void;
+  lSecDependant: string;
+  setLSecDependant: (v: string) => void;
+  lDependant: string;
+  setLDependant: (v: string) => void;
   lSecContacts: string;
   setLSecContacts: (v: string) => void;
   lContactsNote: string;
@@ -89,6 +99,7 @@ export interface CoverLetterPreviewProps {
   // Sponsorship context
   sponsorshipType?: string;
   applicantProfile?: string;
+  hasDependant?: string;
 }
 
 export function CoverLetterPreview({
@@ -142,12 +153,22 @@ export function CoverLetterPreview({
   setLSecFinanceIntro,
   lSecIncome,
   setLSecIncome,
+  lIncomeContent,
+  setLIncomeContent,
+  lSecAssets,
+  setLSecAssets,
+  lAssetsContent,
+  setLAssetsContent,
   lFinance,
   setLFinance,
   lSecSponsor,
   setLSecSponsor,
   lSponsor,
   setLSponsor,
+  lSecDependant,
+  setLSecDependant,
+  lDependant,
+  setLDependant,
   lSecContacts,
   setLSecContacts,
   lContactsNote,
@@ -166,10 +187,12 @@ export function CoverLetterPreview({
   unfilled = [],
   sponsorshipType,
   applicantProfile,
+  hasDependant,
 }: CoverLetterPreviewProps) {
   const isSpon = isSponsored(sponsorshipType || "");
   const isEmp = isEmployed(applicantProfile || "");
   const isStu = isStudent(applicantProfile || "");
+  const hasDep = hasDependant === "yes";
 
   return (
     <>
@@ -386,6 +409,19 @@ export function CoverLetterPreview({
           />
           <InlinePara value={lEconomicTies} onChange={setLEconomicTies} rows={3} />
 
+          {/* Dependant section (only shown when hasDependant === "yes") */}
+          {hasDep && (
+            <>
+              <input
+                className="cl-section-heading-input"
+                value={lSecDependant}
+                onChange={(e) => setLSecDependant(e.target.value)}
+                title="Click to edit"
+              />
+              <InlinePara value={lDependant} onChange={setLDependant} rows={6} />
+            </>
+          )}
+
           {/* Financial ability */}
           <input
             className="cl-section-heading-input"
@@ -402,7 +438,14 @@ export function CoverLetterPreview({
                 onChange={(e) => setLSecIncome(e.target.value)}
                 title="Click to edit"
               />
-              <InlinePara value={lFinance} onChange={setLFinance} rows={4} />
+              <InlinePara value={lIncomeContent} onChange={setLIncomeContent} rows={3} />
+              <input
+                className="cl-subsection-heading-input"
+                value={lSecAssets}
+                onChange={(e) => setLSecAssets(e.target.value)}
+                title="Click to edit"
+              />
+              <InlinePara value={lAssetsContent} onChange={setLAssetsContent} rows={4} />
             </>
           ) : (
             <>

@@ -9,9 +9,10 @@ export const COVER_LETTER_TEMPLATES = {
   // Main sections
   heading: "COVER LETTER",
   toBlock: "To,\nThe Visa Officer,\nEmbassy of Japan,\nDelhi, India",
-  salutation: "To whom it may concern,",
+  salutation: "Dear Sir/Madam",
   closing:
-    "Finally, I can confirm that the information provided above is true to the best of my knowledge and belief.\n\nYour faithfully,",
+    "Finally, I can confirm that the information provided above is true to the best of my knowledge and belief.\n\n" +
+    "If you would like to contact any other individuals or organisations and I have not provided their contact details, please feel free to get in touch and I will be more than happy to provide them for you.\n\nYour faithfully, ",
 
   // Section headings
   secDocs: "List of Supporting Documents",
@@ -27,9 +28,9 @@ export const COVER_LETTER_TEMPLATES = {
   secFamily: "Family ties to my home country",
   secEconomic: "Financial and economic ties to my home country",
   secFinance: "My ability to adequately maintain myself during my visit to Japan",
-  secFinanceIntro:
-    "I confirm that I can adequately maintain myself. To support this, my sources of income and financial assets are highlighted below.",
+  secFinanceIntro: "I confirm that I have sufficient financial means to support myself and my dependent during our stay in Japan. My sources of income and financial assets are highlighted below:",
   secIncome: "My sources of income",
+  secAssets: "My assets and/or cash savings",
   secSponsor: "My sponsor",
   secContacts: "Relevant contact details",
 
