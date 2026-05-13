@@ -40,6 +40,13 @@ export interface CoverLetterInputs {
   hotelName: string;
   bankBalance: string;
 
+  // Dependant travelling with applicant
+  hasDependant: "yes" | "no";
+  dependantName: string;
+  dependantDob: string;
+  dependantPassport: string;
+  dependantRelationship: string;
+
   // Emergency contacts
   contacts: Array<{ name: string; rel: string; phone: string; email: string }>;
 }
@@ -54,6 +61,8 @@ export interface ApplicantContext {
   sponsorshipType: string;
   visaType: string;
   visaTypeName: string;
+  country: string;
+  vfsCenter: string;
 }
 
 export interface ValidationErrors {
@@ -66,6 +75,15 @@ export interface LetterPreviewState {
   lFinance: string;
   lSigName: string;
   lSigPassport: string;
+}
+
+/**
+ * Strip all [[ ... ]] editorial hint annotations from a string before writing
+ * to docx. The preview renders these as styled callouts; the document must not
+ * contain them.
+ */
+export function stripHints(text: string): string {
+  return text.replace(/\[\[HINT:[^\]]*\]\]/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -120,6 +138,10 @@ export function isSponsored(sponsorshipType: string): boolean {
   return sponsorshipType === "sponsored";
 }
 
+export function isNocNeeded(vfsCenter: string): boolean {
+  return vfsCenter.toLowerCase().includes("chennai");
+}
+
 // ─────────────────────────────────────────────────────────────
 // Step 1 validation
 // ─────────────────────────────────────────────────────────────
@@ -150,6 +172,10 @@ export function validateCoverLetterInputs(
   if (isSponsored(inputs.sponsorshipType) && !inputs.sponsorRel.trim()) {
     errors.sponsorRel = "Required";
   }
+  if (inputs.hasDependant === "yes") {
+    if (!inputs.dependantName.trim()) errors.dependantName = "Required";
+    if (!inputs.dependantRelationship.trim()) errors.dependantRelationship = "Required";
+  }
 
   return errors;
 }
@@ -167,9 +193,9 @@ export function validateLetterPreview(state: LetterPreviewState): string[] {
   const missing: string[] = [];
 
   if (!state.lPurposeDetail.trim()) missing.push("Purpose of visit detail");
-  if (!state.lFinance.trim())       missing.push("Finance / accommodation detail");
-  if (!state.lSigName.trim())       missing.push("Applicant name (signature block)");
-  if (!state.lSigPassport.trim())   missing.push("Passport number (signature block)");
+  if (!state.lFinance.trim()) missing.push("Finance / accommodation detail");
+  if (!state.lSigName.trim()) missing.push("Applicant name (signature block)");
+  if (!state.lSigPassport.trim()) missing.push("Passport number (signature block)");
 
   return missing;
 }

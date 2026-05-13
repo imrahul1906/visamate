@@ -24,6 +24,7 @@ export interface CoverLetterInputsStepProps {
   onUpdateContact: (idx: number, contact: Contact) => void;
   onRemoveContact: (idx: number) => void;
   onProceed: () => void;
+  hasDependant?: string;
 }
 
 export function CoverLetterInputsStep({
@@ -38,6 +39,7 @@ export function CoverLetterInputsStep({
   onUpdateContact,
   onRemoveContact,
   onProceed,
+  hasDependant,
 }: CoverLetterInputsStepProps) {
   const isEmp = isEmployed(applicantProfile || "");
   const isStu = isStudent(applicantProfile || "");
@@ -261,6 +263,83 @@ export function CoverLetterInputsStep({
             </div>
           </div>
         )}
+
+        {/* Dependant */}
+        <div className="cl-section">
+          <p className="cl-section-label">Travelling with a Dependant?</p>
+          <div className="cl-field">
+            <label className="cl-label">Is anyone applying with you (e.g. spouse, child)?</label>
+            <div className="cl-toggle-row">
+              {[
+                ["no", "No — travelling alone or separately"],
+                ["yes", "Yes — a dependant is on my application"],
+              ].map(([v, l]) => (
+                <button
+                  key={v}
+                  className={`cl-toggle-btn${inputs.hasDependant === v ? " cl-toggle-btn--active" : ""}`}
+                  onClick={() => onChange("hasDependant", v as any)}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {inputs.hasDependant === "yes" && (
+            <>
+              <div className="cl-field-row">
+                <div className="cl-field">
+                  <label className="cl-label">
+                    Dependant&apos;s full name
+                    {attempted && errors.dependantName && (
+                      <span className="cl-field-err">{errors.dependantName}</span>
+                    )}
+                  </label>
+                  <input
+                    className={`cl-input${attempted && errors.dependantName ? " cl-input--error" : ""}`}
+                    placeholder="e.g. Divya Yadav"
+                    value={inputs.dependantName}
+                    onChange={(e) => onChange("dependantName", e.target.value)}
+                  />
+                </div>
+                <div className="cl-field">
+                  <label className="cl-label">
+                    Relationship to you
+                    {attempted && errors.dependantRelationship && (
+                      <span className="cl-field-err">{errors.dependantRelationship}</span>
+                    )}
+                  </label>
+                  <input
+                    className={`cl-input${attempted && errors.dependantRelationship ? " cl-input--error" : ""}`}
+                    placeholder="e.g. Wife, Son, Mother"
+                    value={inputs.dependantRelationship}
+                    onChange={(e) => onChange("dependantRelationship", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="cl-field-row">
+                <div className="cl-field">
+                  <label className="cl-label">Date of birth</label>
+                  <input
+                    className="cl-input"
+                    placeholder="e.g. 15 April 1990"
+                    value={inputs.dependantDob}
+                    onChange={(e) => onChange("dependantDob", e.target.value)}
+                  />
+                </div>
+                <div className="cl-field">
+                  <label className="cl-label">Passport number</label>
+                  <input
+                    className="cl-input"
+                    placeholder="e.g. P1234567"
+                    value={inputs.dependantPassport}
+                    onChange={(e) => onChange("dependantPassport", e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Family ties */}
         <div className="cl-section">

@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import type { CountryCatalogEntry } from "@/lib/data/repository";
 import { scrollbarCSS } from "@/components/shared/theme";
+import { useApplicant } from "@/lib/context/ApplicantContext";
 
 interface Props {
   allCountries: CountryCatalogEntry[] | undefined | null;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function StepCountry({ allCountries, selectedCountry, onSelect, compact }: Props) {
+  const { update } = useApplicant();
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -22,7 +24,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       .sort(
         (a, b) =>
           (b.supported === true ? 1 : 0) -
-            (a.supported === true ? 1 : 0) ||
+          (a.supported === true ? 1 : 0) ||
           a.name.localeCompare(b.name)
       );
   }, [search, allCountries]);
@@ -33,23 +35,23 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
   // so we remove the inner maxHeight / overflowY to avoid double-scroll.
   const listScrollStyle: React.CSSProperties = compact
     ? {
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-        paddingRight: 1,
-        // No maxHeight / overflow — parent card scrolls
-      }
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      paddingRight: 1,
+      // No maxHeight / overflow — parent card scrolls
+    }
     : {
-        display: "flex",
-        flexDirection: "column",
-        gap: 6,
-        maxHeight: 300,
-        overflowY: "auto",
-        // Smooth momentum scrolling (iOS + modern browsers)
-        WebkitOverflowScrolling: "touch" as any,
-        scrollBehavior: "smooth",
-        paddingRight: 1,
-      };
+      display: "flex",
+      flexDirection: "column",
+      gap: 6,
+      maxHeight: 300,
+      overflowY: "auto",
+      // Smooth momentum scrolling (iOS + modern browsers)
+      WebkitOverflowScrolling: "touch" as any,
+      scrollBehavior: "smooth",
+      paddingRight: 1,
+    };
 
   return (
     <div>
@@ -136,7 +138,10 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
                 isSelected={isSelected}
                 onSelect={() => {
                   if (!c.supported) return;
-                  onSelect(isSelected ? null : c.code, isSelected ? null : c.name);
+                  const countryCode = isSelected ? null : c.code;
+                  const countryName = isSelected ? null : c.name;
+                  onSelect(countryCode, countryName);
+                  update({ country: countryName ?? "" });
                 }}
               />
             );
@@ -190,13 +195,13 @@ function CountryRow({
         border: isSelected
           ? "1px solid rgba(108,92,231,0.7)"
           : hovered && c.supported
-          ? "1px solid rgba(108,92,231,0.35)"
-          : "1px solid rgba(255,255,255,0.07)",
+            ? "1px solid rgba(108,92,231,0.35)"
+            : "1px solid rgba(255,255,255,0.07)",
         background: isSelected
           ? "rgba(108,92,231,0.12)"
           : hovered && c.supported
-          ? "rgba(255,255,255,0.05)"
-          : "rgba(255,255,255,0.03)",
+            ? "rgba(255,255,255,0.05)"
+            : "rgba(255,255,255,0.03)",
         cursor: c.supported ? "pointer" : "not-allowed",
         opacity: !c.supported ? 0.5 : 1,
         transition: "all 0.15s ease",

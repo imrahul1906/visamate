@@ -44,6 +44,8 @@ export interface CoverLetterDocxData {
   lFinance: string;
   lSecSponsor: string;
   lSponsor: string;
+  lSecDependant: string;
+  lDependant: string;
   lSecContacts: string;
   lContactsNote: string;
   lContacts: Contact[];
@@ -52,6 +54,7 @@ export interface CoverLetterDocxData {
   lSigPassport: string;
   // Context
   sponsorshipType: string;
+  hasDependant?: string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -75,6 +78,7 @@ export async function buildCoverLetterDocx(data: CoverLetterDocxData): Promise<B
   } = await import("docx");
 
   const isSpon = isSponsored(data.sponsorshipType);
+  const hasDep = data.hasDependant === "yes";
 
   // ── Paragraph helpers ──────────────────────────────────────
 
@@ -262,21 +266,30 @@ export async function buildCoverLetterDocx(data: CoverLetterDocxData): Promise<B
 
     para(""),
 
+    // Dependant section (only when hasDependant = "yes")
+    ...(hasDep && data.lDependant
+      ? [
+        sectionHeading(data.lSecDependant),
+        ...multiPara(data.lDependant),
+        para(""),
+      ]
+      : []),
+
     // Finance section
     sectionHeading(data.lSecFinance),
     ...(!isSpon
       ? [
-          ...multiPara(data.lSecFinanceIntro),
-          para(""),
-          subHeading(data.lSecIncome),
-          ...multiPara(data.lFinance),
-        ]
+        ...multiPara(data.lSecFinanceIntro),
+        para(""),
+        subHeading(data.lSecIncome),
+        ...multiPara(data.lFinance),
+      ]
       : [
-          ...multiPara(data.lFinance),
-          para(""),
-          subHeading(data.lSecSponsor),
-          ...multiPara(data.lSponsor),
-        ]),
+        ...multiPara(data.lFinance),
+        para(""),
+        subHeading(data.lSecSponsor),
+        ...multiPara(data.lSponsor),
+      ]),
 
     para(""),
 

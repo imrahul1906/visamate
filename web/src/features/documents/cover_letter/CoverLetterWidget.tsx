@@ -61,6 +61,11 @@ export default function CoverLetterWidget() {
     purpose: ctx.purpose || "",
     hotelName: ctx.hotelName || "",
     bankBalance: ctx.bankBalance || "",
+    hasDependant: (ctx.hasDependant as any) || "no",
+    dependantName: ctx.dependantName || "",
+    dependantDob: ctx.dependantDob || "",
+    dependantPassport: ctx.dependantPassport || "",
+    dependantRelationship: ctx.dependantRelationship || "",
   });
 
   /* ── Step 1: Validation ── */
@@ -93,9 +98,14 @@ export default function CoverLetterWidget() {
   const [lSecFinance, setLSecFinance] = useState(COVER_LETTER_TEMPLATES.secFinance);
   const [lSecFinanceIntro, setLSecFinanceIntro] = useState(COVER_LETTER_TEMPLATES.secFinanceIntro);
   const [lSecIncome, setLSecIncome] = useState(COVER_LETTER_TEMPLATES.secIncome);
+  const [lIncomeContent, setLIncomeContent] = useState("");
+  const [lSecAssets, setLSecAssets] = useState(COVER_LETTER_TEMPLATES.secAssets);
+  const [lAssetsContent, setLAssetsContent] = useState("");
   const [lFinance, setLFinance] = useState("");
   const [lSecSponsor, setLSecSponsor] = useState(COVER_LETTER_TEMPLATES.secSponsor);
   const [lSponsor, setLSponsor] = useState("");
+  const [lSecDependant, setLSecDependant] = useState("Information Relating to the Dependants Applying with Me");
+  const [lDependant, setLDependant] = useState("");
   const [lSecContacts, setLSecContacts] = useState(COVER_LETTER_TEMPLATES.secContacts);
   const [lContactsNote, setLContactsNote] = useState(COVER_LETTER_TEMPLATES.contactsNote);
   const [lContacts, setLContacts] = useState<Contact[]>([]);
@@ -132,6 +142,11 @@ export default function CoverLetterWidget() {
       purpose: ctx.purpose || "",
       hotelName: ctx.hotelName || "",
       bankBalance: ctx.bankBalance || "",
+      hasDependant: (ctx.hasDependant as any) || "no",
+      dependantName: ctx.dependantName || "",
+      dependantDob: ctx.dependantDob || "",
+      dependantPassport: ctx.dependantPassport || "",
+      dependantRelationship: ctx.dependantRelationship || "",
     });
   };
 
@@ -173,6 +188,11 @@ export default function CoverLetterWidget() {
         hotelName: inputs.hotelName,
         bankBalance: inputs.bankBalance,
         purpose: inputs.purpose,
+        hasDependant: inputs.hasDependant,
+        dependantName: inputs.dependantName,
+        dependantDob: inputs.dependantDob,
+        dependantPassport: inputs.dependantPassport,
+        dependantRelationship: inputs.dependantRelationship,
       });
 
       // Seed letter preview state
@@ -186,8 +206,12 @@ export default function CoverLetterWidget() {
       setLImmigration(seeded.lImmigration as string);
       setLFamilyTies(seeded.lFamilyTies as string);
       setLEconomicTies(seeded.lEconomicTies as string);
+      setLIncomeContent(seeded.lIncomeContent as string);
+      setLAssetsContent(seeded.lAssetsContent as string);
       setLFinance(seeded.lFinance as string);
       setLSponsor(seeded.lSponsor as string);
+      setLDependant(seeded.lDependant as string);
+      setLSecDependant(seeded.lSecDependant as string);
       setLSigName(seeded.lSigName as string);
       setLSigPassport(seeded.lSigPassport as string);
       setLSecDocsIntro(seeded.lSecDocsIntro as string);
@@ -214,7 +238,9 @@ export default function CoverLetterWidget() {
       applicantProfile: ctx.applicantProfile || "",
       sponsorshipType: ctx.sponsorshipType || "",
       visaType: ctx.visaType || "",
-      visaTypeName: ctx.visaTypeName || ""
+      visaTypeName: ctx.visaTypeName || "",
+      country: ctx.country || "",
+      vfsCenter: ctx.vfsCenter || "",
     };
   }
 
@@ -237,11 +263,13 @@ export default function CoverLetterWidget() {
         lSecImmigration, lImmigration,
         lSecFamily, lFamilyTies,
         lSecEconomic, lEconomicTies,
-        lSecFinance, lSecFinanceIntro, lSecIncome, lFinance,
+        lSecFinance, lSecFinanceIntro, lSecIncome, lIncomeContent, lSecAssets, lAssetsContent, lFinance,
         lSecSponsor, lSponsor,
+        lSecDependant, lDependant,
         lSecContacts, lContactsNote, lContacts,
         lClosing, lSigName, lSigPassport,
         sponsorshipType: ctx.sponsorshipType,
+        hasDependant: inputs.hasDependant,
       });
 
       const url = URL.createObjectURL(blob);
@@ -370,6 +398,7 @@ export default function CoverLetterWidget() {
             onUpdateContact={(idx, c) => setInputs((p) => ({ ...p, contacts: p.contacts.map((x, j) => (j === idx ? c : x)) }))}
             onRemoveContact={(idx) => setInputs((p) => ({ ...p, contacts: p.contacts.filter((_, j) => j !== idx) }))}
             onProceed={handleProceed}
+            hasDependant={inputs.hasDependant}
           />
         </div>
       )}
@@ -428,12 +457,22 @@ export default function CoverLetterWidget() {
             setLSecFinanceIntro={setLSecFinanceIntro}
             lSecIncome={lSecIncome}
             setLSecIncome={setLSecIncome}
+            lIncomeContent={lIncomeContent}
+            setLIncomeContent={setLIncomeContent}
+            lSecAssets={lSecAssets}
+            setLSecAssets={setLSecAssets}
+            lAssetsContent={lAssetsContent}
+            setLAssetsContent={setLAssetsContent}
             lFinance={lFinance}
             setLFinance={setLFinance}
             lSecSponsor={lSecSponsor}
             setLSecSponsor={setLSecSponsor}
             lSponsor={lSponsor}
             setLSponsor={setLSponsor}
+            lSecDependant={lSecDependant}
+            setLSecDependant={setLSecDependant}
+            lDependant={lDependant}
+            setLDependant={setLDependant}
             lSecContacts={lSecContacts}
             setLSecContacts={setLSecContacts}
             lContactsNote={lContactsNote}
@@ -452,6 +491,7 @@ export default function CoverLetterWidget() {
             unfilled={unfilled}
             sponsorshipType={ctx.sponsorshipType}
             applicantProfile={ctx.applicantProfile}
+            hasDependant={inputs.hasDependant}
           />
         </div>
       )}

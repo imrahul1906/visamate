@@ -39,8 +39,10 @@ const defaults: ApplicantData = {
   hotelName: "",
   bankBalance: "",
   purpose: "",
-  visaType:"",
-  visaTypeName:""
+  visaType: "",
+  visaTypeName: "",
+  country: "",
+  vfsCenter: ""
 };
 
 /* ─── Context ─── */

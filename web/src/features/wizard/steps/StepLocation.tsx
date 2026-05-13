@@ -6,6 +6,7 @@ import { getLocationsForCountry, getVfsCenterInfo } from "@/lib/data/repository"
 import type { LocationCatalogEntry } from "@/lib/data/repository";
 import type { VfsCenterInfo } from "@/lib/data/types";
 import { scrollbarCSS } from "@/components/shared/theme";
+import { useApplicant } from "@/lib/context/ApplicantContext";
 
 interface Props {
   countryCode: string | null;
@@ -33,7 +34,7 @@ function HoursRow({ label, slot }: { label: string; slot: { days: string; time: 
         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 3 }}>{slot.days}</div>
         {slot.note && (
           <div style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 4, background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)", borderRadius: 4, padding: "2px 6px" }}>
-            <svg width="8" height="8" fill="#fbbf24" viewBox="0 0 24 24"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd"/></svg>
+            <svg width="8" height="8" fill="#fbbf24" viewBox="0 0 24 24"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" /></svg>
             <span style={{ fontSize: 9, color: "#fbbf24", fontWeight: 600 }}>{slot.note}</span>
           </div>
         )}
@@ -252,12 +253,17 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function StepLocation({ countryCode, selectedLocation, onSelect, compact }: Props) {
+  const { update } = useApplicant();
   const [locations, setLocations] = useState<LocationWithCenter[]>([]);
   const [loading, setLoading] = useState(false);
   const [drawerInfo, setDrawerInfo] = useState<VfsCenterInfo | null>(null);
 
   useEffect(() => {
-    if (!countryCode) { setLocations([]); return; }
+    if (!countryCode) {
+      setLocations([]);
+      update({ vfsCenter: "" });
+      return;
+    }
     setLoading(true);
     getLocationsForCountry(countryCode)
       .then(async (locs) => {
@@ -269,7 +275,7 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
         );
         setLocations(withCenters);
       })
-      .catch((err)=>console.error("[StepLocation] Failed to load locations for", countryCode, ":", err))
+      .catch((err) => console.error("[StepLocation] Failed to load locations for", countryCode, ":", err))
       .finally(() => setLoading(false));
   }, [countryCode]);
 
@@ -325,7 +331,12 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
               >
                 <button
                   type="button"
-                  onClick={() => onSelect(isSelected ? null : loc.code)}
+                  onClick={
+                    () => {
+                      const vfsCenter = isSelected ? null : loc.code;
+                      onSelect(vfsCenter);
+                      update({ vfsCenter: "" });
+                    }}
                   style={{ width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", display: "block" }}
                 >
                   <div style={{ position: "relative", height: 80, overflow: "hidden" }}>
