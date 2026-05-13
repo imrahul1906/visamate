@@ -6,7 +6,7 @@
     {
       "id": "VISA_JP_TOURIST_001",
       "code": "TOURIST",
-      "name": "Tourism Visa",
+      "name": "Tourism",
       "category": "SHORT_STAY",
       "maxStayDays": 90,
       "fees": 500,

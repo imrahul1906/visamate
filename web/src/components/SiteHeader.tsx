@@ -28,8 +28,6 @@ export default function SiteHeader() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
-
         .vm-header {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;

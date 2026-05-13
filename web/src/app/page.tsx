@@ -1,6 +1,6 @@
 // app/wizard/page.tsx
-import WizardAccordion from "../features/wizard/WizardAccordion";
+import VisaMateLanding from "../features/wizard/WizardAccordion";
 
 export default function WizardPage() {
-  return <WizardAccordion />;
+  return <VisaMateLanding />;
 }

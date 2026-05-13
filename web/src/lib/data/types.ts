@@ -47,7 +47,7 @@ export interface RoutingEntry {
   locationId: string;
   locationCode?: string;
   destinationCountryId: string;
-  authorityLable?: string;
+  authorityLabel?: string;
   states?: unknown[];
   description?: string;
   metadata?: Record<string, unknown>;

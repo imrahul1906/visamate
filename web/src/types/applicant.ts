@@ -12,6 +12,10 @@ export interface ApplicantData {
   sponsorshipType: "self" | "sponsored" | null;
   applicantProfile: "employed" | "student" | "self-employed" | null;
 
+  // ── From StepVisaType ──
+  visaType: string;
+  visaTypeName: string;
+
   // ── From CoverLetterWidget (Step 1 inputs) ──
   departureCity: string;
   countriesVisited: string;          // comma-separated

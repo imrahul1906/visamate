@@ -3,7 +3,7 @@
     "locationId" : "VFS_CENTER_DELHI_001",
     "locationCode" : "DELHI",
     "destinationCountryId":"COUNTRY_JP_001",
-    "authorityLable" : "Embassy of Japan, New Delhi",
+    "authorityLabel" : "Embassy of Japan, New Delhi",
     "states": [
       "Andaman & Nicobar Islands",
       "Arunachal Pradesh",

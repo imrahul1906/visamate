@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { getLocationsForCountry, getVfsCenterInfo } from "@/lib/data/repository";
 import type { LocationCatalogEntry } from "@/lib/data/repository";
 import type { VfsCenterInfo } from "@/lib/data/types";
-import { scrollbarCSS } from "@/app/shared/theme";
+import { scrollbarCSS } from "@/components/shared/theme";
 
 interface Props {
   countryCode: string | null;
@@ -269,6 +269,7 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
         );
         setLocations(withCenters);
       })
+      .catch((err)=>console.error("[StepLocation] Failed to load locations for", countryCode, ":", err))
       .finally(() => setLoading(false));
   }, [countryCode]);
 

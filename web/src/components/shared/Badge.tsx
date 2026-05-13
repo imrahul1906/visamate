@@ -3,9 +3,7 @@
 // <Badge> — unified pill/chip label used throughout the app.
 //
 // Replaces the repeated inline badge JSX in:
-//   - DocumentRow.tsx      (light theme)
-//   - DocumentsContent.tsx (dark theme drawer)
-//   - CategorySection.tsx
+//   - DocumentsContent.tsx
 //
 // Usage:
 //   <Badge variant="uploaded" />
@@ -20,7 +18,6 @@
 //   </Badge>
 //
 // The `theme` prop switches between "dark" (default, matches DocumentsContent)
-// and "light" (matches DocumentRow / CategorySection).
 
 "use client";
 

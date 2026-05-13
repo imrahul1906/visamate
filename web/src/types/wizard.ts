@@ -9,10 +9,4 @@ export interface WizardSelections {
   locationName: string;
   sponsorship: string;
   profile: string;
-  // Applicant context for CoverLetterWidget
-  applicantName: string;
-  passportNo: string;
-  travelStartDate: string;
-  travelDuration: number;
-  cities: string[];
 }

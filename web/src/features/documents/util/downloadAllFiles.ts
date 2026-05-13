@@ -1,6 +1,6 @@
 // app/documents/downloadAllFiles.ts
 
-import type { DocumentItem, UploadsMap } from "./types";
+import type { DocumentItem, UploadsMap } from "../../../types/document";
 
 // ─────────────────────────────────────────────────────────────
 // ZIP download helper (browser-side, no server needed)
