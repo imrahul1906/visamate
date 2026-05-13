@@ -12,8 +12,8 @@ import type { DocumentData, DocumentItem, UploadsMap } from "../../types/documen
 import { mapRequirementsToDocumentData } from "./mapRequirements";
 import { downloadAllFiles } from "./util/downloadAllFiles";
 import { DocHelper } from "./CategorySection";
-import Badge from "@/app/shared/Badge";
-import { T, font, scrollbarCSS } from "@/app/shared/theme";
+import Badge from "@/components/shared/Badge";
+import { T, font, scrollbarCSS } from "@/components/shared/theme";
 
 // ─────────────────────────────────────────────────────────────
 // Theme tokens imported from shared theme — no local redeclaration.
@@ -40,12 +40,6 @@ export interface DocumentsContentProps {
   locationName?: string;
   sponsorship?: string;
   profile?: string;
-  // Applicant context for CoverLetterWidget
-  applicantName?: string;
-  passportNo?: string;
-  travelStartDate?: string;
-  travelDuration?: number;
-  cities?: string[];
 }
 
 export default function DocumentsContent(props: DocumentsContentProps = {}) {
@@ -61,21 +55,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const locationName = props.locationName ?? params.get("locationName") ?? params.get("location") ?? "—";
   const sponsorship = props.sponsorship ?? params.get("sponsorship") ?? "SELF";
   const profile = props.profile ?? params.get("profile") ?? "";
-
-  // ── Applicant context passed down to CoverLetterWidget ───────
-  const coverLetterContext = {
-    applicantName: props.applicantName ?? "",
-    passportNo: props.passportNo ?? "",
-    sponsorshipType: sponsorship.toLowerCase() === "sponsored" ? "sponsored" as const : "self" as const,
-    applicantProfile: (
-      profile.toLowerCase() === "student" ? "student" :
-        profile.toLowerCase() === "self-employed" ? "self-employed" :
-          "employed"
-    ) as "employed" | "student" | "self-employed",
-    travelStartDate: props.travelStartDate ?? "",
-    travelDuration: props.travelDuration ?? 14,
-    cities: props.cities ?? [],
-  };
 
   const [data, setData] = useState<DocumentData | null>(null);
   const [itineraryData, setItineraryData] = useState<ItineraryPlacesData | null>(null);
@@ -1129,7 +1108,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                     onRemove={() => handleRemove(visibleDoc.id)}
                     onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
                     itineraryData={itineraryData}
-                    applicantContext={coverLetterContext}
                   />
                 </div>
 

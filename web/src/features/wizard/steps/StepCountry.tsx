@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import type { CountryCatalogEntry } from "@/lib/data/repository";
-import { scrollbarCSS } from "@/app/shared/theme";
+import { scrollbarCSS } from "@/components/shared/theme";
 
 interface Props {
   allCountries: CountryCatalogEntry[] | undefined | null;

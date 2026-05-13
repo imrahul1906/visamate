@@ -30,7 +30,11 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
 
   useEffect(() => {
-    getAllCountries().then(setCountries);
+    getAllCountries()
+    .then(setCountries)
+    .catch(err => {
+      console.error("[WizardAccordion] Failed to load country data:", err);
+    });
   }, []);
 
   const [activeStep, setActiveStep]             = useState(0);
@@ -111,12 +115,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
         location:     selectedLocation     ?? "",
         locationName: selectedLocation     ?? "",
         sponsorship:  sponsorship          ?? "SELF",
-        profile:      profile              ?? "",
-        applicantName:   "",
-        passportNo:      "",
-        travelStartDate: "",
-        travelDuration:  14,
-        cities:          [],
+        profile:      profile              ?? ""
       });
     } else {
       goToStep(Math.min(activeStep + 1, STEP_LABELS.length - 1));
@@ -421,11 +420,6 @@ function DocumentsSection({
         locationName={selections.locationName}
         sponsorship={selections.sponsorship}
         profile={selections.profile}
-        applicantName={selections.applicantName}
-        passportNo={selections.passportNo}
-        travelStartDate={selections.travelStartDate}
-        travelDuration={selections.travelDuration}
-        cities={selections.cities}
       />
     </section>
   );
@@ -478,7 +472,6 @@ export default function VisaMateLanding() {
     <ApplicantProvider>
       <div style={{ fontFamily: "'DM Sans', 'Inter', sans-serif", margin: 0, padding: 0 }}>
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
           * { box-sizing: border-box; margin: 0; padding: 0; }
           input::placeholder { color: rgba(255,255,255,0.25); }
           @media (max-width: 768px) {

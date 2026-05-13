@@ -32,15 +32,6 @@ export interface DocHelperProps {
   onRemove: () => void;
   onItineraryReady: (file: File) => void;
   itineraryData?: ItineraryPlacesData | null;
-  applicantContext?: {
-    applicantName: string;
-    passportNo: string;
-    sponsorshipType: "self" | "sponsored";
-    applicantProfile: "employed" | "student" | "self-employed";
-    travelStartDate: string;
-    travelDuration: number;
-    cities: string[];
-  };
 }
 
 export function DocHelper({
@@ -51,7 +42,6 @@ export function DocHelper({
   onRemove,
   onItineraryReady,
   itineraryData,
-  applicantContext,
 }: DocHelperProps) {
   // Wrap the flat callbacks back into the docId-keyed signatures
   // that each widget / UploadSlot expects.
@@ -89,7 +79,7 @@ export function DocHelper({
 
       {/* Cover letter builder */}
       {doc.specialWidget === "cover_letter" && (
-        <CoverLetterWidget applicantContext={applicantContext} />
+        <CoverLetterWidget />
       )}
 
       {/* Upload slot — not shown for hardcopy-only docs */}

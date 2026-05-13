@@ -7,7 +7,7 @@
 import { useEffect, useState } from "react";
 import type { DocumentItem, UploadsMap } from "../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
-import Badge from "@/app/shared/Badge";
+import Badge from "@/components/shared/Badge";
 import PhotoSpecWidget from "./PhotoSpecWidget";
 import VisaFormWidget from "./visa_form/VisaFormWidget";
 import UploadSlot from "./util/UploadSlot";

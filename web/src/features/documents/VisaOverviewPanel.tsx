@@ -23,7 +23,7 @@
 //   • Colours are semantic tokens, not specific visa knowledge
 
 import type { VisaType } from "@/lib/data/types";
-import { T } from "@/app/shared/theme";
+import { T } from "@/components/shared/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -9,7 +9,7 @@
 import React, { useEffect, useState } from "react";
 import { getVisaTypes } from "@/lib/data/repository";
 import type { VisaType } from "@/lib/data/types";
-import { SelectCard } from "@/app/shared/ToggleChip";
+import { SelectCard } from "@/components/shared/ToggleChip";
 
 interface Props {
   countryCode: string | null;
@@ -75,6 +75,9 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
     setLoading(true);
     getVisaTypes(countryCode)
       .then(setVisaTypes)
+      .catch(err => {
+        console.error(`[StepVisaType] Failed to load visa types for ${countryCode}:`, err);
+      })
       .finally(() => setLoading(false));
   }, [countryCode]);
 

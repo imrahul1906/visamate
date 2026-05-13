@@ -11,7 +11,7 @@
 
 import React, { useState } from "react";
 import { useApplicant } from "@/lib/context/ApplicantContext";
-import { ToggleGroup } from "@/app/shared/ToggleChip";
+import { ToggleGroup } from "@/components/shared/ToggleChip";
 
 interface Props {
   compact?: boolean;

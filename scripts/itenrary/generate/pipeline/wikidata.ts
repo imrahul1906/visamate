@@ -12,7 +12,7 @@ import type { WikidataPlace } from "../types/index.js";
 const WP_API = "https://en.wikipedia.org/w/api.php";
 
 // Delays — tuned to stay well under Wikipedia's anonymous rate limit
-const DELAY_BETWEEN_CATEGORIES_MS    = 500;   // between each category GET
+const DELAY_BETWEEN_CATEGORIES_MS = 500;   // between each category GET
 const DELAY_BETWEEN_DETAIL_BATCHES_MS = 800;  // between each 50-title POST
 
 // Category name patterns tried in order for each city
@@ -48,6 +48,9 @@ const TITLE_BLACKLIST = [
 
 export async function fetchWikidataPlaces(
   cityName: string,
+  _wikidataId?: string,
+  _regionQId?: string,
+  _minSiteLinks?: number
 ): Promise<WikidataPlace[]> {
 
   // Strip parenthetical suffix, e.g. "Hokkaido (Sapporo)" → "Sapporo"
@@ -97,14 +100,14 @@ export async function fetchWikidataPlaces(
 
 async function fetchCategoryMembers(category: string): Promise<string[]> {
   const params = new URLSearchParams({
-    action:      "query",
-    list:        "categorymembers",
-    cmtitle:     `Category:${category}`,
-    cmlimit:     "100",
-    cmtype:      "page",
+    action: "query",
+    list: "categorymembers",
+    cmtitle: `Category:${category}`,
+    cmlimit: "100",
+    cmtype: "page",
     cmnamespace: "0",
-    format:      "json",
-    origin:      "*",
+    format: "json",
+    origin: "*",
   });
 
   const url = `${WP_API}?${params}`;
@@ -155,16 +158,16 @@ async function fetchPageDetails(titles: string[]): Promise<WikidataPlace[]> {
 
 async function fetchPageDetailsBatch(titles: string[]): Promise<WikidataPlace[]> {
   const body = new URLSearchParams({
-    action:      "query",
-    titles:      titles.join("|"),
-    prop:        "pageprops|extracts",
-    ppprop:      "wikibase_item",
-    exintro:     "1",
+    action: "query",
+    titles: titles.join("|"),
+    prop: "pageprops|extracts",
+    ppprop: "wikibase_item",
+    exintro: "1",
     exsentences: "2",
     explaintext: "1",
-    exlimit:     "max",
-    format:      "json",
-    origin:      "*",
+    exlimit: "max",
+    format: "json",
+    origin: "*",
   });
 
   try {
@@ -184,14 +187,14 @@ async function fetchPageDetailsBatch(titles: string[]): Promise<WikidataPlace[]>
         return true;
       })
       .map((p): WikidataPlace => {
-        const wikipedia   = p.title.replace(/ /g, "_");
+        const wikipedia = p.title.replace(/ /g, "_");
         const description = (p.extract ?? "").slice(0, 300);
         // Fall back to a stable title-based ID when wikibase_item is absent
-        const wikidataId  = p.pageprops?.wikibase_item ?? `wp:${wikipedia}`;
+        const wikidataId = p.pageprops?.wikibase_item ?? `wp:${wikipedia}`;
 
         return {
           wikidataId,
-          name:         p.title,
+          name: p.title,
           wikidataType: description,
           wikipedia,
           sitelinkCount: 10, // pageviews will be the real ranking signal
@@ -298,9 +301,9 @@ interface WikipediaQueryResponse {
 }
 
 interface WikipediaPage {
-  pageid?:    number;
-  title:      string;
-  missing?:   string;
-  extract?:   string;
+  pageid?: number;
+  title: string;
+  missing?: string;
+  extract?: string;
   pageprops?: { wikibase_item?: string };
 }

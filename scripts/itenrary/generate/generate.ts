@@ -41,9 +41,9 @@ async function generateCountry(countryKey: string): Promise<void> {
       // e.g. "Hokkaido (Sapporo)" → use "Sapporo" for the category search.
       const lookupName = cityConfig.categoryCity ?? cityConfig.name;
 
-      const rawPlaces = await fetchWikidataPlaces
+      const rawPlaces = await fetchWikidataPlaces(
+        lookupName,
         cityConfig.wikidataId,
-        lookupName,        // used for category pattern building
         cityConfig.regionQId,
         MIN_SITELINKS
       );
