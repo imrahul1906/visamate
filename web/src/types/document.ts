@@ -7,7 +7,6 @@
 //
 // CHANGED from original:
 //   - Extracted SpecialWidget as a named export (was an anonymous inline union)
-//   - Added "cover_letter" to SpecialWidget — it was handled in CategorySection
 //     and DocumentsContent but missing from the type, which caused implicit `any`
 //     and would silently break any exhaustive switch.
 
