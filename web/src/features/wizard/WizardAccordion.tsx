@@ -7,7 +7,7 @@ import StepVisaType from "./steps/StepVisaType";
 import StepLocation from "./steps/StepLocation";
 import StepDetails from "./steps/StepDetails";
 import DocumentsContent from "../documents/DocumentsContent";
-import { ApplicantProvider } from "@/lib/context/ApplicantContext";
+import { ApplicantProvider, useApplicant } from "@/lib/context/ApplicantContext";
 import {
   getAllCountries,
   type CountryCatalogEntry
@@ -27,6 +27,7 @@ const STEP_LABELS = ["Country", "Visa type", "Location", "Details"];
 // ─── WizardCard ───────────────────────────────────────────────────────────────
 
 function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
+  const { update } = useApplicant();
   const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
 
   useEffect(() => {
@@ -83,6 +84,9 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   const continueLabel = continueLabels[activeStep] ?? "Continue";
 
   const handleCountrySelect = (code: string | null, name: string | null) => {
+    if (code != selectedCountry) {
+      update({ visaType: "", visaTypeName: "" });
+    }
     setSelectedCountry(code);
     setSelectedCountryName(name);
     if (!code) { setSelectedVisa(null); setSelectedVisaName(null); }

@@ -52,10 +52,20 @@ export interface ApplicantContext {
   cities: string[];
   applicantProfile: string;
   sponsorshipType: string;
+  visaType: string;
+  visaTypeName: string;
 }
 
 export interface ValidationErrors {
   [field: string]: string;
+}
+
+/** Fields that must be non-empty before the letter can be downloaded */
+export interface LetterPreviewState {
+  lPurposeDetail: string;
+  lFinance: string;
+  lSigName: string;
+  lSigPassport: string;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -142,4 +152,24 @@ export function validateCoverLetterInputs(
   }
 
   return errors;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Step 2 (preview) validation
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Returns the human-readable labels of any fields that must be
+ * filled before the letter can be downloaded.
+ * Returns an empty array when everything is ready.
+ */
+export function validateLetterPreview(state: LetterPreviewState): string[] {
+  const missing: string[] = [];
+
+  if (!state.lPurposeDetail.trim()) missing.push("Purpose of visit detail");
+  if (!state.lFinance.trim())       missing.push("Finance / accommodation detail");
+  if (!state.lSigName.trim())       missing.push("Applicant name (signature block)");
+  if (!state.lSigPassport.trim())   missing.push("Passport number (signature block)");
+
+  return missing;
 }

@@ -33,6 +33,8 @@ export function seedLetterState(
 } {
   const citiesStr = (ctx.cities || []).join(", ") || "[Cities]";
   const flightCity = (ctx.cities && ctx.cities[0]) || "[City]";
+  const visaType = ctx.visaType  || "[Visa Type]";
+  const visaTypeName = ctx.visaTypeName || "[Visa Type Name]";
 
   const familyParts: string[] = [];
   if (inputs.married === "yes") familyParts.push("spouse");
@@ -74,7 +76,7 @@ export function seedLetterState(
     lDate: today(),
     lSubject: `Application for Japan Temporary Visitor Visa (Tourism) — ${ctx.applicantName || "[Name]"}`,
     lSalutation: COVER_LETTER_TEMPLATES.salutation,
-    lIntro: `My name is ${ctx.applicantName || "[Name]"} and I am from India. I am applying from India and I am applying for a Temporary Visitor Visa for Tourism.\nIn discussing that I am a genuine and credible applicant for a Japan Tourism Visa, this letter will cover;`,
+    lIntro: `My name is ${ctx.applicantName || "[Name]"} and I am from India. I am applying from India and I am applying for a Temporary ${visaTypeName} Visa.\nIn discussing that I am a genuine and credible applicant for a Japan Tourism Visa, this letter will cover;`,
     lPurposeDetail:
       `To explore the beautiful country including ${citiesStr} and visit the tourist spots. ${inputs.purpose || ""}` +
       (inputs.travellingWith === "with" && inputs.companion

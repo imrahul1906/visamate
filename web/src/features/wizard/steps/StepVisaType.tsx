@@ -10,6 +10,7 @@ import React, { useEffect, useState } from "react";
 import { getVisaTypes } from "@/lib/data/repository";
 import type { VisaType } from "@/lib/data/types";
 import { SelectCard } from "@/components/shared/ToggleChip";
+import { useApplicant } from "@/lib/context/ApplicantContext";
 
 interface Props {
   countryCode: string | null;
@@ -67,11 +68,17 @@ const VISA_DESCRIPTIONS: Record<string, string> = {
 // ─── Component ────────────────────────────────────────────────
 
 export default function StepVisaType({ countryCode, selectedVisa, onSelect, compact }: Props) {
+  const {update} = useApplicant();
+
   const [visaTypes, setVisaTypes] = useState<VisaType[]>([]);
   const [loading, setLoading]     = useState(false);
 
   useEffect(() => {
-    if (!countryCode) { setVisaTypes([]); return; }
+    if (!countryCode) {
+      setVisaTypes([]);
+      update({ visaType: "", visaTypeName: "" });
+      return;
+    }
     setLoading(true);
     getVisaTypes(countryCode)
       .then(setVisaTypes)
@@ -79,7 +86,7 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
         console.error(`[StepVisaType] Failed to load visa types for ${countryCode}:`, err);
       })
       .finally(() => setLoading(false));
-  }, [countryCode]);
+  }, [countryCode, update]);
 
   const emptyStyle: React.CSSProperties = {
     padding:   "28px 0",
@@ -120,7 +127,14 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
               description={description}
               icon={icon}
               selected={isActive}
-              onSelect={(code) => onSelect(isActive ? null : code, isActive ? null : option.name)}
+              onSelect={
+                (code) => {
+                  const nextCode = isActive ? null : code;
+                  const nextName = isActive ? null : option.name;
+                  onSelect(nextCode, nextName);
+                  update({ visaType: nextCode ?? "", visaTypeName: nextName ?? "" });
+                }
+              }
             />
           );
         })}

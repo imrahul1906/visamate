@@ -21,8 +21,10 @@ import { CoverLetterInputsStep } from "./coverLetterInputs";
 import { CoverLetterPreview } from "./coverLetterPreview";
 import {
   validateCoverLetterInputs,
+  validateLetterPreview,
   isSponsored as isSponsoredFn,
 } from "@/features/documents/cover_letter/coverLetterService";
+import { buildCoverLetterDocx } from "@/features/documents/cover_letter/coverLetterDocx";
 import type {
   CoverLetterInputs,
   ValidationErrors,
@@ -211,99 +213,49 @@ export default function CoverLetterWidget() {
       cities: ctx.cities ?? [],
       applicantProfile: ctx.applicantProfile || "",
       sponsorshipType: ctx.sponsorshipType || "",
+      visaType: ctx.visaType || "",
+      visaTypeName: ctx.visaTypeName || ""
     };
   }
 
   /* ── Download handler ── */
   async function handleDownload() {
-    // Validate live preview state — NOT the stale Step 1 inputs
-    const missing: string[] = [];
-    if (!lPurposeDetail.trim()) missing.push("Purpose of visit detail");
-    if (!lFinance.trim()) missing.push("Finance / accommodation detail");
-    if (!lSigName.trim()) missing.push("Applicant name (signature block)");
-    if (!lSigPassport.trim()) missing.push("Passport number (signature block)");
-
+    const missing = validateLetterPreview({ lPurposeDetail, lFinance, lSigName, lSigPassport });
     if (missing.length > 0) {
       setUnfilled(missing);
       return;
     }
     setUnfilled([]);
     setDownloading(true);
-    await new Promise((r) => setTimeout(r, 1800));
-    setDownloading(false);
 
-    // Build plain text from editable preview state
-    const contactsTable = lContacts
-      .filter((c) => c.name.trim())
-      .map((c) => `  ${c.name} (${c.rel || "—"}) | ${c.phone || "—"} | ${c.email || "—"}`)
-      .join("\n");
+    try {
+      const blob = await buildCoverLetterDocx({
+        lHeading, lToBlock, lDate, lSubject, lSalutation, lIntro, lBullets,
+        lSecDocs, lSecDocsIntro, lDocRows,
+        lSecPurpose, lSecPurposeIntro, lPurposeDetail, lFlightPara,
+        lSecOverstay, lSecOverstayIntro,
+        lSecImmigration, lImmigration,
+        lSecFamily, lFamilyTies,
+        lSecEconomic, lEconomicTies,
+        lSecFinance, lSecFinanceIntro, lSecIncome, lFinance,
+        lSecSponsor, lSponsor,
+        lSecContacts, lContactsNote, lContacts,
+        lClosing, lSigName, lSigPassport,
+        sponsorshipType: ctx.sponsorshipType,
+      });
 
-    const docRowsText = lDocRows.map((r, i) => `  ${i + 1}. ${r}`).join("\n");
-    const bulletsText = lBullets.map((b) => `  • ${b}`).join("\n");
-
-    const sections: string[] = [
-      lHeading,
-      "",
-      lToBlock,
-      "",
-      lDate,
-      "",
-      `Subject: ${lSubject}`,
-      "",
-      lSalutation,
-      "",
-      lIntro,
-      "",
-      bulletsText,
-      "",
-      `${lSecDocs.toUpperCase()}`,
-      lSecDocsIntro,
-      docRowsText,
-      "",
-      `${lSecPurpose.toUpperCase()}`,
-      lSecPurposeIntro,
-      lPurposeDetail,
-      lFlightPara,
-      "",
-      `${lSecOverstay.toUpperCase()}`,
-      lSecOverstayIntro,
-      "",
-      lSecImmigration,
-      lImmigration,
-      "",
-      lSecFamily,
-      lFamilyTies,
-      "",
-      lSecEconomic,
-      lEconomicTies,
-      "",
-      `${lSecFinance.toUpperCase()}`,
-      ...(!isSponsoredFn(ctx.sponsorshipType)
-        ? [lSecFinanceIntro, "", lSecIncome, lFinance]
-        : [lFinance, "", lSecSponsor, lSponsor]),
-      "",
-      `${lSecContacts.toUpperCase()}`,
-      lContactsNote,
-      contactsTable,
-      "",
-      lClosing,
-      "",
-      `${lSigName}  (Passport No. — ${lSigPassport})`,
-      "_____________________",
-      "Signature",
-    ];
-
-    const text = sections.join("\n");
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Japan_Visa_Cover_Letter_${(lSigName || ctx.applicantName || "applicant").replace(/\s+/g, "_")}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    setStep("select");
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Japan_Visa_Cover_Letter_${(lSigName || ctx.applicantName || "applicant").replace(/\s+/g, "_")}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setStep("select");
+    } finally {
+      setDownloading(false);
+    }
   }
 
   /* ── RENDER ── */
