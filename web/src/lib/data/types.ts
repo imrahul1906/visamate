@@ -1,4 +1,4 @@
-// Type definitions generated from JSON schemas
+// lib/data/types.ts
 
 export interface CountryInfo {
   id: string;
@@ -6,7 +6,7 @@ export interface CountryInfo {
   name: string;
   description?: string;
   officialWebsite?: string;
-  supportedVfsLocationCodes?: string[],
+  supportedVfsLocationCodes?: string[];
   vfs?: {
     website?: string;
     appointmentUrl?: string;
@@ -26,15 +26,96 @@ export interface VisaVariant {
   validityMonths?: number;
 }
 
+// ── VFS Charges ──────────────────────────────────────────────────────────────
+
+export interface VfsChargeItem {
+  charge: number;
+  currency?: string;
+  /** Free-text note, e.g. "Non-refundable" */
+  note?: string;
+  /** Explicitly set in JSON; takes precedence over note parsing */
+  refundable?: boolean;
+}
+
+export interface VfsCourierCharge extends VfsChargeItem {
+  optional?: boolean;
+}
+
+export interface VfsCharges {
+  serviceCharge?: VfsChargeItem;
+  courierCharges?: VfsCourierCharge;
+}
+
+// ── Process ───────────────────────────────────────────────────────────────────
+
+export interface PaymentDraftRule {
+  type: string;
+  amount?: number;
+  currency?: string;
+  optional?: boolean;
+  separateDraftRequired?: boolean;
+  refundable?: boolean;
+}
+
+export interface PaymentInstruction {
+  /**
+   * The VFS centre this instruction belongs to.
+   * Must match the locationCode used in VFS_CENTER_STORE, e.g. "DELHI".
+   * This is the filter key — dropOffOffices is display-only context.
+   */
+  vfsCenterCode: string;
+  /**
+   * Drop-off offices within the VFS centre that have this exception,
+   * e.g. ["GURUGRAM", "CHANDIGARH", "LUCKNOW"].
+   * Used for display only — never used as a filter key.
+   */
+  dropOffOffices?: string[];
+  paymentMode?: string;
+  payableTo?: string;
+  rules?: PaymentDraftRule[];
+  notes?: string[];
+}
+
+export interface VisaProcess {
+  /** Default process settings (applies to all centres unless overridden) */
+  default?: {
+    applicationMode?: string;
+    biometricRequired?: boolean;
+    interviewRequired?: boolean;
+  };
+  /** Centre-specific payment rules — only shown when the selected centre matches */
+  paymentInstructions: PaymentInstruction[];
+}
+
+// ── VisaType ──────────────────────────────────────────────────────────────────
+
 export interface VisaType {
   id: string;
   code: string;
   name: string;
   category?: string;
   variants?: VisaVariant[];
-  process?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
+
+  /** Government visa fee (e.g. 500 for INR 500) */
+  fees?: number;
+  /** ISO currency code for fees, e.g. "INR" */
+  currency?: string;
+  /** Free-text note on the visa fee, used to derive refundability */
+  note?: string;
+
+  maxStayDays?: number;
+
+  vfsCharges?: VfsCharges;
+  process?: VisaProcess;
+
+  metadata?: {
+    status?: string;
+    lastUpdated?: string;
+    [key: string]: unknown;
+  };
 }
+
+// ── Country / Catalog ─────────────────────────────────────────────────────────
 
 export interface CountryVisaTypes {
   countryId: string;
@@ -54,6 +135,8 @@ export interface RoutingEntry {
   description?: string;
   metadata?: Record<string, unknown>;
 }
+
+// ── VFS Center ────────────────────────────────────────────────────────────────
 
 export interface OperatingHoursEntry {
   days: string;
@@ -93,6 +176,8 @@ export interface VfsCenterInfo {
   vfsCenter: VfsCenterDetail;
   metadata?: Record<string, unknown>;
 }
+
+// ── Requirements ──────────────────────────────────────────────────────────────
 
 export interface PhotoSpec {
   widthMm: number;
@@ -143,8 +228,8 @@ export interface RequirementsData {
   visaVariantId?: string;
   locationId: string;
   locationCode?: string;
-  processingDays?: number | null;
-  processingDaysExpress?: number | null;
+  processingDays?: number | string | null;
+  processingDaysExpress?: number | string | null;
   fees?: Record<string, unknown>;
   photoSpecifications?: PhotoSpec;
   documentSections?: DocumentSection[];
@@ -152,15 +237,7 @@ export interface RequirementsData {
   metadata?: Record<string, unknown>;
 }
 
-// lib/data/types.ts
-// ─────────────────────────────────────────────────────────────
-// Add the four itinerary types below to your existing types.ts.
-// Everything above this comment is your existing file — unchanged.
-// ─────────────────────────────────────────────────────────────
-
-// ── Itinerary types ──────────────────────────────────────────
-// Used by ItineraryWidget (generic) and repository.getItineraryPlaces().
-// Shape mirrors what was in japanData.ts, now generic across countries.
+// ── Itinerary ─────────────────────────────────────────────────────────────────
 
 export interface ItineraryPlace {
   id: string;

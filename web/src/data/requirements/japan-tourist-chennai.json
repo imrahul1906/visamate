@@ -8,7 +8,7 @@
     "locationId": "VFS_CENTER_CHENNAI_001",
     "visaVariantId": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
     "locationCode": "CHENNAI",
-    "processingDays": "15-17 working days",
+    "processingDays": "1-3 weeks",
     "processingDaysExpress": null,
     "fees": {
         "visaFeeINR": 500,
@@ -137,16 +137,6 @@
                         "Applicant name should match passport",
                         "Accommodation address and contact details should be visible"
                     ]
-                },
-                 {
-                    "order": 9,
-                    "id": "JP_TOURIST_CHENNAI_DOC_CHECKLIST_001",
-                    "code": "DOC_CHECKLIST",
-                    "name": "Documents Checklist",
-                    "isRequired": true,
-                    "optionality": "required",
-                    "description": "Document checklist filled and signed by applicant",
-                    "check_list_download_Url": "https://assets.ctfassets.net/xxg4p8gt3sg6/4Emh51n2TX1kgGcbqqMLNB/c9458d3aae09d1e1ce03161b1b12a56c/CL-01-Visitor-Visa-Without-Guarantor-Apr-26.pdf"
                 }
             ]
         },
@@ -158,7 +148,7 @@
             },
             "documents": [
                 {
-                    "order": 10,
+                    "order": 9,
                     "id": "JP_TOURIST_CHENNAI_INCOME_TAX_001",
                     "code": "INCOME_TAX_RETURN",
                     "name": "Latest Income Tax Return",
@@ -174,7 +164,7 @@
                     ]
                 },
                 {
-                    "order": 11,
+                    "order": 10,
                     "id": "JP_TOURIST_CHENNAI_SALARY_SLIP_001",
                     "code": "SALARY_SLIP",
                     "name": "Salary Slips (Last 3 Months)",
@@ -189,7 +179,7 @@
                     ]
                 },
                 {
-                    "order": 12,
+                    "order": 11,
                     "id": "JP_TOURIST_CHENNAI_BANK_STATEMENT_001",
                     "code": "BANK_STATEMENT",
                     "name": "Bank Statement (Last 3 Months)",
@@ -208,7 +198,7 @@
                     ]
                 },
                 {
-                    "order": 13,
+                    "order": 12,
                     "id": "JP_TOURIST_CHENNAI_NOC_001",
                     "code": "NOC",
                     "name": "No Objection Certificate (NOC)",
@@ -236,7 +226,7 @@
             },
             "documents": [
                 {
-                    "order": 14,
+                    "order": 13,
                     "id": "JP_TOURIST_CHENNAI_PARENT_SPOUSE_ITR_001",
                     "code": "PARENT_SPOUSE_INCOME_TAX_RETURN",
                     "name": "Parent/Spouse Income Tax Return",
@@ -255,7 +245,7 @@
                     ]
                 },
                 {
-                    "order": 15,
+                    "order": 14,
                     "id": "JP_TOURIST_CHENNAI_RELATIONSHIP_PROOF_001",
                     "code": "RELATIONSHIP_PROOF",
                     "name": "Proof of Relationship",
@@ -273,7 +263,7 @@
                     }
                 },
                 {
-                    "order": 16,
+                    "order": 15,
                     "id": "JP_TOURIST_CHENNAI_DEPENDENT_CONSENT_001",
                     "code": "DEPENDENT_CONSENT",
                     "name": "Consent from Parents/Spouse",

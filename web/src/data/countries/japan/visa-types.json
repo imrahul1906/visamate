@@ -11,14 +11,13 @@
       "maxStayDays": 90,
       "fees": 500,
       "currency": "INR",
-      "processingTime": "5-10 days",
-
       "note": "Visa Fee is refunded only if the visa is not approved by the Embassy.",
 
       "vfsCharges": {
         "serviceCharge": {
           "charge": 800,
           "currency": "INR",
+          "refundable": false,
           "note": "Non-refundable"
         },
         "courierCharges": {
@@ -28,6 +27,7 @@
           "note": "Charges are only applicable if you want your passport delivered."
         }
       },
+
       "process": {
         "default": {
           "applicationMode": "OFFLINE",
@@ -37,14 +37,10 @@
 
         "paymentInstructions": [
           {
-            "applicableCenters": [
-              "GURUGRAM",
-              "CHANDIGARH",
-              "LUCKNOW"
-            ],
+            "vfsCenterCode": "DELHI",
+            "dropOffOffices": ["GURUGRAM", "CHANDIGARH", "LUCKNOW"],
 
             "paymentMode": "DEMAND_DRAFT",
-
             "payableTo": "VFS Global Services Pvt. Ltd.",
 
             "rules": [

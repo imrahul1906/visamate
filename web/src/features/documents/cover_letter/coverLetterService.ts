@@ -162,7 +162,7 @@ export function isSponsored(sponsorshipType: string): boolean {
 }
 
 export function isNocNeeded(vfsCenter: string): boolean {
-  return vfsCenter.toLowerCase().includes("chennai");
+  return !vfsCenter.toLowerCase().includes("delhi");
 }
 
 // ─────────────────────────────────────────────────────────────
