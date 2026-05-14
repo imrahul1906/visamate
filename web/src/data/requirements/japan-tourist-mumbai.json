@@ -1,0 +1,308 @@
+{
+    "schemaVersion": 1,
+    "id": "REQ_JP_TOURIST_MUMBAI_001",
+    "countryId": "COUNTRY_JP_001",
+    "countryCode": "JP",
+    "visaTypeId": "VISA_JP_TOURIST_001",
+    "visaTypeCode": "TOURIST",
+    "locationId": "VFS_CENTER_MUMBAI_001",
+    "visaVariantId": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
+    "locationCode": "MUMBAI",
+    "processingDays": "15-17 working days",
+    "processingDaysExpress": null,
+    "fees": {
+        "visaFeeINR": 500,
+        "serviceChargeINR": 800,
+        "courierReturnINR": 550,
+        "courierReturnOptional": true,
+        "note": "Visa fee refunded only if visa not approved by Embassy"
+    },
+    "photoSpecifications": {
+        "default": {
+            "widthMm": 45,
+            "heightMm": 45,
+            "background": "Plain white",
+            "colorFormat": "Colored",
+            "faceVisibilityPercent": "70-80",
+            "quality": "Good quality paper",
+            "maxAgeMonths": 6,
+            "requirements": [
+                "Taken looking straight forward",
+                "Face clearly visible",
+                "Printed on good quality paper"
+            ]
+        }
+    },
+    "documentSections": [
+        {
+            "sectionId": "COMMON",
+            "title": "Common Documents",
+            "documents": [
+                {
+                    "order": 1,
+                    "id": "JP_TOURIST_MUMBAI_VISA_FORM_001",
+                    "code": "VISA_APPLICATION_FORM",
+                    "name": "Visa Application Form",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "form": {
+                        "type": "DOWNLOADABLE",
+                        "downloadUrl": "https://assets.ctfassets.net/xxg4p8gt3sg6/2vUOdRMFiIuPueU5P8yL7S/2f0952ad2f7557ffbaba055ec04e95c9/Visa-Application-Form.pdf",
+                        "onlineUrl": null,
+                        "requiresPrint": true,
+                        "formFillDataKey": "JP_TOURIST_VISA_FORM_FIELDS_V1"
+                    },
+                    "notes": "Download -> fill -> print -> sign"
+                },
+                {
+                    "order": 2,
+                    "id": "JP_TOURIST_MUMBAI_PASSPORT_001",
+                    "code": "PASSPORT",
+                    "name": "Original Passport",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "notes": "Submit old passports also if any.",
+                    "requirements": [
+                        "More than 2 blank pages",
+                        "Minimum 6 months validity from date of travel"
+                    ]
+                },
+                {
+                    "order": 3,
+                    "id": "JP_TOURIST_MUMBAI_JAPAN_ITINERARY_001",
+                    "code": "JAPAN_ITINERARY",
+                    "name": "Itinerary in Japan",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Detailed itinerary in Japan in official format",
+                    "notes": "MUST use official itinerary format",
+                    "formUrl": "https://www.mofa.go.jp/files/000262548.pdf"
+                },
+                {
+                    "order": 4,
+                    "id": "JP_TOURIST_MUMBAI_COVER_LETTER_001",
+                    "code": "COVER_LETTER",
+                    "name": "Cover Letter",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Personal cover letter explaining purpose of travel to Japan",
+                    "notes": "Strongly recommended for better clarity of application"
+                },
+                {
+                    "order": 5,
+                    "id": "JP_TOURIST_MUMBAI_PHOTOGRAPH_001",
+                    "code": "PHOTOGRAPH",
+                    "name": "Passport Size Photograph",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "One photograph taken within last 6 months",
+                    "photoSpecRef": "default"
+                },
+                {
+                    "order": 6,
+                    "id": "JP_TOURIST_MUMBAI_PASSPORT_BIODATA_001",
+                    "code": "PASSPORT_BIODATA",
+                    "name": "Passport photocopy",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Photocopy of the Bio Data Page of current passport (First and Last Page)",
+                    "requirements": [
+                        "Should be self attested with signature"
+                    ]
+                },
+                {
+                    "order": 7,
+                    "id": "JP_TOURIST_MUMBAI_FLIGHT_ITINERARY_001",
+                    "code": "FLIGHT_ITINERARY",
+                    "name": "Flight Reservations",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Document to show the flight/cruise schedule to/from Japan"
+                },
+                {
+                    "order": 8,
+                    "id": "JP_TOURIST_MUMBAI_HOTEL_RESERVATION_001",
+                    "code": "HOTEL_RESERVATION",
+                    "name": "Hotel Reservation",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Hotel booking confirmation for the stay in Japan",
+                    "notes": "Can include hotel booking confirmations, Airbnb reservations, or accommodation details for entire stay",
+                    "acceptedFormats": [
+                        "PDF",
+                        "Printout"
+                    ],
+                    "requirements": [
+                        "Must cover entire duration of stay in Japan",
+                        "Applicant name should match passport",
+                        "Accommodation address and contact details should be visible"
+                    ]
+                },
+                 {
+                    "order": 9,
+                    "id": "JP_TOURIST_MUMBAI_DOC_CHECKLIST_001",
+                    "code": "DOC_CHECKLIST",
+                    "name": "Documents Checklist",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Document checklist filled and signed by applicant",
+                    "check_list_download_Url": "https://assets.ctfassets.net/xxg4p8gt3sg6/4Emh51n2TX1kgGcbqqMLNB/c9458d3aae09d1e1ce03161b1b12a56c/CL-01-Visitor-Visa-Without-Guarantor-Apr-26.pdf"
+                }
+            ]
+        },
+        {
+            "sectionId": "SELF_SPONSORED",
+            "title": "Financial Documents (Self Sponsored)",
+            "applicableWhen": {
+                "sponsorship": "SELF"
+            },
+            "documents": [
+                {
+                    "order": 10,
+                    "id": "JP_TOURIST_MUMBAI_INCOME_TAX_001",
+                    "code": "INCOME_TAX_RETURN",
+                    "name": "Latest Income Tax Return",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Latest Income Tax Return or bank statement of last 6 months if ITR not available",
+                    "notes": "Either ITR or bank statement (last 6 months). A4 size photocopy.",
+                    "alternativeDocuments": [
+                        "Bank statement of last 6 months",
+                        "Should not be taken print out from bank website.",
+                        "Get bank statement and balance certificate from your bank branch",
+                        "Providing both ITR and bank statements are always a good idea"
+                    ]
+                },
+                {
+                    "order": 11,
+                    "id": "JP_TOURIST_MUMBAI_SALARY_SLIP_001",
+                    "code": "SALARY_SLIP",
+                    "name": "Salary Slips (Last 3 Months)",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Latest salary slips for the last 3 months",
+                    "notes": "Recommended to submit company-issued salary slips with company seal/signature if available",
+                    "requirements": [
+                        "Must include applicant name",
+                        "Must clearly show salary credited",
+                        "Should cover last 3 months"
+                    ]
+                },
+                {
+                    "order": 12,
+                    "id": "JP_TOURIST_MUMBAI_BANK_STATEMENT_001",
+                    "code": "BANK_STATEMENT",
+                    "name": "Bank Statement (Last 3 Months)",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Personal bank statement for the last 6 months",
+                    "notes": "Should be stamped and signed by the bank branch",
+                    "acceptedFormats": [
+                        "Original",
+                        "Stamped Bank Statement"
+                    ],
+                    "requirements": [
+                        "Should cover last 3 months",
+                        "Must show sufficient balance",
+                        "Online printouts without bank attestation are not preferred"
+                    ]
+                },
+                {
+                    "order": 13,
+                    "id": "JP_TOURIST_MUMBAI_NOC_001",
+                    "code": "NOC",
+                    "name": "No Objection Certificate (NOC)",
+                    "isRequired": false,
+                    "description": "NOC or leave approval letter from employer/School/College",
+                    "acceptedFormats": [
+                        "Original",
+                        "Company Letterhead"
+                    ],
+                    "requirements": [
+                        "Must be issued on company letterhead",
+                        "Should mention applicant name and passport number if possible",
+                        "Should confirm designation and employment status",
+                        "Should clearly mention approved leave dates",
+                        "Should include HR/manager signature and company stamp if available"
+                    ]
+                }
+            ]
+        },
+        {
+            "sectionId": "SPONSORED",
+            "title": "Financial Documents (Sponsored)",
+            "applicableWhen": {
+                "sponsorship": "SPONSORED"
+            },
+            "documents": [
+                {
+                    "order": 14,
+                    "id": "JP_TOURIST_MUMBAI_PARENT_SPOUSE_ITR_001",
+                    "code": "PARENT_SPOUSE_INCOME_TAX_RETURN",
+                    "name": "Parent/Spouse Income Tax Return",
+                    "isRequired": false,
+                    "optionality": "conditional",
+                    "description": "Latest Income Tax Return of parents/spouse or bank statement of last 6 months if student/dependent",
+                    "notes": "Required only if applicant is student or dependent. A4 size photocopy.",
+                    "applicableWhen": {
+                        "applicantRolesAnyOf": [
+                            "STUDENT",
+                            "DEPENDENT"
+                        ]
+                    },
+                    "alternativeDocuments": [
+                        "Bank statement of last 6 months (if ITR not available)"
+                    ]
+                },
+                {
+                    "order": 15,
+                    "id": "JP_TOURIST_MUMBAI_RELATIONSHIP_PROOF_001",
+                    "code": "RELATIONSHIP_PROOF",
+                    "name": "Proof of Relationship",
+                    "isRequired": false,
+                    "optionality": "conditional",
+                    "description": "Proof of relationship if applicant is accompanied by dependent",
+                    "notes": "Can be passport copy, marriage certificate, or birth certificate",
+                    "acceptedFormats": [
+                        "Passport copy",
+                        "Marriage certificate",
+                        "Birth certificate"
+                    ],
+                    "applicableWhen": {
+                        "accompaniedByDependent": true
+                    }
+                },
+                {
+                    "order": 16,
+                    "id": "JP_TOURIST_MUMBAI_DEPENDENT_CONSENT_001",
+                    "code": "DEPENDENT_CONSENT",
+                    "name": "Consent from Parents/Spouse",
+                    "isRequired": false,
+                    "optionality": "conditional",
+                    "description": "Consent from parents/spouse if applicant is student or dependent",
+                    "notes": "Required only if applicant is a student or dependent",
+                    "applicableWhen": {
+                        "applicantRolesAnyOf": [
+                            "STUDENT",
+                            "DEPENDENT"
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "importantNotes": [
+        "All photocopies should be on A4 size only",
+        "The above is a guide to documents. Japan Embassy may request interview/additional documentation depending on personal circumstances",
+        "Documents submitted will not be returned except for the passport",
+        "Processing time is indicative only and may increase/decrease at discretion of Embassy of Japan, New Delhi",
+        "VFS Global is involved only in non-judgmental task of visa processing"
+    ],
+    "metadata": {
+        "sourceUrl": "https://visa.vfsglobal.com/ind/en/jpn/visa-type#visainformation",
+        "lastVerified": "2026-04-25",
+        "verifiedBy": "admin",
+        "status": "verified",
+        "dataCollectionDate": "2026-04-25"
+    }
+}

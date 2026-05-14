@@ -6,6 +6,7 @@ export interface CountryInfo {
   name: string;
   description?: string;
   officialWebsite?: string;
+  supportedVfsLocationCodes?: string[],
   vfs?: {
     website?: string;
     appointmentUrl?: string;
@@ -46,6 +47,7 @@ export interface RoutingEntry {
   id: string;
   locationId: string;
   locationCode?: string;
+  countryCode?: string;
   destinationCountryId: string;
   authorityLabel?: string;
   states?: unknown[];

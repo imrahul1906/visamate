@@ -44,13 +44,7 @@ function HoursRow({ label, slot }: { label: string; slot: { days: string; time: 
   );
 }
 
-// ─── Scrollbar styles — injected from shared theme ───────────────────────────
-// The .vm-scroll-indigo class from scrollbarCSS covers the same indigo thumb
-// style that the old drawerScrollbarStyle defined locally.
-// The injection site in CenterDrawer now uses <style>{scrollbarCSS}</style>.
-
 // ─── Center detail modal ──────────────────────────────────────────────────────
-// (Logic unchanged, only the modal panel itself is light — it's a separate overlay)
 function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => void }) {
   const [visible, setVisible] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -251,6 +245,162 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
   return createPortal(drawer, document.body);
 }
 
+// ─── Location Row (matches StepCountry's CountryRow design language) ──────────
+function LocationRow({
+  loc,
+  centerName,
+  centerAddress,
+  centerInfo,
+  isSelected,
+  onSelect,
+  onInfoClick,
+}: {
+  loc: LocationCatalogEntry;
+  centerName: string;
+  centerAddress: string;
+  centerInfo: VfsCenterInfo | null;
+  isSelected: boolean;
+  onSelect: () => void;
+  onInfoClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        width: "100%",
+        padding: "7px 10px",
+        borderRadius: 10,
+        border: isSelected
+          ? "1px solid rgba(108,92,231,0.7)"
+          : hovered
+            ? "1px solid rgba(108,92,231,0.35)"
+            : "1px solid rgba(255,255,255,0.07)",
+        background: isSelected
+          ? "rgba(108,92,231,0.12)"
+          : hovered
+            ? "rgba(255,255,255,0.05)"
+            : "rgba(255,255,255,0.03)",
+        cursor: "pointer",
+        transition: "all 0.15s ease",
+        textAlign: "left",
+        boxSizing: "border-box",
+        flexShrink: 0,
+        boxShadow: isSelected ? "0 0 0 3px rgba(108,92,231,0.12)" : "none",
+      }}
+    >
+      {/* City photo thumbnail */}
+      <div style={{
+        width: 38, height: 38,
+        borderRadius: 7, overflow: "hidden",
+        flexShrink: 0,
+        background: "rgba(255,255,255,0.08)",
+        position: "relative",
+      }}>
+        {loc.photo ? (
+          <img
+            src={loc.photo}
+            alt={loc.city}
+            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          />
+        ) : (
+          <div style={{
+            width: "100%", height: "100%",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)",
+            letterSpacing: "0.05em",
+          }}>
+            {loc.city.slice(0, 2).toUpperCase()}
+          </div>
+        )}
+      </div>
+
+      {/* Label */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          color: isSelected ? "#fff" : "rgba(255,255,255,0.85)",
+          fontSize: 13,
+          fontWeight: isSelected ? 600 : 500,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          lineHeight: 1.3,
+        }}>
+          {loc.city}
+        </div>
+        <div style={{
+          fontSize: 10,
+          color: isSelected ? "#a89cef" : "rgba(255,255,255,0.3)",
+          marginTop: 1,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          fontWeight: isSelected ? 600 : 400,
+        }}>
+          {centerName}
+        </div>
+      </div>
+
+      {/* Right: info button or checkmark */}
+      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 6 }}>
+        {centerInfo && (
+          <div
+            role="button"
+            onClick={(e) => { e.stopPropagation(); onInfoClick(); }}
+            style={{
+              width: 20, height: 20, borderRadius: "50%",
+              background: isSelected ? "rgba(108,92,231,0.2)" : "rgba(255,255,255,0.07)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: isSelected ? "#a89cef" : "rgba(255,255,255,0.35)",
+              transition: "all 0.15s",
+              cursor: "pointer",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(108,92,231,0.25)";
+              e.currentTarget.style.color = "#a89cef";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = isSelected ? "rgba(108,92,231,0.2)" : "rgba(255,255,255,0.07)";
+              e.currentTarget.style.color = isSelected ? "#a89cef" : "rgba(255,255,255,0.35)";
+            }}
+          >
+            <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+          </div>
+        )}
+
+        <div style={{ width: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {isSelected ? (
+            <div style={{
+              width: 18, height: 18,
+              background: "#6c5ce7",
+              borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(108,92,231,0.5)",
+            }}>
+              <svg width="9" height="9" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            </div>
+          ) : (
+            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function StepLocation({ countryCode, selectedLocation, onSelect, compact }: Props) {
   const { update } = useApplicant();
@@ -270,7 +420,12 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
         const withCenters = await Promise.all(
           locs.map(async (loc) => {
             const center = await getVfsCenterInfo(loc.code);
-            return { loc, centerName: center?.vfsCenter?.name ?? "VFS Global Center", centerAddress: center?.vfsCenter?.address ?? "", centerInfo: center ?? null };
+            return {
+              loc,
+              centerName: center?.vfsCenter?.name ?? "VFS Global Center",
+              centerAddress: center?.vfsCenter?.address ?? "",
+              centerInfo: center ?? null,
+            };
           })
         );
         setLocations(withCenters);
@@ -279,121 +434,81 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
       .finally(() => setLoading(false));
   }, [countryCode]);
 
-  const emptyStyle: React.CSSProperties = { padding: "28px 0", textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12 };
+  const emptyStyle: React.CSSProperties = {
+    padding: "28px 0", textAlign: "center",
+    color: "rgba(255,255,255,0.3)", fontSize: 12,
+  };
 
   if (!countryCode) return <div style={emptyStyle}>Please select a country first.</div>;
   if (loading) return <div style={emptyStyle}>Loading locations...</div>;
   if (locations.length === 0) return <div style={emptyStyle}>No application centers available for the selected country.</div>;
 
+  // In compact mode, defer scrolling to the parent WizardCard — same pattern as StepCountry.
+  const listScrollStyle: React.CSSProperties = compact
+    ? { display: "flex", flexDirection: "column", gap: 6, paddingRight: 1 }
+    : {
+        display: "flex", flexDirection: "column", gap: 6,
+        maxHeight: 300, overflowY: "auto",
+        WebkitOverflowScrolling: "touch" as any,
+        scrollBehavior: "smooth",
+        paddingRight: 1,
+      };
+
   return (
     <>
       <div>
         {!compact && (
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginBottom: 2 }}>Step 3</div>
-            <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 500, margin: 0 }}>Where will you apply from?</h2>
-            <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>Select the city where you'll submit your application</p>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>Step 3</div>
+            <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>Where will you apply from?</h2>
+            <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Select the city where you'll submit your application</p>
           </div>
         )}
 
-        {/* Country indicator */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 8,
-          background: "rgba(255,255,255,0.05)",
-          border: "0.5px solid rgba(255,255,255,0.1)",
-          borderRadius: 9, padding: "8px 12px", marginBottom: 12,
-        }}>
-          <svg width="13" height="13" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth={1.8} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3" />
-          </svg>
-          <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>India</span>
-          <svg style={{ marginLeft: "auto" }} width="12" height="12" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-          </svg>
-        </div>
+        {/* Location count hint — mirrors StepCountry's hint row */}
+        {locations.length > 0 && (
+          <div style={{ color: "rgba(255,255,255,0.22)", fontSize: 10, marginBottom: 8, letterSpacing: "0.04em" }}>
+            {locations.length === 1
+              ? "1 application center available"
+              : `${locations.length} application centers available`}
+          </div>
+        )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+        {/* Location list */}
+        <style>{scrollbarCSS}</style>
+        <div className="vm-scroll-hidden" style={listScrollStyle}>
           {locations.map(({ loc, centerName, centerAddress, centerInfo }) => {
             const isSelected = selectedLocation === loc.code;
             return (
-              <div
+              <LocationRow
                 key={loc.code}
-                style={{
-                  borderRadius: 12, overflow: "hidden",
-                  border: isSelected ? "1px solid rgba(108,92,231,0.6)" : "0.5px solid rgba(255,255,255,0.1)",
-                  boxShadow: isSelected ? "0 0 0 3px rgba(108,92,231,0.15)" : "none",
-                  transition: "all 0.2s",
-                  background: "rgba(255,255,255,0.03)",
-                  cursor: "pointer",
+                loc={loc}
+                centerName={centerName}
+                centerAddress={centerAddress}
+                centerInfo={centerInfo}
+                isSelected={isSelected}
+                onSelect={() => {
+                  const vfsCenter = isSelected ? null : loc.code;
+                  onSelect(vfsCenter);
+                  update({ vfsCenter: isSelected ? "" : loc.code });
                 }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.borderColor = "rgba(108,92,231,0.4)"; }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; }}
-              >
-                <button
-                  type="button"
-                  onClick={
-                    () => {
-                      const vfsCenter = isSelected ? null : loc.code;
-                      onSelect(vfsCenter);
-                      update({ vfsCenter: "" });
-                    }}
-                  style={{ width: "100%", background: "none", border: "none", padding: 0, cursor: "pointer", display: "block" }}
-                >
-                  <div style={{ position: "relative", height: 80, overflow: "hidden" }}>
-                    <img src={loc.photo} alt={loc.city} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%, transparent 100%)" }} />
-                    {isSelected && (
-                      <div style={{ position: "absolute", top: 7, right: 7, width: 18, height: 18, background: "#6c5ce7", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(108,92,231,0.5)" }}>
-                        <svg width="9" height="9" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                      </div>
-                    )}
-                    <div style={{ position: "absolute", bottom: 7, left: 10 }}>
-                      <span style={{ color: "#fff", fontSize: 11, fontWeight: 600, textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>{loc.city}</span>
-                    </div>
-                  </div>
-                </button>
-
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px 8px 10px" }}>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: "#a89cef", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{centerName}</div>
-                    {centerAddress && (
-                      <div style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", marginTop: 2, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                        {centerAddress}
-                      </div>
-                    )}
-                  </div>
-                  {centerInfo && (
-                    <button
-                      type="button"
-                      onClick={() => setDrawerInfo(centerInfo)}
-                      style={{
-                        marginLeft: 8, flexShrink: 0, width: 22, height: 22, borderRadius: "50%",
-                        background: isSelected ? "rgba(108,92,231,0.2)" : "rgba(255,255,255,0.07)",
-                        border: "none", cursor: "pointer",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        color: isSelected ? "#a89cef" : "rgba(255,255,255,0.35)",
-                        transition: "all 0.15s",
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.background = "rgba(108,92,231,0.25)"; e.currentTarget.style.color = "#a89cef"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = isSelected ? "rgba(108,92,231,0.2)" : "rgba(255,255,255,0.07)"; e.currentTarget.style.color = isSelected ? "#a89cef" : "rgba(255,255,255,0.35)"; }}
-                    >
-                      <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              </div>
+                onInfoClick={() => centerInfo && setDrawerInfo(centerInfo)}
+              />
             );
           })}
         </div>
 
-        {selectedLocation && (
-          <p style={{ marginTop: 10, fontSize: 10, color: "rgba(255,255,255,0.22)", textAlign: "center" }}>
-            Tap <span style={{ fontWeight: 600, color: "rgba(255,255,255,0.35)" }}>ⓘ</span> on any card to see center hours & rules
-          </p>
+        {/* Scroll-hint fade — only in non-compact (standalone) mode */}
+        {!compact && locations.length > 5 && (
+          <div style={{
+            height: 20,
+            background: "linear-gradient(to top, rgba(15,12,30,0.6) 0%, transparent 100%)",
+            marginTop: -20,
+            pointerEvents: "none",
+            position: "relative",
+            zIndex: 1,
+            borderRadius: "0 0 8px 8px",
+          }} />
         )}
       </div>
 

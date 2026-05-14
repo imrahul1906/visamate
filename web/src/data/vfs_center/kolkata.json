@@ -1,0 +1,48 @@
+{
+  "id": "VFS_CENTER_KOLKATA_001",
+  "code": "KOLKATA",
+  "name": "Kolkata",
+  "state": "West Bengal",
+  "vfsCenter": {
+    "name": "VFS Global Kolkata",
+    "address": "VFS Global Services Pvt. Ltd. 6th Floor, Rene Tower, Plot No. AA-I, 1842 Rajdanga Main Road, Kasba, Kolkata-700107. India.",
+    "phone": "+91-11-XXXX-XXXX",
+    "email": "contact@vfsglobal.com",
+    "website": "https://visa.vfsglobal.com/ind/en",
+    "operatingHours": {
+      "submissionIndividual": {
+        "days": "Monday - Friday",
+        "time": "09:00 - 14:00",
+        "note": "Token for submission issued till 13:00 hrs only"
+      },
+      "submissionAgent": {
+        "days": "Monday - Friday",
+        "time": "09:00 - 14:00",
+        "note": "For travel agents and representatives"
+      },
+      "passportCollection": {
+        "days": "Monday - Friday",
+        "time": "15:00 - 17:00"
+      }
+    },
+    "security": {
+      "cctvSurveillance": true,
+      "mobilePhone": "Allowed but must be on silent mode",
+      "photography": "Not permitted",
+      "itemsNotAllowed": [
+        "Travel bags, backpacks, briefcases, suitcases",
+        "Electronic devices (cameras, tablets, laptops, etc.)",
+        "Sealed envelopes or packages",
+        "Inflammable items (matchboxes, lighters, etc.)",
+        "Sharp objects (scissors, pen knives, nail filers)",
+        "Weapons or weapon-like objects"
+      ],
+      "cloakingFacility": "Available for storing bags (paid service)"
+    }
+  },
+  "metadata": {
+    "createdAt": "2026-04-25",
+    "lastUpdated": "2026-04-25",
+    "status": "active"
+  }
+}

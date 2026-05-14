@@ -1,7 +1,6 @@
 // web\src\features\documents\mapRequirements.ts
 //
 // Maps raw RequirementsData from the repository into the UI-ready DocumentData shape.
-// SPECIAL_WIDGETS now includes "cover_letter" to match the SpecialWidget union in types.ts.
 
 import type { RequirementsData } from "@/lib/data/types";
 import type { DocumentData, DocumentCategory, DocumentItem, VisaFormInfo, SpecialWidget } from "../../types/document";
@@ -17,8 +16,6 @@ export const SECTION_META: Record<string, { icon: string; color: string }> = {
 };
 
 // Doc codes that must NOT have an upload slot.
-// VISA_APPLICATION_FORM is downloaded → printed → filled by hand → signed → photo pasted.
-// PASSPORT and PHOTOGRAPH are physical-only items.
 export const NO_UPLOAD_CODES = new Set([
   "PASSPORT",
   "PHOTOGRAPH",
@@ -26,13 +23,16 @@ export const NO_UPLOAD_CODES = new Set([
 ]);
 
 // Doc codes → special widget type.
-// Keep this in sync with the SpecialWidget union in types.ts.
+// Keep in sync with the SpecialWidget union in types/document.ts.
+// IMPORTANT: keys must exactly match the `code` field in the JSON data.
 export const SPECIAL_WIDGETS: Record<string, SpecialWidget> = {
-  PHOTOGRAPH: "photo_spec",
-  VISA_APPLICATION_FORM: "visa_form",
-  JAPAN_ITINERARY: "itinerary",
-  FRANCE_ITINERARY: "itinerary",
-  COVER_LETTER: "cover_letter",   // ← was missing; now explicit
+  PHOTOGRAPH:             "photo_spec",
+  VISA_APPLICATION_FORM:  "visa_form",
+  JAPAN_ITINERARY:        "itinerary",
+  FRANCE_ITINERARY:       "itinerary",
+  COVER_LETTER:           "cover_letter",
+  // FIX: was "DOCUMENT_CHECKLIST" but JSON uses code "DOC_CHECKLIST"
+  DOC_CHECKLIST:          "document_checklist",
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -84,6 +84,9 @@ export function mapRequirementsToDocumentData(
           form: formInfo,
           noUpload: NO_UPLOAD_CODES.has(doc.code),
           specialWidget: SPECIAL_WIDGETS[doc.code] ?? undefined,
+          photoSpecRef: doc.photoSpecRef ?? undefined,
+          // FIX: carry through the checklist download URL from the raw JSON doc
+          checkListDownloadUrl: doc.check_list_download_Url ?? undefined,
         };
       });
 

@@ -3,6 +3,7 @@ import Badge from "@/components/shared/Badge";
 import type { DocumentItem, UploadsMap } from "../../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import { DocHelper } from "../DocumentHelper";
+import type { PhotoSpec } from "../DocumentHelper";
 
 interface FocusDrawerProps {
   visibleDoc: DocumentItem;
@@ -15,6 +16,8 @@ interface FocusDrawerProps {
   drawerOpacity: number;
   drawerTranslateY: number;
   itineraryData: ItineraryPlacesData | null;
+  /** Photo spec for the current doc — resolved from RequirementsData by the parent */
+  photoSpec?: PhotoSpec | null;
   onClose: () => void;
   onToggleDone: (id: string) => void;
   onUpload: (file: File) => void;
@@ -36,6 +39,7 @@ export function FocusDrawer({
   drawerOpacity,
   drawerTranslateY,
   itineraryData,
+  photoSpec,
   onClose,
   onToggleDone,
   onUpload,
@@ -221,6 +225,7 @@ export function FocusDrawer({
           doc={visibleDoc}
           color={activeCategory?.color ?? T.indigo}
           uploads={uploads}
+          photoSpec={photoSpec}
           onUpload={onUpload}
           onRemove={onRemove}
           onItineraryReady={onItineraryReady}

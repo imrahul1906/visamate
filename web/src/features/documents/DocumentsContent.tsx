@@ -58,7 +58,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   );
 
   // ── Custom hooks ──────────────────────────────────────────────
-  const { data, itineraryData, visaTypeData, loading, error } = useDocumentData({
+  const { data, itineraryData, visaTypeData, requirementsData, loading, error } = useDocumentData({
     country, visaType, location, sponsorship,
     countryName, visaTypeName, locationName,
   });
@@ -117,6 +117,13 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const visibleDoc     = allDocs.find(d => d.id === visibleDocId) ?? null;
   const activeCategory = visibleDoc
     ? data?.categories.find(c => c.documents.some(d => d.id === visibleDoc.id))
+    : null;
+
+  // ── Resolve photo spec for the active doc ─────────────────────
+  // visibleDoc.photoSpecRef (e.g. "default") is now carried through by
+  // mapRequirements, so we can look it up directly in requirementsData.
+  const photoSpec = visibleDoc?.photoSpecRef && requirementsData?.photoSpecifications
+    ? (requirementsData.photoSpecifications[visibleDoc.photoSpecRef] ?? null)
     : null;
 
   const drawerOpen = activeDocId !== null;
@@ -253,6 +260,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 drawerOpacity={drawerOpacity}
                 drawerTranslateY={drawerTranslateY}
                 itineraryData={itineraryData}
+                photoSpec={photoSpec}
                 onClose={() => setActiveDocId(null)}
                 onToggleDone={toggleDocAndAdvance}
                 onUpload={(file) => handleUpload(visibleDoc.id, file)}

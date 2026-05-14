@@ -1,14 +1,8 @@
 // src/types/document.ts
 //
 // Central type definitions for the document checklist feature.
-// Previously lived at app/documents/types.ts — moved to src/types/document.ts
-// so it can be imported by both the checklist and the shared/ components
-// without creating circular deps.
-//
-// CHANGED from original:
-//   - Extracted SpecialWidget as a named export (was an anonymous inline union)
-//     and DocumentsContent but missing from the type, which caused implicit `any`
-//     and would silently break any exhaustive switch.
+// UI-layer types only. Raw JSON shapes live in lib/data/types.ts.
+// mapRequirements.ts bridges the two.
 
 export interface FormFillField {
   id: string;
@@ -25,11 +19,6 @@ export interface VisaFormInfo {
   downloadUrl?: string | null;
   onlineUrl?: string | null;
   requiresPrint?: boolean;
-  /**
-   * Key used to load form-fill field data.
-   * Maps to a key in FORM_FILL_DATA_STORE (Phase 1).
-   * In Phase 2, pass this key to your storage/API layer.
-   */
   formFillDataKey?: string | null;
 }
 
@@ -42,7 +31,8 @@ export type SpecialWidget =
   | "photo_spec"
   | "visa_form"
   | "itinerary"
-  | "cover_letter";
+  | "cover_letter"
+  | "document_checklist";
 
 export interface DocumentItem {
   id: string;
@@ -57,6 +47,10 @@ export interface DocumentItem {
   acceptedFormats?: string[];
   noUpload?: boolean;
   specialWidget?: SpecialWidget;
+  photoSpecRef?: string;
+  // FIX: added to carry the PDF download URL for the document_checklist widget.
+  // Populated by mapRequirements from doc.check_list_download_Url in the JSON.
+  checkListDownloadUrl?: string;
 }
 
 export interface DocumentCategory {

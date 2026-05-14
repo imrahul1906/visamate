@@ -19,8 +19,8 @@
   },
   "photoSpecifications": {
     "default": {
-      "widthMm": 45,
-      "heightMm": 35,
+      "widthMm": 35,
+      "heightMm": 45,
       "background": "Plain white",
       "colorFormat": "Colored",
       "faceVisibilityPercent": "70-80",
