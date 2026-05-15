@@ -193,6 +193,46 @@ export const STYLES = `
     display: grid; grid-template-columns: 24px 1fr 1fr 1fr 1fr 28px;
     gap: 8px; align-items: center;
   }
+
+  /* Country visit row — narrower grid: num | country | month-select | year-select | remove */
+  .cl-country-visit-header {
+    grid-template-columns: 24px 1fr 130px 90px 28px !important;
+  }
+  .cl-country-visit-row {
+    grid-template-columns: 24px 1fr 130px 90px 28px;
+  }
+
+  /* Compact styled select — used for month and year pickers */
+  .cl-select-pill {
+    appearance: none; -webkit-appearance: none;
+    background: var(--iw-surface2);
+    border: 1px solid var(--iw-border);
+    border-radius: 7px;
+    padding: 7px 28px 7px 10px;
+    font-size: 12px; font-weight: 500;
+    color: var(--iw-text);
+    font-family: var(--iw-ff-body);
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    min-width: 0;
+    transition: border-color 120ms, background 120ms;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238888aa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+  }
+  .cl-select-pill:focus { border-color: rgba(99,102,241,0.55); background-color: var(--iw-surface2); }
+  .cl-select-pill:hover { border-color: var(--iw-border2); }
+  .cl-select-pill option { background: #1a1a35; color: var(--iw-text); }
+
+  /* Mandatory asterisk */
+  .cl-required {
+    color: var(--iw-error);
+    font-size: 11px;
+    margin-left: 2px;
+    font-weight: 700;
+  }
   .cl-contact-num {
     width: 20px; height: 20px; border-radius: 50%; background: var(--iw-indigo);
     color: white; font-size: 10px; font-weight: 700;
@@ -454,6 +494,8 @@ export const STYLES = `
     .cl-ties-grid { grid-template-columns: 1fr 1fr; }
     .cl-contact-header { display: none; }
     .cl-contact-row { grid-template-columns: 24px 1fr 28px; }
+    .cl-country-visit-header { display: none !important; }
+    .cl-country-visit-row { grid-template-columns: 24px 1fr 100px 72px 28px !important; }
     .cl-context-strip { grid-template-columns: repeat(2, 1fr); }
     .cl-letter-sheet { padding: 24px 18px; }
   }

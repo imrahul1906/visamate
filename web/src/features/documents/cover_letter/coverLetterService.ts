@@ -11,10 +11,18 @@
 // Types
 // ─────────────────────────────────────────────────────────────
 
+/** A single country visit entry with structured month/year */
+export interface CountryVisit {
+  country: string;
+  /** Native <input type="month"> value — "YYYY-MM" e.g. "2024-06" */
+  month: string;
+}
+
 export interface CoverLetterInputs {
   // Travel
   departureCity: string;
-  countriesVisited: string;
+  /** Structured list of countries visited in last 5 years */
+  countriesVisited: CountryVisit[];
   travellingWith: "alone" | "with";
   companion: string;
 
@@ -122,6 +130,21 @@ export function today(): string {
   });
 }
 
+/**
+ * Format a "YYYY-MM" month string as "June 2025".
+ * Returns empty string if input is blank.
+ */
+export function fmtMonthYear(ym: string): string {
+  if (!ym) return "";
+  const [year, month] = ym.split("-");
+  const y = Number(year);
+  const m = Number(month);
+  // Guard: both parts must be valid numbers — prevents "Invalid date" in preview
+  if (!year || !month || isNaN(y) || isNaN(m) || m < 1 || m > 12) return "";
+  const d = new Date(y, m - 1, 1);
+  return d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+}
+
 // ─────────────────────────────────────────────────────────────
 // Profile helpers
 // ─────────────────────────────────────────────────────────────
@@ -172,11 +195,6 @@ export function validateCoverLetterInputs(
   if (isSponsored(inputs.sponsorshipType) && !inputs.sponsorRel.trim()) {
     errors.sponsorRel = "Required";
   }
-  if (inputs.hasDependant === "yes") {
-    if (!inputs.dependantName.trim()) errors.dependantName = "Required";
-    if (!inputs.dependantRelationship.trim()) errors.dependantRelationship = "Required";
-  }
-
   return errors;
 }
 

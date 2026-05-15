@@ -36,14 +36,19 @@ import { STYLES } from "./coverLetterStyles";
 import { COVER_LETTER_TEMPLATES } from "./coverLetterTemplates";
 
 /* ═══════════════════════════ MAIN WIDGET ═══════════════════════════ */
-export default function CoverLetterWidget() {
+export default function CoverLetterWidget({
+  onDocxReady,
+}: {
+  /** Called after a .docx Blob is generated so the parent can track documents. */
+  onDocxReady?: (file: File) => void;
+}) {
   const { ctx, update } = useApplicant();
   const [step, setStep] = useState("select"); // "select" | "inputs" | "letter"
 
   /* ── Step 1: Collect fresh inputs ── */
   const [inputs, setInputs] = useState<CoverLetterInputs>({
     departureCity: ctx.departureCity || "",
-    countriesVisited: ctx.countriesVisited || "",
+    countriesVisited: Array.isArray(ctx.countriesVisited) ? ctx.countriesVisited : [],
     travellingWith: (ctx.travellingWith as any) || "alone",
     companion: ctx.companion || "",
     applicantProfile: ctx.applicantProfile || "",
@@ -60,17 +65,20 @@ export default function CoverLetterWidget() {
     contacts: ctx.contacts?.length ? ctx.contacts : [{ name: "", rel: "", phone: "", email: "" }],
     purpose: ctx.purpose || "",
     hotelName: ctx.hotelName || "",
-    bankBalance: ctx.bankBalance || "",
-    hasDependant: (ctx.hasDependant as any) || "no",
-    dependantName: ctx.dependantName || "",
-    dependantDob: ctx.dependantDob || "",
-    dependantPassport: ctx.dependantPassport || "",
-    dependantRelationship: ctx.dependantRelationship || "",
+    bankBalance: "",
+    hasDependant: "no" as const,
+    dependantName: "",
+    dependantDob: "",
+    dependantPassport: "",
+    dependantRelationship: "",
   });
 
   /* ── Step 1: Validation ── */
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [attempted, setAttempted] = useState(false);
+
+  /* ── Dependants (separate array, not stored in inputs) ── */
+  const [dependants, setDependants] = useState<Array<{ name: string; relationship: string; dob: string; passport: string }>>([]);
 
   /* ── Step 2: Letter preview state (all l* prefixed states) ── */
   const [lHeading, setLHeading] = useState(COVER_LETTER_TEMPLATES.heading);
@@ -124,7 +132,7 @@ export default function CoverLetterWidget() {
     if (step === "letter") return;
     setInputs({
       departureCity: ctx.departureCity || "",
-      countriesVisited: ctx.countriesVisited || "",
+      countriesVisited: Array.isArray(ctx.countriesVisited) ? ctx.countriesVisited : [],
       travellingWith: (ctx.travellingWith as any) || "alone",
       companion: ctx.companion || "",
       applicantProfile: ctx.applicantProfile || "",
@@ -141,12 +149,12 @@ export default function CoverLetterWidget() {
       contacts: ctx.contacts?.length ? ctx.contacts : inputs.contacts,
       purpose: ctx.purpose || "",
       hotelName: ctx.hotelName || "",
-      bankBalance: ctx.bankBalance || "",
-      hasDependant: (ctx.hasDependant as any) || "no",
-      dependantName: ctx.dependantName || "",
-      dependantDob: ctx.dependantDob || "",
-      dependantPassport: ctx.dependantPassport || "",
-      dependantRelationship: ctx.dependantRelationship || "",
+      bankBalance: inputs.bankBalance,
+      hasDependant: inputs.hasDependant,
+      dependantName: "",
+      dependantDob: "",
+      dependantPassport: "",
+      dependantRelationship: "",
     });
   };
 
@@ -196,7 +204,7 @@ export default function CoverLetterWidget() {
       });
 
       // Seed letter preview state
-      const seeded = seedLetterState(inputs, makeCtx());
+      const seeded = seedLetterState(inputs, makeCtx(), dependants);
       setLHeading(seeded.lHeading as string);
       setLDate(seeded.lDate as string);
       setLSubject(seeded.lSubject as string);
@@ -280,6 +288,12 @@ export default function CoverLetterWidget() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      const filename = `Japan_Visa_Cover_Letter_${(lSigName || ctx.applicantName || "applicant").replace(/\s+/g, "_")}.docx`;
+      onDocxReady?.(new File([blob], filename, {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      }));
+
       setStep("select");
     } finally {
       setDownloading(false);
@@ -398,7 +412,34 @@ export default function CoverLetterWidget() {
             onUpdateContact={(idx, c) => setInputs((p) => ({ ...p, contacts: p.contacts.map((x, j) => (j === idx ? c : x)) }))}
             onRemoveContact={(idx) => setInputs((p) => ({ ...p, contacts: p.contacts.filter((_, j) => j !== idx) }))}
             onProceed={handleProceed}
+            onBack={() => setStep("select")}
             hasDependant={inputs.hasDependant}
+            dependants={dependants}
+            onAddDependant={() => setDependants((prev) => [...prev, { name: "", relationship: "", dob: "", passport: "" }])}
+            onUpdateDependant={(idx, d) => setDependants((prev) => prev.map((x, j) => (j === idx ? d : x)))}
+            onRemoveDependant={(idx) => setDependants((prev) => prev.filter((_, j) => j !== idx))}
+            onAddCountryVisit={() =>
+              setInputs((p) => ({
+                ...p,
+                countriesVisited: [...(Array.isArray(p.countriesVisited) ? p.countriesVisited : []), { country: "", month: "" }],
+              }))
+            }
+            onUpdateCountryVisit={(idx, v) =>
+              setInputs((p) => ({
+                ...p,
+                countriesVisited: (Array.isArray(p.countriesVisited) ? p.countriesVisited : []).map((x, j) =>
+                  j === idx ? v : x
+                ),
+              }))
+            }
+            onRemoveCountryVisit={(idx) =>
+              setInputs((p) => ({
+                ...p,
+                countriesVisited: (Array.isArray(p.countriesVisited) ? p.countriesVisited : []).filter(
+                  (_, j) => j !== idx
+                ),
+              }))
+            }
           />
         </div>
       )}
