@@ -7,11 +7,9 @@ import StepVisaType from "./steps/StepVisaType";
 import StepLocation from "./steps/StepLocation";
 import StepDetails from "./steps/StepDetails";
 import DocumentsContent from "../documents/DocumentsContent";
+import FlightAnimation from "./FlightAnimation";
 import { ApplicantProvider, useApplicant } from "@/lib/context/ApplicantContext";
-import {
-  getAllCountries,
-  type CountryCatalogEntry
-} from "@/lib/data/repository";
+import { getAllCountries, type CountryCatalogEntry } from "@/lib/data/repository";
 import type { WizardSelections } from "@/types/wizard";
 
 // ─── Static data ─────────────────────────────────────────────────────────────
@@ -31,25 +29,31 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
 
   useEffect(() => {
-    getAllCountries()
-    .then(setCountries)
-    .catch(err => {
+    getAllCountries().then(setCountries).catch(err => {
       console.error("[WizardAccordion] Failed to load country data:", err);
     });
   }, []);
 
-  const [activeStep, setActiveStep]             = useState(0);
-  const [displayStep, setDisplayStep]           = useState(0);
-  const [animState, setAnimState]               = useState<"idle" | "exit" | "enter">("idle");
-  const [direction, setDirection]               = useState<1 | -1>(1); // 1 = forward, -1 = backward
-  const animLock = useRef(false);
-  const [selectedCountry, setSelectedCountry]   = useState<string | null>(null);
+  const [activeStep, setActiveStep]                   = useState(0);
+  const [displayStep, setDisplayStep]                 = useState(0);
+  const [animState, setAnimState]                     = useState<"idle" | "exit" | "enter">("idle");
+  const [direction, setDirection]                     = useState<1 | -1>(1);
+  const animLock                                      = useRef(false);
+  const [selectedCountry, setSelectedCountry]         = useState<string | null>(null);
   const [selectedCountryName, setSelectedCountryName] = useState<string | null>(null);
-  const [selectedVisa, setSelectedVisa]         = useState<string | null>(null);
-  const [selectedVisaName, setSelectedVisaName] = useState<string | null>(null);
-  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
-  const [sponsorship, setSponsorship]           = useState<string | null>(null);
-  const [profile, setProfile]                   = useState<string | null>(null);
+  const [selectedVisa, setSelectedVisa]               = useState<string | null>(null);
+  const [selectedVisaName, setSelectedVisaName]       = useState<string | null>(null);
+  const [selectedLocation, setSelectedLocation]       = useState<string | null>(null);
+  const [sponsorship, setSponsorship]                 = useState<string | null>(null);
+  const [profile, setProfile]                         = useState<string | null>(null);
+
+  // ── Flight state ─────────────────────────────────────────────────────────────
+  // "idle"      → wizard steps shown normally
+  // "animating" → flight animation overlays the card, wizard fades out
+  // "landed"    → flight animation frozen on last frame; wizard stays hidden forever
+  //               (user has scrolled to docs — card is a pretty artifact now)
+  const [flightState, setFlightState]       = useState<"idle" | "animating" | "landed">("idle");
+  const [pendingSelections, setPendingSelections] = useState<WizardSelections | null>(null);
 
   const goToStep = (next: number) => {
     if (animLock.current || next === activeStep) return;
@@ -61,10 +65,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
       setActiveStep(next);
       setDisplayStep(next);
       setAnimState("enter");
-      setTimeout(() => {
-        setAnimState("idle");
-        animLock.current = false;
-      }, 320);
+      setTimeout(() => { setAnimState("idle"); animLock.current = false; }, 320);
     }, 220);
   };
 
@@ -81,12 +82,9 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
     "Continue → Trip details",
     "Show my documents",
   ];
-  const continueLabel = continueLabels[activeStep] ?? "Continue";
 
   const handleCountrySelect = (code: string | null, name: string | null) => {
-    if (code != selectedCountry) {
-      update({ visaType: "", visaTypeName: "" });
-    }
+    if (code !== selectedCountry) update({ visaType: "", visaTypeName: "" });
     setSelectedCountry(code);
     setSelectedCountryName(name);
     if (!code) { setSelectedVisa(null); setSelectedVisaName(null); }
@@ -102,232 +100,249 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
     setProfile(pr);
   };
 
-  const breadcrumbs = [
-    selectedCountryName,
-    selectedVisaName,
-    selectedLocation,
-  ].slice(0, activeStep).filter(Boolean);
+  const breadcrumbs = [selectedCountryName, selectedVisaName, selectedLocation]
+    .slice(0, activeStep).filter(Boolean);
 
   const handleContinue = () => {
     if (!canContinue) return;
     if (activeStep === 3) {
-      onShowDocuments({
-        country:      selectedCountry      ?? "",
-        countryName:  selectedCountryName  ?? "",
-        visaType:     selectedVisa         ?? "",
-        visaTypeName: selectedVisaName     ?? "",
-        location:     selectedLocation     ?? "",
-        locationName: selectedLocation     ?? "",
-        sponsorship:  sponsorship          ?? "SELF",
-        profile:      profile              ?? ""
-      });
+      const selections: WizardSelections = {
+        country:      selectedCountry     ?? "",
+        countryName:  selectedCountryName ?? "",
+        visaType:     selectedVisa        ?? "",
+        visaTypeName: selectedVisaName    ?? "",
+        location:     selectedLocation    ?? "",
+        locationName: selectedLocation    ?? "",
+        sponsorship:  sponsorship         ?? "SELF",
+        profile:      profile             ?? "",
+      };
+      setPendingSelections(selections);
+      setFlightState("animating");
     } else {
       goToStep(Math.min(activeStep + 1, STEP_LABELS.length - 1));
     }
   };
 
+  const handleFlightComplete = () => {
+    // Transition to "landed" — keeps the flight overlay visible (frozen last-frame)
+    // while telling the parent to reveal + scroll to docs
+    setFlightState("landed");
+    if (pendingSelections) onShowDocuments(pendingSelections);
+  };
+
+  // Show the flight overlay whenever we're animating OR frozen on the last frame
+  const showFlight = flightState === "animating" || flightState === "landed";
+
   return (
     <>
-      {/* Inject keyframes once */}
       <style>{`
         @keyframes cardFloat {
           0%, 100% { transform: translateY(0px); }
           50%       { transform: translateY(-6px); }
         }
-        .wizard-card {
-          animation: cardFloat 6s ease-in-out infinite;
-        }
-        .wizard-card:hover {
-          animation-play-state: paused;
-        }
-        @keyframes stepExitForward {
-          from { opacity: 1; transform: translateX(0) scale(1); }
-          to   { opacity: 0; transform: translateX(-28px) scale(0.97); }
-        }
-        @keyframes stepExitBackward {
-          from { opacity: 1; transform: translateX(0) scale(1); }
-          to   { opacity: 0; transform: translateX(28px) scale(0.97); }
-        }
-        @keyframes stepEnterForward {
-          from { opacity: 0; transform: translateX(32px) scale(0.97); }
-          to   { opacity: 1; transform: translateX(0) scale(1); }
-        }
-        @keyframes stepEnterBackward {
-          from { opacity: 0; transform: translateX(-32px) scale(0.97); }
-          to   { opacity: 1; transform: translateX(0) scale(1); }
-        }
+        .wizard-card { animation: cardFloat 6s ease-in-out infinite; }
+        .wizard-card:hover { animation-play-state: paused; }
+        .wizard-card.is-flying { animation-play-state: paused; }
+
+        @keyframes stepExitForward   { from { opacity:1; transform: translateX(0) scale(1); } to { opacity:0; transform: translateX(-28px) scale(0.97); } }
+        @keyframes stepExitBackward  { from { opacity:1; transform: translateX(0) scale(1); } to { opacity:0; transform: translateX(28px) scale(0.97); } }
+        @keyframes stepEnterForward  { from { opacity:0; transform: translateX(32px) scale(0.97); } to { opacity:1; transform: translateX(0) scale(1); } }
+        @keyframes stepEnterBackward { from { opacity:0; transform: translateX(-32px) scale(0.97); } to { opacity:1; transform: translateX(0) scale(1); } }
         .step-exit-forward   { animation: stepExitForward   0.22s cubic-bezier(0.4,0,1,1) forwards; }
         .step-exit-backward  { animation: stepExitBackward  0.22s cubic-bezier(0.4,0,1,1) forwards; }
         .step-enter-forward  { animation: stepEnterForward  0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
         .step-enter-backward { animation: stepEnterBackward 0.32s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+        @keyframes flightFadeIn { from { opacity:0; transform: scale(0.97); } to { opacity:1; transform: scale(1); } }
+        .flight-enter { animation: flightFadeIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
       `}</style>
 
       <div
-        className="wizard-card"
+        className={`wizard-card${showFlight ? " is-flying" : ""}`}
         style={{
-          /* ── Fixed dimensions ── */
           height: 500,
           display: "flex",
           flexDirection: "column",
-
-          /* ── Glass surface ── */
-          background: "rgba(255,255,255,0.035)",
+          background: showFlight ? "rgba(6,3,18,0.95)" : "rgba(255,255,255,0.035)",
           backdropFilter: "blur(24px) saturate(160%)",
           WebkitBackdropFilter: "blur(24px) saturate(160%)",
-
-          /* ── Border: faint top highlight + regular edge ── */
           border: "0.5px solid rgba(255,255,255,0.1)",
-          borderTop: "0.5px solid rgba(255,255,255,0.18)",
-
+          borderTop: showFlight
+            ? "0.5px solid rgba(108,92,231,0.4)"
+            : "0.5px solid rgba(255,255,255,0.18)",
           borderRadius: 22,
           padding: "20px 20px 16px",
-
-          /* ── Elevation ── */
-          boxShadow:
-            "0 8px 32px rgba(0,0,0,0.45), " +
-            "0 2px 8px rgba(0,0,0,0.3), " +
-            "0 0 0 0.5px rgba(108,92,231,0.12) inset, " +
-            "0 32px 64px rgba(108,92,231,0.08)",
+          boxShadow: showFlight
+            ? "0 8px 40px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(108,92,231,0.3) inset, 0 32px 80px rgba(108,92,231,0.2)"
+            : "0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(108,92,231,0.12) inset, 0 32px 64px rgba(108,92,231,0.08)",
+          transition: "background 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease",
+          overflow: "hidden",
+          position: "relative",
         }}
       >
-        {/* Header row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexShrink: 0 }}>
-          <div>
-            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>Step {activeStep + 1} of {STEP_LABELS.length}</span>
-            <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
-              {STEP_LABELS[activeStep] === "Country" ? "Select destination" : `Select ${STEP_LABELS[activeStep].toLowerCase()}`}
+        {/* ── Single column layout: navigation always on top, content below ── */}
+        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+
+          {/* ── Header: always visible ── */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, flexShrink: 0 }}>
+            <div>
+              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
+                {showFlight ? "✓ All steps complete" : `Step ${activeStep + 1} of ${STEP_LABELS.length}`}
+              </span>
+              <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
+                {showFlight
+                  ? `India → ${pendingSelections?.countryName}`
+                  : STEP_LABELS[activeStep] === "Country" ? "Select destination" : `Select ${STEP_LABELS[activeStep].toLowerCase()}`}
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 5 }}>
+              {STEP_LABELS.map((_, i) => (
+                <div key={i} style={{
+                  width: showFlight ? 18 : i === activeStep ? 22 : 18,
+                  height: 4, borderRadius: 2,
+                  background: showFlight ? "#4ade80" : i < activeStep ? "#4ade80" : i === activeStep ? "#6c5ce7" : "rgba(255,255,255,0.12)",
+                  transition: "all 0.3s",
+                }} />
+              ))}
             </div>
           </div>
-          <div style={{ display: "flex", gap: 5 }}>
-            {STEP_LABELS.map((_, i) => (
-              <div key={i} style={{
-                width: i === activeStep ? 22 : 18, height: 4, borderRadius: 2,
-                background: i < activeStep ? "#4ade80" : i === activeStep ? "#6c5ce7" : "rgba(255,255,255,0.12)",
-                transition: "all 0.3s",
-              }} />
-            ))}
-          </div>
-        </div>
 
-        {/* Breadcrumb pills */}
-        <div style={{ minHeight: 28, marginBottom: breadcrumbs.length ? 10 : 0, flexShrink: 0 }}>
-          {breadcrumbs.length > 0 && (
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {breadcrumbs.map((label, i) => (
-                <div
-                  key={i}
-                  onClick={() => goToStep(i)}
-                  style={{
+          {/* ── Breadcrumbs: always visible (show all selections when flight is showing) ── */}
+          <div style={{ minHeight: 28, marginBottom: 10, flexShrink: 0 }}>
+            {showFlight && pendingSelections ? (
+              // During/after animation: show all selections as clickable chips to go back
+              <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                {[
+                  { label: selectedCountryName, step: 0 },
+                  { label: selectedVisaName, step: 1 },
+                  { label: selectedLocation, step: 2 },
+                ].filter(b => b.label).map((b, i) => (
+                  <div
+                    key={i}
+                    onClick={() => { setFlightState("idle"); setPendingSelections(null); goToStep(b.step); }}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 5,
+                      background: "rgba(108,92,231,0.1)",
+                      border: "0.5px solid rgba(108,92,231,0.3)",
+                      borderRadius: 20, padding: "4px 10px 4px 8px", cursor: "pointer",
+                    }}
+                  >
+                    <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                    <span style={{ color: "#a89cef", fontSize: 11 }}>{b.label}</span>
+                  </div>
+                ))}
+              </div>
+            ) : breadcrumbs.length > 0 ? (
+              // Normal wizard steps: show completed step breadcrumbs
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {breadcrumbs.map((label, i) => (
+                  <div key={i} onClick={() => goToStep(i)} style={{
                     display: "inline-flex", alignItems: "center", gap: 5,
                     background: "rgba(108,92,231,0.1)",
                     border: "0.5px solid rgba(108,92,231,0.3)",
-                    borderRadius: 20, padding: "4px 10px 4px 8px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
+                    borderRadius: 20, padding: "4px 10px 4px 8px", cursor: "pointer",
+                  }}>
+                    <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                    <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          {/* ── Content area: flight map OR wizard step ── */}
+          <div style={{
+            flex: 1, minHeight: 0, marginBottom: 14,
+            position: "relative", overflow: "hidden",
+          }}>
+            {/* Flight animation — rendered in-flow, never an overlay */}
+            {showFlight && pendingSelections && (
+              <div
+                className={flightState === "animating" ? "flight-enter" : undefined}
+                style={{ position: "absolute", inset: 0 }}
+              >
+                <FlightAnimation
+                  inline
+                  countryCode={pendingSelections.country}
+                  countryName={pendingSelections.countryName}
+                  onComplete={flightState === "animating" ? handleFlightComplete : () => {}}
+                />
+              </div>
+            )}
+
+            {/* Wizard step content — hidden (not unmounted) while flight plays */}
+            <div style={{
+              position: "absolute", inset: 0,
+              overflowY: "auto", overflowX: "hidden",
+              WebkitOverflowScrolling: "touch" as any,
+              scrollBehavior: "smooth", scrollbarWidth: "none", msOverflowStyle: "none",
+              opacity: showFlight ? 0 : 1,
+              pointerEvents: showFlight ? "none" : "auto",
+              transition: "opacity 0.25s ease",
+            }}>
+              <style>{`.wizard-scroll::-webkit-scrollbar { display: none; }`}</style>
+              <div className={
+                animState === "exit" ? (direction === 1 ? "step-exit-forward" : "step-exit-backward") :
+                animState === "enter" ? (direction === 1 ? "step-enter-forward" : "step-enter-backward") : ""
+              } style={{ height: "100%" }}>
+                <div className="wizard-scroll" style={{ height: "100%" }}>
+                  {activeStep === 0 && <StepCountry allCountries={countries} selectedCountry={selectedCountry} onSelect={handleCountrySelect} compact />}
+                  {activeStep === 1 && <StepVisaType countryCode={selectedCountry} selectedVisa={selectedVisa} onSelect={handleVisaSelect} compact />}
+                  {activeStep === 2 && <StepLocation countryCode={selectedCountry} selectedLocation={selectedLocation} onSelect={setSelectedLocation} compact />}
+                  {activeStep === 3 && <StepDetails sponsorship={sponsorship} profile={profile} onSelect={handleDetailsSelect} compact />}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── CTA: always visible ── */}
+          <div style={{ flexShrink: 0 }}>
+            <button
+              onClick={showFlight
+                ? () => { setFlightState("idle"); setPendingSelections(null); goToStep(3); }
+                : handleContinue}
+              style={{
+                width: "100%",
+                background: showFlight
+                  ? "rgba(108,92,231,0.15)"
+                  : canContinue
+                    ? activeStep === 3 ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)" : "#6c5ce7"
+                    : "rgba(255,255,255,0.06)",
+                color: showFlight ? "#a89cef" : canContinue ? "#fff" : "rgba(255,255,255,0.2)",
+                border: showFlight ? "0.5px solid rgba(108,92,231,0.35)" : "none",
+                borderRadius: 10, padding: "11px",
+                fontSize: 13, fontWeight: 500,
+                cursor: showFlight ? "pointer" : canContinue ? "pointer" : "not-allowed",
+                transition: "all 0.3s",
+                boxShadow: !showFlight && canContinue && activeStep === 3 ? "0 4px 20px rgba(108,92,231,0.4)" : "none",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+              }}
+              onMouseEnter={e => { (e.currentTarget.style.opacity = "0.88"); }}
+              onMouseLeave={e => { (e.currentTarget.style.opacity = "1"); }}
+            >
+              {showFlight ? (
+                <>
+                  <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                   </svg>
-                  <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Step content — scrollable, fills remaining space */}
-        <div style={{
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden",
-          marginBottom: 14,
-          /* smooth momentum scrolling */
-          WebkitOverflowScrolling: "touch" as any,
-          scrollBehavior: "smooth",
-          /* subtle inner fade at bottom so content disappears gracefully */
-          maskImage: "linear-gradient(to bottom, black 82%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 82%, transparent 100%)",
-          /* hide scrollbar but keep it functional */
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}>
-          <style>{`.wizard-scroll::-webkit-scrollbar { display: none; }`}</style>
-          <div
-            className={
-              animState === "exit"
-                ? (direction === 1 ? "step-exit-forward" : "step-exit-backward")
-                : animState === "enter"
-                ? (direction === 1 ? "step-enter-forward" : "step-enter-backward")
-                : ""
-            }
-            style={{ height: "100%" }}
-          >
-          <div className="wizard-scroll" style={{ height: "100%" }}>
-            {activeStep === 0 && (
-              <StepCountry
-                allCountries={countries}
-                selectedCountry={selectedCountry}
-                onSelect={handleCountrySelect}
-                compact
-              />
-            )}
-            {activeStep === 1 && (
-              <StepVisaType
-                countryCode={selectedCountry}
-                selectedVisa={selectedVisa}
-                onSelect={handleVisaSelect}
-                compact
-              />
-            )}
-            {activeStep === 2 && (
-              <StepLocation
-                countryCode={selectedCountry}
-                selectedLocation={selectedLocation}
-                onSelect={setSelectedLocation}
-                compact
-              />
-            )}
-            {activeStep === 3 && (
-              <StepDetails
-                sponsorship={sponsorship}
-                profile={profile}
-                onSelect={handleDetailsSelect}
-                compact
-              />
-            )}
-          </div>{/* wizard-scroll */}
-          </div>{/* step animation wrapper */}
-        </div>
-
-        {/* CTA — always pinned to bottom */}
-        <div style={{ flexShrink: 0 }}>
-          <button
-            onClick={handleContinue}
-            style={{
-              width: "100%",
-              background: canContinue
-                ? activeStep === 3
-                  ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
-                  : "#6c5ce7"
-                : "rgba(255,255,255,0.06)",
-              color: canContinue ? "#fff" : "rgba(255,255,255,0.2)",
-              border: "none", borderRadius: 10, padding: "11px",
-              fontSize: 13, fontWeight: 500,
-              cursor: canContinue ? "pointer" : "not-allowed",
-              transition: "all 0.2s",
-              boxShadow: canContinue && activeStep === 3 ? "0 4px 20px rgba(108,92,231,0.4)" : "none",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            }}
-            onMouseEnter={e => { if (canContinue) (e.currentTarget.style.opacity = "0.88"); }}
-            onMouseLeave={e => { if (canContinue) (e.currentTarget.style.opacity = "1"); }}
-          >
-            {activeStep === 3 && canContinue && (
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
-              </svg>
-            )}
-            {continueLabel}
-          </button>
+                  Edit selections
+                </>
+              ) : (
+                <>
+                  {activeStep === 3 && canContinue && (
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
+                    </svg>
+                  )}
+                  {continueLabels[activeStep] ?? "Continue"}
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </>
@@ -339,10 +354,8 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
 function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
   return (
     <section style={{
-      background: "#0a0718", minHeight: "100vh",
-      padding: "0 32px",
-      display: "flex", alignItems: "center",
-      position: "relative", overflow: "hidden",
+      background: "#0a0718", minHeight: "100vh", padding: "0 32px",
+      display: "flex", alignItems: "center", position: "relative", overflow: "hidden",
     }}>
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
@@ -353,25 +366,20 @@ function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => v
         display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56,
         alignItems: "center", paddingTop: 80, position: "relative",
       }}>
-        {/* Left */}
         <div>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 7,
-            background: "rgba(108,92,231,0.15)",
-            border: "0.5px solid rgba(108,92,231,0.38)",
-            color: "#a89cef", fontSize: 11, padding: "4px 12px",
-            borderRadius: 20, marginBottom: 24,
+            background: "rgba(108,92,231,0.15)", border: "0.5px solid rgba(108,92,231,0.38)",
+            color: "#a89cef", fontSize: 11, padding: "4px 12px", borderRadius: 20, marginBottom: 24,
           }}>
             <div style={{ width: 5, height: 5, background: "#6c5ce7", borderRadius: "50%" }} />
             Visa Document Intelligence
           </div>
           <h1 style={{
             color: "#fff", fontSize: "clamp(32px, 4vw, 50px)",
-            fontWeight: 500, lineHeight: 1.15, margin: "0 0 18px",
-            letterSpacing: "-0.03em",
+            fontWeight: 500, lineHeight: 1.15, margin: "0 0 18px", letterSpacing: "-0.03em",
           }}>
-            Your personalised<br />
-            visa checklist,<br />
+            Your personalised<br />visa checklist,<br />
             <span style={{ color: "#a89cef" }}>in 4 steps.</span>
           </h1>
           <p style={{ color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.7, margin: "0 0 30px", maxWidth: 420 }}>
@@ -386,7 +394,6 @@ function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => v
             ))}
           </div>
         </div>
-        {/* Right: wizard */}
         <div><WizardCard onShowDocuments={onShowDocuments} /></div>
       </div>
     </section>
@@ -395,9 +402,7 @@ function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => v
 
 // ─── DocumentsSection ─────────────────────────────────────────────────────────
 
-function DocumentsSection({
-  sectionRef, visible, selections,
-}: {
+function DocumentsSection({ sectionRef, visible, selections }: {
   sectionRef: React.RefObject<HTMLDivElement>;
   visible: boolean;
   selections: WizardSelections;
@@ -406,8 +411,7 @@ function DocumentsSection({
     <section
       ref={sectionRef}
       style={{
-        background: "#0d0b1e",
-        borderTop: "0.5px solid rgba(255,255,255,0.07)",
+        background: "#0d0b1e", borderTop: "0.5px solid rgba(255,255,255,0.07)",
         padding: "72px 0 80px",
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(56px)",
@@ -436,40 +440,31 @@ export default function VisaMateLanding() {
   const [wizardSelections, setWizardSelections] = useState<WizardSelections | null>(null);
   const docsSectionRef = useRef<HTMLDivElement>(null);
 
+  const scrollToDocs = () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const target = docsSectionRef.current;
+      if (!target) return;
+      const startY  = window.scrollY;
+      const targetY = target.getBoundingClientRect().top + window.scrollY;
+      const distance = targetY - startY;
+      const duration = 900;
+      let startTime: number | null = null;
+      const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+      const step = (ts: number) => {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        const p = Math.min(elapsed / duration, 1);
+        window.scrollTo(0, startY + distance * easeOutCubic(p));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }));
+  };
+
   const handleShowDocuments = (selections: WizardSelections) => {
     setWizardSelections(selections);
     setDocsVisible(true);
-
-    // Wait one frame for the section to mount, then smoothly scroll to it
-    // using a custom eased animation for a premium feel.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const target = docsSectionRef.current;
-        if (!target) return;
-
-        const startY   = window.scrollY;
-        const targetY  = target.getBoundingClientRect().top + window.scrollY;
-        const distance = targetY - startY;
-        const duration = 900; // ms — long enough to feel deliberate
-        let startTime: number | null = null;
-
-        // Cubic ease-out: fast start, graceful deceleration
-        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-
-        const step = (timestamp: number) => {
-          if (!startTime) startTime = timestamp;
-          const elapsed  = timestamp - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased    = easeOutCubic(progress);
-
-          window.scrollTo(0, startY + distance * eased);
-
-          if (progress < 1) requestAnimationFrame(step);
-        };
-
-        requestAnimationFrame(step);
-      });
-    });
+    scrollToDocs();
   };
 
   return (
@@ -478,9 +473,7 @@ export default function VisaMateLanding() {
         <style>{`
           * { box-sizing: border-box; margin: 0; padding: 0; }
           input::placeholder { color: rgba(255,255,255,0.25); }
-          @media (max-width: 768px) {
-            .hero-grid { grid-template-columns: 1fr !important; }
-          }
+          @media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr !important; } }
         `}</style>
         <Hero onShowDocuments={handleShowDocuments} />
         {docsVisible && wizardSelections && (
