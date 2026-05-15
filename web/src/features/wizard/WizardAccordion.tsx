@@ -329,108 +329,6 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
                   <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                   </svg>
-<<<<<<< Updated upstream
-                  <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Step content — scrollable, fills remaining space */}
-        <div style={{
-          flex: 1,
-          overflowY: "auto",
-          overflowX: "hidden",
-          marginBottom: 14,
-          /* smooth momentum scrolling */
-          WebkitOverflowScrolling: "touch" as any,
-          scrollBehavior: "smooth",
-          /* subtle inner fade at bottom so content disappears gracefully */
-          maskImage: "linear-gradient(to bottom, black 82%, transparent 100%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 82%, transparent 100%)",
-          /* hide scrollbar but keep it functional */
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}>
-          <style>{`.wizard-scroll::-webkit-scrollbar { display: none; }`}</style>
-          <div
-            className={
-              animState === "exit"
-                ? (direction === 1 ? "step-exit-forward" : "step-exit-backward")
-                : animState === "enter"
-                ? (direction === 1 ? "step-enter-forward" : "step-enter-backward")
-                : ""
-            }
-            style={{ height: "100%" }}
-          >
-          <div className="wizard-scroll" style={{ height: "100%" }}>
-            {activeStep === 0 && (
-              <StepCountry
-                allCountries={countries}
-                selectedCountry={selectedCountry}
-                onSelect={handleCountrySelect}
-                compact
-              />
-            )}
-            {activeStep === 1 && (
-              <StepVisaType
-                countryCode={selectedCountry}
-                selectedVisa={selectedVisa}
-                onSelect={handleVisaSelect}
-                compact
-              />
-            )}
-            {activeStep === 2 && (
-              <StepLocation
-                countryCode={selectedCountry}
-                selectedLocation={selectedLocation}
-                onSelect={setSelectedLocation}
-                compact
-              />
-            )}
-            {activeStep === 3 && (
-              <StepDetails
-                sponsorship={sponsorship}
-                profile={profile}
-                onSelect={handleDetailsSelect}
-                compact
-              />
-            )}
-          </div>{/* wizard-scroll */}
-          </div>{/* step animation wrapper */}
-        </div>
-
-        {/* CTA — always pinned to bottom */}
-        <div style={{ flexShrink: 0 }}>
-          <button
-            onClick={handleContinue}
-            style={{
-              width: "100%",
-              background: canContinue
-                ? activeStep === 3
-                  ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
-                  : "#6c5ce7"
-                : "rgba(255,255,255,0.06)",
-              color: canContinue ? "#fff" : "rgba(255,255,255,0.2)",
-              border: "none", borderRadius: 10, padding: "11px",
-              fontSize: 13, fontWeight: 500,
-              cursor: canContinue ? "pointer" : "not-allowed",
-              transition: "all 0.2s",
-              boxShadow: canContinue && activeStep === 3 ? "0 4px 20px rgba(108,92,231,0.4)" : "none",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-            }}
-            onMouseEnter={e => { if (canContinue) (e.currentTarget.style.opacity = "0.88"); }}
-            onMouseLeave={e => { if (canContinue) (e.currentTarget.style.opacity = "1"); }}
-          >
-            {activeStep === 3 && canContinue && (
-              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
-              </svg>
-            )}
-            {continueLabel}
-          </button>
-=======
                   Edit selections
                 </>
               ) : (
@@ -445,7 +343,6 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
               )}
             </button>
           </div>
->>>>>>> Stashed changes
         </div>
       </div>
     </>
