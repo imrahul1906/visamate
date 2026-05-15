@@ -20,6 +20,7 @@ export interface DocHelperProps {
   onUpload: (file: File) => void;
   onRemove: () => void;
   onItineraryReady: (file: File) => void;
+  onCoverLetterReady: (file: File) => void;
   itineraryData?: ItineraryPlacesData | null;
 }
 
@@ -30,6 +31,7 @@ export function DocHelper({
   onUpload,
   onRemove,
   onItineraryReady,
+  onCoverLetterReady,
   itineraryData,
 }: DocHelperProps) {
   // Wrap the flat callbacks back into the docId-keyed signatures
@@ -68,7 +70,7 @@ export function DocHelper({
 
       {/* Cover letter builder */}
       {doc.specialWidget === "cover_letter" && (
-        <CoverLetterWidget />
+        <CoverLetterWidget onDocxReady={file => onCoverLetterReady(file)} />
       )}
 
       {/* Upload slot — not shown for hardcopy-only docs */}

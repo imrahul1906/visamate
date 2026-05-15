@@ -13,9 +13,11 @@
 
 import {
   CoverLetterInputs,
+  CountryVisit,
   ApplicantContext,
   fmtDate,
   fmtDateEnd,
+  fmtMonthYear,
   today,
   isEmployed,
   isSponsored,
@@ -26,7 +28,7 @@ import { COVER_LETTER_TEMPLATES } from "./coverLetterTemplates";
 
 // Re-export date helpers and profile checks so existing importers of
 // coverLetterUtils don't need to change their import paths.
-export { fmtDate, fmtDateEnd, today, isEmployed, isStudent, isSponsored, isNocNeeded };
+export { fmtDate, fmtDateEnd, fmtMonthYear, today, isEmployed, isStudent, isSponsored, isNocNeeded };
 
 /** Wrap an editorial note in the hint marker syntax. */
 const hint = (msg: string) => `[[HINT: ${msg}]]`;
@@ -41,7 +43,8 @@ const hint = (msg: string) => `[[HINT: ${msg}]]`;
  */
 export function seedLetterState(
   inputs: CoverLetterInputs,
-  ctx: ApplicantContext
+  ctx: ApplicantContext,
+  dependants: Array<{ name: string; relationship: string; dob: string; passport: string }> = []
 ): {
   [key: string]: string | string[];
 } {
@@ -106,8 +109,8 @@ export function seedLetterState(
       hint(
         "Add more details about your family here — e.g. if you have a spouse, children, or dependents who rely on you for medical or other support, mention them. The more specific, the stronger this section."
       ),
-    lEconomicTies: buildEconomicTiesSection(inputs, country, vfsCenter),
-    lDependant: buildDependantSection(inputs),
+    lEconomicTies: buildEconomicTiesSection(inputs, country, vfsCenter, dependants),
+    lDependant: buildDependantSection(inputs, dependants),
     lSecDependant: "Information Relating to the Dependants Applying with Me",
     lFinance: buildFinanceSection(inputs, country),
     lSponsor:
@@ -146,19 +149,43 @@ export function seedLetterState(
 // Section builders
 // ─────────────────────────────────────────────────────────────
 
-/** Helper function to build immigration paragraph */
+/**
+ * Build the immigration history paragraph.
+ *
+ * With structured visits: sorts chronologically (newest first) and formats
+ * as "Japan (June 2024), UAE (March 2023), Thailand (January 2022)".
+ * Entries with no country name are skipped; entries with no month show just
+ * the country name without parentheses.
+ */
 function buildImmigrationParag(inputs: CoverLetterInputs): string {
-  const hasCountries = inputs.countriesVisited.trim().length > 0;
+  const visits: CountryVisit[] = Array.isArray(inputs.countriesVisited)
+    ? inputs.countriesVisited.filter((v) => v.country.trim())
+    : [];
 
-  if (!hasCountries) {
+  if (visits.length === 0) {
     return (
       `I have maintained a clean immigration record and have not travelled internationally in the ` +
       `last five years. I have no history of visa refusals or overstays in any country.`
     );
   }
 
+  // Sort newest first (month string "YYYY-MM" sorts lexicographically)
+  const sorted = [...visits].sort((a, b) => {
+    if (!a.month && !b.month) return 0;
+    if (!a.month) return 1;
+    if (!b.month) return -1;
+    return b.month.localeCompare(a.month);
+  });
+
+  const formatted = sorted
+    .map((v) => {
+      const monthStr = v.month ? fmtMonthYear(v.month) : "";
+      return monthStr ? `${v.country.trim()} (${monthStr})` : v.country.trim();
+    })
+    .join(", ");
+
   return (
-    `In the last five years, I have travelled to the following countries: ${inputs.countriesVisited}. ` +
+    `In the last five years, I have travelled to the following countries: ${formatted}. ` +
     `I have maintained a clean immigration record with no history of visa refusals or overstays.`
   );
 }
@@ -167,11 +194,13 @@ function buildImmigrationParag(inputs: CoverLetterInputs): string {
 function buildEconomicTiesSection(
   inputs: CoverLetterInputs,
   country: string,
-  vfsCenter: string
+  vfsCenter: string,
+  dependants: Array<{ name: string; relationship: string; dob: string; passport: string }> = []
 ): string {
+  const firstDepName = dependants[0]?.name;
   const depPhrase =
-    inputs.hasDependant === "yes" && inputs.dependantName
-      ? `myself and my dependant (${inputs.dependantName})`
+    inputs.hasDependant === "yes" && dependants.length > 0
+      ? `myself and my dependant${dependants.length > 1 ? "s" : ""}${firstDepName ? ` (${firstDepName})` : ""}`
       : "myself";
 
   let text =
@@ -195,30 +224,38 @@ function buildEconomicTiesSection(
 }
 
 /** Build the dependant section text (empty string if no dependant) */
-export function buildDependantSection(inputs: CoverLetterInputs): string {
-  if (inputs.hasDependant !== "yes") return "";
+export function buildDependantSection(
+  inputs: CoverLetterInputs,
+  dependants: Array<{ name: string; relationship: string; dob: string; passport: string }> = []
+): string {
+  if (inputs.hasDependant !== "yes" || dependants.length === 0) return "";
 
-  const rel = inputs.dependantRelationship || "[Relationship]";
-  const name = inputs.dependantName || "[Full Name]";
-  const dob = inputs.dependantDob
-    ? inputs.dependantDob
-    : hint("Add date of birth (e.g. 15 April 1990)");
-  const passport = inputs.dependantPassport
-    ? inputs.dependantPassport
-    : hint("Add passport number");
+  const blocks = dependants.map((dep, i) => {
+    const rel = dep.relationship || "[Relationship]";
+    const name = dep.name || "[Full Name]";
+    const dob = dep.dob ? dep.dob : hint("Add date of birth (e.g. 15 April 1990)");
+    const passport = dep.passport ? dep.passport : hint("Add passport number");
+    const relCapital = rel.charAt(0).toUpperCase() + rel.slice(1);
+    const prefix = dependants.length > 1 ? `Dependant ${i + 1} — ${relCapital}\n` : "";
+    return (
+      prefix +
+      `• Full Name: ${name}\n` +
+      `• Date of Birth: ${dob}\n` +
+      `• Nationality: Indian\n` +
+      `• Passport Number: ${passport}\n` +
+      `• Relationship: ${relCapital}`
+    );
+  });
 
-  const relCapital = rel.charAt(0).toUpperCase() + rel.slice(1);
+  const intro = dependants.length === 1
+    ? `My ${dependants[0].relationship || "dependant"} is accompanying me on this trip, and their details are provided below for reference.\n\n`
+    : `The following dependants are accompanying me on this trip.\n\n`;
 
   return (
-    `My ${rel} is accompanying me on this trip, and their details are provided below for reference.\n\n` +
-    `• Full Name: ${name}\n` +
-    `• Date of Birth: ${dob}\n` +
-    `• Nationality: Indian\n` +
-    `• Passport Number: ${passport}\n` +
-    `• Relationship: ${relCapital}\n\n` +
-    hint(
-      `If you have a marriage certificate or other proof of relationship, mention it here — e.g. "A copy of our marriage certificate has been attached for your kind reference."`
-    )
+    intro +
+    blocks.join("\n\n") +
+    "\n\n" +
+    hint(`If you have a marriage certificate or other proof of relationship, mention it here — e.g. "A copy of our marriage certificate has been attached for your kind reference."`)
   );
 }
 

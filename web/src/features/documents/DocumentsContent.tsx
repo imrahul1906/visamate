@@ -274,6 +274,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 onUpload={(file) => handleUpload(visibleDoc.id, file)}
                 onRemove={() => handleRemove(visibleDoc.id)}
                 onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
+                onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file)}
                 onPrev={() => {
                   const prev = allDocs[activeDocIndex - 1];
                   if (prev) setActiveDocId(prev.id);

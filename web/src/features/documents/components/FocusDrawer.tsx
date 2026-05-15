@@ -20,6 +20,7 @@ interface FocusDrawerProps {
   onUpload: (file: File) => void;
   onRemove: () => void;
   onItineraryReady: (file: File) => void;
+  onCoverLetterReady: (file: File) => void;
   onPrev: () => void;
   onNext: () => void;
 }
@@ -40,6 +41,7 @@ export function FocusDrawer({
   onUpload,
   onRemove,
   onItineraryReady,
+  onCoverLetterReady,
   onPrev,
   onNext,
 }: FocusDrawerProps) {
@@ -245,6 +247,7 @@ export function FocusDrawer({
           onUpload={onUpload}
           onRemove={onRemove}
           onItineraryReady={onItineraryReady}
+          onCoverLetterReady={onCoverLetterReady}
           itineraryData={itineraryData}
         />
       </div>
