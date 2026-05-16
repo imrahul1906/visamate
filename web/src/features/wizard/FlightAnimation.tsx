@@ -361,11 +361,11 @@ export default function FlightAnimation({ inline = false, countryCode, countryNa
         {/* India origin dot */}
         <circle cx={INDIA.x} cy={INDIA.y} r={5.5} fill="#6c5ce7" opacity={0.95} />
         <circle cx={INDIA.x} cy={INDIA.y} r={2.5} fill="#fff" />
-        <text x={INDIA.x} y={INDIA.y + 13} textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize={9} fontFamily="DM Sans, Inter, sans-serif">India</text>
+        <text x={INDIA.x} y={INDIA.y + 16} textAnchor="middle" fill="rgba(255,255,255,0.75)" fontSize={13} fontWeight="600" fontFamily="DM Sans, Inter, sans-serif">India</text>
 
         {/* India flag pin — always visible */}
-        <foreignObject x={INDIA.x - 10} y={INDIA.y - 32} width={20} height={20} style={{ overflow: "visible" }}>
-          <div style={{ fontSize: 14, lineHeight: 1, textAlign: "center", userSelect: "none" }}>
+        <foreignObject x={INDIA.x - 16} y={INDIA.y - 42} width={32} height={32} style={{ overflow: "visible" }}>
+          <div style={{ fontSize: 22, lineHeight: 1, textAlign: "center", userSelect: "none", filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.7))" }}>
             🇮🇳
           </div>
         </foreignObject>
@@ -388,10 +388,10 @@ export default function FlightAnimation({ inline = false, countryCode, countryNa
         {/* Destination label fades in near end */}
         {progress > 0.65 && (
           <text
-            x={dest.x} y={dest.y + 15}
+            x={dest.x} y={dest.y + 20}
             textAnchor="middle"
-            fill="rgba(168,156,239,0.9)"
-            fontSize={10} fontWeight="500"
+            fill="rgba(200,192,255,1)"
+            fontSize={14} fontWeight="700"
             fontFamily="DM Sans, Inter, sans-serif"
             opacity={Math.min(1, (progress - 0.65) / 0.25)}
           >
@@ -416,9 +416,9 @@ export default function FlightAnimation({ inline = false, countryCode, countryNa
         {/* SVG text emoji fallback — always renders */}
         <text
           x={dest.x}
-          y={dest.y - 20}
+          y={dest.y - 24}
           textAnchor="middle"
-          fontSize={16}
+          fontSize={24}
           opacity={flagVisible ? 1 : destFlagProgressOpacity * 0.7}
           style={{
             transition: "opacity 0.3s",
@@ -431,13 +431,13 @@ export default function FlightAnimation({ inline = false, countryCode, countryNa
 
         {/* foreignObject overlay for the pop animation on landing */}
         {flagVisible && (
-          <foreignObject x={dest.x - 16} y={dest.y - 44} width={32} height={32} style={{ overflow: "visible" }}>
+          <foreignObject x={dest.x - 22} y={dest.y - 58} width={44} height={44} style={{ overflow: "visible" }}>
             <div style={{
-              fontSize: 20,
+              fontSize: 30,
               lineHeight: 1,
               textAlign: "center",
               userSelect: "none",
-              filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.8))",
+              filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.9))",
               animation: "flagAppear 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards",
             }}>
               {dest.flag}

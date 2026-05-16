@@ -72,11 +72,7 @@ export default function FieldDetail({
     );
   }
 
-  const isDone = doneFields.has(activeField.id);
   const isCopied = copiedId === activeField.id;
-  const nextUnfilled = allFields.find(
-    (f) => !doneFields.has(f.id) && f.id !== activeField.id
-  );
 
   return (
     <div style={{ padding: "18px 18px 14px" }}>
@@ -279,58 +275,6 @@ export default function FieldDetail({
         </div>
       )}
 
-      {/* Mark as done */}
-      <button
-        onClick={() => onToggleDone(activeField.id)}
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 7,
-          padding: "9px 16px",
-          borderRadius: 8,
-          cursor: "pointer",
-          border: isDone ? `1.5px solid ${accentColor}` : `1.5px solid ${T.border2}`,
-          background: isDone ? `${accentColor}18` : "transparent",
-          fontSize: 12,
-          fontWeight: 600,
-          color: isDone ? accentColor : T.muted2,
-          transition: "all 150ms",
-          fontFamily: font.sans,
-        }}
-      >
-        {isDone ? "✓ Marked as filled — click to undo" : "Mark this field as filled"}
-      </button>
-
-      {/* Next unfilled shortcut */}
-      {nextUnfilled && (
-        <button
-          onClick={() => onSelectField(nextUnfilled.id)}
-          style={{
-            width: "100%",
-            marginTop: 6,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 6,
-            padding: "7px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-            border: "none",
-            background: "transparent",
-            fontSize: 11,
-            fontWeight: 500,
-            color: T.muted,
-            transition: "color 150ms",
-            fontFamily: font.sans,
-          }}
-          onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = T.muted2)}
-          onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = T.muted)}
-        >
-          Next unfilled field →
-        </button>
-      )}
     </div>
   );
 }

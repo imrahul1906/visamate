@@ -61,8 +61,7 @@ export default function FieldList({
     <>
       {Object.entries(sections).map(([sectionName, fields]) => {
         const isCollapsed = collapsedSections.has(sectionName);
-        const sectionDone = fields.filter((f) => doneFields.has(f.id)).length;
-        const allSectionDone = sectionDone === fields.length;
+        const allSectionDone = fields.every((f) => doneFields.has(f.id));
 
         return (
           <div key={sectionName}>
@@ -70,42 +69,53 @@ export default function FieldList({
             <div
               onClick={() => onToggleSection(sectionName)}
               style={{
-                padding: "6px 12px",
-                fontSize: 9,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                color: allSectionDone ? T.green : T.muted,
+                padding: "8px 12px 8px 0",
+                color: T.muted2,
                 background: T.surface2,
                 borderBottom: `1px solid ${T.border}`,
+                borderLeft: `3px solid ${allSectionDone ? T.green : accentColor}`,
                 position: "sticky",
                 top: 0,
                 zIndex: 1,
                 display: "flex",
                 alignItems: "center",
-                gap: 5,
+                gap: 7,
                 cursor: "pointer",
                 userSelect: "none",
                 transition: "background 120ms",
+                paddingLeft: 10,
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface3; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = T.surface2; }}
             >
-              <span style={{ color: allSectionDone ? T.green : T.indigoLight, opacity: 0.7 }}>
-                <SectionIcon section={sectionName} />
-              </span>
-              {sectionName}
+              {/* Section icon — slightly more visible */}
               <span
                 style={{
-                  fontSize: 9,
-                  color: allSectionDone ? T.green : T.muted,
-                  background: allSectionDone ? T.greenBg : T.border,
-                  padding: "1px 5px",
-                  borderRadius: 10,
+                  color: allSectionDone ? T.green : accentColor,
+                  opacity: 0.85,
+                  display: "flex",
+                  alignItems: "center",
+                  flexShrink: 0,
                 }}
               >
-                {sectionDone}/{fields.length}
+                <SectionIcon section={sectionName} />
               </span>
+
+              {/* Section name — readable, not screaming */}
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: allSectionDone ? T.green : T.muted2,
+                  letterSpacing: "0.02em",
+                  fontFamily: font.sans,
+                  flex: 1,
+                  lineHeight: 1,
+                }}
+              >
+                {sectionName}
+              </span>
+
               {/* Chevron */}
               <svg
                 width="9"
@@ -115,7 +125,6 @@ export default function FieldList({
                 strokeWidth={2.5}
                 viewBox="0 0 24 24"
                 style={{
-                  marginLeft: "auto",
                   flexShrink: 0,
                   transform: isCollapsed ? "rotate(-90deg)" : "rotate(0deg)",
                   transition: "transform 200ms ease",

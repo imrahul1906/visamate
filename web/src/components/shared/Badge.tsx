@@ -2,9 +2,6 @@
 //
 // <Badge> — unified pill/chip label used throughout the app.
 //
-// Replaces the repeated inline badge JSX in:
-//   - DocumentsContent.tsx
-//
 // Usage:
 //   <Badge variant="uploaded" />
 //   <Badge variant="optional" />
@@ -17,7 +14,7 @@
 //     My label
 //   </Badge>
 //
-// The `theme` prop switches between "dark" (default, matches DocumentsContent)
+// The `theme` prop switches between "dark" (default) and "light".
 
 "use client";
 
@@ -39,52 +36,65 @@ type PresetVariant =
 
 interface PresetConfig {
   label: string;
-  // dark theme
   dark: { color: string; bg: string; border: string };
-  // light theme
   light: { color: string; bg: string; border: string };
 }
 
 const PRESETS: Record<PresetVariant, PresetConfig> = {
+  // ✓ Uploaded — fresh lime green (done / success)
   uploaded: {
     label: "✓ Uploaded",
-    dark: { color: "#4ade80", bg: "rgba(74,222,128,0.15)", border: "rgba(74,222,128,0.25)" },
-    light: { color: "#16a34a", bg: "#dcfce7", border: "transparent" },
+    dark:  { color: "#a3e635", bg: "rgba(163,230,53,0.12)",  border: "rgba(163,230,53,0.28)"  },
+    light: { color: "#3f6212", bg: "rgba(163,230,53,0.15)",  border: "transparent"             },
   },
+
+  // 📎 Uploadable — warm cyan/mint (action / possible)
   uploadable: {
     label: "📎 Uploadable",
-    dark: { color: "#818cf8", bg: "rgba(99,102,241,0.1)", border: "rgba(99,102,241,0.25)" },
-    light: { color: "#6366f1", bg: "rgba(99,102,241,0.08)", border: "transparent" },
+    dark:  { color: "#34d399", bg: "rgba(52,211,153,0.10)",  border: "rgba(52,211,153,0.25)"  },
+    light: { color: "#065f46", bg: "rgba(52,211,153,0.12)",  border: "transparent"             },
   },
+
+  // 📌 Hardcopy — golden amber (physical / attention)
   hardcopy: {
     label: "📌 Hardcopy only",
-    dark: { color: "#fbbf24", bg: "rgba(251,191,36,0.08)", border: "rgba(251,191,36,0.3)" },
-    light: { color: "#92400e", bg: "#fef3c7", border: "transparent" },
+    dark:  { color: "#fbbf24", bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.30)"  },
+    light: { color: "#92400e", bg: "#fef3c7",                border: "transparent"             },
   },
+
+  // Optional — warm stone (low emphasis)
   optional: {
     label: "Optional",
-    dark: { color: "rgba(255,255,255,0.38)", bg: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.08)" },
-    light: { color: "#9ca3af", bg: "#f3f4f6", border: "transparent" },
+    dark:  { color: "rgba(255,255,255,0.35)", bg: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.08)" },
+    light: { color: "#9ca3af",                bg: "#f3f4f6",                border: "transparent"            },
   },
+
+  // Required — vivid rose red (urgent / must-have)
   required: {
     label: "Required",
-    dark: { color: "#818cf8", bg: "rgba(99,102,241,0.08)", border: "rgba(99,102,241,0.2)" },
-    light: { color: "#6366f1", bg: "rgba(99,102,241,0.08)", border: "transparent" },
+    dark:  { color: "#f87171", bg: "rgba(248,113,113,0.12)", border: "rgba(248,113,113,0.28)" },
+    light: { color: "#b91c1c", bg: "rgba(254,226,226,0.8)",  border: "transparent"            },
   },
+
+  // Builder — bright orange (creative / build)
   builder: {
     label: "Builder",
-    dark: { color: "#818cf8", bg: "rgba(99,102,241,0.15)", border: "rgba(99,102,241,0.25)" },
-    light: { color: "#6366f1", bg: "rgba(99,102,241,0.1)", border: "transparent" },
+    dark:  { color: "#fb923c", bg: "rgba(251,146,60,0.12)",  border: "rgba(251,146,60,0.28)"  },
+    light: { color: "#c2410c", bg: "rgba(254,215,170,0.5)",  border: "transparent"             },
   },
+
+  // Form — hot pink/fuchsia (interactive / fill)
   form: {
     label: "Form",
-    dark: { color: "#818cf8", bg: "rgba(99,102,241,0.15)", border: "rgba(99,102,241,0.25)" },
-    light: { color: "#6366f1", bg: "rgba(99,102,241,0.1)", border: "transparent" },
+    dark:  { color: "#f472b6", bg: "rgba(244,114,182,0.12)", border: "rgba(244,114,182,0.28)" },
+    light: { color: "#9d174d", bg: "rgba(252,231,243,0.8)",  border: "transparent"            },
   },
+
+  // Spec — warm yellow (technical / reference)
   spec: {
     label: "Spec",
-    dark: { color: "#818cf8", bg: "rgba(99,102,241,0.15)", border: "rgba(99,102,241,0.25)" },
-    light: { color: "#6366f1", bg: "rgba(99,102,241,0.1)", border: "transparent" },
+    dark:  { color: "#facc15", bg: "rgba(250,204,21,0.10)",  border: "rgba(250,204,21,0.25)"  },
+    light: { color: "#854d0e", bg: "rgba(254,249,195,0.8)",  border: "transparent"            },
   },
 };
 
@@ -94,25 +104,25 @@ const PRESETS: Record<PresetVariant, PresetConfig> = {
 
 type BadgeProps =
   | {
-    variant: PresetVariant;
-    theme?: "dark" | "light";
-    children?: never;
-    color?: never;
-    bg?: never;
-    border?: never;
-    className?: string;
-    style?: React.CSSProperties;
-  }
+      variant: PresetVariant;
+      theme?: "dark" | "light";
+      children?: never;
+      color?: never;
+      bg?: never;
+      border?: never;
+      className?: string;
+      style?: React.CSSProperties;
+    }
   | {
-    variant: "custom";
-    theme?: "dark" | "light";
-    children: React.ReactNode;
-    color: string;
-    bg: string;
-    border: string;
-    className?: string;
-    style?: React.CSSProperties;
-  };
+      variant: "custom";
+      theme?: "dark" | "light";
+      children: React.ReactNode;
+      color: string;
+      bg: string;
+      border: string;
+      className?: string;
+      style?: React.CSSProperties;
+    };
 
 // ─────────────────────────────────────────────────────────────
 // Component
