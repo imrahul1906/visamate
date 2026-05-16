@@ -170,10 +170,27 @@ export default function CoverLetterWidget({
     }
   }
 
+  /**
+   * Fields that were previously mandatory but are now optional.
+   * The service (coverLetterService.ts) may still return errors for these —
+   * we strip them here so they never block "Preview Letter".
+   */
+  const OPTIONAL_FIELDS = [
+    "designation",
+    "companyName",
+    "institutionName",
+    "sponsorName",
+    "sponsorRel",
+  ];
+
   /* ── Proceed to preview ── */
   function handleProceed() {
     setAttempted(true);
-    const e = validateCoverLetterInputs(inputs);
+    const raw = validateCoverLetterInputs(inputs);
+    // Remove optional-field errors — user chose not to fill them in
+    const e = Object.fromEntries(
+      Object.entries(raw).filter(([k]) => !OPTIONAL_FIELDS.includes(k))
+    ) as ValidationErrors;
     setErrors(e);
 
     if (Object.keys(e).length === 0) {

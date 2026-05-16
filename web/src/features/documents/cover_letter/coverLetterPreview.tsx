@@ -242,7 +242,7 @@ export function CoverLetterPreview({
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
           </svg>
           <span>
-            <strong>Click any text to edit it directly</strong> — every
+            <strong>Click any text to edit it directly. Look for [] or [HINT] to fill values.</strong> — every
             heading, paragraph, table cell, and contact is editable right here.
           </span>
         </div>

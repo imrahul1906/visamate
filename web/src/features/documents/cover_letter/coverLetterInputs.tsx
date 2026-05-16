@@ -7,10 +7,11 @@
  * Returns when user clicks "Preview Letter".
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { Contact, ContactRow, CountryVisit, CountryVisitRow } from "./coverLetterComponents";
 import type { CoverLetterInputs, ValidationErrors } from "@/features/documents/cover_letter/coverLetterService";
 import { isEmployed, isStudent, isSponsored } from "@/features/documents/cover_letter/coverLetterService";
+import { validators, validateContact, type ContactErrors } from "../util/docInputValidation";
 
 export interface CoverLetterInputsStepProps {
   inputs: CoverLetterInputs;
@@ -69,6 +70,28 @@ export function CoverLetterInputsStep({
   const isStu = isStudent(applicantProfile || "");
   const isSpon = isSponsored(sponsorshipType || "");
 
+  // Per-field inline validation (shown on blur, cleared on fix)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
+  const [contactErrors, setContactErrors] = useState<Array<{ phone?: string; email?: string }>>([]);
+
+  function validateField(name: string, value: string) {
+    let err: string | null = null;
+    if (name === "departureCity") err = validators.city.validate(value);
+    if (name === "designation") err = validators.nameOnly.validate(value);
+    if (name === "institutionName") err = validators.nameOnly.validate(value);
+    if (name === "sponsorName") err = validators.nameOnly.validate(value);
+    setFieldErrors((prev) => ({ ...prev, [name]: err }));
+  }
+
+  function validateContactField(idx: number, contact: Contact) {
+    const errs = validateContact(contact);
+    setContactErrors((prev) => {
+      const next = [...prev];
+      next[idx] = errs;
+      return next;
+    });
+  }
+
   const countryVisits: CountryVisit[] = Array.isArray(inputs.countriesVisited)
     ? inputs.countriesVisited
     : [];
@@ -108,28 +131,72 @@ export function CoverLetterInputsStep({
         <div className="cl-section">
           <p className="cl-section-label">Travel</p>
 
-          {/* Departure city — full width row of its own */}
-          <div className="cl-field">
-            <label className="cl-label">
-              Departure city in India<span className="cl-required">*</span>
-              {attempted && errors.departureCity && (
-                <span className="cl-field-err">{errors.departureCity}</span>
-              )}
-            </label>
-            <input
-              className={`cl-input${attempted && errors.departureCity ? " cl-input--error" : ""}`}
-              placeholder="e.g. New Delhi"
-              value={inputs.departureCity}
-              onChange={(e) => onChange("departureCity", e.target.value)}
-            />
+          {/* Travel row: Departure city | Travelling toggle | Companion (3-col) */}
+          <div className="cl-travel-row">
+            {/* Col 1 — Departure city */}
+            <div className="cl-field">
+              <label className="cl-label">
+                Departure city in India<span className="cl-required">*</span>
+                {(attempted && errors.departureCity || fieldErrors.departureCity) && (
+                  <span className="cl-field-err">{errors.departureCity || fieldErrors.departureCity}</span>
+                )}
+              </label>
+              <input
+                className={`cl-input${(attempted && errors.departureCity) || fieldErrors.departureCity ? " cl-input--error" : ""}`}
+                placeholder="e.g. New Delhi"
+                value={inputs.departureCity}
+                onChange={(e) => onChange("departureCity", e.target.value)}
+                onBlur={(e) => validateField("departureCity", e.target.value)}
+              />
+            </div>
+
+            {/* Col 2 — Alone / With someone */}
+            <div className="cl-field">
+              <label className="cl-label">Travelling</label>
+              <div className="cl-toggle-row">
+                {["alone", "with"].map((v) => (
+                  <button
+                    key={v}
+                    className={`cl-toggle-btn${inputs.travellingWith === v ? " cl-toggle-btn--active" : ""}`}
+                    onClick={() => onChange("travellingWith", v as any)}
+                  >
+                    {v === "alone" ? "Alone" : "With someone"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 3 — Companion (only visible when "with" is selected) */}
+            <div className={`cl-field cl-companion-col${inputs.travellingWith === "with" ? " cl-companion-col--visible" : ""}`}>
+              <label className="cl-label">
+                Travelling with
+                {attempted && errors.companion && (
+                  <span className="cl-field-err">{errors.companion}</span>
+                )}
+              </label>
+              <div className="cl-toggle-row">
+                {["mother", "father", "spouse"].map((v) => (
+                  <button
+                    key={v}
+                    className={`cl-toggle-btn${inputs.companion === v ? " cl-toggle-btn--active" : ""}`}
+                    onClick={() => onChange("companion", v)}
+                  >
+                    {v.charAt(0).toUpperCase() + v.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Countries visited in last 5 years */}
-          <div className="cl-field" style={{ marginTop: 12 }}>
+          <div className="cl-field">
             <label className="cl-label">
               Countries visited in last 5 years
-              <span className="cl-section-hint" style={{ marginLeft: 6 }}>
-                (leave blank if none)
+              <span className="cl-hint-chip">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                leave blank if none
               </span>
             </label>
 
@@ -173,46 +240,6 @@ export function CoverLetterInputsStep({
               {countryVisits.length === 0 ? "Add a country" : "Add another country"}
             </button>
           </div>
-
-          {/* Travelling with */}
-          <div className="cl-field">
-            <label className="cl-label">Travelling</label>
-            <div className="cl-toggle-row">
-              {["alone", "with"].map((v) => (
-                <button
-                  key={v}
-                  className={`cl-toggle-btn${inputs.travellingWith === v ? " cl-toggle-btn--active" : ""}`}
-                  onClick={() => onChange("travellingWith", v as any)}
-                >
-                  {v === "alone" ? "Alone" : "With someone"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {inputs.travellingWith === "with" && (
-            <div className="cl-field">
-              <label className="cl-label">
-                Travelling with
-                {attempted && errors.companion && (
-                  <span className="cl-field-err">{errors.companion}</span>
-                )}
-              </label>
-              <div className="cl-toggle-row">
-                {["mother", "father", "spouse", "friend", "colleague"].map(
-                  (v) => (
-                    <button
-                      key={v}
-                      className={`cl-toggle-btn${inputs.companion === v ? " cl-toggle-btn--active" : ""}`}
-                      onClick={() => onChange("companion", v)}
-                    >
-                      {v.charAt(0).toUpperCase() + v.slice(1)}
-                    </button>
-                  )
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Employment */}
@@ -222,29 +249,25 @@ export function CoverLetterInputsStep({
             <div className="cl-field-row">
               <div className="cl-field">
                 <label className="cl-label">
-                  Designation / Job title<span className="cl-required">*</span>
-                  {attempted && errors.designation && (
-                    <span className="cl-field-err">
-                      {errors.designation}
-                    </span>
+                  Designation / Job title
+                  {fieldErrors.designation && (
+                    <span className="cl-field-err">{fieldErrors.designation}</span>
                   )}
                 </label>
                 <input
-                  className={`cl-input${attempted && errors.designation ? " cl-input--error" : ""}`}
+                  className={`cl-input${fieldErrors.designation ? " cl-input--error" : ""}`}
                   placeholder="e.g. Software Engineer"
                   value={inputs.designation}
                   onChange={(e) => onChange("designation", e.target.value)}
+                  onBlur={(e) => validateField("designation", e.target.value)}
                 />
               </div>
               <div className="cl-field">
                 <label className="cl-label">
-                  Company name<span className="cl-required">*</span>
-                  {attempted && errors.companyName && (
-                    <span className="cl-field-err">{errors.companyName}</span>
-                  )}
+                  Company name
                 </label>
                 <input
-                  className={`cl-input${attempted && errors.companyName ? " cl-input--error" : ""}`}
+                  className="cl-input"
                   placeholder="e.g. Infosys Ltd."
                   value={inputs.companyName}
                   onChange={(e) => onChange("companyName", e.target.value)}
@@ -260,18 +283,17 @@ export function CoverLetterInputsStep({
             <p className="cl-section-label">Education</p>
             <div className="cl-field">
               <label className="cl-label">
-                Institution name<span className="cl-required">*</span>
-                {attempted && errors.institutionName && (
-                  <span className="cl-field-err">
-                    {errors.institutionName}
-                  </span>
+                Institution name
+                {fieldErrors.institutionName && (
+                  <span className="cl-field-err">{fieldErrors.institutionName}</span>
                 )}
               </label>
               <input
-                className={`cl-input${attempted && errors.institutionName ? " cl-input--error" : ""}`}
+                className={`cl-input${fieldErrors.institutionName ? " cl-input--error" : ""}`}
                 placeholder="e.g. IIT Delhi"
                 value={inputs.institutionName}
                 onChange={(e) => onChange("institutionName", e.target.value)}
+                onBlur={(e) => validateField("institutionName", e.target.value)}
               />
             </div>
           </div>
@@ -284,27 +306,25 @@ export function CoverLetterInputsStep({
             <div className="cl-field-row">
               <div className="cl-field">
                 <label className="cl-label">
-                  Sponsor name<span className="cl-required">*</span>
-                  {attempted && errors.sponsorName && (
-                    <span className="cl-field-err">{errors.sponsorName}</span>
+                  Sponsor name
+                  {fieldErrors.sponsorName && (
+                    <span className="cl-field-err">{fieldErrors.sponsorName}</span>
                   )}
                 </label>
                 <input
-                  className={`cl-input${attempted && errors.sponsorName ? " cl-input--error" : ""}`}
+                  className={`cl-input${fieldErrors.sponsorName ? " cl-input--error" : ""}`}
                   placeholder="e.g. Rahul Sharma"
                   value={inputs.sponsorName}
                   onChange={(e) => onChange("sponsorName", e.target.value)}
+                  onBlur={(e) => validateField("sponsorName", e.target.value)}
                 />
               </div>
               <div className="cl-field">
                 <label className="cl-label">
-                  Relationship to sponsor<span className="cl-required">*</span>
-                  {attempted && errors.sponsorRel && (
-                    <span className="cl-field-err">{errors.sponsorRel}</span>
-                  )}
+                  Relationship to sponsor
                 </label>
                 <input
-                  className={`cl-input${attempted && errors.sponsorRel ? " cl-input--error" : ""}`}
+                  className="cl-input"
                   placeholder="e.g. Father, Brother"
                   value={inputs.sponsorRel}
                   onChange={(e) => onChange("sponsorRel", e.target.value)}
@@ -476,7 +496,12 @@ export function CoverLetterInputsStep({
         <div className="cl-section">
           <p className="cl-section-label">
             Emergency Contacts in India{" "}
-            <span className="cl-section-hint">(up to 3)</span>
+            <span className="cl-hint-chip">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              up to 3
+            </span>
           </p>
           <div className="cl-contact-header">
             <span />
@@ -491,8 +516,13 @@ export function CoverLetterInputsStep({
               key={i}
               contact={c}
               idx={i}
-              onChange={(updated) => onUpdateContact(i, updated)}
+              onChange={(updated) => {
+                onUpdateContact(i, updated);
+                validateContactField(i, updated);
+              }}
               onRemove={() => onRemoveContact(i)}
+              phoneError={contactErrors[i]?.phone}
+              emailError={contactErrors[i]?.email}
             />
           ))}
           {contacts.length < 3 && (
