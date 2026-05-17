@@ -253,8 +253,6 @@ export default function ItineraryWidget({
       {mode === "select" && (
         <div className="iw-select">
           <div className="iw-select-inner">
-            <p className="iw-select-eyebrow">{countryName} Visa · Travel Document</p>
-            <h2 className="iw-select-title">Travel Itinerary</h2>
             <p className="iw-select-sub">
               Prepare your official itinerary for your {countryName} visa application.
             </p>
@@ -280,6 +278,12 @@ export default function ItineraryWidget({
                 </svg>
               </button>
 
+              <div className="iw-opt-or">
+                <span className="iw-opt-or-line" />
+                <span className="iw-opt-or-text">OR</span>
+                <span className="iw-opt-or-line" />
+              </div>
+              
               <button className="iw-opt iw-opt--dark" onClick={(e) => { e.stopPropagation(); setMode("helper"); }}>
                 <div className="iw-opt-left">
                   <div className="iw-opt-icon iw-opt-icon--dark">
@@ -935,7 +939,7 @@ const styles = `
   .iw-select-inner { max-width: 560px; width: 100%; }
   .iw-select-eyebrow { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--iw-indigo-lt); }
   .iw-select-title { font-size: 22px; font-weight: 600; color: var(--iw-text); margin: 0 0 8px; font-family: var(--iw-ff-body); }
-  .iw-select-sub { font-size: 13px; color: var(--iw-muted2); margin: 0 0 24px; line-height: 1.6; }
+  .iw-select-sub { font-size: 13px; color: var(--iw-muted2); margin: 0 0 10px; line-height: 1.6; }
   .iw-options { display: flex; flex-direction: column; gap: 10px; }
   .iw-opt { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; border-radius: var(--iw-radius); border: 1px solid var(--iw-border); cursor: pointer; text-align: left; width: 100%; transition: border-color 150ms, background 150ms, transform 120ms; background: rgba(255,255,255,0.03); }
   .iw-opt:active { transform: scale(0.99); }
@@ -953,6 +957,11 @@ const styles = `
   .iw-opt-desc { font-size: 12px; color: var(--iw-muted2); line-height: 1.5; }
   .iw-opt-arrow { flex-shrink: 0; color: var(--iw-muted); }
   .iw-opt--dark .iw-opt-arrow { color: var(--iw-indigo-lt); }
+
+    /* OR divider between options */
+  .iw-opt-or { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
+  .iw-opt-or-line { flex: 1; height: 1px; background: var(--iw-border); }
+  .iw-opt-or-text { font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--iw-muted); text-transform: uppercase; flex-shrink: 0; }
 
   /* ─── Builder / Preview shared shell ─── */
   .iw-builder { font-family: var(--iw-ff-body); background: transparent; display: flex; flex-direction: column; font-weight: 400; overflow: visible; }

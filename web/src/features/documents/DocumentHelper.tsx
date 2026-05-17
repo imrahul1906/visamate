@@ -7,6 +7,22 @@ import VisaFormWidget from "./visa_form/VisaFormWidget";
 import UploadSlot from "./util/UploadSlot";
 import ItineraryWidget from "./itinerary/ItineraryWidget";
 import CoverLetterWidget from "./cover_letter/CoverLetterWidget";
+import DocumentChecklistWidget from "./DocumentChecklistWidget";
+
+// ─────────────────────────────────────────────────────────────
+// PhotoSpec — mirrors the shape in the requirements JSON.
+// Keep in sync with RequirementsData["photoSpecifications"][key].
+// ─────────────────────────────────────────────────────────────
+
+export interface PhotoSpec {
+  widthMm: number;
+  heightMm: number;
+  background?: string;
+  colorFormat?: string;
+  faceVisibilityPercent?: string;
+  quality?: string;
+  maxAgeMonths?: number;
+}
 
 // ─────────────────────────────────────────────────────────────
 // DocHelper — renders the appropriate helper for a single doc.
@@ -16,6 +32,8 @@ export interface DocHelperProps {
   doc: DocumentItem;
   color: string;
   uploads: UploadsMap;
+  /** Photo spec pulled from RequirementsData.photoSpecifications */
+  photoSpec?: PhotoSpec | null;
   /** Called with the File — caller is responsible for docId binding */
   onUpload: (file: File) => void;
   onRemove: () => void;
@@ -28,14 +46,13 @@ export function DocHelper({
   doc,
   color,
   uploads,
+  photoSpec,
   onUpload,
   onRemove,
   onItineraryReady,
   onCoverLetterReady,
   itineraryData,
 }: DocHelperProps) {
-  // Wrap the flat callbacks back into the docId-keyed signatures
-  // that each widget / UploadSlot expects.
   const wrappedUploads: UploadsMap = uploads;
 
   const handleUploadBridge = (docId: string, file: File) => {
@@ -47,14 +64,20 @@ export function DocHelper({
 
   return (
     <>
-      {/* Photo spec widget */}
+      {/* Photo spec widget — uses the spec referenced by the doc (photoSpecRef),
+          falling back gracefully to defaults when no spec is provided. */}
       {doc.specialWidget === "photo_spec" && (
-        <PhotoSpecWidget color={color} />
+        <PhotoSpecWidget color={color} photoSpec={photoSpec ?? undefined} />
       )}
 
       {/* Visa form widget */}
       {doc.specialWidget === "visa_form" && (
         <VisaFormWidget doc={doc} color={color} />
+      )}
+
+      {/* Document checklist widget */}
+      {doc.specialWidget === "document_checklist" && (
+        <DocumentChecklistWidget doc={doc} color={color} />
       )}
 
       {/* Itinerary builder */}

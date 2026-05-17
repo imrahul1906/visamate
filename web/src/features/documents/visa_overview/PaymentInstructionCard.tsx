@@ -1,16 +1,19 @@
 // visa-overview/PaymentInstructionCard.tsx
 //
 // Renders a single centre-specific payment instruction block.
-// Displays: payment mode, payable-to, applicable centres, draft rules, and notes.
+// Displays: payment mode, payable-to, drop-off offices, draft rules, and notes.
+//
+// Note: `instruction.vfsCenterCode` is used for filtering upstream (in
+// useVisaOverviewData) — it is NOT displayed here since the card is already
+// shown only when the centre matches. `dropOffOffices` is displayed so the
+// user knows exactly which offices within their centre have this exception.
 
-import type { VisaType } from "@/lib/data/types";
+import type { PaymentInstruction } from "@/lib/data/types";
 import { T } from "@/components/shared/theme";
 import { PALETTE } from "./palette";
 import { Tag } from "./primitives";
 import { AlertIcon } from "./icons";
 import { fmtCurrency, toTitleCase, toProperCase } from "./utils";
-
-type PaymentInstruction = NonNullable<VisaType["process"]>["paymentInstructions"][number];
 
 interface PaymentInstructionCardProps {
   instruction: PaymentInstruction;
@@ -21,10 +24,10 @@ export function PaymentInstructionCard({
   instruction,
   fallbackCurrency,
 }: PaymentInstructionCardProps) {
-  const centers = instruction.applicableCenters ?? [];
-  const rules   = instruction.rules ?? [];
-  const notes   = instruction.notes ?? [];
-  const modeLabel = instruction.paymentMode ? toTitleCase(instruction.paymentMode) : "—";
+  const dropOffOffices = instruction.dropOffOffices ?? [];
+  const rules          = instruction.rules ?? [];
+  const notes          = instruction.notes ?? [];
+  const modeLabel      = instruction.paymentMode ? toTitleCase(instruction.paymentMode) : "—";
 
   return (
     <div
@@ -69,8 +72,8 @@ export function PaymentInstructionCard({
         )}
       </div>
 
-      {/* ── Applicable centres ── */}
-      {centers.length > 0 && (
+      {/* ── Drop-off offices ── */}
+      {dropOffOffices.length > 0 && (
         <div
           style={{
             padding: "8px 14px",
@@ -88,12 +91,12 @@ export function PaymentInstructionCard({
               fontFamily: "'DM Sans', sans-serif",
             }}
           >
-            Applicable centres
+            Applicable drop-off offices
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-            {centers.map((c) => (
+            {dropOffOffices.map((office) => (
               <span
-                key={c}
+                key={office}
                 style={{
                   fontSize: 10,
                   fontWeight: 600,
@@ -106,7 +109,7 @@ export function PaymentInstructionCard({
                   textTransform: "capitalize",
                 }}
               >
-                {toProperCase(c)}
+                {toProperCase(office)}
               </span>
             ))}
           </div>
@@ -135,85 +138,82 @@ export function PaymentInstructionCard({
             Draft breakdown
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-            {rules.map((rule, i) => {
-              const ruleRefundable = (rule as { refundable?: boolean }).refundable ?? null;
-              return (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 8,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div
+            {rules.map((rule, i) => (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 8,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div
+                    style={{
+                      width: 5,
+                      height: 5,
+                      borderRadius: "50%",
+                      background: rule.optional
+                        ? PALETTE.blue.text + "99"
+                        : PALETTE.indigo.text + "99",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color: T.text,
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {toTitleCase(rule.type)}
+                    {rule.optional && (
+                      <span style={{ color: T.muted, fontWeight: 400 }}> (optional)</span>
+                    )}
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  {rule.refundable === false && <Tag label="Non-refundable" colorKey="red"   />}
+                  {rule.refundable === true  && <Tag label="Refundable"     colorKey="green" />}
+
+                  {rule.separateDraftRequired && (
+                    <span
                       style={{
-                        width: 5,
-                        height: 5,
-                        borderRadius: "50%",
-                        background: rule.optional
-                          ? PALETTE.blue.text + "99"
-                          : PALETTE.indigo.text + "99",
-                        flexShrink: 0,
+                        fontSize: 9,
+                        color: PALETTE.yellow.text,
+                        background: PALETTE.yellow.bg,
+                        border: `1px solid ${PALETTE.yellow.border}`,
+                        borderRadius: 4,
+                        padding: "1px 5px",
+                        fontWeight: 700,
+                        letterSpacing: "0.04em",
+                        textTransform: "uppercase",
+                        fontFamily: "'DM Sans', sans-serif",
+                        whiteSpace: "nowrap",
                       }}
-                    />
+                    >
+                      Separate DD
+                    </span>
+                  )}
+
+                  {rule.amount != null && (
                     <span
                       style={{
                         fontSize: 11,
+                        fontWeight: 700,
                         color: T.text,
                         fontFamily: "'DM Sans', sans-serif",
+                        whiteSpace: "nowrap",
                       }}
                     >
-                      {toTitleCase(rule.type)}
-                      {rule.optional && (
-                        <span style={{ color: T.muted, fontWeight: 400 }}> (optional)</span>
-                      )}
+                      {fmtCurrency(rule.amount, rule.currency ?? fallbackCurrency)}
                     </span>
-                  </div>
-
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    {ruleRefundable === false && <Tag label="Non-refundable" colorKey="red"   />}
-                    {ruleRefundable === true  && <Tag label="Refundable"     colorKey="green" />}
-
-                    {rule.separateDraftRequired && (
-                      <span
-                        style={{
-                          fontSize: 9,
-                          color: PALETTE.yellow.text,
-                          background: PALETTE.yellow.bg,
-                          border: `1px solid ${PALETTE.yellow.border}`,
-                          borderRadius: 4,
-                          padding: "1px 5px",
-                          fontWeight: 700,
-                          letterSpacing: "0.04em",
-                          textTransform: "uppercase",
-                          fontFamily: "'DM Sans', sans-serif",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        Separate DD
-                      </span>
-                    )}
-
-                    {rule.amount != null && (
-                      <span
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 700,
-                          color: T.text,
-                          fontFamily: "'DM Sans', sans-serif",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {fmtCurrency(rule.amount, rule.currency ?? fallbackCurrency)}
-                      </span>
-                    )}
-                  </div>
+                  )}
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       )}

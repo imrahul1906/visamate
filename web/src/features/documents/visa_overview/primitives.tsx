@@ -58,9 +58,13 @@ export interface StatCardProps {
   label: string;
   value: string;
   colorKey: PaletteKey;
+  /** Optional secondary value shown as a badge below the main value. */
+  subValue?: string;
+  /** Label for the subValue badge — defaults to "Express". */
+  subLabel?: string;
 }
 
-export function StatCard({ icon, label, value, colorKey }: StatCardProps) {
+export function StatCard({ icon, label, value, colorKey, subValue, subLabel }: StatCardProps) {
   const c = PALETTE[colorKey];
   return (
     <div
@@ -86,6 +90,28 @@ export function StatCard({ icon, label, value, colorKey }: StatCardProps) {
       >
         {value}
       </span>
+      {subValue && (
+        <span
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            alignSelf: "flex-start",
+            fontSize: 9,
+            fontWeight: 700,
+            color: PALETTE.emerald.text,
+            background: PALETTE.emerald.bg,
+            border: `1px solid ${PALETTE.emerald.border}`,
+            borderRadius: 4,
+            padding: "1px 5px",
+            letterSpacing: "0.04em",
+            textTransform: "uppercase",
+            fontFamily: "'DM Sans', sans-serif",
+          }}
+        >
+          ⚡ {subLabel ?? "Express"}: {subValue}
+        </span>
+      )}
       <span
         style={{
           fontSize: 10,

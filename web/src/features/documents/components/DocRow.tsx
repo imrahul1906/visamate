@@ -18,7 +18,6 @@ export function DocRow({ doc, isActive, isDone, isUploaded, badge, onSelect, onT
   let rowClass = "vm-doc-row";
   if (isActive) rowClass += " vm-active";
   if (isDone) rowClass += " vm-done";
-  if (isOptional) rowClass += " vm-optional";
 
   return (
     <div className={rowClass} onClick={onSelect}>

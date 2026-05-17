@@ -170,27 +170,10 @@ export default function CoverLetterWidget({
     }
   }
 
-  /**
-   * Fields that were previously mandatory but are now optional.
-   * The service (coverLetterService.ts) may still return errors for these —
-   * we strip them here so they never block "Preview Letter".
-   */
-  const OPTIONAL_FIELDS = [
-    "designation",
-    "companyName",
-    "institutionName",
-    "sponsorName",
-    "sponsorRel",
-  ];
-
   /* ── Proceed to preview ── */
   function handleProceed() {
     setAttempted(true);
-    const raw = validateCoverLetterInputs(inputs);
-    // Remove optional-field errors — user chose not to fill them in
-    const e = Object.fromEntries(
-      Object.entries(raw).filter(([k]) => !OPTIONAL_FIELDS.includes(k))
-    ) as ValidationErrors;
+    const e = validateCoverLetterInputs(inputs);
     setErrors(e);
 
     if (Object.keys(e).length === 0) {
@@ -326,8 +309,6 @@ export default function CoverLetterWidget({
       {step === "select" && (
         <div className="cl-select">
           <div className="cl-select-inner">
-            <p className="cl-eyebrow">Japan Visa Documents</p>
-            <h2 className="cl-select-title">Cover Letter Generator</h2>
             <p className="cl-select-sub">
               We'll pre-fill everything we already know — name, dates, cities, passport — and ask only for what's missing.
               Takes under 2 minutes.

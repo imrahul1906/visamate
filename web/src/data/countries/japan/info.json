@@ -4,7 +4,14 @@
   "name": "Japan",
   "description": "Japan visa information for Indian applicants",
   "officialWebsite": "https://www.mofa.go.jp",
-  "vfs":{
+  "supportedVfsLocationCodes": [
+    "DELHI",
+    "MUMBAI",
+    "BENGALURU",
+    "CHENNAI",
+    "KOLKATA"
+  ],
+  "vfs": {
     "website": "https://visa.vfsglobal.com/ind/en/jpn",
     "appointmentUrl": "https://visa.vfsglobal.com/ind/en/jpn/login",
     "appointmentVerificationUrl": "https://visa.vfsglobal.com/ind/en/jpn/appointment-verification"

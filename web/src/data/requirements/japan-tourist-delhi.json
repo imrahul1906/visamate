@@ -8,7 +8,7 @@
   "locationId": "VFS_CENTER_DELHI_001",
   "visaVariantId": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
   "locationCode": "DELHI",
-  "processingDays": 5,
+  "processingDays": "15-20 working days",
   "processingDaysExpress": null,
   "fees": {
     "visaFeeINR": 500,
@@ -19,8 +19,8 @@
   },
   "photoSpecifications": {
     "default": {
-      "widthMm": 45,
-      "heightMm": 35,
+      "widthMm": 35,
+      "heightMm": 45,
       "background": "Plain white",
       "colorFormat": "Colored",
       "faceVisibilityPercent": "70-80",

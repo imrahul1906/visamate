@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getRequirementsData, getItineraryPlaces, getVisaType } from "@/lib/data/repository";
-import type { ItineraryPlacesData, VisaType } from "@/lib/data/types";
+import type { ItineraryPlacesData, VisaType, RequirementsData } from "@/lib/data/types";
 import type { DocumentData } from "../../../types/document";
 import { mapRequirementsToDocumentData } from "../mapRequirements";
 
@@ -18,6 +18,7 @@ interface UseDocumentDataResult {
   data: DocumentData | null;
   itineraryData: ItineraryPlacesData | null;
   visaTypeData: VisaType | null;
+  requirementsData: RequirementsData | null; // ← exposes raw JSON including photoSpecifications
   loading: boolean;
   error: string | null;
 }
@@ -34,6 +35,7 @@ export function useDocumentData({
   const [data, setData] = useState<DocumentData | null>(null);
   const [itineraryData, setItineraryData] = useState<ItineraryPlacesData | null>(null);
   const [visaTypeData, setVisaTypeData] = useState<VisaType | null>(null);
+  const [requirementsData, setRequirementsData] = useState<RequirementsData | null>(null); // ← new
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,6 +60,7 @@ export function useDocumentData({
           setLoading(false);
           return;
         }
+        setRequirementsData(req); // ← store raw JSON so callers can access photoSpecifications etc.
         setData(mapRequirementsToDocumentData(req, countryName, visaTypeName, locationName, sponsorship));
         setItineraryData(itin);
         setVisaTypeData(vt);
@@ -70,5 +73,5 @@ export function useDocumentData({
       });
   }, [country, visaType, location, sponsorship, countryName, visaTypeName, locationName]);
 
-  return { data, itineraryData, visaTypeData, loading, error };
+  return { data, itineraryData, visaTypeData, requirementsData, loading, error };
 }

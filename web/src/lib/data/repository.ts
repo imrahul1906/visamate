@@ -40,7 +40,16 @@ import japanVisaTypes from "../../data/countries/japan/visa-types.json";
 import japanRoutingDelhi from "../../data/countries/japan/routing/delhi.json";
 import delhiVfsCenter from "../../data/vfs_center/delhi.json";
 import japanTouristDelhi from "../../data/requirements/japan-tourist-delhi.json";
+import japanTouristMumbai from "../../data/requirements/japan-tourist-mumbai.json";
+import japanTouristKolkata from "../../data/requirements/japan-tourist-kolkata.json"
+import japanTouristChennai from "../../data/requirements/japan-tourist-chennai.json"
+import japanTouristBengaluru from "../../data/requirements/japan-tourist-bengaluru.json"
+import mumbaiVfsCenter from "../../data/vfs_center/mumbai.json";
+import chennaiVfsCenter from "../../data/vfs_center/chennai.json"
+import bengaluruVfsCenter from "../../data/vfs_center/bengaluru.json"
+import kolkataVfsCenter from "../../data/vfs_center/kolkata.json"
 import japanItineraryPlaces from "../../data/countries/japan/itinerary-places.json";
+
 
 // ── NEW: Form fill field JSON imports ──────────────────────────────────────
 // Add one import per country/visa-type JSON file as they land.
@@ -173,6 +182,10 @@ const ROUTING_STORE: RoutingEntry[] = [
 // Simulates: SELECT * FROM requirements
 const REQUIREMENTS_STORE: RequirementsData[] = [
   japanTouristDelhi as RequirementsData,
+  japanTouristMumbai as RequirementsData,
+  japanTouristBengaluru as RequirementsData,
+  japanTouristChennai as RequirementsData,
+  japanTouristKolkata as RequirementsData,
 ];
 
 // ─── VFS Center Store ──────────────────────────────────────────────────────
@@ -183,12 +196,10 @@ interface VfsCenterStoreEntry {
 
 const VFS_CENTER_STORE: VfsCenterStoreEntry[] = [
   { locationCode: "DELHI", data: delhiVfsCenter as VfsCenterInfo },
-  // Uncomment as JSON files are added:
-  // { locationCode: "MUMBAI",    data: mumbaiVfsCenter as VfsCenterInfo },
-  // { locationCode: "BENGALURU", data: bengaluruVfsCenter as VfsCenterInfo },
-  // { locationCode: "CHENNAI",   data: chennaiVfsCenter as VfsCenterInfo },
-  // { locationCode: "KOLKATA",   data: kolkataVfsCenter as VfsCenterInfo },
-  // { locationCode: "HYDERABAD", data: hyderabadVfsCenter as VfsCenterInfo },
+  { locationCode: "MUMBAI", data: mumbaiVfsCenter as VfsCenterInfo },
+  { locationCode: "BENGALURU", data: bengaluruVfsCenter as VfsCenterInfo },
+  { locationCode: "CHENNAI", data: chennaiVfsCenter as VfsCenterInfo },
+  { locationCode: "KOLKATA", data: kolkataVfsCenter as VfsCenterInfo },
 ];
 
 // ─── Itinerary Places Store ────────────────────────────────────────────────
@@ -302,7 +313,7 @@ export async function getCountryInfo(
   assertParam(countryCode, "countryCode");
 
   const result = COUNTRY_INFO_STORE.find(
-    (c) => normalizeCode(c.countryCode) === normalizeCode(countryCode)
+    (c) => normalizeCode(c.code) === normalizeCode(countryCode)
   ) ?? null;
 
   if (!result) {
@@ -370,12 +381,35 @@ export async function getLocationsForCountry(
 ): Promise<LocationCatalogEntry[]> {
   assertParam(countryCode, "countryCode");
 
+  const cc = normalizeCode(countryCode);
   const activeCodes = new Set(
     VFS_CENTER_STORE.map((entry) => normalizeCode(entry.locationCode))
   );
 
+  const info = await getCountryInfo(countryCode);
+  let allowedVfs: Set<string> | null = null;
+
+  const fromInfo = info?.supportedVfsLocationCodes;
+  if (fromInfo?.length) {
+    allowedVfs = new Set(fromInfo.map((c) => normalizeCode(c)));
+  }
+
+  if (!allowedVfs) {
+    const forCountry = ROUTING_STORE.filter(
+      (r) => normalizeCode(r.countryCode) === cc
+    );
+    allowedVfs = new Set(
+      forCountry
+        .map((r) => normalizeCode(r.locationCode))
+        .filter((c) => c !== "")
+    )
+  }
+
   const validLocations = LOCATION_CATALOG.filter(
-    (loc) => activeCodes.has(normalizeCode(loc.code))
+    (loc) => {
+      const code = normalizeCode(loc.code);
+      return allowedVfs!.has(code) && activeCodes.has(normalizeCode(loc.code))
+    }
   );
 
   if (validLocations.length === 0) {
