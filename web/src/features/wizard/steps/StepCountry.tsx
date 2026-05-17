@@ -31,15 +31,16 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
 
   const isSearching = search.trim().length > 0;
 
-  // In compact mode the parent WizardCard scroll area handles overflow,
-  // so we remove the inner maxHeight / overflowY to avoid double-scroll.
   const listScrollStyle: React.CSSProperties = compact
     ? {
       display: "flex",
       flexDirection: "column",
       gap: 6,
       paddingRight: 1,
-      // No maxHeight / overflow — parent card scrolls
+      overflowY: "auto",
+      WebkitOverflowScrolling: "touch" as any,
+      scrollBehavior: "smooth",
+      // flex: 1 is set on the wrapper div below
     }
     : {
       display: "flex",
@@ -47,81 +48,74 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       gap: 6,
       maxHeight: 300,
       overflowY: "auto",
-      // Smooth momentum scrolling (iOS + modern browsers)
       WebkitOverflowScrolling: "touch" as any,
       scrollBehavior: "smooth",
       paddingRight: 1,
     };
 
-  return (
-    <div>
-      {!compact && (
-        <div style={{ marginBottom: 18 }}>
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>Step 1</div>
-          <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>Select destination</h2>
-          <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Where are you planning to go?</p>
-        </div>
-      )}
-
-      {/* Search */}
-      <div style={{ position: "relative", marginBottom: 10 }}>
-        <input
-          type="text"
-          placeholder="Search country..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+  // Shared search bar JSX
+  const searchBar = (
+    <div style={{ position: "relative", marginBottom: 10, flexShrink: 0 }}>
+      <input
+        type="text"
+        placeholder="Search country..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          width: "100%",
+          paddingLeft: 34, paddingRight: search ? 32 : 12, paddingTop: 9, paddingBottom: 9,
+          background: "rgba(255,255,255,0.06)",
+          border: "0.5px solid rgba(255,255,255,0.12)",
+          borderRadius: 10,
+          color: "#fff",
+          fontSize: 13,
+          outline: "none",
+          boxSizing: "border-box",
+          fontFamily: "inherit",
+          transition: "border-color 0.15s",
+        }}
+        onFocus={e => (e.currentTarget.style.borderColor = "rgba(108,92,231,0.6)")}
+        onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
+      />
+      <svg
+        style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "rgba(255,255,255,0.3)", pointerEvents: "none" }}
+        fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z" />
+      </svg>
+      {search && (
+        <button
+          onClick={() => setSearch("")}
           style={{
-            width: "100%",
-            paddingLeft: 34, paddingRight: search ? 32 : 12, paddingTop: 9, paddingBottom: 9,
-            background: "rgba(255,255,255,0.06)",
-            border: "0.5px solid rgba(255,255,255,0.12)",
-            borderRadius: 10,
-            color: "#fff",
-            fontSize: 13,
-            outline: "none",
-            boxSizing: "border-box",
-            fontFamily: "inherit",
-            transition: "border-color 0.15s",
+            position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+            background: "rgba(255,255,255,0.12)", border: "none", borderRadius: "50%",
+            width: 16, height: 16, cursor: "pointer", padding: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
           }}
-          onFocus={e => (e.currentTarget.style.borderColor = "rgba(108,92,231,0.6)")}
-          onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
-        />
-        <svg
-          style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "rgba(255,255,255,0.3)", pointerEvents: "none" }}
-          fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z" />
-        </svg>
-        {search && (
-          <button
-            onClick={() => setSearch("")}
-            style={{
-              position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-              background: "rgba(255,255,255,0.12)", border: "none", borderRadius: "50%",
-              width: 16, height: 16, cursor: "pointer", padding: 0,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
-            <svg width="8" height="8" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        )}
-      </div>
-
-      {/* Hint row */}
-      {!isSearching && Array.isArray(allCountries) && allCountries.length > 0 && (
-        <div style={{ color: "rgba(255,255,255,0.22)", fontSize: 10, marginBottom: 8, letterSpacing: "0.04em" }}>
-          {(() => {
-            const supported = allCountries.filter(c => c.supported).length;
-            return supported === 1
-              ? "1 destination available — more coming soon"
-              : `${supported} destinations available`;
-          })()}
-        </div>
+          <svg width="8" height="8" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       )}
+    </div>
+  );
 
-      {/* Country list */}
+  // Shared hint row JSX
+  const hintRow = !isSearching && Array.isArray(allCountries) && allCountries.length > 0 && (
+    <div style={{ color: "rgba(255,255,255,0.22)", fontSize: 10, marginBottom: 8, letterSpacing: "0.04em", flexShrink: 0 }}>
+      {(() => {
+        const supported = allCountries.filter(c => c.supported).length;
+        return supported === 1
+          ? "1 destination available — more coming soon"
+          : `${supported} destinations available`;
+      })()}
+    </div>
+  );
+
+  // Shared country list JSX
+  const countryList = (
+    <>
       <style>{scrollbarCSS}</style>
       <div className="vm-scroll-hidden" style={listScrollStyle}>
         {filtered.length === 0 ? (
@@ -148,9 +142,63 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
           })
         )}
       </div>
+    </>
+  );
 
-      {/* Scroll-hint fade — only in non-compact (standalone) mode */}
-      {!compact && filtered.length > 5 && (
+  // ── Compact mode: search + hint pinned, list scrolls inside the card ──────
+  if (compact) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        {/* Pinned: search bar + hint */}
+        {searchBar}
+        {hintRow}
+        {/* Scrollable: only the country list */}
+        <div className="vm-scroll-hidden" style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch" as any, scrollBehavior: "smooth" }}>
+          <style>{scrollbarCSS}</style>
+          <div className="vm-scroll-hidden" style={{ display: "flex", flexDirection: "column", gap: 6, paddingRight: 1 }}>
+            {filtered.length === 0 ? (
+              <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "20px 0", margin: 0 }}>
+                {Array.isArray(allCountries) ? "No countries found" : "Loading..."}
+              </p>
+            ) : (
+              filtered.map((c) => {
+                const isSelected = selectedCountry === c.code;
+                return (
+                  <CountryRow
+                    key={c.code}
+                    country={c}
+                    isSelected={isSelected}
+                    onSelect={() => {
+                      if (!c.supported) return;
+                      const countryCode = isSelected ? null : c.code;
+                      const countryName = isSelected ? null : c.name;
+                      onSelect(countryCode, countryName);
+                      update({ country: countryName ?? "" });
+                    }}
+                  />
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Non-compact (standalone / full-page) mode ─────────────────────────────
+  return (
+    <div>
+      <div style={{ marginBottom: 18 }}>
+        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>Step 1</div>
+        <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>Select destination</h2>
+        <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Where are you planning to go?</p>
+      </div>
+
+      {searchBar}
+      {hintRow}
+      {countryList}
+
+      {filtered.length > 5 && (
         <div style={{
           height: 20,
           background: "linear-gradient(to top, rgba(15,12,30,0.6) 0%, transparent 100%)",

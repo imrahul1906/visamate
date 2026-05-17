@@ -212,7 +212,8 @@
                     "id": "JP_TOURIST_MUMBAI_NOC_001",
                     "code": "NOC",
                     "name": "No Objection Certificate (NOC)",
-                    "isRequired": false,
+                    "isRequired": true,
+                    "optionality": "required",
                     "description": "NOC or leave approval letter from employer/School/College",
                     "acceptedFormats": [
                         "Original",
