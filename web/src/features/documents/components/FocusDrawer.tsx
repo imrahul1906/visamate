@@ -111,29 +111,6 @@ export function FocusDrawer({
               {visibleDoc.description}
             </p>
           </div>
-
-          {/* Mark done button */}
-          <button
-            className={`vm-mark-done-btn ${isDone ? "vm-is-done" : "vm-undone"}`}
-            onClick={() => onToggleDone(visibleDoc.id)}
-            style={{ flexShrink: 0 }}
-          >
-            {isDone ? (
-              <>
-                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                </svg>
-                Done
-              </>
-            ) : (
-              <>
-                <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="9" />
-                </svg>
-                Mark done
-              </>
-            )}
-          </button>
         </div>
 
         {/* Tags row */}

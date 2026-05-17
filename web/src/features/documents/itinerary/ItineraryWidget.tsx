@@ -29,6 +29,7 @@ import {
   downloadDocxBlob,
 } from "./itineraryDocxService";
 import type { ItineraryRowData } from "./itineraryDocxService";
+import { validators } from "../util/docInputValidation";
 
 export default function ItineraryWidget({
   color,
@@ -84,6 +85,12 @@ export default function ItineraryWidget({
   /* ── Validation ── */
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [attempted, setAttempted] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [passportError, setPassportError] = useState<string | null>(null);
+  // per-day phone format errors (non-blocking — won't prevent preview)
+  const [phoneErrors, setPhoneErrors] = useState<Record<number, string | null>>({});
+  const setPhoneError = (day: number, err: string | null) =>
+    setPhoneErrors(p => ({ ...p, [day]: err }));
 
   /* ── Sync unique city names → context ── */
   useEffect(() => {
@@ -382,19 +389,55 @@ export default function ItineraryWidget({
 
             {/* ── Right: Day planner ── */}
             <div className="iw-right">
-              {/* Applicant + passport */}
+              {/* Applicant + passport — optional, validated inline */}
               <div className="iw-config-row">
                 <div className="iw-config-field">
-                  <label className="iw-label">Applicant Name</label>
-                  <input type="text" className="iw-input" placeholder="e.g. Rahul Yadav" value={applicantName}
-                    onChange={(e) => { setApplicantName(e.target.value); update({ applicantName: e.target.value }); }}
-                    onBlur={() => update({ applicantName })} />
+                  <label className="iw-label">
+                    Applicant Name
+                    <span className="iw-label-optional">optional</span>
+                    {nameError && <span className="iw-field-err">{nameError}</span>}
+                  </label>
+                  <input
+                    type="text"
+                    className={`iw-input ${nameError ? "iw-input--error" : ""}`}
+                    placeholder="e.g. Rahul Yadav"
+                    value={applicantName}
+                    onKeyDown={validators.nameOnly.onKeyDown}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setApplicantName(v);
+                      update({ applicantName: v });
+                      setNameError(validators.nameOnly.validate(v));
+                    }}
+                    onBlur={() => {
+                      update({ applicantName });
+                      setNameError(validators.nameOnly.validate(applicantName));
+                    }}
+                  />
                 </div>
                 <div className="iw-config-field">
-                  <label className="iw-label">Passport Number</label>
-                  <input type="text" className="iw-input" placeholder="e.g. A1234567" value={passportNo}
-                    onChange={(e) => { setPassportNo(e.target.value); update({ passportNo: e.target.value }); }}
-                    onBlur={() => update({ passportNo })} />
+                  <label className="iw-label">
+                    Passport Number
+                    <span className="iw-label-optional">optional</span>
+                    {passportError && <span className="iw-field-err">{passportError}</span>}
+                  </label>
+                  <input
+                    type="text"
+                    className={`iw-input ${passportError ? "iw-input--error" : ""}`}
+                    placeholder="e.g. A1234567"
+                    value={passportNo}
+                    onKeyDown={validators.passport.onKeyDown}
+                    onChange={(e) => {
+                      const v = validators.passport.sanitise?.(e.target.value) ?? e.target.value;
+                      setPassportNo(v);
+                      update({ passportNo: v });
+                      setPassportError(validators.passport.validate(v));
+                    }}
+                    onBlur={() => {
+                      update({ passportNo });
+                      setPassportError(validators.passport.validate(passportNo));
+                    }}
+                  />
                 </div>
               </div>
 
@@ -451,6 +494,43 @@ export default function ItineraryWidget({
 
                 {/* Hotel row */}
                 <div className="iw-hotel-row">
+                  {/* Single "Same as above" toggle — copies both hotel name and contact */}
+                  {activeDay > 1 && (
+                    <label className="iw-same-checkbox-label iw-same-checkbox-label--unified">
+                      <input
+                        type="checkbox"
+                        className="iw-same-checkbox"
+                        checked={
+                          accomForDay(activeDay).hotelName !== "" &&
+                          accomForDay(activeDay).hotelName === accomForDay(activeDay - 1).hotelName &&
+                          accomForDay(activeDay).hotelContact !== "" &&
+                          accomForDay(activeDay).hotelContact === accomForDay(activeDay - 1).hotelContact
+                        }
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            const prev = accomForDay(activeDay - 1);
+                            setAccommodations(a => ({
+                              ...a,
+                              [activeDay]: { hotelName: prev.hotelName, hotelContact: prev.hotelContact },
+                            }));
+                          } else {
+                            setAccommodations(a => ({
+                              ...a,
+                              [activeDay]: { hotelName: "", hotelContact: "" },
+                            }));
+                          }
+                          if (attempted) setFieldErrors(p => {
+                            const n = { ...p };
+                            delete n[`day_${activeDay}_hotel`];
+                            delete n[`day_${activeDay}_contact`];
+                            return n;
+                          });
+                          setPhoneError(activeDay, null);
+                        }}
+                      />
+                      <span>Same hotel &amp; contact as previous day</span>
+                    </label>
+                  )}
                   <div className="iw-hotel-field">
                     <label className="iw-label">
                       Hotel / Accommodation
@@ -458,33 +538,14 @@ export default function ItineraryWidget({
                         <span className="iw-field-err">{fieldErrors[`day_${activeDay}_hotel`]}</span>
                       )}
                     </label>
-                    {activeDay > 1 && (
-                      <label className="iw-same-checkbox-label">
-                        <input
-                          type="checkbox"
-                          className="iw-same-checkbox"
-                          checked={
-                            accomForDay(activeDay).hotelName !== "" &&
-                            accomForDay(activeDay).hotelName === accomForDay(activeDay - 1).hotelName
-                          }
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              const prev = accomForDay(activeDay - 1);
-                              setAccommodations(a => ({ ...a, [activeDay]: { ...accomForDay(activeDay), hotelName: prev.hotelName } }));
-                            } else {
-                              setAccommodations(a => ({ ...a, [activeDay]: { ...accomForDay(activeDay), hotelName: "" } }));
-                            }
-                            if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_hotel`]; return n; });
-                          }}
-                        />
-                        <span>Same as above</span>
-                      </label>
-                    )}
                     <input
                       className={`iw-input ${attempted && fieldErrors[`day_${activeDay}_hotel`] ? "iw-input--error" : ""}`}
                       placeholder="e.g. APA Hotel Shinjuku"
                       value={accomForDay(activeDay).hotelName}
-                      onChange={(e) => { setAccom(activeDay, "hotelName", e.target.value); if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_hotel`]; return n; }); }}
+                      onChange={(e) => {
+                        setAccom(activeDay, "hotelName", e.target.value);
+                        if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_hotel`]; return n; });
+                      }}
                     />
                   </div>
                   <div className="iw-hotel-field">
@@ -493,34 +554,26 @@ export default function ItineraryWidget({
                       {attempted && fieldErrors[`day_${activeDay}_contact`] && (
                         <span className="iw-field-err">{fieldErrors[`day_${activeDay}_contact`]}</span>
                       )}
+                      {!fieldErrors[`day_${activeDay}_contact`] && phoneErrors[activeDay] && (
+                        <span className="iw-field-err">{phoneErrors[activeDay]}</span>
+                      )}
                     </label>
-                    {activeDay > 1 && (
-                      <label className="iw-same-checkbox-label">
-                        <input
-                          type="checkbox"
-                          className="iw-same-checkbox"
-                          checked={
-                            accomForDay(activeDay).hotelContact !== "" &&
-                            accomForDay(activeDay).hotelContact === accomForDay(activeDay - 1).hotelContact
-                          }
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              const prev = accomForDay(activeDay - 1);
-                              setAccommodations(a => ({ ...a, [activeDay]: { ...accomForDay(activeDay), hotelContact: prev.hotelContact } }));
-                            } else {
-                              setAccommodations(a => ({ ...a, [activeDay]: { ...accomForDay(activeDay), hotelContact: "" } }));
-                            }
-                            if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_contact`]; return n; });
-                          }}
-                        />
-                        <span>Same as above</span>
-                      </label>
-                    )}
                     <input
-                      className={`iw-input ${attempted && fieldErrors[`day_${activeDay}_contact`] ? "iw-input--error" : ""}`}
+                      className={`iw-input ${
+                        (attempted && fieldErrors[`day_${activeDay}_contact`]) || phoneErrors[activeDay]
+                          ? "iw-input--error"
+                          : ""
+                      }`}
                       placeholder="e.g. +81 3 1234 5678"
                       value={accomForDay(activeDay).hotelContact}
-                      onChange={(e) => { setAccom(activeDay, "hotelContact", e.target.value); if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_contact`]; return n; }); }}
+                      onKeyDown={validators.phone.onKeyDown}
+                      onChange={(e) => {
+                        const v = validators.phone.sanitise?.(e.target.value) ?? e.target.value;
+                        setAccom(activeDay, "hotelContact", v);
+                        setPhoneError(activeDay, validators.phone.validate(v));
+                        if (attempted) setFieldErrors(p => { const n = { ...p }; delete n[`day_${activeDay}_contact`]; return n; });
+                      }}
+                      onBlur={() => setPhoneError(activeDay, validators.phone.validate(accomForDay(activeDay).hotelContact))}
                     />
                   </div>
                 </div>
@@ -580,7 +633,7 @@ export default function ItineraryWidget({
                 {/* Preview button */}
                 <div className="iw-save-row">
                   <p className="iw-save-hint">
-                    Complete all days, then preview your itinerary before downloading.
+                    Complete all days, then preview your itinerary before downloading. Make sure to fill every field after downloading, if not filled here.
                   </p>
                   <button className="iw-save-btn" onClick={handlePreview}>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1043,8 +1096,19 @@ const styles = `
     gap: 16px;
   }
 
-  /* Info strip */
-  .iw-preview-info-strip {
+  .iw-label-optional {
+    font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 99px;
+    background: rgba(255,255,255,0.06); color: var(--iw-muted);
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-left: 6px; vertical-align: middle;
+  }
+
+  /* Unified "same as above" row — spans both hotel fields */
+  .iw-same-checkbox-label--unified {
+    grid-column: 1 / -1;
+    margin-bottom: 2px;
+  }
     display: flex; align-items: flex-start; gap: 10px;
     background: rgba(99,102,241,0.08);
     border: 1px solid rgba(99,102,241,0.22);

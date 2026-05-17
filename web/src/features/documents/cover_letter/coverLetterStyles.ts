@@ -144,22 +144,64 @@ export const STYLES = `
     background: var(--iw-surface);
     border: 1px solid var(--iw-border); border-top: none;
     border-radius: 0 0 10px 10px;
-    padding: 20px;
-    display: flex; flex-direction: column; gap: 20px;
+    padding: 24px 24px;
+    display: flex; flex-direction: column; gap: 22px;
   }
-  .cl-section { display: flex; flex-direction: column; gap: 12px; }
+  .cl-section { display: flex; flex-direction: column; gap: 14px; }
   .cl-section-label {
     font-size: 10px; font-weight: 700; letter-spacing: .07em;
     text-transform: uppercase; color: var(--iw-indigo-lt); margin: 0;
+    padding-bottom: 6px; border-bottom: 1px solid var(--iw-border);
   }
   .cl-section-hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--iw-muted); font-size: 10px; }
-  .cl-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .cl-field { display: flex; flex-direction: column; gap: 5px; }
+
+  /* ── Hint chip — styled inline contextual tips ── */
+  .cl-hint-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: rgba(251,191,36,0.10); border: 1px solid rgba(251,191,36,0.28);
+    color: #f59e0b; border-radius: 99px;
+    padding: 2px 8px; font-size: 10px; font-weight: 600;
+    letter-spacing: .02em; text-transform: none;
+    vertical-align: middle; margin-left: 6px;
+    white-space: nowrap;
+  }
+  .cl-hint-chip svg { flex-shrink: 0; }
+  .cl-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cl-field-row--3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  /* Travel: departure city (wider) + travelling toggle (narrower) */
+  .cl-field-row--travel { grid-template-columns: 1.6fr 1fr; align-items: start; }
+
+  /* Travel 3-col row: city | alone/with | companion */
+  .cl-travel-row {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  /* Companion column — hidden when "Alone", fades in when "With someone" */
+  .cl-companion-col {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+  .cl-companion-col--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Companion sub-picker — slides in under the Alone/With toggle */
+  .cl-companion-picker {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 4px; padding-top: 10px;
+    border-top: 1px solid var(--iw-border);
+  }
+  .cl-field { display: flex; flex-direction: column; gap: 6px; }
   .cl-label { font-size: 11px; font-weight: 600; color: var(--iw-muted2); display: flex; gap: 8px; align-items: center; }
   .cl-field-err { font-size: 10px; color: var(--iw-error); font-weight: 500; }
   .cl-input {
     background: var(--iw-surface2); border: 1px solid var(--iw-border);
-    border-radius: 7px; padding: 8px 10px; font-size: 12px;
+    border-radius: 8px; padding: 9px 12px; font-size: 13px;
     color: var(--iw-text); font-family: var(--iw-ff-body);
     outline: none; transition: border-color 120ms;
   }
@@ -180,17 +222,23 @@ export const STYLES = `
   .cl-toggle-btn--active { background: var(--iw-indigo-glow); border-color: rgba(99,102,241,0.5); color: var(--iw-indigo-lt); }
 
   /* Family ties grid */
-  .cl-ties-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .cl-ties-item { display: flex; flex-direction: column; gap: 6px; }
+  .cl-ties-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  }
+  .cl-ties-item {
+    display: flex; flex-direction: column; gap: 8px;
+    background: var(--iw-surface2); border: 1px solid var(--iw-border);
+    border-radius: 10px; padding: 12px 14px;
+  }
 
   /* Contacts */
   .cl-contact-header {
-    display: grid; grid-template-columns: 24px 1fr 1fr 1fr 1fr 28px;
+    display: grid; grid-template-columns: 24px 1.4fr 1fr 1fr 1.2fr 28px;
     gap: 8px; padding: 0 4px; font-size: 10px; font-weight: 700;
     letter-spacing: .05em; text-transform: uppercase; color: var(--iw-muted);
   }
   .cl-contact-row {
-    display: grid; grid-template-columns: 24px 1fr 1fr 1fr 1fr 28px;
+    display: grid; grid-template-columns: 24px 1.4fr 1fr 1fr 1.2fr 28px;
     gap: 8px; align-items: center;
   }
 
@@ -256,6 +304,26 @@ export const STYLES = `
     cursor: pointer; color: var(--iw-muted); transition: all 100ms;
   }
   .cl-icon-btn--remove:hover { border-color: rgba(248,113,113,0.4); color: var(--iw-error); background: var(--iw-error-bg); }
+
+  /* Dependant rows */
+  .cl-dependant-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--iw-surface2); border: 1px solid var(--iw-border);
+    border-radius: 10px; padding: 14px;
+  }
+  .cl-dependant-row-num {
+    width: 22px; height: 22px; border-radius: 50%; background: var(--iw-indigo);
+    color: white; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cl-dependant-row-fields { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .cl-remove-btn {
+    width: 26px; height: 26px; border: 1px solid var(--iw-border);
+    background: rgba(255,255,255,0.04); border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--iw-muted); transition: all 100ms; margin-top: 1px;
+  }
+  .cl-remove-btn:hover { border-color: rgba(248,113,113,0.4); color: var(--iw-error); background: var(--iw-error-bg); }
 
   /* Save row */
   .cl-save-row {
@@ -491,6 +559,9 @@ export const STYLES = `
   /* Responsive */
   @media (max-width: 640px) {
     .cl-field-row { grid-template-columns: 1fr; }
+    .cl-field-row--travel { grid-template-columns: 1fr; }
+    .cl-travel-row { grid-template-columns: 1fr; }
+    .cl-companion-col { opacity: 1; pointer-events: auto; }
     .cl-ties-grid { grid-template-columns: 1fr 1fr; }
     .cl-contact-header { display: none; }
     .cl-contact-row { grid-template-columns: 24px 1fr 28px; }

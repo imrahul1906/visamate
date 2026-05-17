@@ -68,37 +68,35 @@ export function useVisaFormState(doc: DocumentItem): VisaFormState {
   const formInfo = doc.form;
   const isDownloadable = isDownloadableForm(formInfo?.type);
 
-  // ── Data loading ────────────────────────────────────────────
-  const [allFields, setAllFields] = useState<FormFillField[]>([]);
-  const [fieldsLoading, setFieldsLoading] = useState(true);
-
-  useEffect(() => {
-    setFieldsLoading(true);
-    getFormFillFields(formInfo?.formFillDataKey).then((fields) => {
-      setAllFields(fields);
-      setFieldsLoading(false);
-    });
-  }, [formInfo?.formFillDataKey]);
-
   // ── UI state ────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFieldId, setActiveFieldId] = useState<string | null>(null);
   const [doneFields, setDoneFields] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [helperOpen, setHelperOpen] = useState(true);
+  const [helperOpen, setHelperOpen] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
-  const [sectionsInitialized, setSectionsInitialized] = useState(false);
+
+  // ── Data loading (lazy — only when helper is opened) ────────
+  const [allFields, setAllFields] = useState<FormFillField[]>([]);
+  const [fieldsLoading, setFieldsLoading] = useState(false);
+  const [fieldsLoaded, setFieldsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!helperOpen || fieldsLoaded) return;
+    setFieldsLoading(true);
+    getFormFillFields(formInfo?.formFillDataKey).then((fields) => {
+      setAllFields(fields);
+      setFieldsLoading(false);
+      setFieldsLoaded(true);
+    });
+  }, [helperOpen, formInfo?.formFillDataKey]);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Auto-select first field; initialise section collapse once data arrives
+  // Auto-select first field and initialise section collapse once data arrives
   useEffect(() => {
-    if (allFields.length > 0 && !activeFieldId) {
-      setActiveFieldId(allFields[0].id);
-    }
-    if (allFields.length > 0 && !sectionsInitialized) {
-      setCollapsedSections(getInitialCollapsedSections(allFields));
-      setSectionsInitialized(true);
-    }
+    if (allFields.length === 0) return;
+    if (!activeFieldId) setActiveFieldId(allFields[0].id);
+    setCollapsedSections(getInitialCollapsedSections(allFields));
   }, [allFields]);
 
   // ── Derived ─────────────────────────────────────────────────

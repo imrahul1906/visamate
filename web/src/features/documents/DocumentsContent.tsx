@@ -12,25 +12,19 @@ import { useDrawerAnimation } from "./hooks/useDrawerAnimation";
 import { useKeyboardNav } from "./hooks/useKeyboardNav";
 
 import { DocumentsStyles } from "./components/DocumentsStyles";
-import { DocumentsHeader } from "./components/DocumentsHeader";
-import { StatStrip } from "./components/StatStrip";
-import { UploadProgressBanner } from "./components/UploadProgressBanner";
+import { VisaOverviewStrip } from "./components/VisaOverviewStrip";
 import { CompletionBanner } from "./components/CompletionBanner";
 import { ChecklistPanel } from "./components/ChecklistPanel";
 import { FocusDrawer } from "./components/FocusDrawer";
 import { LoadingState, ErrorState } from "./components/StatusStates";
-import VisaOverviewPanel from "./visa_overview/VisaOverviewPanel";
 
 import { downloadAllFiles } from "./util/downloadAllFiles";
 
 // ─────────────────────────────────────────────────────────────
-// Props — all optional. When provided they take priority over
-// URL search-params, so the component works both as a standalone
-// page AND embedded inside WizardAccordion without navigation.
+// Props
 // ─────────────────────────────────────────────────────────────
 
 export interface DocumentsContentProps {
-  /** When truthy the "Edit selections" back-button is hidden */
   embedded?: boolean;
   country?: string;
   countryName?: string;
@@ -46,7 +40,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const params = useSearchParams();
   const router = useRouter();
 
-  // ── Resolve params — prefer injected props, fall back to URL ──
   const country      = props.country      ?? params.get("country")      ?? "";
   const countryName  = props.countryName  ?? params.get("countryName")  ?? params.get("country")  ?? "—";
   const visaType     = props.visaType     ?? params.get("visaType")     ?? "";
@@ -56,11 +49,11 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const sponsorship  = props.sponsorship  ?? params.get("sponsorship")  ?? "SELF";
 
   // ── State ─────────────────────────────────────────────────────
-  const [checked, setChecked]             = useState<Record<string, boolean>>({});
-  const [uploads, setUploads]             = useState<UploadsMap>({});
+  const [checked, setChecked]               = useState<Record<string, boolean>>({});
+  const [uploads, setUploads]               = useState<UploadsMap>({});
   const [downloadingZip, setDownloadingZip] = useState(false);
-  const [activeDocId, setActiveDocId]     = useState<string | null>(null);
-  const [isMobile]                        = useState(() =>
+  const [activeDocId, setActiveDocId]       = useState<string | null>(null);
+  const [isMobile]                          = useState(() =>
     typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
 
@@ -112,12 +105,12 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   };
 
   // ── Derived values ────────────────────────────────────────────
-  const allDocs        = data?.categories.flatMap(c => c.documents) ?? [];
-  const requiredDocs   = allDocs.filter(d => d.status === "required");
-  const totalDone      = allDocs.filter(d => checked[d.id]).length;
-  const requiredDone   = requiredDocs.filter(d => checked[d.id]).length;
-  const overallPct     = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
-  const uploadCount    = Object.keys(uploads).length;
+  const allDocs         = data?.categories.flatMap(c => c.documents) ?? [];
+  const requiredDocs    = allDocs.filter(d => d.status === "required");
+  const totalDone       = allDocs.filter(d => checked[d.id]).length;
+  const requiredDone    = requiredDocs.filter(d => checked[d.id]).length;
+  const overallPct      = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
+  const uploadCount     = Object.keys(uploads).length;
   const uploadableCount = allDocs.filter(d => !d.noUpload).length;
 
   const activeDocIndex = allDocs.findIndex(d => d.id === activeDocId);
@@ -163,8 +156,8 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           </button>
         )}
 
-        {/* Hero header */}
-        <DocumentsHeader
+        {/* ── Visa Overview Strip (replaces old header + stat cards) ── */}
+        <VisaOverviewStrip
           embedded={embedded}
           countryName={countryName}
           visaTypeName={visaTypeName}
@@ -177,20 +170,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           uploadableCount={uploadableCount}
           downloadingZip={downloadingZip}
           onDownloadAll={handleDownloadAll}
-        />
-
-        {/* Stat strip */}
-        <StatStrip
-          requiredCount={requiredDocs.length}
-          optionalCount={allDocs.length - requiredDocs.length}
-          uploadCount={uploadCount}
-        />
-
-        {/* Upload progress banner */}
-        <UploadProgressBanner
-          uploadCount={uploadCount}
-          uploadableCount={uploadableCount}
-          onDownloadAll={handleDownloadAll}
+          visaType={visaTypeData}
         />
 
         {/* Completion banner */}
@@ -203,7 +183,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             display: "flex",
             gap: 0,
             width: "100%",
-            minHeight: embedded ? 560 : "calc(100vh - 420px)",
+            minHeight: embedded ? 560 : "calc(100vh - 340px)",
             position: "relative",
             borderRadius: 16,
             overflow: "hidden",
@@ -232,13 +212,16 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 totalDone={totalDone}
                 totalDocs={allDocs.length}
                 overallPct={overallPct}
+                uploadCount={uploadCount}
+                uploadableCount={uploadableCount}
                 onSelectDoc={setActiveDocId}
                 onToggleDoc={toggleDoc}
+                onDownloadAll={handleDownloadAll}
               />
             )}
           </div>
 
-          {/* RIGHT PANEL — Focus Drawer */}
+          {/* RIGHT PANEL — Focus Drawer or Welcome State */}
           <div
             className={isMobile && drawerOpen ? "vm-right-panel-overlay" : ""}
             style={{
@@ -252,10 +235,11 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             }}
           >
             {!visibleDoc ? (
-              <VisaOverviewPanel
-                visaType={visaTypeData}
-                countryName={countryName}
+              <ChecklistWelcomeState
+                totalDocs={allDocs.length}
+                requiredTotal={requiredDocs.length}
                 visaTypeName={visaTypeName}
+                countryName={countryName}
               />
             ) : (
               <FocusDrawer
@@ -288,6 +272,88 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           </div>
         </div>
 
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// ChecklistWelcomeState
+// Shown in the right panel when no document is selected.
+// Replaces the old VisaOverviewPanel (which has moved to the strip).
+// ─────────────────────────────────────────────────────────────
+
+function ChecklistWelcomeState({
+  totalDocs,
+  requiredTotal,
+  visaTypeName,
+  countryName,
+}: {
+  totalDocs: number;
+  requiredTotal: number;
+  visaTypeName: string;
+  countryName: string;
+}) {
+  return (
+    <div style={{
+      flex: 1, display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      padding: "32px 28px", textAlign: "center",
+    }}>
+      {/* Icon */}
+      <div style={{
+        width: 56, height: 56, borderRadius: 16,
+        background: "rgba(99,102,241,0.1)",
+        border: "1px solid rgba(99,102,241,0.25)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 26, marginBottom: 18,
+      }}>
+        📋
+      </div>
+
+      {/* Heading */}
+      <h2 style={{
+        fontFamily: "'DM Serif Display', serif",
+        fontSize: 18, fontWeight: 400,
+        color: "rgba(255,255,255,0.85)",
+        margin: "0 0 10px", lineHeight: 1.3,
+      }}>
+        Your {visaTypeName} Checklist
+      </h2>
+
+      {/* Subtext */}
+      <p style={{
+        fontSize: 13, color: "rgba(255,255,255,0.4)",
+        margin: "0 0 24px", lineHeight: 1.7,
+        maxWidth: 320, fontFamily: "'DM Sans', sans-serif",
+      }}>
+        {totalDocs} documents for {countryName} — {requiredTotal} required.
+        Click any item on the left to view details, upload files, or use built-in tools like the itinerary builder.
+      </p>
+
+      {/* Step hints */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 300, textAlign: "left" }}>
+        {[
+          { icon: "👆", text: "Select a document to see requirements" },
+          { icon: "✅", text: "Mark items done as you gather them" },
+          { icon: "📎", text: "Upload files to build your folder" },
+          { icon: "⬇️", text: "Download everything as a ZIP when ready" },
+        ].map(({ icon, text }) => (
+          <div key={text} style={{
+            display: "flex", alignItems: "center", gap: 10,
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            borderRadius: 10, padding: "10px 14px",
+          }}>
+            <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
+            <span style={{
+              fontSize: 12, color: "rgba(255,255,255,0.5)",
+              fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4,
+            }}>
+              {text}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
