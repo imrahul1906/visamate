@@ -31,8 +31,8 @@ export const SPECIAL_WIDGETS: Record<string, SpecialWidget> = {
   JAPAN_ITINERARY:        "itinerary",
   FRANCE_ITINERARY:       "itinerary",
   COVER_LETTER:           "cover_letter",
-  // FIX: was "DOCUMENT_CHECKLIST" but JSON uses code "DOC_CHECKLIST"
   DOC_CHECKLIST:          "document_checklist",
+  DEPENDENT_CONSENT:        "sponsor_consent",
 };
 
 // ─────────────────────────────────────────────────────────────
