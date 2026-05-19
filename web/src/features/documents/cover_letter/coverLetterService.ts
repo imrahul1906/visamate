@@ -37,6 +37,8 @@ export interface CoverLetterInputs {
   sponsorName: string;
   sponsorRel: string;
   sponsorAccompanying: "accompanying" | "staying";
+  sponsorPassport: string;
+  sponsorDob: string;
 
   // Family ties
   married: "yes" | "no";

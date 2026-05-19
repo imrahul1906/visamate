@@ -1,5 +1,7 @@
 // visamate/web/src/types/applicant.ts
 
+import { CountryVisit } from "@/features/documents/cover_letter/coverLetterService";
+
 export interface ApplicantData {
   // ── From ItineraryWidget ──
   applicantName: string;
@@ -17,6 +19,8 @@ export interface ApplicantData {
   // ── From StepDetails ──
   sponsorshipType: "self" | "sponsored" | null;
   applicantProfile: "employed" | "student" | "self-employed" | null;
+  sponsorPassport: string;
+  sponsorDob: string;
 
   // ── From StepVisaType ──
   visaType: string;
@@ -24,7 +28,7 @@ export interface ApplicantData {
 
   // ── From CoverLetterWidget (Step 1 inputs) ──
   departureCity: string;
-  countriesVisited: string;          // comma-separated
+  countriesVisited: CountryVisit[];          // comma-separated
   travellingWith: "alone" | "with";
   companion: "mother" | "father" | "spouse" | "friend" | "";
   designation: string;               // employed / self-employed only

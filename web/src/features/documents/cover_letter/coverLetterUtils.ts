@@ -118,7 +118,13 @@ export function seedLetterState(
       (inputs.sponsorAccompanying === "accompanying"
         ? `${inputs.sponsorName || "[Sponsor Name]"} will be accompanying me on this trip.`
         : `${inputs.sponsorName || "[Sponsor Name]"} will remain in India during my travel.`) +
-      ` Copies of their passport, bank statements, and sponsorship letter are enclosed.`,
+      ` Their details are as follows:\n\n` +
+      `• Full Name: ${inputs.sponsorName || "[Sponsor Name]"}\n` +
+      `• Relationship: ${inputs.sponsorRel || "[Relationship]"}\n` +
+      `• Nationality: Indian\n` +
+      `• Passport Number: ${(inputs as any).sponsorPassport || hint("Add sponsor's passport number")}\n` +
+      `• Date of Birth: ${(inputs as any).sponsorDob ? new Date((inputs as any).sponsorDob + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : hint("Add sponsor's date of birth")}\n\n` +
+      `Copies of their passport, bank statements, and sponsorship letter are enclosed.`,
     lSigName: ctx.applicantName || "[Name]",
     lSigPassport: ctx.passportNo || "[Passport No]",
     lSecDocs: COVER_LETTER_TEMPLATES.secDocs,
@@ -304,6 +310,6 @@ function buildFinanceSection(inputs: CoverLetterInputs, country: string): string
     (inputs.sponsorAccompanying === "accompanying"
       ? "who is accompanying me in this trip "
       : "") +
-    `will sponsor and bear all the cost incurred in this trip. I have attached the consent letter from them. I have also attached their financial records.`
+    `will sponsor and bear all the expenses incurred in this trip. I have attached his letter of consent and sponsorship, along with his financial documents, for your reference.`
   );
 }

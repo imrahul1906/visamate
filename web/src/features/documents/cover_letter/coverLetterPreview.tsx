@@ -75,6 +75,10 @@ export interface CoverLetterPreviewProps {
   setLSecSponsor: (v: string) => void;
   lSponsor: string;
   setLSponsor: (v: string) => void;
+  lSponsorPassport: string;
+  setLSponsorPassport: (v: string) => void;
+  lSponsorDob: string;
+  setLSponsorDob: (v: string) => void;
   lSecDependant: string;
   setLSecDependant: (v: string) => void;
   lDependant: string;
@@ -165,6 +169,10 @@ export function CoverLetterPreview({
   setLSecSponsor,
   lSponsor,
   setLSponsor,
+  lSponsorPassport,
+  setLSponsorPassport,
+  lSponsorDob,
+  setLSponsorDob,
   lSecDependant,
   setLSecDependant,
   lDependant,
@@ -456,7 +464,7 @@ export function CoverLetterPreview({
                 onChange={(e) => setLSecSponsor(e.target.value)}
                 title="Click to edit"
               />
-              <InlinePara value={lSponsor} onChange={setLSponsor} rows={3} />
+              <InlinePara value={lSponsor} onChange={setLSponsor} rows={5} />
             </>
           )}
 

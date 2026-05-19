@@ -80,6 +80,7 @@ export function CoverLetterInputsStep({
     if (name === "designation") err = validators.nameOnly.validate(value);
     if (name === "institutionName") err = validators.nameOnly.validate(value);
     if (name === "sponsorName") err = validators.nameOnly.validate(value);
+    if (name === "sponsorPassport") err = validators.passport.validate(value);
     setFieldErrors((prev) => ({ ...prev, [name]: err }));
   }
 
@@ -89,6 +90,19 @@ export function CoverLetterInputsStep({
       const next = [...prev];
       next[idx] = errs;
       return next;
+    });
+  }
+
+  // Wrap onProceed so we can scroll to the first visible error
+  function handleProceedWithScroll() {
+    onProceed();
+    // Give React a tick to set errors, then scroll to first error field
+    requestAnimationFrame(() => {
+      const el = document.querySelector<HTMLElement>(".cl-input--error, .cl-field-err");
+      if (el) {
+        const field = el.closest(".cl-field") || el;
+        field.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
     });
   }
 
@@ -303,35 +317,77 @@ export function CoverLetterInputsStep({
         {isSpon && (
           <div className="cl-section">
             <p className="cl-section-label">Sponsorship</p>
-            <div className="cl-field-row">
-              <div className="cl-field">
-                <label className="cl-label">
-                  Sponsor name
-                  {fieldErrors.sponsorName && (
-                    <span className="cl-field-err">{fieldErrors.sponsorName}</span>
-                  )}
-                </label>
-                <input
-                  className={`cl-input${fieldErrors.sponsorName ? " cl-input--error" : ""}`}
-                  placeholder="e.g. Rahul Sharma"
-                  value={inputs.sponsorName}
-                  onChange={(e) => onChange("sponsorName", e.target.value)}
-                  onBlur={(e) => validateField("sponsorName", e.target.value)}
-                />
-              </div>
-              <div className="cl-field">
-                <label className="cl-label">
-                  Relationship to sponsor
-                </label>
-                <input
-                  className="cl-input"
-                  placeholder="e.g. Father, Brother"
-                  value={inputs.sponsorRel}
-                  onChange={(e) => onChange("sponsorRel", e.target.value)}
-                />
+
+            {/* Unified sponsor card — same layout as dependant card */}
+            <div className="cl-dependant-row">
+              <div className="cl-dependant-row-fields">
+                <div className="cl-field-row">
+                  <div className="cl-field">
+                    <label className="cl-label">
+                      Sponsor name
+                      {(attempted && errors.sponsorName || fieldErrors.sponsorName) && (
+                        <span className="cl-field-err">{errors.sponsorName || fieldErrors.sponsorName}</span>
+                      )}
+                    </label>
+                    <input
+                      className={`cl-input${(attempted && errors.sponsorName) || fieldErrors.sponsorName ? " cl-input--error" : ""}`}
+                      placeholder="e.g. Rahul Sharma"
+                      value={inputs.sponsorName}
+                      onChange={(e) => onChange("sponsorName", e.target.value)}
+                      onBlur={(e) => validateField("sponsorName", e.target.value)}
+                    />
+                  </div>
+                  <div className="cl-field">
+                    <label className="cl-label">
+                      Relationship to sponsor
+                      {(attempted && errors.sponsorRel) && (
+                        <span className="cl-field-err">{errors.sponsorRel}</span>
+                      )}
+                    </label>
+                    <input
+                      className={`cl-input${(attempted && errors.sponsorRel) ? " cl-input--error" : ""}`}
+                      placeholder="e.g. Father, Brother"
+                      value={inputs.sponsorRel}
+                      onChange={(e) => onChange("sponsorRel", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="cl-field-row">
+                  <div className="cl-field">
+                    <label className="cl-label">
+                      Sponsor's passport number
+                      {fieldErrors.sponsorPassport && (
+                        <span className="cl-field-err">{fieldErrors.sponsorPassport}</span>
+                      )}
+                    </label>
+                    <input
+                      className={`cl-input${fieldErrors.sponsorPassport ? " cl-input--error" : ""}`}
+                      placeholder="e.g. P1234567"
+                      value={(inputs as any).sponsorPassport || ""}
+                      onChange={(e) => {
+                        const cleaned = validators.passport.sanitise?.(e.target.value) ?? e.target.value;
+                        onChange("sponsorPassport" as any, cleaned);
+                      }}
+                      onBlur={(e) => validateField("sponsorPassport", e.target.value)}
+                      onKeyDown={validators.passport.onKeyDown}
+                      maxLength={8}
+                    />
+                  </div>
+                  <div className="cl-field">
+                    <label className="cl-label">Sponsor's date of birth</label>
+                    <input
+                      className="cl-input cl-input--date"
+                      type="date"
+                      max={new Date().toISOString().split("T")[0]}
+                      value={(inputs as any).sponsorDob || ""}
+                      onChange={(e) => onChange("sponsorDob" as any, e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="cl-field">
+
+            <div className="cl-field" style={{ marginTop: 8 }}>
               <label className="cl-label">Is your sponsor travelling with you?</label>
               <div className="cl-toggle-row">
                 {[
@@ -551,7 +607,7 @@ export function CoverLetterInputsStep({
             The letter preview opens in the next step. You can edit every
             paragraph inline before downloading.
           </p>
-          <button className="cl-save-btn" onClick={onProceed}>
+          <button className="cl-save-btn" onClick={handleProceedWithScroll}>
             Preview Letter →
           </button>
         </div>

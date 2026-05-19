@@ -15,7 +15,7 @@
  * - coverLetterService.ts: Business logic, validation, paragraph builders
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useApplicant } from "@/lib/context/ApplicantContext";
 import { CoverLetterInputsStep } from "./coverLetterInputs";
 import { CoverLetterPreview } from "./coverLetterPreview";
@@ -44,6 +44,12 @@ export default function CoverLetterWidget({
 }) {
   const { ctx, update } = useApplicant();
   const [step, setStep] = useState("select"); // "select" | "inputs" | "letter"
+  // Keep a ref in sync so useEffect callbacks see the current step without stale closure
+  const stepRef = useRef<string>("select");
+  function gotoStep(s: string) {
+    stepRef.current = s;
+    setStep(s);
+  }
 
   /* ── Step 1: Collect fresh inputs ── */
   const [inputs, setInputs] = useState<CoverLetterInputs>({
@@ -55,7 +61,7 @@ export default function CoverLetterWidget({
     designation: ctx.designation || "",
     companyName: ctx.companyName || "",
     institutionName: ctx.institutionName || "",
-    sponsorshipType: ctx.sponsorshipType || "",
+    sponsorshipType: ctx.sponsorshipType || "",   // always seeded from ctx
     sponsorName: ctx.sponsorName || "",
     sponsorRel: ctx.sponsorRel || "",
     sponsorAccompanying: (ctx.sponsorAccompanying as any) || "staying",
@@ -71,6 +77,8 @@ export default function CoverLetterWidget({
     dependantDob: "",
     dependantPassport: "",
     dependantRelationship: "",
+    sponsorPassport: ctx.sponsorPassport || "",
+    sponsorDob: ctx.sponsorDob || "",
   });
 
   /* ── Step 1: Validation ── */
@@ -112,6 +120,8 @@ export default function CoverLetterWidget({
   const [lFinance, setLFinance] = useState("");
   const [lSecSponsor, setLSecSponsor] = useState(COVER_LETTER_TEMPLATES.secSponsor);
   const [lSponsor, setLSponsor] = useState("");
+  const [lSponsorPassport, setLSponsorPassport] = useState("");
+  const [lSponsorDob, setLSponsorDob] = useState("");
   const [lSecDependant, setLSecDependant] = useState("Information Relating to the Dependants Applying with Me");
   const [lDependant, setLDependant] = useState("");
   const [lSecContacts, setLSecContacts] = useState(COVER_LETTER_TEMPLATES.secContacts);
@@ -129,7 +139,7 @@ export default function CoverLetterWidget({
   const { applicantProfile, sponsorshipType } = ctx;
 
   const reseedFromContext = () => {
-    if (step === "letter") return;
+    if (stepRef.current === "letter") return;
     setInputs({
       departureCity: ctx.departureCity || "",
       countriesVisited: Array.isArray(ctx.countriesVisited) ? ctx.countriesVisited : [],
@@ -155,11 +165,31 @@ export default function CoverLetterWidget({
       dependantDob: "",
       dependantPassport: "",
       dependantRelationship: "",
+      sponsorPassport: ctx.sponsorPassport || inputs.sponsorPassport || "",
+      sponsorDob: ctx.sponsorDob || inputs.sponsorDob || "",
     });
   };
 
   useEffect(reseedFromContext, []);
   useEffect(reseedFromContext, [applicantProfile, sponsorshipType]);
+
+  /* ── Fields that are written to context immediately on change ── */
+  const LIVE_SYNC_FIELDS: Partial<Record<keyof CoverLetterInputs, keyof typeof ctx>> = {
+    sponsorName:         "sponsorName",
+    sponsorRel:          "sponsorRel",
+    sponsorPassport:     "sponsorPassport",
+    sponsorDob:          "sponsorDob",
+    sponsorAccompanying: "sponsorAccompanying",
+    departureCity:       "departureCity",
+    designation:         "designation",
+    companyName:         "companyName",
+    institutionName:     "institutionName",
+    married:             "married",
+    parentsInIndia:      "parentsInIndia",
+    hasChildren:         "hasChildren",
+    purpose:             "purpose",
+    hotelName:           "hotelName",
+  };
 
   /* ── Handle input changes ── */
   function handleInputChange(key: keyof CoverLetterInputs, value: any) {
@@ -168,15 +198,37 @@ export default function CoverLetterWidget({
       const e = validateCoverLetterInputs({ ...inputs, [key]: value });
       setErrors(e);
     }
+    // Sync select fields to ApplicantContext immediately so other widgets can read them
+    const ctxKey = LIVE_SYNC_FIELDS[key];
+    if (ctxKey) {
+      update({ [ctxKey]: value });
+    }
   }
 
   /* ── Proceed to preview ── */
   function handleProceed() {
     setAttempted(true);
-    const e = validateCoverLetterInputs(inputs);
-    setErrors(e);
+    // Always use the resolved sponsorshipType (ctx is source of truth for wizard fields)
+    const resolvedSponsorshipType = inputs.sponsorshipType || ctx.sponsorshipType || "";
+    const validationInputs: CoverLetterInputs = {
+      ...inputs,
+      sponsorshipType: resolvedSponsorshipType,
+    };
+    const e = validateCoverLetterInputs(validationInputs);
+    // Only departureCity is mandatory to proceed — employment/sponsor fields are optional
+    // (the letter uses placeholders if they're empty, user can fill them in preview)
+    const hardErrors: ValidationErrors = {};
+    if (e.departureCity) hardErrors.departureCity = e.departureCity;
+    if (e.companion) hardErrors.companion = e.companion;
+    setErrors(hardErrors);
 
-    if (Object.keys(e).length === 0) {
+    if (Object.keys(hardErrors).length > 0) {
+      // Errors are set — the scroll in coverLetterInputs.tsx will handle focus
+      return;
+    }
+    // Set step first so reseedFromContext guard sees "letter" before update() triggers context effects
+    gotoStep("letter");
+
       // Write inputs back to context
       update({
         departureCity: inputs.departureCity,
@@ -201,6 +253,8 @@ export default function CoverLetterWidget({
         dependantDob: inputs.dependantDob,
         dependantPassport: inputs.dependantPassport,
         dependantRelationship: inputs.dependantRelationship,
+        sponsorPassport: inputs.sponsorPassport || "",
+        sponsorDob: inputs.sponsorDob || "",
       });
 
       // Seed letter preview state
@@ -218,6 +272,8 @@ export default function CoverLetterWidget({
       setLAssetsContent(seeded.lAssetsContent as string);
       setLFinance(seeded.lFinance as string);
       setLSponsor(seeded.lSponsor as string);
+      setLSponsorPassport(inputs.sponsorPassport || "");
+      setLSponsorDob(inputs.sponsorDob || "");
       setLDependant(seeded.lDependant as string);
       setLSecDependant(seeded.lSecDependant as string);
       setLSigName(seeded.lSigName as string);
@@ -230,9 +286,6 @@ export default function CoverLetterWidget({
       setLBullets(seeded.lBullets as string[]);
       setLContacts(inputs.contacts.length ? inputs.contacts : [{ name: "", rel: "", phone: "", email: "" }]);
       setLContactsNote(seeded.lContactsNote as string);
-
-      setStep("letter");
-    }
   }
 
   /* ── Build context for letter builders ── */
@@ -294,7 +347,7 @@ export default function CoverLetterWidget({
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       }));
 
-      setStep("select");
+      gotoStep("select");
     } finally {
       setDownloading(false);
     }
@@ -368,7 +421,7 @@ export default function CoverLetterWidget({
             )}
 
             <div className="cl-options">
-              <button className="cl-opt cl-opt--dark" onClick={() => setStep("inputs")}>
+              <button className="cl-opt cl-opt--dark" onClick={() => gotoStep("inputs")}>
                 <div className="cl-opt-left">
                   <div className="cl-opt-icon cl-opt-icon--dark">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -410,7 +463,7 @@ export default function CoverLetterWidget({
             onUpdateContact={(idx, c) => setInputs((p) => ({ ...p, contacts: p.contacts.map((x, j) => (j === idx ? c : x)) }))}
             onRemoveContact={(idx) => setInputs((p) => ({ ...p, contacts: p.contacts.filter((_, j) => j !== idx) }))}
             onProceed={handleProceed}
-            onBack={() => setStep("select")}
+            onBack={() => gotoStep("select")}
             hasDependant={inputs.hasDependant}
             dependants={dependants}
             onAddDependant={() => setDependants((prev) => [...prev, { name: "", relationship: "", dob: "", passport: "" }])}
@@ -508,6 +561,10 @@ export default function CoverLetterWidget({
             setLSecSponsor={setLSecSponsor}
             lSponsor={lSponsor}
             setLSponsor={setLSponsor}
+            lSponsorPassport={lSponsorPassport}
+            setLSponsorPassport={setLSponsorPassport}
+            lSponsorDob={lSponsorDob}
+            setLSponsorDob={setLSponsorDob}
             lSecDependant={lSecDependant}
             setLSecDependant={setLSecDependant}
             lDependant={lDependant}
@@ -524,7 +581,7 @@ export default function CoverLetterWidget({
             setLSigName={setLSigName}
             lSigPassport={lSigPassport}
             setLSigPassport={setLSigPassport}
-            onBack={() => setStep("inputs")}
+            onBack={() => gotoStep("inputs")}
             onDownload={handleDownload}
             downloading={downloading}
             unfilled={unfilled}
