@@ -24,7 +24,6 @@ export interface SponsorConsentDocxData {
   lRequest: string;
   lClosing: string;
   lSigName: string;
-  lSigAddress: string;
   lSigMobile: string;
   lSigPassport: string;
 }
@@ -86,26 +85,31 @@ export async function buildSponsorConsentDocx(data: SponsorConsentDocxData): Pro
   // ── Document children ──────────────────────────────────────
 
   const children = [
-    // To block
-    ...multiPara(data.lToBlock, 60),
-    para(""),
-
-    // Date (right-aligned)
+    // Date (right-aligned) — appears FIRST, at the top of the letter
     new Paragraph({
       children: [new TextRun({ text: `Date: ${data.lDate}`, size: 24, font: "Times New Roman" })],
       alignment: AlignmentType.RIGHT,
-      spacing: { after: 200 },
+      spacing: { after: 240 },
     }),
 
-    // Subject / Heading
+    // To block
+    ...multiPara(data.lToBlock, 60),
+
+    // Spacer between To block and Subject
+    para("", { spacing: 200 }),
+
+    // Subject / Heading — bold, uniform space below before salutation
     new Paragraph({
       children: [new TextRun({ text: clean(data.lHeading), bold: true, size: 26, font: "Times New Roman" })],
       alignment: AlignmentType.LEFT,
-      spacing: { after: 200 },
+      spacing: { before: 0, after: 280 },
     }),
 
-    // Salutation
-    para(data.lSalutation, { spacing: 160 }),
+    // Salutation — uniform space below before body
+    new Paragraph({
+      children: [new TextRun({ text: clean(data.lSalutation), size: 24, font: "Times New Roman" })],
+      spacing: { after: 240 },
+    }),
 
     // Body paragraphs
     ...multiPara(data.lIntro),
@@ -117,10 +121,12 @@ export async function buildSponsorConsentDocx(data: SponsorConsentDocxData): Pro
     ...multiPara(data.lDocuments),
     para(""),
     para(data.lRequest),
-    para(""),
+
+    // Spacer before closing ("Yours sincerely") — generous gap
+    para("", { spacing: 320 }),
 
     // Closing
-    ...multiPara(data.lClosing),
+    ...multiPara(data.lClosing, 120),
     para(""),
 
     // Signature block
@@ -133,7 +139,6 @@ export async function buildSponsorConsentDocx(data: SponsorConsentDocxData): Pro
       spacing: { after: 160 },
     }),
     sigLine("Name", data.lSigName),
-    sigLine("Current Address", data.lSigAddress),
     sigLine("Mob.", data.lSigMobile),
     sigLine("Passport No.", data.lSigPassport),
   ];

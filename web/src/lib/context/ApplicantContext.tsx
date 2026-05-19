@@ -3,7 +3,7 @@
 "use client";
 
 // ApplicantContext.tsx
-// Shared data store for the Japan visa wizard.
+// Shared data store for the visa wizard.
 // Wrap your app root (or page) in <ApplicantProvider>.
 // Every widget reads with useApplicant() and writes with update().
 // No UI — this file is pure state.
@@ -15,13 +15,37 @@ export type { ApplicantData };
 
 /* ─── Defaults (all empty — no mock data) ─── */
 const defaults: ApplicantData = {
+  // Applicant
   applicantName: "",
   passportNo: "",
+  applicantDob: "",
   travelStartDate: "",
   travelDuration: 0,
   cities: [],
+
+  // Destination
+  country: "",
+  vfsCenter: "",
+
+  // Profile
   sponsorshipType: null,
   applicantProfile: null,
+
+  // Sponsor
+  sponsorName: "",
+  sponsorRel: "",
+  sponsorPassport: "",
+  sponsorDob: "",
+  sponsorMobile: "",
+  sponsorCity: "",
+  sponsorAccompanying: "staying",
+  sponsorshipReason: "",
+
+  // Visa type
+  visaType: "",
+  visaTypeName: "",
+
+  // Cover letter
   departureCity: "",
   countriesVisited: [],
   travellingWith: "alone",
@@ -29,22 +53,15 @@ const defaults: ApplicantData = {
   designation: "",
   companyName: "",
   institutionName: "",
-  sponsorName: "",
-  sponsorRel: "",
-  sponsorPassport: "",
-  sponsorDob: "",
-  sponsorAccompanying: "staying",
   married: "no",
   parentsInIndia: "yes",
   hasChildren: "no",
   contacts: [],
+
+  // Inline placeholders
   hotelName: "",
   bankBalance: "",
   purpose: "",
-  visaType: "",
-  visaTypeName: "",
-  country: "",
-  vfsCenter: ""
 };
 
 /* ─── Context ─── */

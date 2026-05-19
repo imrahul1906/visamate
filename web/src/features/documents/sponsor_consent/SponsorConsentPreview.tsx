@@ -63,7 +63,6 @@ export interface ConsentPreviewState {
   lRequest: string;
   lClosing: string;
   lSigName: string;
-  lSigAddress: string;
   lSigMobile: string;
   lSigPassport: string;
 }
@@ -138,56 +137,49 @@ export function SponsorConsentPreview({ state, onChange }: SponsorConsentPreview
       />
 
       {/* Body paragraphs — each is one editable textarea, no duplicate overlays */}
-      <InlinePara value={state.lIntro}       onChange={set("lIntro")}       rows={4} />
-      <InlinePara value={state.lPurpose}     onChange={set("lPurpose")}     rows={3} />
+      <InlinePara value={state.lIntro} onChange={set("lIntro")} rows={4} />
+      <InlinePara value={state.lPurpose} onChange={set("lPurpose")} rows={3} />
       <InlinePara value={state.lSponsorship} onChange={set("lSponsorship")} rows={3} />
-      <InlinePara value={state.lDocuments}   onChange={set("lDocuments")}   rows={3} />
-      <InlinePara value={state.lRequest}     onChange={set("lRequest")}     rows={1} />
-      <InlinePara value={state.lClosing}     onChange={set("lClosing")}     rows={2} />
+      <InlinePara value={state.lDocuments} onChange={set("lDocuments")} rows={3} />
+      <InlinePara value={state.lRequest} onChange={set("lRequest")} rows={1} />
+      <InlinePara value={state.lClosing} onChange={set("lClosing")} rows={2} />
 
       {/* Signature block */}
       <div className="cl-sig-block">
-        <p className="cl-sig-sub cl-sig-italic">(signature)</p>
-        <div className="cl-sig-line" />
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 24px", marginTop: 10 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 10 }}>
 
-          <div>
-            <div style={sigLabelStyle}>Name</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={sigLabelStyle}>Name:</span>
             <input
               className="cl-inline-field cl-inline-field--sig"
               value={state.lSigName}
               onChange={(e) => set("lSigName")(e.target.value)}
-              style={{ display: "block", width: "100%" }}
+              style={{ flex: 1 }}
               title="Click to edit"
             />
           </div>
 
-          <div>
-            <div style={sigLabelStyle}>Mob.</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={sigLabelStyle}>Mobile:</span>
             <input
               className="cl-inline-field cl-inline-field--sig"
               value={state.lSigMobile}
               onChange={(e) => set("lSigMobile")(e.target.value)}
-              style={{ display: "block", width: "100%" }}
+              style={{ flex: 1 }}
               title="Click to edit"
             />
           </div>
 
-          <div>
-            <div style={sigLabelStyle}>Passport No.</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={sigLabelStyle}>Passport No:</span>
             <input
               className="cl-inline-field cl-inline-field--sig"
               value={state.lSigPassport}
               onChange={(e) => set("lSigPassport")(e.target.value)}
-              style={{ display: "block", width: "100%" }}
+              style={{ flex: 1 }}
               title="Click to edit"
             />
-          </div>
-
-          <div>
-            <div style={sigLabelStyle}>Current Address</div>
-            <InlinePara value={state.lSigAddress} onChange={set("lSigAddress")} rows={2} />
           </div>
 
         </div>

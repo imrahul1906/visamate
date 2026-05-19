@@ -40,43 +40,42 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const params = useSearchParams();
   const router = useRouter();
 
-  const country      = props.country      ?? params.get("country")      ?? "";
-  const countryName  = props.countryName  ?? params.get("countryName")  ?? params.get("country")  ?? "—";
-  const visaType     = props.visaType     ?? params.get("visaType")     ?? "";
+  const country = props.country ?? params.get("country") ?? "";
+  const countryName = props.countryName ?? params.get("countryName") ?? params.get("country") ?? "—";
+  const visaType = props.visaType ?? params.get("visaType") ?? "";
   const visaTypeName = props.visaTypeName ?? params.get("visaTypeName") ?? params.get("visaType") ?? "—";
-  const location     = props.location     ?? params.get("location")     ?? "";
+  const location = props.location ?? params.get("location") ?? "";
   const locationName = props.locationName ?? params.get("locationName") ?? params.get("location") ?? "—";
-  const sponsorship  = props.sponsorship  ?? params.get("sponsorship")  ?? "SELF";
+  const sponsorship = props.sponsorship ?? params.get("sponsorship") ?? "SELF";
 
   // ── Sponsor consent prefill — sourced from wizard params / props ──────────
   // These keys mirror SponsorConsentInputs so the widget can pre-populate
   // the letter without a separate input screen.
   const sponsorConsentPrefill: Record<string, string> = {
-    destination:         countryName !== "—" ? countryName : country,
-    sponsorName:         params.get("sponsorName")        ?? "",
-    sponsorCity:         params.get("sponsorCity")        ?? "",
-    sponsorPassport:     params.get("sponsorPassport")    ?? "",
-    sponsorDob:          params.get("sponsorDob")         ?? "",
-    sponsorMobile:       params.get("sponsorMobile")      ?? "",
-    sponsorAddress:      params.get("sponsorAddress")     ?? "",
-    sponsorRelationship: params.get("sponsorRel")         ?? params.get("sponsorRelationship") ?? "",
-    applicantName:       params.get("applicantName")      ?? "",
-    applicantPassport:   params.get("applicantPassport")  ?? "",
-    applicantDob:        params.get("applicantDob")       ?? "",
-    travelStartDate:     params.get("travelStartDate")    ?? "",
-    travelEndDate:       params.get("travelEndDate")      ?? "",
-    travelDuration:      params.get("travelDuration")     ?? "",
-    purposeOfVisit:      params.get("purposeOfVisit")     ?? "",
-    sponsorshipReason:   params.get("sponsorshipReason")  ?? "",
+    destination: countryName !== "—" ? countryName : country,
+    sponsorName: params.get("sponsorName") ?? "",
+    sponsorCity: params.get("sponsorCity") ?? "",
+    sponsorPassport: params.get("sponsorPassport") ?? "",
+    sponsorDob: params.get("sponsorDob") ?? "",
+    sponsorMobile: params.get("sponsorMobile") ?? "",
+    sponsorRelationship: params.get("sponsorRel") ?? params.get("sponsorRelationship") ?? "",
+    applicantName: params.get("applicantName") ?? "",
+    applicantPassport: params.get("applicantPassport") ?? "",
+    applicantDob: params.get("applicantDob") ?? "",
+    travelStartDate: params.get("travelStartDate") ?? "",
+    travelEndDate: params.get("travelEndDate") ?? "",
+    travelDuration: params.get("travelDuration") ?? "",
+    purposeOfVisit: params.get("purposeOfVisit") ?? "",
+    sponsorshipReason: params.get("sponsorshipReason") ?? "",
     sponsorAccompanying: params.get("sponsorAccompanying") ?? "accompanying",
   };
 
   // ── State ─────────────────────────────────────────────────────
-  const [checked, setChecked]               = useState<Record<string, boolean>>({});
-  const [uploads, setUploads]               = useState<UploadsMap>({});
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [uploads, setUploads] = useState<UploadsMap>({});
   const [downloadingZip, setDownloadingZip] = useState(false);
-  const [activeDocId, setActiveDocId]       = useState<string | null>(null);
-  const [isMobile]                          = useState(() =>
+  const [activeDocId, setActiveDocId] = useState<string | null>(null);
+  const [isMobile] = useState(() =>
     typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
 
@@ -132,16 +131,16 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   };
 
   // ── Derived values ────────────────────────────────────────────
-  const allDocs         = data?.categories.flatMap(c => c.documents) ?? [];
-  const requiredDocs    = allDocs.filter(d => d.status === "required");
-  const totalDone       = allDocs.filter(d => checked[d.id]).length;
-  const requiredDone    = requiredDocs.filter(d => checked[d.id]).length;
-  const overallPct      = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
-  const uploadCount     = Object.keys(uploads).length;
+  const allDocs = data?.categories.flatMap(c => c.documents) ?? [];
+  const requiredDocs = allDocs.filter(d => d.status === "required");
+  const totalDone = allDocs.filter(d => checked[d.id]).length;
+  const requiredDone = requiredDocs.filter(d => checked[d.id]).length;
+  const overallPct = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
+  const uploadCount = Object.keys(uploads).length;
   const uploadableCount = allDocs.filter(d => !d.noUpload).length;
 
   const activeDocIndex = allDocs.findIndex(d => d.id === activeDocId);
-  const visibleDoc     = allDocs.find(d => d.id === visibleDocId) ?? null;
+  const visibleDoc = allDocs.find(d => d.id === visibleDocId) ?? null;
   const activeCategory = visibleDoc
     ? data?.categories.find(c => c.documents.some(d => d.id === visibleDoc.id))
     : null;
@@ -154,12 +153,12 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     : null;
 
   const drawerOpen = activeDocId !== null;
-  const leftWidth  = isMobile ? "100%" : "340px";
-  const embedded   = !!props.embedded;
+  const leftWidth = isMobile ? "100%" : "340px";
+  const embedded = !!props.embedded;
 
   // ── Early returns ─────────────────────────────────────────────
   if (loading) return <LoadingState embedded={embedded} />;
-  if (error)   return <ErrorState embedded={embedded} error={error} onGoBack={() => router.push("/wizard")} />;
+  if (error) return <ErrorState embedded={embedded} error={error} onGoBack={() => router.push("/wizard")} />;
 
   // ── Main render ───────────────────────────────────────────────
   return (
