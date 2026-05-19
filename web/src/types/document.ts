@@ -32,7 +32,8 @@ export type SpecialWidget =
   | "visa_form"
   | "itinerary"
   | "cover_letter"
-  | "document_checklist";
+  | "document_checklist"
+  | "sponsor_consent";
 
 export interface DocumentItem {
   id: string;
