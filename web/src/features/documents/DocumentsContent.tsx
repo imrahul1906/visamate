@@ -48,6 +48,29 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const locationName = props.locationName ?? params.get("locationName") ?? params.get("location") ?? "—";
   const sponsorship  = props.sponsorship  ?? params.get("sponsorship")  ?? "SELF";
 
+  // ── Sponsor consent prefill — sourced from wizard params / props ──────────
+  // These keys mirror SponsorConsentInputs so the widget can pre-populate
+  // the letter without a separate input screen.
+  const sponsorConsentPrefill: Record<string, string> = {
+    destination:         countryName !== "—" ? countryName : country,
+    sponsorName:         params.get("sponsorName")        ?? "",
+    sponsorCity:         params.get("sponsorCity")        ?? "",
+    sponsorPassport:     params.get("sponsorPassport")    ?? "",
+    sponsorDob:          params.get("sponsorDob")         ?? "",
+    sponsorMobile:       params.get("sponsorMobile")      ?? "",
+    sponsorAddress:      params.get("sponsorAddress")     ?? "",
+    sponsorRelationship: params.get("sponsorRel")         ?? params.get("sponsorRelationship") ?? "",
+    applicantName:       params.get("applicantName")      ?? "",
+    applicantPassport:   params.get("applicantPassport")  ?? "",
+    applicantDob:        params.get("applicantDob")       ?? "",
+    travelStartDate:     params.get("travelStartDate")    ?? "",
+    travelEndDate:       params.get("travelEndDate")      ?? "",
+    travelDuration:      params.get("travelDuration")     ?? "",
+    purposeOfVisit:      params.get("purposeOfVisit")     ?? "",
+    sponsorshipReason:   params.get("sponsorshipReason")  ?? "",
+    sponsorAccompanying: params.get("sponsorAccompanying") ?? "accompanying",
+  };
+
   // ── State ─────────────────────────────────────────────────────
   const [checked, setChecked]               = useState<Record<string, boolean>>({});
   const [uploads, setUploads]               = useState<UploadsMap>({});
@@ -94,6 +117,10 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   }, []);
 
   const handleItineraryReady = useCallback((docId: string, file: File) => {
+    setUploads(prev => ({ ...prev, [docId]: file }));
+  }, []);
+
+  const handleSponsorConsentReady = useCallback((docId: string, file: File) => {
     setUploads(prev => ({ ...prev, [docId]: file }));
   }, []);
 
@@ -267,6 +294,8 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 onRemove={() => handleRemove(visibleDoc.id)}
                 onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
                 onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file)}
+                onSponsorConsentReady={(file) => handleSponsorConsentReady(visibleDoc.id, file)}
+                sponsorConsentPrefill={sponsorConsentPrefill}
                 onPrev={() => {
                   const prev = allDocs[activeDocIndex - 1];
                   if (prev) setActiveDocId(prev.id);

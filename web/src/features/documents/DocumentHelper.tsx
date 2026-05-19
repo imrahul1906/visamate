@@ -7,6 +7,7 @@ import VisaFormWidget from "./visa_form/VisaFormWidget";
 import UploadSlot from "./util/UploadSlot";
 import ItineraryWidget from "./itinerary/ItineraryWidget";
 import CoverLetterWidget from "./cover_letter/CoverLetterWidget";
+import SponsorConsentWidget from "./sponsor_consent/SponsorConsentWidget";
 import DocumentChecklistWidget from "./DocumentChecklistWidget";
 
 // ─────────────────────────────────────────────────────────────
@@ -39,7 +40,10 @@ export interface DocHelperProps {
   onRemove: () => void;
   onItineraryReady: (file: File) => void;
   onCoverLetterReady: (file: File) => void;
+  onSponsorConsentReady: (file: File) => void;
   itineraryData?: ItineraryPlacesData | null;
+  /** Pre-filled sponsor consent inputs sourced from the wizard/cover letter context */
+  sponsorConsentPrefill?: Record<string, string>;
 }
 
 export function DocHelper({
@@ -51,7 +55,9 @@ export function DocHelper({
   onRemove,
   onItineraryReady,
   onCoverLetterReady,
+  onSponsorConsentReady,
   itineraryData,
+  sponsorConsentPrefill,
 }: DocHelperProps) {
   const wrappedUploads: UploadsMap = uploads;
 
@@ -94,6 +100,15 @@ export function DocHelper({
       {/* Cover letter builder */}
       {doc.specialWidget === "cover_letter" && (
         <CoverLetterWidget onDocxReady={file => onCoverLetterReady(file)} />
+      )}
+
+      {/* Sponsor consent letter builder */}
+      {doc.specialWidget === "sponsor_consent" && (
+        <SponsorConsentWidget
+          color={color}
+          prefill={sponsorConsentPrefill as any}
+          onDocxReady={file => onSponsorConsentReady(file)}
+        />
       )}
 
       {/* Upload slot — not shown for hardcopy-only docs */}

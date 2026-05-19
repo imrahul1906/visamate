@@ -83,7 +83,7 @@ export function DocRow({ doc, isActive, isDone, isUploaded, badge, onSelect, onT
 
 // Helper: derive badge label for a doc
 export function getDocBadge(doc: DocumentItem): string | null {
-  if (doc.specialWidget === "itinerary" || doc.specialWidget === "cover_letter") return "Builder";
+  if (doc.specialWidget === "itinerary" || doc.specialWidget === "cover_letter" || doc.specialWidget === "sponsor_consent") return "Builder";
   if (doc.specialWidget === "photo_spec") return "Spec";
   if (doc.specialWidget === "visa_form") return "Form";
   if (!doc.noUpload) return "Upload";

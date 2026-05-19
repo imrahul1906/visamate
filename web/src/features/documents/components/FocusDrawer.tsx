@@ -24,8 +24,11 @@ interface FocusDrawerProps {
   onRemove: () => void;
   onItineraryReady: (file: File) => void;
   onCoverLetterReady: (file: File) => void;
+  onSponsorConsentReady: (file: File) => void;
   onPrev: () => void;
   onNext: () => void;
+  /** Pre-filled sponsor consent inputs sourced from the wizard/cover letter context */
+  sponsorConsentPrefill?: Record<string, string>;
 }
 
 export function FocusDrawer({
@@ -46,8 +49,10 @@ export function FocusDrawer({
   onRemove,
   onItineraryReady,
   onCoverLetterReady,
+  onSponsorConsentReady,
   onPrev,
   onNext,
+  sponsorConsentPrefill,
 }: FocusDrawerProps) {
   const isDone = !!checked[visibleDoc.id];
 
@@ -230,7 +235,9 @@ export function FocusDrawer({
           onRemove={onRemove}
           onItineraryReady={onItineraryReady}
           onCoverLetterReady={onCoverLetterReady}
+          onSponsorConsentReady={onSponsorConsentReady}
           itineraryData={itineraryData}
+          sponsorConsentPrefill={sponsorConsentPrefill}
         />
       </div>
 
