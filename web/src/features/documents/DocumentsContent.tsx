@@ -277,7 +277,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             style={{
               flex: 1,
               minWidth: 0,
-              minHeight: 0,
+              minHeight: embedded ? 560 : "calc(100vh - 340px)",
               display: "flex",
               flexDirection: "column",
               overflow: "hidden",

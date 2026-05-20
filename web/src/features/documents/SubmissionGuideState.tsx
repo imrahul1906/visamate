@@ -56,8 +56,8 @@ export function SubmissionGuideState({
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        padding: "36px 28px 32px",
+        justifyContent: "flex-start",
+        padding: "48px 28px 32px",
         textAlign: "center",
         overflowY: "auto",
       }}
