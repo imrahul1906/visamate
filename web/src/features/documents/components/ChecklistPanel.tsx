@@ -215,22 +215,6 @@ export function ChecklistPanel({
             </div>
           );
         })}
-
-        {/* Footer tip */}
-        <div style={{
-          marginTop: 10, padding: "10px 12px",
-          background: "rgba(251,191,36,0.06)",
-          border: "1px solid rgba(251,191,36,0.15)",
-          borderLeft: `3px solid ${T.amber}`,
-          borderRadius: 8,
-        }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: T.amber, margin: "0 0 3px", fontFamily: "'DM Sans', sans-serif" }}>
-            💡 Pro Tip
-          </p>
-          <p style={{ fontSize: 10, color: T.muted, margin: 0, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>
-            All photocopies must be on A4 size only. Upload digital copies to create a ready-to-send document folder.
-          </p>
-        </div>
       </div>
     </>
   );

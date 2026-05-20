@@ -20,6 +20,7 @@ interface VisaOverviewStripProps {
   countryName: string;
   visaTypeName: string;
   locationName: string;
+  locationCode?: string;
   totalDocs: number;
   requiredDone: number;
   requiredTotal: number;
@@ -28,23 +29,27 @@ interface VisaOverviewStripProps {
   downloadingZip: boolean;
   onDownloadAll: () => void;
   visaType: VisaType | null;
+  /** Processing time string from RequirementsData (e.g. "Minimum 6 working days") */
+  processingDays?: string | number | null;
 }
 
 // ─── Drawer — portalled to document.body so it never affects page scroll ──
 
 function DrawerPortal({
-  visaType, countryName, visaTypeName, onClose,
+  visaType, countryName, visaTypeName, locationCode, processingDays, onClose,
 }: {
   visaType: VisaType;
   countryName: string;
   visaTypeName: string;
+  locationCode?: string;
+  processingDays?: string | number | null;
   onClose: () => void;
 }) {
   const {
     currency, lastUpdated, hasFees, courierFee,
     totalMin, totalMax, visaFeeRefundable, serviceChargeRefundable,
     stats, processFlags, paymentInstructions,
-  } = useVisaOverviewData(visaType);
+  } = useVisaOverviewData(visaType, locationCode);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -141,11 +146,27 @@ function DrawerPortal({
             </p>
           </div>
 
-          {stats.length > 0 && (
+          {(stats.length > 0 || processingDays != null) && (
             <div>
               <SectionLabel>At a glance</SectionLabel>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                 {stats.map(s => <StatCard key={s.label} {...s} />)}
+                {processingDays != null && (
+                  <div style={{
+                    background: "rgba(17,15,50,0.85)",
+                    border: "1px solid rgba(251,146,60,0.2)",
+                    borderRadius: 10, padding: "10px 12px",
+                    display: "flex", flexDirection: "column", gap: 6,
+                  }}>
+                    <span style={{ fontSize: 18, lineHeight: 1 }}>⏱️</span>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#fdba74", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.2 }}>
+                      {String(processingDays)}
+                    </div>
+                    <div style={{ fontSize: 9, color: "rgba(251,146,60,0.55)", fontFamily: "'DM Sans', sans-serif", textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 600 }}>
+                      Processing time
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -172,9 +193,13 @@ function DrawerPortal({
             </div>
           )}
 
-          {paymentInstructions.length > 0 && (
+          {paymentInstructions.length > 0 && (() => {
+            // Collect all drop-off offices across matched instructions for the banner.
+            const allDropOffs = paymentInstructions.flatMap(i => i.dropOffOffices ?? []);
+
+            return (
             <div>
-              <SectionLabel>Centre-specific exceptions</SectionLabel>
+              <SectionLabel>Payment instructions</SectionLabel>
               <div style={{
                 display: "flex", gap: 10, alignItems: "flex-start",
                 background: PALETTE.yellow.bg, border: `1px solid ${PALETTE.yellow.border}`,
@@ -184,10 +209,20 @@ function DrawerPortal({
                 <span style={{ color: PALETTE.yellow.text, flexShrink: 0, marginTop: 1 }}><AlertIcon /></span>
                 <div>
                   <p style={{ fontSize: 11, fontWeight: 700, color: PALETTE.yellow.text, margin: "0 0 3px", fontFamily: "'DM Sans', sans-serif" }}>
-                    Special payment rules at select centres
+                    Payment rules for this centre
                   </p>
                   <p style={{ fontSize: 10, color: T.muted, margin: 0, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>
-                    These are <strong style={{ color: T.text }}>NOT UNIVERSAL</strong> — only for the specific <strong style={{ color: T.text }}>DROP OFF OFFICES</strong> below.
+                    These rules apply to the{" "}
+                    <strong style={{ color: T.text }}>{locationCode?.toUpperCase()}</strong> VFS centre
+                    {allDropOffs.length > 0 && (
+                      <>
+                        {" "}and its drop-off offices:{" "}
+                        <strong style={{ color: T.text }}>
+                          {allDropOffs.map(o => o.charAt(0).toUpperCase() + o.slice(1).toLowerCase()).join(" · ")}
+                        </strong>
+                      </>
+                    )}
+                    .
                   </p>
                 </div>
               </div>
@@ -197,7 +232,8 @@ function DrawerPortal({
                 ))}
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
       </div>
     </>,
@@ -308,8 +344,10 @@ export function VisaOverviewStrip({
   countryName,
   visaTypeName,
   locationName,
+  locationCode,
   totalDocs,
   visaType,
+  processingDays,
 }: VisaOverviewStripProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -319,8 +357,7 @@ export function VisaOverviewStrip({
   const { currency, totalMin, totalMax, processFlags } =
     useVisaOverviewData(visaType ?? ({} as VisaType));
 
-  const fees           = visaType?.fees;
-  const processingDays = visaType?.processingTime;
+  const fees = visaType?.fees;
 
   // Total fee string — prefer totalMin/Max (includes VFS), fall back to base fee
   const totalFeeStr = (() => {
@@ -510,6 +547,8 @@ export function VisaOverviewStrip({
           visaType={visaType}
           countryName={countryName}
           visaTypeName={visaTypeName}
+          locationCode={locationCode}
+          processingDays={processingDays}
           onClose={() => setDrawerOpen(false)}
         />
       )}

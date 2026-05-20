@@ -199,7 +199,9 @@ export default function VisaOverviewPanel({
 
       {/* ── Payment Instructions ── */}
       {/* Only rendered when the selected centre has matching instructions */}
-      {paymentInstructions.length > 0 && (
+      {paymentInstructions.length > 0 && (() => {
+        const allDropOffs = paymentInstructions.flatMap(i => i.dropOffOffices ?? []);
+        return (
         <div>
           <SectionLabel>Centre-specific exceptions</SectionLabel>
 
@@ -240,9 +242,17 @@ export default function VisaOverviewPanel({
                   fontFamily: "'DM Sans', sans-serif",
                 }}
               >
-                The following instructions apply only to the{" "}
-                <strong style={{ color: T.text }}>DROP OFF OFFICE</strong> you have selected.
-                If you change your office, these rules may not apply.
+                The following instructions apply to the{" "}
+                <strong style={{ color: T.text }}>{selectedLocationCode?.toUpperCase()}</strong> VFS centre
+                {allDropOffs.length > 0 && (
+                  <>
+                    {" "}and its drop-off offices:{" "}
+                    <strong style={{ color: T.text }}>
+                      {allDropOffs.map(o => o.charAt(0).toUpperCase() + o.slice(1).toLowerCase()).join(" · ")}
+                    </strong>
+                  </>
+                )}
+                . If you change your office, these rules may not apply.
               </p>
             </div>
           </div>
@@ -257,7 +267,8 @@ export default function VisaOverviewPanel({
             ))}
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {/* ── CTA nudge ── */}
       <div

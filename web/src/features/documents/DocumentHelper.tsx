@@ -44,6 +44,8 @@ export interface DocHelperProps {
   itineraryData?: ItineraryPlacesData | null;
   /** Pre-filled sponsor consent inputs sourced from the wizard/cover letter context */
   sponsorConsentPrefill?: Record<string, string>;
+  /** Suppress the UploadSlot — used when the parent renders it inside a card instead */
+  hideUpload?: boolean;
 }
 
 export function DocHelper({
@@ -58,6 +60,7 @@ export function DocHelper({
   onSponsorConsentReady,
   itineraryData,
   sponsorConsentPrefill,
+  hideUpload,
 }: DocHelperProps) {
   const wrappedUploads: UploadsMap = uploads;
 
@@ -111,8 +114,8 @@ export function DocHelper({
         />
       )}
 
-      {/* Upload slot — not shown for hardcopy-only docs */}
-      {!doc.noUpload && (
+      {/* Upload slot — not shown for hardcopy-only docs or when parent renders it */}
+      {!doc.noUpload && !hideUpload && (
         <div style={{ marginTop: doc.specialWidget ? 14 : 0 }}>
           <UploadSlot
             docId={doc.id}

@@ -36,7 +36,7 @@ export interface CoverLetterInputs {
   sponsorshipType: string; // "self" | "sponsored"
   sponsorName: string;
   sponsorRel: string;
-  sponsorAccompanying: "accompanying" | "staying";
+  sponsorAccompanying: "accompanying" | "staying" | null;
   sponsorPassport: string;
   sponsorDob: string;
 

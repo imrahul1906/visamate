@@ -1,7 +1,7 @@
 "use client";
 
 // web\src\features\documents\DocumentsContent.tsx
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import { T } from "@/components/shared/theme";
@@ -13,10 +13,11 @@ import { useKeyboardNav } from "./hooks/useKeyboardNav";
 
 import { DocumentsStyles } from "./components/DocumentsStyles";
 import { VisaOverviewStrip } from "./components/VisaOverviewStrip";
-import { CompletionBanner } from "./components/CompletionBanner";
 import { ChecklistPanel } from "./components/ChecklistPanel";
 import { FocusDrawer } from "./components/FocusDrawer";
 import { LoadingState, ErrorState } from "./components/StatusStates";
+import { SubmissionGuideState } from "./SubmissionGuideState";
+import { ChecklistWelcomeState } from "./components/ChecklistWelcomeState";
 
 import { downloadAllFiles } from "./util/downloadAllFiles";
 
@@ -67,7 +68,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     travelDuration: params.get("travelDuration") ?? "",
     purposeOfVisit: params.get("purposeOfVisit") ?? "",
     sponsorshipReason: params.get("sponsorshipReason") ?? "",
-    sponsorAccompanying: params.get("sponsorAccompanying") ?? "accompanying",
+    sponsorAccompanying: params.get("sponsorAccompanying") ?? "",
   };
 
   // ── State ─────────────────────────────────────────────────────
@@ -89,6 +90,16 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
 
   useKeyboardNav({ data, activeDocId, setActiveDocId });
 
+  // ── Auto-close drawer when all required docs become checked ───
+  useEffect(() => {
+    if (!data || activeDocId === null) return;
+    const allD = data.categories.flatMap(c => c.documents);
+    const requiredD = allD.filter(d => d.status === "required");
+    if (requiredD.length > 0 && requiredD.every(d => checked[d.id])) {
+      setActiveDocId(null);
+    }
+  }, [checked, data, activeDocId]);
+
   // ── Handlers ──────────────────────────────────────────────────
   const toggleDoc = useCallback((id: string) => {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }));
@@ -99,9 +110,16 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
       const next = { ...prev, [id]: !prev[id] };
       if (next[id] && data) {
         const allD = data.categories.flatMap(c => c.documents);
-        const currentIdx = allD.findIndex(d => d.id === id);
-        const nextDoc = allD.slice(currentIdx + 1).find(d => !next[d.id] && d.status === "required");
-        if (nextDoc) setTimeout(() => setActiveDocId(nextDoc.id), 0);
+        const requiredD = allD.filter(d => d.status === "required");
+        const allRequiredDone = requiredD.every(d => next[d.id]);
+
+        if (!allRequiredDone) {
+          // Advance to next unchecked required doc
+          const currentIdx = allD.findIndex(d => d.id === id);
+          const nextDoc = allD.slice(currentIdx + 1).find(d => !next[d.id] && d.status === "required");
+          if (nextDoc) setTimeout(() => setActiveDocId(nextDoc.id), 0);
+        }
+        // If allRequiredDone, the useEffect above will close the drawer reactively
       }
       return next;
     });
@@ -195,6 +213,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           countryName={countryName}
           visaTypeName={visaTypeName}
           locationName={locationName}
+          locationCode={location}
           totalDone={totalDone}
           totalDocs={allDocs.length}
           requiredDone={requiredDone}
@@ -204,10 +223,8 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           downloadingZip={downloadingZip}
           onDownloadAll={handleDownloadAll}
           visaType={visaTypeData}
+          processingDays={requirementsData?.processingDays ?? null}
         />
-
-        {/* Completion banner */}
-        <CompletionBanner requiredDone={requiredDone} requiredTotal={requiredDocs.length} />
 
         {/* Two-panel shell */}
         <div
@@ -268,12 +285,22 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             }}
           >
             {!visibleDoc ? (
-              <ChecklistWelcomeState
-                totalDocs={allDocs.length}
-                requiredTotal={requiredDocs.length}
-                visaTypeName={visaTypeName}
-                countryName={countryName}
-              />
+              requiredDone === requiredDocs.length && requiredDocs.length > 0 ? (
+                <SubmissionGuideState
+                  countryName={countryName}
+                  visaTypeName={visaTypeName}
+                  importantNotes={
+                    (requirementsData?.importantNotes as string[] | undefined) ?? []
+                  }
+                />
+              ) : (
+                <ChecklistWelcomeState
+                  totalDocs={allDocs.length}
+                  requiredTotal={requiredDocs.length}
+                  visaTypeName={visaTypeName}
+                  countryName={countryName}
+                />
+              )
             ) : (
               <FocusDrawer
                 visibleDoc={visibleDoc}
@@ -308,88 +335,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           </div>
         </div>
 
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────
-// ChecklistWelcomeState
-// Shown in the right panel when no document is selected.
-// Replaces the old VisaOverviewPanel (which has moved to the strip).
-// ─────────────────────────────────────────────────────────────
-
-function ChecklistWelcomeState({
-  totalDocs,
-  requiredTotal,
-  visaTypeName,
-  countryName,
-}: {
-  totalDocs: number;
-  requiredTotal: number;
-  visaTypeName: string;
-  countryName: string;
-}) {
-  return (
-    <div style={{
-      flex: 1, display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      padding: "32px 28px", textAlign: "center",
-    }}>
-      {/* Icon */}
-      <div style={{
-        width: 56, height: 56, borderRadius: 16,
-        background: "rgba(99,102,241,0.1)",
-        border: "1px solid rgba(99,102,241,0.25)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 26, marginBottom: 18,
-      }}>
-        📋
-      </div>
-
-      {/* Heading */}
-      <h2 style={{
-        fontFamily: "'DM Serif Display', serif",
-        fontSize: 18, fontWeight: 400,
-        color: "rgba(255,255,255,0.85)",
-        margin: "0 0 10px", lineHeight: 1.3,
-      }}>
-        Your {visaTypeName} Checklist
-      </h2>
-
-      {/* Subtext */}
-      <p style={{
-        fontSize: 13, color: "rgba(255,255,255,0.4)",
-        margin: "0 0 24px", lineHeight: 1.7,
-        maxWidth: 320, fontFamily: "'DM Sans', sans-serif",
-      }}>
-        {totalDocs} documents for {countryName} — {requiredTotal} required.
-        Click any item on the left to view details, upload files, or use built-in tools like the itinerary builder.
-      </p>
-
-      {/* Step hints */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%", maxWidth: 300, textAlign: "left" }}>
-        {[
-          { icon: "👆", text: "Select a document to see requirements" },
-          { icon: "✅", text: "Mark items done as you gather them" },
-          { icon: "📎", text: "Upload files to build your folder" },
-          { icon: "⬇️", text: "Download everything as a ZIP when ready" },
-        ].map(({ icon, text }) => (
-          <div key={text} style={{
-            display: "flex", alignItems: "center", gap: 10,
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: 10, padding: "10px 14px",
-          }}>
-            <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
-            <span style={{
-              fontSize: 12, color: "rgba(255,255,255,0.5)",
-              fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4,
-            }}>
-              {text}
-            </span>
-          </div>
-        ))}
       </div>
     </div>
   );

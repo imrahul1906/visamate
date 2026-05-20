@@ -1,9 +1,11 @@
+import { useRef, useEffect } from "react";
 import { T } from "@/components/shared/theme";
 import Badge from "@/components/shared/Badge";
 import type { DocumentItem, UploadsMap } from "../../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import { DocHelper } from "../DocumentHelper";
 import type { PhotoSpec } from "../DocumentHelper";
+import UploadSlot from "../util/UploadSlot";
 
 interface FocusDrawerProps {
   visibleDoc: DocumentItem;
@@ -55,6 +57,16 @@ export function FocusDrawer({
   sponsorConsentPrefill,
 }: FocusDrawerProps) {
   const isDone = !!checked[visibleDoc.id];
+  const shimmerRef = useRef<HTMLDivElement>(null);
+
+  // Fire the border shimmer each time a new document is selected
+  useEffect(() => {
+    const el = shimmerRef.current;
+    if (!el) return;
+    el.classList.remove("vm-header-shimmer-run");
+    void el.offsetWidth;
+    el.classList.add("vm-header-shimmer-run");
+  }, [visibleDoc.id]);
 
   return (
     <div style={{
@@ -65,16 +77,46 @@ export function FocusDrawer({
       willChange: "opacity, transform",
     }}>
 
-      {/* DRAWER HEADER */}
-      <div style={{
-        flexShrink: 0,
-        padding: "16px 18px 14px",
-        borderBottom: `1px solid ${T.border}`,
-        background: T.surface2,
-      }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 10 }}>
-          {/* Mobile back / Desktop close */}
-          <button className="vm-drawer-close-btn" onClick={onClose} aria-label="Close drawer">
+      {/* DRAWER HEADER — identity block */}
+      <div style={{ flexShrink: 0, padding: "12px 14px 0", background: T.surface2 }}>
+        <div
+          className="vm-doc-identity-header"
+          style={{
+            position: "relative",
+            borderRadius: 13,
+            border: "0.5px solid rgba(255,255,255,0.09)",
+            background: "rgba(255,255,255,0.025)",
+            isolation: "isolate",
+          }}
+        >
+          {/* dot grid */}
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+            backgroundImage: "linear-gradient(rgba(99,102,241,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.045) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+            borderRadius: 13,
+          }} />
+
+          {/* radial category glow */}
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+            background: `radial-gradient(ellipse 55% 120% at 0% 50%, ${activeCategory?.color ?? "rgba(99,102,241,1)"}12 0%, transparent 70%)`,
+            borderRadius: 13,
+          }} />
+
+          {/* border shimmer pseudo-element — driven by CSS animation class */}
+          <div ref={shimmerRef} className="vm-header-shimmer-border" style={{
+            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
+            borderRadius: 13,
+          }} />
+
+          {/* close btn */}
+          <button
+            className="vm-drawer-close-btn"
+            onClick={onClose}
+            aria-label="Close drawer"
+            style={{ position: "absolute", top: 9, right: 10, zIndex: 3 }}
+          >
             {isMobile ? (
               <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -86,85 +128,131 @@ export function FocusDrawer({
             )}
           </button>
 
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Category label */}
-            {activeCategory && (
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+          {/* identity row */}
+          <div style={{
+            position: "relative", zIndex: 2,
+            display: "flex", alignItems: "center", gap: 13,
+            padding: "12px 42px 12px 14px",
+          }}>
+            {/* doc icon */}
+            <div style={{
+              width: 40, height: 40, borderRadius: 11, flexShrink: 0,
+              background: `${activeCategory?.color ?? "rgba(99,102,241,1)"}1a`,
+              border: `1px solid ${activeCategory?.color ?? "rgba(99,102,241,1)"}38`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none"
+                stroke={activeCategory?.color ?? "rgba(129,140,248,0.9)"}
+                strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h6.586a1 1 0 01.707.293l4.414 4.414A1 1 0 0119 8.414V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+
+            {/* text */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {/* crumb */}
+              {activeCategory && (
                 <div style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: activeCategory.color, flexShrink: 0,
-                }} />
-                <span style={{
-                  fontSize: 10, fontWeight: 700,
-                  color: activeCategory.color,
-                  textTransform: "uppercase", letterSpacing: "0.07em",
+                  display: "flex", alignItems: "center", gap: 5, marginBottom: 3,
+                  fontSize: 10, fontWeight: 600, letterSpacing: "0.07em",
+                  textTransform: "uppercase", color: activeCategory.color,
                   fontFamily: "'DM Sans', sans-serif",
                 }}>
+                  <div style={{ width: 4, height: 4, borderRadius: "50%", background: "currentColor" }} />
                   {activeCategory.label}
-                </span>
+                </div>
+              )}
+
+              {/* title + pills */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <h2 style={{
+                  fontSize: 18, fontWeight: 700, letterSpacing: "-0.3px",
+                  color: "rgba(255,255,255,0.96)", margin: 0, lineHeight: 1,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}>
+                  {visibleDoc.name}
+                </h2>
+
+                {visibleDoc.noUpload && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
+                    color: "rgba(251,191,36,0.9)", background: "rgba(251,191,36,0.1)",
+                    border: "1px solid rgba(251,191,36,0.25)", lineHeight: 1,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>Hardcopy</span>
+                )}
+                {!visibleDoc.noUpload && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
+                    color: "rgba(129,140,248,0.9)", background: "rgba(99,102,241,0.1)",
+                    border: "1px solid rgba(99,102,241,0.25)", lineHeight: 1,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>Uploadable</span>
+                )}
+                {visibleDoc.specialWidget && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
+                    color: "rgba(251,146,60,0.9)", background: "rgba(251,146,60,0.1)",
+                    border: "1px solid rgba(251,146,60,0.25)", lineHeight: 1,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>Builder</span>
+                )}
+                {visibleDoc.status !== "required" && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
+                    color: "rgba(255,255,255,0.35)", background: "rgba(255,255,255,0.05)",
+                    border: "0.5px solid rgba(255,255,255,0.12)", lineHeight: 1,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>Optional</span>
+                )}
+                {uploads[visibleDoc.id] && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
+                    color: "rgba(74,222,128,0.9)", background: "rgba(74,222,128,0.1)",
+                    border: "1px solid rgba(74,222,128,0.25)", lineHeight: 1,
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}>✓ Uploaded</span>
+                )}
               </div>
-            )}
-            {/* Doc title */}
-            <h2 style={{
-              fontSize: 16, fontWeight: 700, color: T.text,
-              margin: "0 0 4px", lineHeight: 1.3,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
-              {visibleDoc.name}
-            </h2>
-            {/* Doc description */}
-            <p style={{
-              fontSize: 12, color: T.muted, margin: 0, lineHeight: 1.5,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
-              {visibleDoc.description}
-            </p>
+
+              {/* description */}
+              {visibleDoc.description && (
+                <p style={{
+                  fontSize: 11.5, color: "rgba(255,255,255,0.55)", margin: "4px 0 0",
+                  fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4,
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                }}>
+                  {visibleDoc.description}
+                </p>
+              )}
+            </div>
           </div>
+
+          {/* hint strip */}
+          {visibleDoc.notes && (
+            <div style={{
+              position: "relative", zIndex: 2,
+              borderTop: "1px solid rgba(99,102,241,0.1)",
+              padding: "7px 14px",
+              display: "flex", alignItems: "center", gap: 7,
+              background: "rgba(99,102,241,0.03)",
+            }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="rgba(99,102,241,0.65)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" />
+              </svg>
+              <span style={{
+                fontSize: 11, color: "rgba(255,255,255,0.52)",
+                fontFamily: "'DM Sans', sans-serif", lineHeight: 1.4,
+              }}>
+                {visibleDoc.notes}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Tags row */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {visibleDoc.noUpload && (
-            <span style={{
-              fontSize: 10, fontWeight: 600, color: "#92400e",
-              background: "#fef3c708", border: "1px solid rgba(251,191,36,0.3)",
-              padding: "3px 9px", borderRadius: 20,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
-              📌 Hardcopy only
-            </span>
-          )}
-          {!visibleDoc.noUpload && (
-            <span style={{
-              fontSize: 10, fontWeight: 600, color: T.indigoLight,
-              background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.25)",
-              padding: "3px 9px", borderRadius: 20,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
-              📎 Uploadable
-            </span>
-          )}
-          {visibleDoc.status !== "required" && (
-            <span style={{
-              fontSize: 10, fontWeight: 600, color: T.muted,
-              background: "rgba(255,255,255,0.05)", border: `1px solid ${T.border}`,
-              padding: "3px 9px", borderRadius: 20,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
-              Optional
-            </span>
-          )}
-          {uploads[visibleDoc.id] && (
-            <span style={{
-              fontSize: 10, fontWeight: 600, color: T.green,
-              background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.25)",
-              padding: "3px 9px", borderRadius: 20,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>
-              ✓ File uploaded
-            </span>
-          )}
-        </div>
+        {/* spacing below identity block, before body */}
+        <div style={{ height: 12 }} />
       </div>
 
       {/* DRAWER BODY */}
@@ -400,11 +488,25 @@ export function FocusDrawer({
                   </div>
                 </div>
               )}
+
+              {/* Upload slot — flush bottom of card, hairline divider only */}
+              {!visibleDoc.noUpload && (
+                <div style={{ padding: "0 14px 14px", marginTop: -12 }}>
+                  <UploadSlot
+                    docId={visibleDoc.id}
+                    docName={visibleDoc.name}
+                    color={activeCategory?.color ?? T.indigo}
+                    uploads={uploads}
+                    onUpload={(_docId, file) => onUpload(file)}
+                    onRemove={(_docId) => onRemove()}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* DocHelper handles all specialWidget types */}
+        {/* DocHelper handles all specialWidget types — upload slot suppressed here */}
         <DocHelper
           doc={visibleDoc}
           color={activeCategory?.color ?? T.indigo}
@@ -417,7 +519,29 @@ export function FocusDrawer({
           onSponsorConsentReady={onSponsorConsentReady}
           itineraryData={itineraryData}
           sponsorConsentPrefill={sponsorConsentPrefill}
+          hideUpload
         />
+
+        {/* Upload slot — standalone card for docs with no What You Need section */}
+        {!(visibleDoc.notes || visibleDoc.tips?.length) && !visibleDoc.noUpload && (
+          <div style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "0.5px solid rgba(255,255,255,0.11)",
+            borderRadius: 14,
+            overflow: "hidden",
+            padding: "0 14px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.25), 0 12px 28px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.06) inset",
+          }}>
+            <UploadSlot
+              docId={visibleDoc.id}
+              docName={visibleDoc.name}
+              color={activeCategory?.color ?? T.indigo}
+              uploads={uploads}
+              onUpload={(_docId, file) => onUpload(file)}
+              onRemove={(_docId) => onRemove()}
+            />
+          </div>
+        )}
       </div>
 
       {/* DRAWER FOOTER — prev/next navigation */}

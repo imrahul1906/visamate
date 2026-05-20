@@ -38,7 +38,7 @@ const defaults: ApplicantData = {
   sponsorDob: "",
   sponsorMobile: "",
   sponsorCity: "",
-  sponsorAccompanying: "staying",
+  sponsorAccompanying: null,
   sponsorshipReason: "",
 
   // Visa type

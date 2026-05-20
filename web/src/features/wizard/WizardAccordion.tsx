@@ -233,7 +233,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
           </div>
 
           {/* ── Breadcrumbs: always visible ───────────────────────────────────── */}
-          <div style={{ minHeight: 28, marginBottom: 10, flexShrink: 0 }}>
+          <div style={{ minHeight: (showFlight || breadcrumbs.length > 0) ? 28 : 0, marginBottom: (showFlight || breadcrumbs.length > 0) ? 10 : 0, flexShrink: 0 }}>
             {showFlight && pendingSelections ? (
               // Flight active: show all 3 selections as "go back to edit" chips
               <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>

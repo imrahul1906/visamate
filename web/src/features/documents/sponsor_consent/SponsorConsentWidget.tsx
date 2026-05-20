@@ -198,14 +198,16 @@ export default function SponsorConsentWidget({
                     : ""
                 }
               />
-              <div className="cl-context-item">
-                <span className="cl-context-label">Sponsor Accompanying</span>
-                <span className="cl-context-val">
-                  {ctx.sponsorAccompanying === "accompanying"
+              <ContextItem
+                label="Sponsor Accompanying"
+                value={
+                  ctx.sponsorAccompanying === "accompanying"
                     ? "Yes — travelling together"
-                    : "No — applicant travels alone"}
-                </span>
-              </div>
+                    : ctx.sponsorAccompanying === "staying"
+                    ? "No — sponsor stays behind"
+                    : ""
+                }
+              />
             </div>
 
             {hasMissing && (

@@ -142,6 +142,60 @@ export function DocumentsStyles() {
         opacity: 0.3; cursor: default;
       }
 
+      /* ── Document identity header ── */
+      .vm-doc-identity-header {
+        transition: border-color 200ms ease;
+      }
+      .vm-doc-identity-header:hover {
+        border-color: rgba(99,102,241,0.28) !important;
+      }
+
+      /*
+        Border shimmer: a bright highlight travels around the border once
+        (two laps if you repeat the keyframe — we do 1.2s × 2 = 2 loops).
+        Implemented as a conic-gradient mask on a pseudo-element overlay.
+        The overlay has a vivid indigo border; the mask reveals only a
+        short arc of it, which rotates a full 360°.
+      */
+      @property --shimmer-angle {
+        syntax: '<angle>';
+        initial-value: 0deg;
+        inherits: false;
+      }
+      .vm-header-shimmer-border {
+        border: 1px solid transparent;
+        border-radius: 13px;
+        pointer-events: none;
+        background:
+          conic-gradient(
+            from var(--shimmer-angle),
+            transparent 0deg,
+            transparent 255deg,
+            rgba(148,155,255,0.06) 290deg,
+            rgba(185,190,255,0.35) 338deg,
+            rgba(215,218,255,0.5) 355deg,
+            rgba(185,190,255,0.35) 372deg,
+            rgba(148,155,255,0.06) 408deg,
+            transparent 430deg
+          )
+          border-box;
+        -webkit-mask:
+          linear-gradient(#fff 0 0) padding-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        opacity: 0;
+      }
+      .vm-header-shimmer-run {
+        animation: shimmer-border-rotate 2.6s cubic-bezier(0.16, 0.8, 0.38, 1) 1 forwards;
+      }
+      @keyframes shimmer-border-rotate {
+        0%   { --shimmer-angle: 0deg;   opacity: 0; }
+        5%   { opacity: 1; }
+        78%  { --shimmer-angle: 360deg; opacity: 0.9; }
+        100% { --shimmer-angle: 390deg; opacity: 0; }
+      }
+
       .vm-stat-card {
         transition: border-color 200ms ease, transform 200ms ease;
       }

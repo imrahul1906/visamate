@@ -8,8 +8,8 @@
     "locationId": "VFS_CENTER_KOLKATA_001",
     "visaVariantId": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
     "locationCode": "KOLKATA",
-    "processingDays": "1-3 week",
-    "processingDaysExpress": "5 days",
+    "processingDays": "Minimum 5 working days",
+    "processingDaysExpress": "null",
     "fees": {
         "visaFeeINR": 500,
         "serviceChargeINR": 800,
@@ -76,7 +76,14 @@
                     "optionality": "required",
                     "description": "Detailed itinerary in Japan in official format",
                     "notes": "MUST use official itinerary format",
-                    "formUrl": "https://www.mofa.go.jp/files/000262548.pdf"
+                    "formUrl": "https://www.mofa.go.jp/files/000262548.pdf",
+                    "requirements": [
+                        "Always good to add flight landing and departure Information in the itinerary",
+                        "Always good to add hotel checking in and checking out Information in the itinerary",
+                        "Itinerary should be consistent with the flight and hotel reservations",
+                        "Always good to mention transportation medium if travelling to multiple cities",
+                        "The whole itinerary should be possible and make sense"
+                    ]
                 },
                 {
                     "order": 4,
@@ -86,7 +93,10 @@
                     "isRequired": true,
                     "optionality": "required",
                     "description": "Personal cover letter explaining purpose of travel to Japan",
-                    "notes": "Strongly recommended for better clarity of application"
+                    "notes": "Strongly recommended for better clarity of application",
+                    "requirements": [
+                        "Any special circumstances to be explained clearly in the letter"
+                    ]
                 },
                 {
                     "order": 5,
@@ -105,10 +115,10 @@
                     "name": "Passport photocopy",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Photocopy of the Bio Data Page of current passport (First and Last Page)",
                     "requirements": [
                         "Should be self attested with signature"
-                    ]
+                    ],
+                    "notes": "Photocopy of the Bio Data Page of current passport (First and Last Page)"
                 },
                 {
                     "order": 7,
@@ -117,7 +127,13 @@
                     "name": "Flight Reservations",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Document to show the flight/cruise schedule to/from Japan"
+                    "description": "Document to show the flight/cruise schedule to/from destination",
+                    "notes": "Applicant should include flight reservation details for arrival and departure from Japan.",
+                    "requirements": [
+                        "Must match with itinerary plan in Japan",
+                        "Applicant name must match passport",
+                        "Applicant doesn't have to confirm the flight/cruise booking by paying upfront. They can submit a reservation with free cancellation and confirm it after visa approval to avoid losing money in case of visa rejection"
+                    ]
                 },
                 {
                     "order": 8,
@@ -126,27 +142,31 @@
                     "name": "Hotel Reservation",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Hotel booking confirmation for the stay in Japan",
-                    "notes": "Can include hotel booking confirmations, Airbnb reservations, or accommodation details for entire stay",
-                    "acceptedFormats": [
-                        "PDF",
-                        "Printout"
-                    ],
+                    "description": "Hotel booking reservation for the stay in Japan",
+                    "notes": "Applicant should include hotel booking reservation, Airbnb reservations, or any other accommodation details for entire stay",
                     "requirements": [
                         "Must cover entire duration of stay in Japan",
-                        "Applicant name should match passport",
-                        "Accommodation address and contact details should be visible"
+                        "Applicant name must match passport",
+                        "Accommodation address and contact details should be visible",
+                        "Always good to add the dependent name in the reservation if sponsoring anyone",
+                        "Applicant doesn't have to confirm the hotel booking by paying upfront. They can submit a reservation with free cancellation and confirm it after visa approval to avoid losing money in case of visa rejection"
                     ]
                 },
-                 {
+                {
                     "order": 9,
                     "id": "JP_TOURIST_KOLKATA_DOC_CHECKLIST_001",
                     "code": "DOC_CHECKLIST",
                     "name": "Documents Checklist",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Document checklist filled and signed by applicant",
-                    "check_list_download_Url": "https://assets.ctfassets.net/xxg4p8gt3sg6/1t2KXs6I14dIetjPTEnn8D/0270c29ddde691fb78d6cebbd05d4e8b/japan-checklist.pdf"
+                    "description": "Download -> Mark -> Sign -> Upload",
+                    "check_list_download_Url": "https://assets.ctfassets.net/xxg4p8gt3sg6/4Emh51n2TX1kgGcbqqMLNB/c9458d3aae09d1e1ce03161b1b12a56c/CL-01-Visitor-Visa-Without-Guarantor-Apr-26.pdf",
+                    "requirements": [
+                        "Tick Mark the documents you are submitting",
+                        "Arrange your documents in the SAME ORDER as mentioned in the checklist",
+                        "Sign the checklist and upload along with your documents",
+                        "There should be One checklist per application "
+                    ]
                 }
             ]
         },
@@ -164,9 +184,9 @@
                     "name": "Latest Income Tax Return",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Latest Income Tax Return or bank statement of last 6 months if ITR not available",
+                    "description": "Latest Income Tax Return(ITR) for last 2 years",
                     "notes": "Either ITR or bank statement (last 6 months). A4 size photocopy.",
-                    "alternativeDocuments": [
+                    "requirements": [
                         "Bank statement of last 6 months",
                         "Should not be taken print out from bank website.",
                         "Get bank statement and balance certificate from your bank branch",
@@ -178,10 +198,10 @@
                     "id": "JP_TOURIST_KOLKATA_SALARY_SLIP_001",
                     "code": "SALARY_SLIP",
                     "name": "Salary Slips (Last 3 Months)",
-                    "isRequired": true,
-                    "optionality": "required",
+                    "isRequired": false,
+                    "optionality": "conditional",
                     "description": "Latest salary slips for the last 3 months",
-                    "notes": "Recommended to submit company-issued salary slips with company seal/signature if available",
+                    "notes": "[RECOMMENDED] to submit company-issued salary slips with company seal/signature if available",
                     "requirements": [
                         "Must include applicant name",
                         "Must clearly show salary credited",
@@ -195,16 +215,13 @@
                     "name": "Bank Statement (Last 3 Months)",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Personal bank statement for the last 6 months",
-                    "notes": "Should be stamped and signed by the bank branch",
-                    "acceptedFormats": [
-                        "Original",
-                        "Stamped Bank Statement"
-                    ],
+                    "description": "Personal bank statement for the last 3 months",
+                    "notes": "IF ITR is not available, INCLUDE A LETTER mentioning the reason for not submitting the ITR.",
                     "requirements": [
+                        "Should be stamped and signed by the bank branch",
                         "Should cover last 3 months",
                         "Must show sufficient balance",
-                        "Online printouts without bank attestation are not preferred"
+                        "Online printouts without bank attestation are not accepted"
                     ]
                 },
                 {
@@ -212,7 +229,7 @@
                     "id": "JP_TOURIST_KOLKATA_NOC_001",
                     "code": "NOC",
                     "name": "No Objection Certificate (NOC)",
-                    "isRequired": false,
+                    "isRequired": true,
                     "description": "NOC or leave approval letter from employer/School/College",
                     "acceptedFormats": [
                         "Original",
@@ -224,7 +241,8 @@
                         "Should confirm designation and employment status",
                         "Should clearly mention approved leave dates",
                         "Should include HR/manager signature and company stamp if available"
-                    ]
+                    ],
+                    "optionality": "required"
                 }
             ]
         },
@@ -249,37 +267,54 @@
                             "STUDENT",
                             "DEPENDENT"
                         ]
-                    },
-                    "alternativeDocuments": [
-                        "Bank statement of last 6 months (if ITR not available)"
-                    ]
+                    }
                 },
                 {
                     "order": 15,
+                    "id": "JP_TOURIST_KOLKATA_SPONSER_BANK_STATEMENT_001",
+                    "code": "SPONSER_BANK_STATEMENT",
+                    "name": "Sponser Bank Statement (Last 3 Months)",
+                    "isRequired": false,
+                    "optionality": "conditional",
+                    "description": "Sponser bank statement for the last 3 months",
+                    "notes": "IF ITR is not available, INCLUDE A LETTER mentioning the reason for not submitting the ITR.",
+                    "requirements": [
+                        "Should be stamped and signed by the bank branch",
+                        "Should cover last 3 months",
+                        "Must show sufficient balance",
+                        "Online printouts without bank attestation are not accepted"
+                    ],
+                    "applicableWhen": {
+                        "applicantRolesAnyOf": [
+                            "STUDENT",
+                            "DEPENDENT"
+                        ]
+                    }
+                },
+                {
+                    "order": 16,
                     "id": "JP_TOURIST_KOLKATA_RELATIONSHIP_PROOF_001",
                     "code": "RELATIONSHIP_PROOF",
                     "name": "Proof of Relationship",
                     "isRequired": false,
                     "optionality": "conditional",
                     "description": "Proof of relationship if applicant is accompanied by dependent",
-                    "notes": "Can be passport copy, marriage certificate, or birth certificate",
-                    "acceptedFormats": [
-                        "Passport copy",
-                        "Marriage certificate",
-                        "Birth certificate"
-                    ],
+                    "notes": "Can be passport copy, marriage certificate, or birth certificate or any other document proving the relationship",
                     "applicableWhen": {
-                        "accompaniedByDependent": true
+                        "applicantRolesAnyOf": [
+                            "STUDENT",
+                            "DEPENDENT"
+                        ]
                     }
                 },
                 {
-                    "order": 16,
+                    "order": 17,
                     "id": "JP_TOURIST_KOLKATA_DEPENDENT_CONSENT_001",
                     "code": "DEPENDENT_CONSENT",
-                    "name": "Consent from Parents/Spouse",
+                    "name": "Consent from SPONSER",
                     "isRequired": false,
                     "optionality": "conditional",
-                    "description": "Consent from parents/spouse if applicant is student or dependent",
+                    "description": "Application stating consent from sponser",
                     "notes": "Required only if applicant is a student or dependent",
                     "applicableWhen": {
                         "applicantRolesAnyOf": [
@@ -295,7 +330,7 @@
         "All photocopies should be on A4 size only",
         "The above is a guide to documents. Japan Embassy may request interview/additional documentation depending on personal circumstances",
         "Documents submitted will not be returned except for the passport",
-        "Processing time is indicative only and may increase/decrease at discretion of Embassy of Japan, New Delhi",
+        "Processing time is indicative only and may increase/decrease at discretion of Consulate General of Japan, Kolkata",
         "VFS Global is involved only in non-judgmental task of visa processing"
     ],
     "metadata": {

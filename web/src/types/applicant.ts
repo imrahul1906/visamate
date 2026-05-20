@@ -28,7 +28,7 @@ export interface ApplicantData {
   sponsorDob: string;             // ISO "YYYY-MM-DD"
   sponsorMobile: string;
   sponsorCity: string;            // city where sponsor resides
-  sponsorAccompanying: "accompanying" | "staying";
+  sponsorAccompanying: "accompanying" | "staying" | null;
   sponsorshipReason: string;      // why sponsor is bearing costs
 
   // ── From StepVisaType ──

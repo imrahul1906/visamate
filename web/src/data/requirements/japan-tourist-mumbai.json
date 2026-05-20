@@ -76,7 +76,14 @@
                     "optionality": "required",
                     "description": "Detailed itinerary in Japan in official format",
                     "notes": "MUST use official itinerary format",
-                    "formUrl": "https://www.mofa.go.jp/files/000262548.pdf"
+                    "formUrl": "https://www.mofa.go.jp/files/000262548.pdf",
+                    "requirements": [
+                        "Always good to add flight landing and departure Information in the itinerary",
+                        "Always good to add hotel checking in and checking out Information in the itinerary",
+                        "Itinerary should be consistent with the flight and hotel reservations",
+                        "Always good to mention transportation medium if travelling to multiple cities",
+                        "The whole itinerary should be possible and make sense"
+                    ]
                 },
                 {
                     "order": 4,
@@ -86,7 +93,10 @@
                     "isRequired": true,
                     "optionality": "required",
                     "description": "Personal cover letter explaining purpose of travel to Japan",
-                    "notes": "Strongly recommended for better clarity of application"
+                    "notes": "Strongly recommended for better clarity of application",
+                    "requirements": [
+                        "Any special circumstances to be explained clearly in the letter"
+                    ]
                 },
                 {
                     "order": 5,
@@ -105,7 +115,7 @@
                     "name": "Passport photocopy",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Photocopy of the Bio Data Page of current passport (First and Last Page)",
+                    "notes": "Photocopy of the Bio Data Page of current passport (First and Last Page)",
                     "requirements": [
                         "Should be self attested with signature"
                     ]
@@ -117,7 +127,13 @@
                     "name": "Flight Reservations",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Document to show the flight/cruise schedule to/from Japan"
+                    "description": "Document to show the flight/cruise schedule to/from destination",
+                    "notes": "Applicant should include flight reservation details for arrival and departure from Japan.",
+                    "requirements": [
+                        "Must match with itinerary plan in Japan",
+                        "Applicant name must match passport",
+                        "Applicant doesn't have to confirm the flight/cruise booking by paying upfront. They can submit a reservation with free cancellation and confirm it after visa approval to avoid losing money in case of visa rejection"
+                    ]
                 },
                 {
                     "order": 8,
@@ -126,16 +142,14 @@
                     "name": "Hotel Reservation",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Hotel booking confirmation for the stay in Japan",
-                    "notes": "Can include hotel booking confirmations, Airbnb reservations, or accommodation details for entire stay",
-                    "acceptedFormats": [
-                        "PDF",
-                        "Printout"
-                    ],
+                    "description": "Hotel booking reservation for the stay in Japan",
+                    "notes": "Applicant should include hotel booking reservation, Airbnb reservations, or any other accommodation details for entire stay",
                     "requirements": [
                         "Must cover entire duration of stay in Japan",
-                        "Applicant name should match passport",
-                        "Accommodation address and contact details should be visible"
+                        "Applicant name must match passport",
+                        "Accommodation address and contact details should be visible",
+                        "Always good to add the dependent name in the reservation if sponsoring anyone",
+                        "Applicant doesn't have to confirm the hotel booking by paying upfront. They can submit a reservation with free cancellation and confirm it after visa approval to avoid losing money in case of visa rejection"
                     ]
                 },
                 {
@@ -145,8 +159,14 @@
                     "name": "Documents Checklist",
                     "isRequired": true,
                     "optionality": "required",
-                    "description": "Use it to arrange your documents in the SAME ORDER as mentioned in the checklist",
-                    "check_list_download_Url": "https://assets.ctfassets.net/xxg4p8gt3sg6/4Emh51n2TX1kgGcbqqMLNB/c9458d3aae09d1e1ce03161b1b12a56c/CL-01-Visitor-Visa-Without-Guarantor-Apr-26.pdf"
+                    "description": "Download -> Mark -> Sign -> Upload",
+                    "check_list_download_Url": "https://assets.ctfassets.net/xxg4p8gt3sg6/4Emh51n2TX1kgGcbqqMLNB/c9458d3aae09d1e1ce03161b1b12a56c/CL-01-Visitor-Visa-Without-Guarantor-Apr-26.pdf",
+                    "requirements": [
+                        "Tick Mark the documents you are submitting",
+                        "Arrange your documents in the SAME ORDER as mentioned in the checklist",
+                        "Sign the checklist and upload along with your documents",
+                        "There should be One checklist per application "
+                    ]
                 }
             ]
         },
@@ -267,7 +287,7 @@
                     "isRequired": false,
                     "optionality": "conditional",
                     "description": "Proof of relationship if applicant is accompanied by dependent",
-                    "notes": "Can be passport copy, marriage certificate, or birth certificate",
+                    "notes": "Can be passport copy, marriage certificate, or birth certificate or any other document proving the relationship",
                     "applicableWhen": {
                         "applicantRolesAnyOf": [
                             "STUDENT",
@@ -299,7 +319,7 @@
         "Prepare single set of common documents for families and group",
         "The above is a guide to documents. Japan Embassy may request interview/additional documentation depending on personal circumstances",
         "Documents submitted will not be returned except for the passport",
-        "Processing time is indicative only and may increase/decrease at discretion of Embassy of Japan, New Delhi",
+        "Processing time is indicative only and may increase/decrease at discretion of Consulate General of Japan, Mumbai",
         "VFS Global is involved only in non-judgmental task of visa processing"
     ],
     "metadata": {

@@ -52,9 +52,11 @@ export default function DocumentChecklistWidget({
       <style>{widgetStyles}</style>
 
       <div className="dcw-wrap" onClick={(e) => e.stopPropagation()}>
-
         {/* Download option card — mirrors iw-opt iw-opt--light exactly */}
         <div className="dcw-options">
+          <p className="iw-select-sub">
+            Prepare your official Document Checklist for your visa application.
+          </p>
           <button
             className={`dcw-opt${downloaded ? " dcw-opt--done" : ""}`}
             onClick={handleDownload}
@@ -207,6 +209,8 @@ const widgetStyles = `
     flex-direction: column;
     gap: 3px;
   }
+
+  .iw-select-sub { font-size: 13px; color: rgba(255,255,255,0.65); margin: 0 0 10px; line-height: 1.6; }
 
   /* Title — mirrors iw-opt-title */
   .dcw-opt-title {
