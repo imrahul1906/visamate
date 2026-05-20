@@ -1,14 +1,11 @@
 /**
- * coverLetterService.ts
+ * letterValidation.ts
  *
  * Pure business logic for the Japan Visa Cover Letter builder.
  * No React, no hooks, no JSX — fully unit-testable.
  *
- * Consumed by: CoverLetterWidget, coverLetterInputs, coverLetterPreview
+ * Consumed by: CoverLetterBuilder, coverLetterInputs, coverLetterPreview
  */
-
-import { fmtDate, fmtDateEnd, today, fmtMonthYear } from "../util/dateFormatting";
-import { stripHints, hint } from "../util/textFormatting";
 
 // ─────────────────────────────────────────────────────────────
 // Types

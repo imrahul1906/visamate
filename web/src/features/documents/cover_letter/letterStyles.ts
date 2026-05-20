@@ -1,8 +1,8 @@
 /**
- * coverLetterStyles.ts
+ * letterStyles.ts
  *
  * All CSS styles for the cover letter builder widget.
- * Injected via <style> tag in CoverLetterWidget.tsx
+ * Injected via <style> tag in CoverLetterBuilder.tsx
  */
 
 export const STYLES = `

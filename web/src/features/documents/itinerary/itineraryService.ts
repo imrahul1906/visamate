@@ -196,7 +196,7 @@ export function getAccomForDay(
 
 /**
  * Extracts the unique city display-names that appear in the itinerary.
- * Used to sync back to ApplicantContext so CoverLetterWidget can read them.
+ * Used to sync back to ApplicantContext so CoverLetterBuilder can read them.
  */
 export function getUniqueCityNames(
   itinerary: ItineraryItem[],

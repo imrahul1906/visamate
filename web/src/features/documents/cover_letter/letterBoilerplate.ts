@@ -1,5 +1,5 @@
 /**
- * coverLetterTemplates.ts
+ * letterBoilerplate.ts
  *
  * All static template texts for the Japan Visa Cover Letter.
  * Single source of truth for headings, intro texts, defaults.

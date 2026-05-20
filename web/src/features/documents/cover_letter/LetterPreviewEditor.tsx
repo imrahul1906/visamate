@@ -8,8 +8,8 @@
  */
 
 import React from "react";
-import { Contact, InlinePara } from "./coverLetterComponents";
-import { isSponsored, isEmployed, isStudent } from "@/features/documents/cover_letter/coverLetterService";
+import { Contact, InlinePara } from "./LetterFormFields";
+import { isSponsored, isEmployed, isStudent } from "./letterValidation";
 
 export interface CoverLetterPreviewProps {
   // Paragraph/section states
@@ -106,7 +106,7 @@ export interface CoverLetterPreviewProps {
   hasDependant?: string;
 }
 
-export function CoverLetterPreview({
+export function LetterPreviewEditor({
   lHeading,
   setLHeading,
   lToBlock,

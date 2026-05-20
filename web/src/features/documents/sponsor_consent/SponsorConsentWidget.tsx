@@ -1,7 +1,7 @@
 /**
  * SponsorConsentWidget.tsx
  *
- * Mirrors CoverLetterWidget architecture:
+ * Mirrors CoverLetterBuilder architecture:
  *   Step "select" — context summary strip + single "Build" action
  *   Step "builder" — inline-editable letter preview → download .docx
  *
@@ -24,7 +24,7 @@ import {
   SponsorConsentPreview,
   type ConsentPreviewState,
 } from "./SponsorConsentPreview";
-import { STYLES } from "../cover_letter/coverLetterStyles";
+import { STYLES } from "../cover_letter/letterStyles";
 
 // ─────────────────────────────────────────────────────────────
 // Props

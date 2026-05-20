@@ -1,5 +1,5 @@
 /**
- * coverLetterUtils.ts
+ * letterContentBuilder.ts
  *
  * Utility functions for the cover letter builder.
  * Includes date formatting, profile checks, and local state seeding logic.
@@ -8,7 +8,7 @@
  * Strings like [[HINT: Add more details here]] are rendered in the preview as
  * amber-coloured italic callouts so the user knows what to fill in.
  * They are stripped automatically before the .docx is built (see stripHints in
- * coverLetterService.ts).
+ * letterValidation.ts).
  */
 
 import {
@@ -19,13 +19,13 @@ import {
   isSponsored,
   isStudent,
   isNocNeeded,
-} from "@/features/documents/cover_letter/coverLetterService";
+} from "@/features/documents/cover_letter/letterValidation";
 import { fmtDate, fmtDateEnd, fmtMonthYear, today } from "../util/dateFormatting";
 import { hint } from "../util/textFormatting";
-import { COVER_LETTER_TEMPLATES } from "./coverLetterTemplates";
+import { COVER_LETTER_TEMPLATES } from "./letterBoilerplate";
 
 // Re-export date helpers and profile checks so existing importers of
-// coverLetterUtils don't need to change their import paths.
+// letterContentBuilder don't need to change their import paths.
 export { fmtDate, fmtDateEnd, fmtMonthYear, today, isEmployed, isStudent, isSponsored, isNocNeeded };
 
 // ─────────────────────────────────────────────────────────────

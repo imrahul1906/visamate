@@ -8,9 +8,9 @@
  */
 
 import React, { useState } from "react";
-import { Contact, ContactRow, CountryVisit, CountryVisitRow } from "./coverLetterComponents";
-import type { CoverLetterInputs, ValidationErrors } from "@/features/documents/cover_letter/coverLetterService";
-import { isEmployed, isStudent, isSponsored } from "@/features/documents/cover_letter/coverLetterService";
+import { Contact, ContactRow, CountryVisit, CountryVisitRow } from "./LetterFormFields";
+import type { CoverLetterInputs, ValidationErrors } from "./letterValidation";
+import { isEmployed, isStudent, isSponsored } from "./letterValidation";
 import { validators, validateContact, type ContactErrors } from "../util/docInputValidation";
 
 export interface CoverLetterInputsStepProps {
@@ -208,7 +208,7 @@ export function CoverLetterInputsStep({
               Countries visited in last 5 years
               <span className="cl-hint-chip">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
                 leave blank if none
               </span>
@@ -554,7 +554,7 @@ export function CoverLetterInputsStep({
             Emergency Contacts in India{" "}
             <span className="cl-hint-chip">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               up to 3
             </span>

@@ -3,7 +3,7 @@
  *
  * Builds a .docx Blob from the editable sponsor consent letter state.
  * No React, no hooks — pure data-in, Blob-out.
- * Mirrors coverLetterDocx.ts architecture exactly.
+ * Mirrors letterDocxExporter.ts architecture exactly.
  */
 
 import { stripHints } from "../util/textFormatting";

@@ -54,7 +54,7 @@ DocumentsContent (Container Component)
 │  - PhotoSpecWidget                      │
 │  - VisaFormWidget                       │
 │  - ItineraryWidget                      │
-│  - CoverLetterWidget                    │
+│  - CoverLetterBuilder                    │
 │  - UploadSlot (default)                 │
 └─────────────────────────────────────────┘
            ↓
@@ -81,7 +81,7 @@ DocumentsContent (Main Container)
            │    ├── PhotoSpecWidget
            │    ├── VisaFormWidget
            │    ├── ItineraryWidget
-           │    ├── CoverLetterWidget
+           │    ├── CoverLetterBuilder
            │    └── UploadSlot (default)
            └── Drawer Footer (prev/next navigation)
 ```
@@ -135,15 +135,15 @@ Generates professional cover letters for visa applications.
 
 | File | Purpose |
 |------|---------|
-| **CoverLetterWidget.tsx** | Main widget container (embedded in DocHelper). |
-| **coverLetterInputs.tsx** | Form UI for collecting applicant info (name, qualifications, etc.). |
-| **coverLetterService.ts** | Business logic: templates, variable interpolation, validation. |
-| **coverLetterDocx.ts** | DOCX file generation using document structure. |
+| **CoverLetterBuilder.tsx** | Main widget container (embedded in DocHelper). |
+| **LetterInputForm.tsx** | Form UI for collecting applicant info (name, qualifications, etc.). |
+| **letterValidation.ts** | Business logic: templates, variable interpolation, validation. |
+| **letterDocxExporter.ts** | DOCX file generation using document structure. |
 | **coverLetterPreview.tsx** | Live preview of generated letter. |
-| **coverLetterComponents.tsx** | Reusable components (input fields, buttons, etc.). |
-| **coverLetterTemplates.ts** | Letter templates with placeholders. |
-| **coverLetterUtils.ts** | Utility functions (formatting, validation). |
-| **coverLetterStyles.ts** | Styling module. |
+| **LetterFormFields.tsx** | Reusable components (input fields, buttons, etc.). |
+| **letterBoilerplate.ts** | Letter templates with placeholders. |
+| **letterContentBuilder.ts** | Utility functions (formatting, validation). |
+| **letterStyles.ts** | Styling module. |
 
 #### **visa_form/** - Visa Application Form Assistant
 Provides guidance and form-fill assistance for visa application forms.
@@ -348,7 +348,7 @@ visibleDoc.specialWidget switch:
   ├─ "photo_spec"    → PhotoSpecWidget
   ├─ "visa_form"     → VisaFormWidget
   ├─ "itinerary"     → ItineraryWidget
-  ├─ "cover_letter"  → CoverLetterWidget
+  ├─ "cover_letter"  → CoverLetterBuilder
   └─ undefined       → UploadSlot (default)
 ```
 
@@ -379,7 +379,7 @@ File stored in state (not yet submitted)
 
 **Option C: Generate Document**
 ```
-CoverLetterWidget/ItineraryWidget → onItineraryReady(file)
+CoverLetterBuilder/ItineraryWidget → onItineraryReady(file)
            ↓
 handleItineraryReady(docId, file)
            ↓

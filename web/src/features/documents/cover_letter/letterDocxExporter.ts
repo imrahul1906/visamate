@@ -1,14 +1,14 @@
 /**
- * coverLetterDocx.ts
+ * letterDocxExporter.ts
  *
  * Builds a .docx Blob from the editable cover letter preview state.
  * No React, no hooks — pure data-in, Blob-out.
  *
- * Consumed by: CoverLetterWidget (handleDownload)
+ * Consumed by: CoverLetterBuilder (handleDownload)
  */
 
-import type { Contact } from "./coverLetterComponents";
-import { isSponsored } from "./coverLetterService";
+import type { Contact } from "./LetterFormFields";
+import { isSponsored } from "./letterValidation";
 
 // ─────────────────────────────────────────────────────────────
 // Input shape

@@ -14,7 +14,7 @@
 import React, { useRef, useEffect } from "react";
 
 // ─────────────────────────────────────────────────────────────
-// Auto-resize textarea — same pattern as coverLetterComponents.tsx
+// Auto-resize textarea — same pattern as LetterFormFields.tsx
 // ─────────────────────────────────────────────────────────────
 
 function InlinePara({

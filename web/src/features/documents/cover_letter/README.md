@@ -19,7 +19,7 @@ The module follows a **separation of concerns** architecture with distinct respo
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  CoverLetterWidget (Main Orchestrator)                      │
+│  CoverLetterBuilder (Main Orchestrator)                      │
 │  - State management (inputs, letter preview, validation)    │
 │  - Step flow control (select → inputs → letter)             │
 │  - Delegates to sub-components and services                 │
@@ -29,7 +29,7 @@ The module follows a **separation of concerns** architecture with distinct respo
         │                     │                     │
         ▼                     ▼                     ▼
 ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│ coverLetterInputs│ │ coverLetterPreview│ │ coverLetterService
+│ coverLetterInputs│ │ coverLetterPreview│ │ letterValidation
 │ (React Component)│ │ (React Component) │ │ (Pure Logic)
 │ - Form UI        │ │ - Letter display  │ │ - Validation
 │ - Input handling │ │ - Inline editing  │ │ - Builders
@@ -41,16 +41,15 @@ The module follows a **separation of concerns** architecture with distinct respo
                     │                   │
                     ▼                   ▼
         ┌──────────────────────┐ ┌──────────────────────┐
-        │ coverLetterDocx      │ │ coverLetterComponents
+        │ letterDocxExporter      │ │ LetterFormFields
         │ (Export Logic)       │ │ (Reusable UI Blocks)
-        │ - .docx generation   │ │ - InlineField
         └──────────────────────┘ │ - InlinePara
                                  │ - ContactRow
                     ┌────────────┴──────────────────┐
                     │                               │
                     ▼                               ▼
         ┌──────────────────────┐ ┌──────────────────────┐
-        │ coverLetterTemplates │ │ coverLetterUtils
+        │ letterBoilerplate │ │ letterContentBuilder
         │ (Static Defaults)    │ │ (Helpers & Seeding)
         │ - Section headings   │ │ - Date formatting
         │ - Default bullets    │ │ - State initialization
@@ -58,7 +57,7 @@ The module follows a **separation of concerns** architecture with distinct respo
                                          │
                                          ▼
                         ┌────────────────────────────┐
-                        │ coverLetterStyles          │
+                        │ letterStyles          │
                         │ (Injected CSS)             │
                         │ - Dark mode theming        │
                         │ - Form & preview styling   │
@@ -68,16 +67,16 @@ The module follows a **separation of concerns** architecture with distinct respo
 ### Key Concepts
 
 - **No circular dependencies**: Exported types and utilities are organized to allow imports without creating loops
-- **Pure business logic**: `coverLetterService.ts` contains all validation and paragraph-building logic—fully unit-testable
+- **Pure business logic**: `letterValidation.ts` contains all validation and paragraph-building logic—fully unit-testable
 - **Inline editing**: All letter sections and paragraphs are editable directly in the preview (no separate edit mode)
 - **Context-aware generation**: Content dynamically includes/excludes sections based on applicant profile and sponsorship
-- **Template-driven**: Default text comes from a single `coverLetterTemplates.ts` source of truth
+- **Template-driven**: Default text comes from a single `letterBoilerplate.ts` source of truth
 
 ---
 
 ## File Information
 
-### 1. **CoverLetterWidget.tsx** (Main Orchestrator)
+### 1. **CoverLetterBuilder.tsx** (Main Orchestrator)
 **Role**: Top-level React component that orchestrates the entire workflow  
 **Responsibilities**:
 - Manages the multi-step flow: "select" → "inputs" → "letter"
@@ -111,7 +110,7 @@ The module follows a **separation of concerns** architecture with distinct respo
 - Shows "Sponsor Name/Rel" only if `sponsorshipType === "sponsored"`
 - Emergency contacts section is always editable
 
-**Imports From**: coverLetterComponents, coverLetterService (for profile checks)
+**Imports From**: LetterFormFields, letterValidation (for profile checks)
 
 ---
 
@@ -132,11 +131,11 @@ The module follows a **separation of concerns** architecture with distinct respo
 - Signature fields (name, passport number)
 - Closing statement
 
-**Imports From**: coverLetterComponents, coverLetterService (for profile checks)
+**Imports From**: LetterFormFields, letterValidation (for profile checks)
 
 ---
 
-### 4. **coverLetterService.ts** (Pure Business Logic)
+### 4. **letterValidation.ts** (Pure Business Logic)
 **Role**: Core logic layer with no React dependencies  
 **Responsibilities**:
 - Defines TypeScript interfaces for inputs, validation, and context
@@ -146,7 +145,7 @@ The module follows a **separation of concerns** architecture with distinct respo
 - Paragraph builders for dynamic content generation based on applicant profile
 
 **Key Types**:
-- `CoverLetterInputs`: User-provided form data
+- `LetterInputForm`: User-provided form data
 - `ApplicantContext`: From ApplicantContext (applicant name, travel dates, cities, visa type, etc.)
 - `ValidationErrors`: Field-level error messages
 - `LetterPreviewState`: Fields that must be non-empty before export
@@ -162,7 +161,7 @@ The module follows a **separation of concerns** architecture with distinct respo
 
 ---
 
-### 5. **coverLetterDocx.ts** (Export Engine)
+### 5. **letterDocxExporter.ts** (Export Engine)
 **Role**: Converts letter state to a Word document  
 **Responsibilities**:
 - Async builder function that generates a .docx file as a Blob
@@ -174,11 +173,11 @@ The module follows a **separation of concerns** architecture with distinct respo
 **Main Export**:
 - `buildCoverLetterDocx(data)`: Takes a `CoverLetterDocxData` object and returns a Promise<Blob>
 
-**Imports From**: coverLetterComponents (Contact type), coverLetterService (isSponsored check), docx package
+**Imports From**: LetterFormFields (Contact type), letterValidation (isSponsored check), docx package
 
 ---
 
-### 6. **coverLetterComponents.tsx** (Reusable UI Building Blocks)
+### 6. **LetterFormFields.tsx** (Reusable UI Building Blocks)
 **Role**: Presentational components with no business logic  
 **Responsibilities**:
 - Provides reusable input components for the builder
@@ -187,7 +186,6 @@ The module follows a **separation of concerns** architecture with distinct respo
 - Contact row component for managing emergency contact entries
 
 **Components**:
-- `InlineField`: Single-line editable field styled like letter text
 - `InlinePara`: Multi-line auto-resizing textarea for paragraphs
 - `ContactRow`: Editable row for contact entries (name, relation, phone, email)
 
@@ -195,7 +193,7 @@ The module follows a **separation of concerns** architecture with distinct respo
 
 ---
 
-### 7. **coverLetterTemplates.ts** (Static Content Repository)
+### 7. **letterBoilerplate.ts** (Static Content Repository)
 **Role**: Single source of truth for all default/template text  
 **Responsibilities**:
 - Exports `COVER_LETTER_TEMPLATES` object with all static strings
@@ -216,10 +214,10 @@ The module follows a **separation of concerns** architecture with distinct respo
 
 ---
 
-### 8. **coverLetterUtils.ts** (Helper Functions & State Seeding)
+### 8. **letterContentBuilder.ts** (Helper Functions & State Seeding)
 **Role**: Utility functions for initialization and formatting  
 **Responsibilities**:
-- Re-exports date and profile check helpers from `coverLetterService`
+- Re-exports date and profile check helpers from `letterValidation`
 - Provides `seedLetterState()` function: generates initial letter preview state from inputs + context
 - Builds context-aware default content for bullets and document rows
 
@@ -232,11 +230,11 @@ The module follows a **separation of concerns** architecture with distinct respo
 - Builds intro paragraph with cities visited, visa type, etc.
 - Intelligently builds family ties description based on marital/parent/children status
 
-**Imports From**: coverLetterService, coverLetterTemplates
+**Imports From**: letterValidation, letterBoilerplate
 
 ---
 
-### 9. **coverLetterStyles.ts** (Stylesheet)
+### 9. **letterStyles.ts** (Stylesheet)
 **Role**: All CSS for the cover letter builder  
 **Responsibilities**:
 - Defines CSS variables for dark mode theming (colors, spacing, fonts)
@@ -253,13 +251,13 @@ The module follows a **separation of concerns** architecture with distinct respo
 - `.cl-topbar`, `.cl-section`, `.cl-field-row`: Layout scaffolding
 - `.cl-step`, `.cl-step-line`: Progress indicator
 
-**Injected Into**: CoverLetterWidget as a `<style>` tag
+**Injected Into**: CoverLetterBuilder as a `<style>` tag
 
 ---
 
 ## Important Method Descriptions
 
-### In `coverLetterService.ts`
+### In `letterValidation.ts`
 
 #### `validateCoverLetterInputs(inputs: CoverLetterInputs): ValidationErrors`
 Validates form data before allowing transition to step 2.
@@ -286,7 +284,7 @@ Converts ISO date + duration to end date formatted string.
 - Adds `(days - 1)` to the start date, then formats
 - Used to display trip end date ("15 May 2025") from start date and duration
 
-### In `coverLetterUtils.ts`
+### In `letterContentBuilder.ts`
 
 #### `seedLetterState(inputs, ctx): Object`
 The "brain" of content generation. Builds initial letter preview state by:
@@ -299,7 +297,7 @@ The "brain" of content generation. Builds initial letter preview state by:
 
 **Returns**: Object like `{ lHeading: "...", lToBlock: "...", lIntro: "...", ... }`
 
-### In `coverLetterDocx.ts`
+### In `letterDocxExporter.ts`
 
 #### `buildCoverLetterDocx(data: CoverLetterDocxData): Promise<Blob>`
 Async function that generates a .docx Blob.
@@ -310,7 +308,7 @@ Async function that generates a .docx Blob.
 - Contact table with 4-column layout
 - Returns Blob ready for download
 
-### In `CoverLetterWidget.tsx`
+### In `CoverLetterBuilder.tsx`
 
 #### `handleProceedToLetter()`
 Triggered when user clicks "Preview Letter" in step 1.
@@ -331,7 +329,7 @@ Triggered when user clicks "Download" in step 2.
 
 ## Entry Point
 
-**Primary Entry**: `CoverLetterWidget` (default export from `CoverLetterWidget.tsx`)
+**Primary Entry**: `CoverLetterBuilder` (default export from `CoverLetterBuilder.tsx`)
 
 **How It's Used**:
 1. Imported by the parent Documents feature or via dynamic lazy loading
@@ -345,13 +343,13 @@ Triggered when user clicks "Download" in step 2.
 
 **Example Integration**:
 ```tsx
-import CoverLetterWidget from "@/features/documents/cover_letter/CoverLetterWidget";
+import CoverLetterBuilder from "@/features/documents/cover_letter/CoverLetterBuilder";
 
 export default function DocumentsPage() {
   return (
     <ApplicantContextProvider>
       {/* Other document widgets */}
-      <CoverLetterWidget />
+      <CoverLetterBuilder />
     </ApplicantContextProvider>
   );
 }
@@ -386,7 +384,7 @@ export default function DocumentsPage() {
 ## Design Decisions
 
 ### Why Pure Business Logic?
-- `coverLetterService.ts` has no React dependencies, making it trivially unit-testable
+- `letterValidation.ts` has no React dependencies, making it trivially unit-testable
 - Validation, formatting, and paragraph building can be tested independently of UI
 - Easy to reuse logic in other contexts (backend, CLI, etc.)
 

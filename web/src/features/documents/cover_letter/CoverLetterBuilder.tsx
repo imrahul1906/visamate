@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * CoverLetterWidget.tsx (REFACTORED)
+ * CoverLetterBuilder.tsx
  *
  * Main orchestrator component for the Japan Visa Cover Letter builder.
  * Manages state and coordinates between input, preview, and download steps.
@@ -9,34 +9,34 @@
  * Uses modular components:
  * - coverLetterInputs.tsx: Step 1 (form inputs)
  * - coverLetterPreview.tsx: Step 2 (editable letter)
- * - coverLetterComponents.tsx: UI building blocks
- * - coverLetterUtils.ts: Utilities and state seeding
- * - coverLetterTemplates.ts: Static template texts
- * - coverLetterService.ts: Business logic, validation, paragraph builders
+ * - LetterFormFields.tsx: UI building blocks
+ * - letterContentBuilder.ts: Utilities and state seeding
+ * - letterBoilerplate.ts: Static template texts
+ * - letterValidation.ts: Business logic, validation, paragraph builders
  */
 
 import { useState, useEffect, useRef } from "react";
 import { useApplicant } from "@/lib/context/ApplicantContext";
-import { CoverLetterInputsStep } from "./coverLetterInputs";
-import { CoverLetterPreview } from "./coverLetterPreview";
+import { CoverLetterInputsStep } from "./LetterInputForm";
+import { LetterPreviewEditor } from "./LetterPreviewEditor";
 import {
   validateCoverLetterInputs,
   validateLetterPreview,
   isSponsored as isSponsoredFn,
-} from "@/features/documents/cover_letter/coverLetterService";
-import { buildCoverLetterDocx } from "@/features/documents/cover_letter/coverLetterDocx";
+} from "@/features/documents/cover_letter/letterValidation";
+import { buildCoverLetterDocx } from "@/features/documents/cover_letter/letterDocxExporter";
 import type {
   CoverLetterInputs,
   ValidationErrors,
   ApplicantContext as CoverLetterCtx,
-} from "@/features/documents/cover_letter/coverLetterService";
-import { seedLetterState, fmtDate, fmtDateEnd, today } from "./coverLetterUtils";
-import { Contact } from "./coverLetterComponents";
-import { STYLES } from "./coverLetterStyles";
-import { COVER_LETTER_TEMPLATES } from "./coverLetterTemplates";
+} from "@/features/documents/cover_letter/letterValidation";
+import { seedLetterState, fmtDate, fmtDateEnd, today } from "./letterContentBuilder";
+import { Contact } from "./LetterFormFields";
+import { STYLES } from "./letterStyles";
+import { COVER_LETTER_TEMPLATES } from "./letterBoilerplate";
 
 /* ═══════════════════════════ MAIN WIDGET ═══════════════════════════ */
-export default function CoverLetterWidget({
+export default function CoverLetterBuilder({
   onDocxReady,
 }: {
   /** Called after a .docx Blob is generated so the parent can track documents. */
@@ -175,20 +175,20 @@ export default function CoverLetterWidget({
 
   /* ── Fields that are written to context immediately on change ── */
   const LIVE_SYNC_FIELDS: Partial<Record<keyof CoverLetterInputs, keyof typeof ctx>> = {
-    sponsorName:         "sponsorName",
-    sponsorRel:          "sponsorRel",
-    sponsorPassport:     "sponsorPassport",
-    sponsorDob:          "sponsorDob",
+    sponsorName: "sponsorName",
+    sponsorRel: "sponsorRel",
+    sponsorPassport: "sponsorPassport",
+    sponsorDob: "sponsorDob",
     sponsorAccompanying: "sponsorAccompanying",
-    departureCity:       "departureCity",
-    designation:         "designation",
-    companyName:         "companyName",
-    institutionName:     "institutionName",
-    married:             "married",
-    parentsInIndia:      "parentsInIndia",
-    hasChildren:         "hasChildren",
-    purpose:             "purpose",
-    hotelName:           "hotelName",
+    departureCity: "departureCity",
+    designation: "designation",
+    companyName: "companyName",
+    institutionName: "institutionName",
+    married: "married",
+    parentsInIndia: "parentsInIndia",
+    hasChildren: "hasChildren",
+    purpose: "purpose",
+    hotelName: "hotelName",
   };
 
   /* ── Handle input changes ── */
@@ -229,63 +229,63 @@ export default function CoverLetterWidget({
     // Set step first so reseedFromContext guard sees "letter" before update() triggers context effects
     gotoStep("letter");
 
-      // Write inputs back to context
-      update({
-        departureCity: inputs.departureCity,
-        countriesVisited: inputs.countriesVisited,
-        travellingWith: inputs.travellingWith,
-        companion: inputs.companion,
-        designation: inputs.designation,
-        companyName: inputs.companyName,
-        institutionName: inputs.institutionName,
-        sponsorName: inputs.sponsorName,
-        sponsorRel: inputs.sponsorRel,
-        sponsorAccompanying: inputs.sponsorAccompanying,
-        married: inputs.married,
-        parentsInIndia: inputs.parentsInIndia,
-        hasChildren: inputs.hasChildren,
-        contacts: inputs.contacts,
-        hotelName: inputs.hotelName,
-        bankBalance: inputs.bankBalance,
-        purpose: inputs.purpose,
-        hasDependant: inputs.hasDependant,
-        dependantName: inputs.dependantName,
-        dependantDob: inputs.dependantDob,
-        dependantPassport: inputs.dependantPassport,
-        dependantRelationship: inputs.dependantRelationship,
-        sponsorPassport: inputs.sponsorPassport || "",
-        sponsorDob: inputs.sponsorDob || "",
-      });
+    // Write inputs back to context
+    update({
+      departureCity: inputs.departureCity,
+      countriesVisited: inputs.countriesVisited,
+      travellingWith: inputs.travellingWith,
+      companion: inputs.companion,
+      designation: inputs.designation,
+      companyName: inputs.companyName,
+      institutionName: inputs.institutionName,
+      sponsorName: inputs.sponsorName,
+      sponsorRel: inputs.sponsorRel,
+      sponsorAccompanying: inputs.sponsorAccompanying,
+      married: inputs.married,
+      parentsInIndia: inputs.parentsInIndia,
+      hasChildren: inputs.hasChildren,
+      contacts: inputs.contacts,
+      hotelName: inputs.hotelName,
+      bankBalance: inputs.bankBalance,
+      purpose: inputs.purpose,
+      hasDependant: inputs.hasDependant,
+      dependantName: inputs.dependantName,
+      dependantDob: inputs.dependantDob,
+      dependantPassport: inputs.dependantPassport,
+      dependantRelationship: inputs.dependantRelationship,
+      sponsorPassport: inputs.sponsorPassport || "",
+      sponsorDob: inputs.sponsorDob || "",
+    });
 
-      // Seed letter preview state
-      const seeded = seedLetterState(inputs, makeCtx(), dependants);
-      setLHeading(seeded.lHeading as string);
-      setLDate(seeded.lDate as string);
-      setLSubject(seeded.lSubject as string);
-      setLIntro(seeded.lIntro as string);
-      setLPurposeDetail(seeded.lPurposeDetail as string);
-      setLFlightPara(seeded.lFlightPara as string);
-      setLImmigration(seeded.lImmigration as string);
-      setLFamilyTies(seeded.lFamilyTies as string);
-      setLEconomicTies(seeded.lEconomicTies as string);
-      setLIncomeContent(seeded.lIncomeContent as string);
-      setLAssetsContent(seeded.lAssetsContent as string);
-      setLFinance(seeded.lFinance as string);
-      setLSponsor(seeded.lSponsor as string);
-      setLSponsorPassport(inputs.sponsorPassport || "");
-      setLSponsorDob(inputs.sponsorDob || "");
-      setLDependant(seeded.lDependant as string);
-      setLSecDependant(seeded.lSecDependant as string);
-      setLSigName(seeded.lSigName as string);
-      setLSigPassport(seeded.lSigPassport as string);
-      setLSecDocsIntro(seeded.lSecDocsIntro as string);
-      setLSecPurposeIntro(seeded.lSecPurposeIntro as string);
-      setLSecOverstayIntro(seeded.lSecOverstayIntro as string);
-      setLSecFinanceIntro(seeded.lSecFinanceIntro as string);
-      setLDocRows(seeded.lDocRows as string[]);
-      setLBullets(seeded.lBullets as string[]);
-      setLContacts(inputs.contacts.length ? inputs.contacts : [{ name: "", rel: "", phone: "", email: "" }]);
-      setLContactsNote(seeded.lContactsNote as string);
+    // Seed letter preview state
+    const seeded = seedLetterState(inputs, makeCtx(), dependants);
+    setLHeading(seeded.lHeading as string);
+    setLDate(seeded.lDate as string);
+    setLSubject(seeded.lSubject as string);
+    setLIntro(seeded.lIntro as string);
+    setLPurposeDetail(seeded.lPurposeDetail as string);
+    setLFlightPara(seeded.lFlightPara as string);
+    setLImmigration(seeded.lImmigration as string);
+    setLFamilyTies(seeded.lFamilyTies as string);
+    setLEconomicTies(seeded.lEconomicTies as string);
+    setLIncomeContent(seeded.lIncomeContent as string);
+    setLAssetsContent(seeded.lAssetsContent as string);
+    setLFinance(seeded.lFinance as string);
+    setLSponsor(seeded.lSponsor as string);
+    setLSponsorPassport(inputs.sponsorPassport || "");
+    setLSponsorDob(inputs.sponsorDob || "");
+    setLDependant(seeded.lDependant as string);
+    setLSecDependant(seeded.lSecDependant as string);
+    setLSigName(seeded.lSigName as string);
+    setLSigPassport(seeded.lSigPassport as string);
+    setLSecDocsIntro(seeded.lSecDocsIntro as string);
+    setLSecPurposeIntro(seeded.lSecPurposeIntro as string);
+    setLSecOverstayIntro(seeded.lSecOverstayIntro as string);
+    setLSecFinanceIntro(seeded.lSecFinanceIntro as string);
+    setLDocRows(seeded.lDocRows as string[]);
+    setLBullets(seeded.lBullets as string[]);
+    setLContacts(inputs.contacts.length ? inputs.contacts : [{ name: "", rel: "", phone: "", email: "" }]);
+    setLContactsNote(seeded.lContactsNote as string);
   }
 
   /* ── Build context for letter builders ── */
@@ -455,8 +455,8 @@ export default function CoverLetterWidget({
             inputs={inputs}
             errors={errors}
             attempted={attempted}
-            applicantProfile={ctx.applicantProfile}
-            sponsorshipType={ctx.sponsorshipType}
+            applicantProfile={ctx.applicantProfile || undefined}
+            sponsorshipType={ctx.sponsorshipType || undefined}
             contacts={inputs.contacts}
             onChange={handleInputChange}
             onAddContact={() => setInputs((p) => ({ ...p, contacts: [...p.contacts, { name: "", rel: "", phone: "", email: "" }] }))}
@@ -498,7 +498,7 @@ export default function CoverLetterWidget({
       {/* LETTER PREVIEW (Step 2) */}
       {step === "letter" && (
         <div className="cl-builder">
-          <CoverLetterPreview
+          <LetterPreviewEditor
             lHeading={lHeading}
             setLHeading={setLHeading}
             lToBlock={lToBlock}
@@ -585,8 +585,8 @@ export default function CoverLetterWidget({
             onDownload={handleDownload}
             downloading={downloading}
             unfilled={unfilled}
-            sponsorshipType={ctx.sponsorshipType}
-            applicantProfile={ctx.applicantProfile}
+            sponsorshipType={ctx.sponsorshipType || undefined}
+            applicantProfile={ctx.applicantProfile || undefined}
             hasDependant={inputs.hasDependant}
           />
         </div>

@@ -3,10 +3,10 @@
 // ItineraryWidget.tsx — Japan Visa Itinerary Builder
 // Props-driven, zero hardcoded country data.
 // Reads applicantName, passportNo, travelStartDate, travelDuration from ApplicantContext.
-// Writes them back on every change so CoverLetterWidget stays in sync.
+// Writes them back on every change so CoverLetterBuilder stays in sync.
 //
 // Flow: select → builder → preview → download .docx
-// Preview mirrors CoverLetterWidget's white-paper sheet pattern.
+// Preview mirrors CoverLetterBuilder's white-paper sheet pattern.
 
 import { useMemo, useState, useEffect } from "react";
 import type { ItineraryCityMap } from "@/lib/data/types";
@@ -283,7 +283,7 @@ export default function ItineraryWidget({
                 <span className="iw-opt-or-text">OR</span>
                 <span className="iw-opt-or-line" />
               </div>
-              
+
               <button className="iw-opt iw-opt--dark" onClick={(e) => { e.stopPropagation(); setMode("helper"); }}>
                 <div className="iw-opt-left">
                   <div className="iw-opt-icon iw-opt-icon--dark">
@@ -563,11 +563,10 @@ export default function ItineraryWidget({
                       )}
                     </label>
                     <input
-                      className={`iw-input ${
-                        (attempted && fieldErrors[`day_${activeDay}_contact`]) || phoneErrors[activeDay]
-                          ? "iw-input--error"
-                          : ""
-                      }`}
+                      className={`iw-input ${(attempted && fieldErrors[`day_${activeDay}_contact`]) || phoneErrors[activeDay]
+                        ? "iw-input--error"
+                        : ""
+                        }`}
                       placeholder="e.g. +81 3 1234 5678"
                       value={accomForDay(activeDay).hotelContact}
                       onKeyDown={validators.phone.onKeyDown}

@@ -1,6 +1,6 @@
 // visamate/web/src/types/applicant.ts
 
-import { CountryVisit } from "@/features/documents/cover_letter/coverLetterService";
+import { CountryVisit } from "@/features/documents/cover_letter/letterValidation";
 
 export interface ApplicantData {
   // ── From ItineraryWidget ──
@@ -35,7 +35,7 @@ export interface ApplicantData {
   visaType: string;
   visaTypeName: string;
 
-  // ── From CoverLetterWidget (Step 1 inputs) ──
+  // ── From CoverLetterBuilder (Step 1 inputs) ──
   departureCity: string;
   countriesVisited: CountryVisit[];
   travellingWith: "alone" | "with";

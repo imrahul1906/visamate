@@ -3,36 +3,12 @@
 import { useRef, useEffect } from "react";
 
 /**
- * coverLetterComponents.tsx
+ * LetterFormFields.tsx
  *
  * Reusable UI components for the cover letter builder.
  * These are presentation components with no business logic.
  */
 
-/* ─────────────────────────── INLINE TEXT FIELD ─────────────────────────── */
-/** Single-line editable field that looks like plain letter text until focused */
-export function InlineField({
-  value,
-  onChange,
-  placeholder = "Click to edit",
-  style = {},
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <input
-      className="cl-inline-field"
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      style={style}
-      title="Click to edit"
-    />
-  );
-}
 
 /* ─────────────────────────── INLINE TEXTAREA ─────────────────────────── */
 /** Multi-line editable paragraph — always editable, styled like letter text */

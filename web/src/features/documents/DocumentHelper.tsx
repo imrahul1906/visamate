@@ -6,7 +6,7 @@ import PhotoSpecWidget from "./PhotoSpecWidget";
 import VisaFormWidget from "./visa_form/VisaFormWidget";
 import UploadSlot from "./util/UploadSlot";
 import ItineraryWidget from "./itinerary/ItineraryWidget";
-import CoverLetterWidget from "./cover_letter/CoverLetterWidget";
+import CoverLetterBuilder from "./cover_letter/CoverLetterBuilder";
 import SponsorConsentWidget from "./sponsor_consent/SponsorConsentWidget";
 import DocumentChecklistWidget from "./DocumentChecklistWidget";
 
@@ -102,7 +102,7 @@ export function DocHelper({
 
       {/* Cover letter builder */}
       {doc.specialWidget === "cover_letter" && (
-        <CoverLetterWidget onDocxReady={file => onCoverLetterReady(file)} />
+        <CoverLetterBuilder onDocxReady={file => onCoverLetterReady(file)} />
       )}
 
       {/* Sponsor consent letter builder */}
