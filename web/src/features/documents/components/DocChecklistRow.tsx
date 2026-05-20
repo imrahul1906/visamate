@@ -12,7 +12,7 @@ interface DocRowProps {
   onToggle: (e: React.MouseEvent) => void;
 }
 
-export function DocRow({ doc, isActive, isDone, isUploaded, badge, onSelect, onToggle }: DocRowProps) {
+export function DocChecklistRow({ doc, isActive, isDone, isUploaded, badge, onSelect, onToggle }: DocRowProps) {
   const isOptional = doc.status !== "required";
 
   let rowClass = "vm-doc-row";

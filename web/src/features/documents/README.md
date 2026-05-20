@@ -35,7 +35,7 @@ DocumentsContent (Container Component)
            ↓
 ┌─────────────────────────────────────────┐
 │   Left Panel (Checklist)                 │
-│  - ChecklistPanel                       │
+│  - DocChecklistSidebar                       │
 │  - Document categories & items          │
 │  - Toggle completion status             │
 └─────────────────────────────────────────┘
@@ -44,7 +44,7 @@ DocumentsContent (Container Component)
            ↓
 ┌─────────────────────────────────────────┐
 │   Right Panel (Focus Drawer)            │
-│  - FocusDrawer with selected doc        │
+│  - DocDetailPanel with selected doc        │
 │  - DocHelper routes to correct widget   │
 │  - Upload/Download/Generate options    │
 └─────────────────────────────────────────┘
@@ -70,12 +70,12 @@ DocumentsContent (Main Container)
   ├── DocumentsHeader (Title + Stats + Download Button)
   ├── StatStrip (Summary of required/optional/uploaded)
   ├── UploadProgressBanner (Upload progress indicator)
-  ├── CompletionBanner (Required documents completion bar)
+  ├── DocChecklistCompleteBanner (Required documents completion bar)
   └── Two-Panel Layout
-      ├── LEFT: ChecklistPanel
+      ├── LEFT: DocChecklistSidebar
       │    └── Category Groups
-      │         └── DocRow items (clickable)
-      └── RIGHT: FocusDrawer (animated)
+      │         └── DocChecklistRow items (clickable)
+      └── RIGHT: DocDetailPanel (animated)
            ├── Drawer Header (with category badge)
            ├── DocHelper (routes to special widget or upload slot)
            │    ├── PhotoSpecWidget
@@ -103,22 +103,22 @@ DocumentsContent (Main Container)
 
 | File | Purpose |
 |------|---------|
-| **ChecklistPanel.tsx** | Left-side panel showing organized document categories and individual checklist items with toggle buttons and upload indicators. |
-| **FocusDrawer.tsx** | Right-side animated drawer displaying a single selected document with header, helper widget, and prev/next navigation. |
-| **DocRow.tsx** | Individual document row in the checklist with status indicator, checkbox, upload icon, and optional badge. |
+| **DocChecklistSidebar.tsx** | Left-side panel showing organized document categories and individual checklist items with toggle buttons and upload indicators. |
+| **DocDetailPanel.tsx** | Right-side animated drawer displaying a single selected document with header, helper widget, and prev/next navigation. |
+| **DocChecklistRow.tsx** | Individual document row in the checklist with status indicator, checkbox, upload icon, and optional badge. |
 | **DocumentsHeader.tsx** | Hero section with title, visa details, overall progress, upload stats, and download-all button. |
-| **DocumentsStyles.tsx** | Global CSS styles injected into DOM for checklist styling. |
+| **DocChecklistStyles.tsx** | Global CSS styles injected into DOM for checklist styling. |
 | **StatStrip.tsx** | Horizontal stats bar showing required/optional/uploaded counts. |
 | **UploadProgressBanner.tsx** | Motivational banner showing file upload progress percentage. |
-| **CompletionBanner.tsx** | Progress bar showing completion of required documents. |
-| **StatusStates.tsx** | Error and loading state UI components. |
+| **DocChecklistCompleteBanner.tsx** | Progress bar showing completion of required documents. |
+| **DocLoadingStates.tsx** | Error and loading state UI components. |
 
 ### Hooks (`/hooks`)
 
 | File | Purpose |
 |------|---------|
 | **useDocumentData.ts** | Fetches country requirements, visa type data, and itinerary data from repository. Maps requirements to DocumentData shape. Handles loading/error states. |
-| **useDrawerAnimation.ts** | Manages FocusDrawer animation state (opacity, slide). Returns `{visibleDocId, drawerOpacity, drawerTranslateY}`. |
+| **useDrawerAnimation.ts** | Manages DocDetailPanel animation state (opacity, slide). Returns `{visibleDocId, drawerOpacity, drawerTranslateY}`. |
 | **useKeyboardNav.ts** | Keyboard navigation (arrow keys to move between documents). |
 
 ### Utilities (`/util`)
@@ -316,14 +316,14 @@ mapRequirementsToDocumentData()
 DocumentData { categories: [...], documents: [...] }
 ```
 
-### 3. **Render Checklist** (ChecklistPanel)
+### 3. **Render Checklist** (DocChecklistSidebar)
 ```
 categories (grouped by color/icon)
            ↓
 For each category:
-  render DocRow for each document
+  render DocChecklistRow for each document
            ↓
-DocRow displays:
+DocChecklistRow displays:
 - Checkbox (reflects checked state)
 - Document name
 - Status badge (required/optional)
@@ -333,13 +333,13 @@ DocRow displays:
 
 ### 4. **Select Document** (setActiveDocId)
 ```
-User clicks DocRow or prev/next button
+User clicks DocChecklistRow or prev/next button
            ↓
 setActiveDocId(docId)
            ↓
-Triggers FocusDrawer animation
+Triggers DocDetailPanel animation
            ↓
-FocusDrawer renders with visibleDoc
+DocDetailPanel renders with visibleDoc
 ```
 
 ### 5. **Route to Widget** (DocHelper)
@@ -355,7 +355,7 @@ visibleDoc.specialWidget switch:
 ### 6. **User Interaction**
 **Option A: Check Document**
 ```
-ChecklistPanel → toggleDoc() or toggleDocAndAdvance()
+DocChecklistSidebar → toggleDoc() or toggleDocAndAdvance()
            ↓
 setChecked({ ...prev, [id]: !prev[id] })
            ↓
@@ -406,7 +406,7 @@ User can close page or continue
 **Option B: Go Back**
 ```
 Click "Edit selections" back button OR
-FocusDrawer close button (embedded context)
+DocDetailPanel close button (embedded context)
            ↓
 router.push("/wizard") OR close drawer
            ↓
@@ -464,7 +464,7 @@ Return to wizard for different country/visa/location
 
 ### 2. **Drawer Animation**
 - `useDrawerAnimation` provides `drawerOpacity` and `drawerTranslateY` values
-- Applied to FocusDrawer for smooth entry/exit transitions
+- Applied to DocDetailPanel for smooth entry/exit transitions
 - Uses CSS `transition` for hardware-accelerated animation
 
 ### 3. **Special Widgets**
@@ -520,13 +520,13 @@ Return to wizard for different country/visa/location
    - Add case to `DocHelper` switch statement
 
 2. **Change Styling**
-   - `DocumentsStyles.tsx` injects global CSS
+   - `DocChecklistStyles.tsx` injects global CSS
    - Component inline styles use `theme.ts` color tokens
    - Update `T` (theme) references for consistent theming
 
 3. **Modify Checklist Layout**
-   - `ChecklistPanel.tsx` controls category grouping and DocRow rendering
-   - `DocRow.tsx` is the individual row component
+   - `DocChecklistSidebar.tsx` controls category grouping and DocChecklistRow rendering
+   - `DocChecklistRow.tsx` is the individual row component
 
 4. **Extend File Upload**
    - Modify `UploadSlot.tsx` for additional validation

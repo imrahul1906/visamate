@@ -198,40 +198,40 @@ function DrawerPortal({
             const allDropOffs = paymentInstructions.flatMap(i => i.dropOffOffices ?? []);
 
             return (
-            <div>
-              <SectionLabel>Payment instructions</SectionLabel>
-              <div style={{
-                display: "flex", gap: 10, alignItems: "flex-start",
-                background: PALETTE.yellow.bg, border: `1px solid ${PALETTE.yellow.border}`,
-                borderLeft: `3px solid ${PALETTE.yellow.text}`,
-                borderRadius: 10, padding: "10px 14px", marginBottom: 10,
-              }}>
-                <span style={{ color: PALETTE.yellow.text, flexShrink: 0, marginTop: 1 }}><AlertIcon /></span>
-                <div>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: PALETTE.yellow.text, margin: "0 0 3px", fontFamily: "'DM Sans', sans-serif" }}>
-                    Payment rules for this centre
-                  </p>
-                  <p style={{ fontSize: 10, color: T.muted, margin: 0, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>
-                    These rules apply to the{" "}
-                    <strong style={{ color: T.text }}>{locationCode?.toUpperCase()}</strong> VFS centre
-                    {allDropOffs.length > 0 && (
-                      <>
-                        {" "}and its drop-off offices:{" "}
-                        <strong style={{ color: T.text }}>
-                          {allDropOffs.map(o => o.charAt(0).toUpperCase() + o.slice(1).toLowerCase()).join(" · ")}
-                        </strong>
-                      </>
-                    )}
-                    .
-                  </p>
+              <div>
+                <SectionLabel>Payment instructions</SectionLabel>
+                <div style={{
+                  display: "flex", gap: 10, alignItems: "flex-start",
+                  background: PALETTE.yellow.bg, border: `1px solid ${PALETTE.yellow.border}`,
+                  borderLeft: `3px solid ${PALETTE.yellow.text}`,
+                  borderRadius: 10, padding: "10px 14px", marginBottom: 10,
+                }}>
+                  <span style={{ color: PALETTE.yellow.text, flexShrink: 0, marginTop: 1 }}><AlertIcon /></span>
+                  <div>
+                    <p style={{ fontSize: 11, fontWeight: 700, color: PALETTE.yellow.text, margin: "0 0 3px", fontFamily: "'DM Sans', sans-serif" }}>
+                      Payment rules for this centre
+                    </p>
+                    <p style={{ fontSize: 10, color: T.muted, margin: 0, lineHeight: 1.6, fontFamily: "'DM Sans', sans-serif" }}>
+                      These rules apply to the{" "}
+                      <strong style={{ color: T.text }}>{locationCode?.toUpperCase()}</strong> VFS centre
+                      {allDropOffs.length > 0 && (
+                        <>
+                          {" "}and its drop-off offices:{" "}
+                          <strong style={{ color: T.text }}>
+                            {allDropOffs.map(o => o.charAt(0).toUpperCase() + o.slice(1).toLowerCase()).join(" · ")}
+                          </strong>
+                        </>
+                      )}
+                      .
+                    </p>
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {paymentInstructions.map((instr, i) => (
+                    <PaymentInstructionCard key={i} instruction={instr} fallbackCurrency={currency} />
+                  ))}
                 </div>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {paymentInstructions.map((instr, i) => (
-                  <PaymentInstructionCard key={i} instruction={instr} fallbackCurrency={currency} />
-                ))}
-              </div>
-            </div>
             );
           })()}
         </div>
@@ -265,12 +265,12 @@ function TravelWatermark() {
         </pattern>
         {/* warm-gold bloom on the right third — draws eye toward the CTA */}
         <radialGradient id="wm-gold" cx="88%" cy="50%" r="38%">
-          <stop offset="0%"   stopColor="rgb(200,160,80)" stopOpacity="0.07" />
+          <stop offset="0%" stopColor="rgb(200,160,80)" stopOpacity="0.07" />
           <stop offset="100%" stopColor="rgb(200,160,80)" stopOpacity="0" />
         </radialGradient>
         {/* very faint left bloom so it's not totally flat on the left */}
         <radialGradient id="wm-left" cx="12%" cy="50%" r="30%">
-          <stop offset="0%"   stopColor="white" stopOpacity="0.025" />
+          <stop offset="0%" stopColor="white" stopOpacity="0.025" />
           <stop offset="100%" stopColor="white" stopOpacity="0" />
         </radialGradient>
       </defs>
@@ -297,14 +297,14 @@ interface InfoTileProps {
 
 const TILE_COLORS = {
   // gold — fee tile, matches the gold CTA accent
-  money:   { bg: "rgba(232,201,122,0.08)", border: "rgba(232,201,122,0.18)", label: "rgba(232,201,122,0.55)", value: "#e8c97a" },
+  money: { bg: "rgba(232,201,122,0.08)", border: "rgba(232,201,122,0.18)", label: "rgba(232,201,122,0.55)", value: "#e8c97a" },
   // amber-orange — processing time (warm, urgency-adjacent)
-  time:    { bg: "rgba(251,146,60,0.08)",  border: "rgba(251,146,60,0.18)",  label: "rgba(251,146,60,0.55)",  value: "#fdba74" },
+  time: { bg: "rgba(251,146,60,0.08)", border: "rgba(251,146,60,0.18)", label: "rgba(251,146,60,0.55)", value: "#fdba74" },
   // green — good-news status (not required)
-  ok:      { bg: "rgba(74,222,128,0.07)",  border: "rgba(74,222,128,0.16)",  label: "rgba(74,222,128,0.55)",  value: "#86efac" },
+  ok: { bg: "rgba(74,222,128,0.07)", border: "rgba(74,222,128,0.16)", label: "rgba(74,222,128,0.55)", value: "#86efac" },
   // red — bad-news status (required)
-  warn:    { bg: "rgba(251,113,133,0.08)", border: "rgba(251,113,133,0.18)", label: "rgba(251,113,133,0.55)", value: "#fda4af" },
-  neutral: { bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.16)", label: "rgba(148,163,184,0.5)",  value: "#cbd5e1" },
+  warn: { bg: "rgba(251,113,133,0.08)", border: "rgba(251,113,133,0.18)", label: "rgba(251,113,133,0.55)", value: "#fda4af" },
+  neutral: { bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.16)", label: "rgba(148,163,184,0.5)", value: "#cbd5e1" },
 };
 
 function InfoTile({ label, value, variant, icon }: InfoTileProps) {
@@ -339,7 +339,7 @@ function InfoTile({ label, value, variant, icon }: InfoTileProps) {
 
 // ─── Strip ─────────────────────────────────────────────────────────────────
 
-export function VisaOverviewStrip({
+export function VisaSummaryBar({
   embedded,
   countryName,
   visaTypeName,
@@ -364,7 +364,7 @@ export function VisaOverviewStrip({
     if (totalMin != null && totalMax != null && totalMin !== totalMax)
       return `${currency} ${totalMin.toLocaleString()}–${totalMax.toLocaleString()}`;
     if (totalMin != null) return `${currency} ${totalMin.toLocaleString()}`;
-    if (fees != null)     return `${currency} ${fees.toLocaleString()}`;
+    if (fees != null) return `${currency} ${fees.toLocaleString()}`;
     return null;
   })();
 
@@ -373,8 +373,8 @@ export function VisaOverviewStrip({
     (processFlags ?? []).map(f => [f.label.toLowerCase(), f.required])
   );
   const biometricsRequired = flagMap["biometrics"] ?? flagMap["biometric"] ?? null;
-  const interviewRequired  = flagMap["interview"] ?? null;
-  const vfsRequired        = flagMap["vfs appointment"] ?? flagMap["vfs"] ?? flagMap["in-person"] ?? null;
+  const interviewRequired = flagMap["interview"] ?? null;
+  const vfsRequired = flagMap["vfs appointment"] ?? flagMap["vfs"] ?? flagMap["in-person"] ?? null;
 
   return (
     <>

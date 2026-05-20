@@ -2,7 +2,7 @@
 
 // SubmissionGuideState.tsx
 //
-// Shown in the right panel (replacing ChecklistWelcomeState) once all
+// Shown in the right panel (replacing DocChecklistEmptyState) once all
 // required documents have been checked off.  Renders the importantNotes
 // from the raw RequirementsData JSON as a polished submission guide.
 
@@ -17,15 +17,15 @@ interface SubmissionGuideStateProps {
 // ── Icon map — maps note keywords → relevant emoji ────────────────────────────
 function getNoteIcon(note: string): string {
   const lower = note.toLowerCase();
-  if (lower.includes("photocop") || lower.includes("a4"))    return "📄";
-  if (lower.includes("stapl"))                                return "📎";
-  if (lower.includes("famil") || lower.includes("group"))    return "👨‍👩‍👧";
+  if (lower.includes("photocop") || lower.includes("a4")) return "📄";
+  if (lower.includes("stapl")) return "📎";
+  if (lower.includes("famil") || lower.includes("group")) return "👨‍👩‍👧";
   if (lower.includes("interview") || lower.includes("additional")) return "🗣️";
-  if (lower.includes("passport"))                             return "🛂";
+  if (lower.includes("passport")) return "🛂";
   if (lower.includes("processing") || lower.includes("time")) return "⏱️";
-  if (lower.includes("vfs"))                                  return "🏢";
-  if (lower.includes("fee") || lower.includes("payment"))    return "💳";
-  if (lower.includes("travel") || lower.includes("itin"))    return "✈️";
+  if (lower.includes("vfs")) return "🏢";
+  if (lower.includes("fee") || lower.includes("payment")) return "💳";
+  if (lower.includes("travel") || lower.includes("itin")) return "✈️";
   return "📌";
 }
 

@@ -33,7 +33,7 @@ interface FocusDrawerProps {
   sponsorConsentPrefill?: Record<string, string>;
 }
 
-export function FocusDrawer({
+export function DocDetailPanel({
   visibleDoc,
   activeCategory,
   checked,

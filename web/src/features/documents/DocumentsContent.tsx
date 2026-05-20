@@ -11,13 +11,13 @@ import { useDocumentData } from "./hooks/useDocumentData";
 import { useDrawerAnimation } from "./hooks/useDrawerAnimation";
 import { useKeyboardNav } from "./hooks/useKeyboardNav";
 
-import { DocumentsStyles } from "./components/DocumentsStyles";
-import { VisaOverviewStrip } from "./components/VisaOverviewStrip";
-import { ChecklistPanel } from "./components/ChecklistPanel";
-import { FocusDrawer } from "./components/FocusDrawer";
-import { LoadingState, ErrorState } from "./components/StatusStates";
+import { DocChecklistStyles } from "./components/DocChecklistStyles";
+import { VisaSummaryBar } from "./components/VisaSummaryBar";
+import { DocChecklistSidebar } from "./components/DocChecklistSidebar";
+import { DocDetailPanel } from "./components/DocDetailPanel";
+import { LoadingState, ErrorState } from "./components/DocLoadingStates";
 import { SubmissionGuideState } from "./SubmissionGuideState";
-import { ChecklistWelcomeState } from "./components/ChecklistWelcomeState";
+import { DocChecklistEmptyState } from "./components/DocChecklistEmptyState";
 
 import { downloadAllFiles } from "./util/downloadAllFiles";
 
@@ -188,7 +188,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
         ? { flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }
         : { minHeight: "calc(100vh - 56px)" }),
     }}>
-      <DocumentsStyles />
+      <DocChecklistStyles />
 
       <div style={{
         width: "100%",
@@ -208,7 +208,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
         )}
 
         {/* ── Visa Overview Strip (replaces old header + stat cards) ── */}
-        <VisaOverviewStrip
+        <VisaSummaryBar
           embedded={embedded}
           countryName={countryName}
           visaTypeName={visaTypeName}
@@ -254,7 +254,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             }}
           >
             {data && (
-              <ChecklistPanel
+              <DocChecklistSidebar
                 data={data}
                 activeDocId={activeDocId}
                 checked={checked}
@@ -294,7 +294,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                   }
                 />
               ) : (
-                <ChecklistWelcomeState
+                <DocChecklistEmptyState
                   totalDocs={allDocs.length}
                   requiredTotal={requiredDocs.length}
                   visaTypeName={visaTypeName}
@@ -302,7 +302,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 />
               )
             ) : (
-              <FocusDrawer
+              <DocDetailPanel
                 visibleDoc={visibleDoc}
                 activeCategory={activeCategory}
                 checked={checked}

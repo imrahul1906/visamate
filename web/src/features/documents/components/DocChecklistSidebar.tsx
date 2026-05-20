@@ -1,6 +1,6 @@
 import { T } from "@/components/shared/theme";
 import type { DocumentData, UploadsMap } from "../../../types/document";
-import { DocRow, getDocBadge } from "./DocRow";
+import { DocChecklistRow, getDocBadge } from "./DocChecklistRow";
 
 interface ChecklistPanelProps {
   data: DocumentData;
@@ -17,7 +17,7 @@ interface ChecklistPanelProps {
   onDownloadAll: () => void;
 }
 
-export function ChecklistPanel({
+export function DocChecklistSidebar({
   data,
   activeDocId,
   checked,
@@ -34,20 +34,20 @@ export function ChecklistPanel({
   // Default: deep cyan-slate premium look. Progress states shift to traffic-light colors.
   const progressColor = overallPct === 0
     ? {
-        bar: "linear-gradient(90deg, #38bdf8, #7dd3fc)",
-        accent: "#7dd3fc",
-        bg: "linear-gradient(135deg, rgba(14,165,233,0.18) 0%, rgba(56,189,248,0.08) 100%)",
-        border: "rgba(56,189,248,0.28)",
-        dotColor: "#38bdf8",
-        dotGlow: "0 0 8px rgba(56,189,248,0.6)",
-        shimmer: "linear-gradient(90deg, transparent, rgba(125,211,252,0.2), transparent)",
-        isDefault: true,
-      }
+      bar: "linear-gradient(90deg, #38bdf8, #7dd3fc)",
+      accent: "#7dd3fc",
+      bg: "linear-gradient(135deg, rgba(14,165,233,0.18) 0%, rgba(56,189,248,0.08) 100%)",
+      border: "rgba(56,189,248,0.28)",
+      dotColor: "#38bdf8",
+      dotGlow: "0 0 8px rgba(56,189,248,0.6)",
+      shimmer: "linear-gradient(90deg, transparent, rgba(125,211,252,0.2), transparent)",
+      isDefault: true,
+    }
     : overallPct < 40
-    ? { bar: "linear-gradient(90deg, #ef4444, #f97316)", accent: "#f97316", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)", dotColor: "#f97316", dotGlow: "0 0 8px rgba(249,115,22,0.6)", shimmer: "none", isDefault: false }
-    : overallPct < 75
-    ? { bar: "linear-gradient(90deg, #f59e0b, #fbbf24)", accent: "#fbbf24", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", dotColor: "#fbbf24", dotGlow: "0 0 8px rgba(251,191,36,0.6)", shimmer: "none", isDefault: false }
-    : { bar: "linear-gradient(90deg, #10b981, #34d399)", accent: "#34d399", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", dotColor: "#34d399", dotGlow: "0 0 8px rgba(52,211,153,0.6)", shimmer: "none", isDefault: false };
+      ? { bar: "linear-gradient(90deg, #ef4444, #f97316)", accent: "#f97316", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)", dotColor: "#f97316", dotGlow: "0 0 8px rgba(249,115,22,0.6)", shimmer: "none", isDefault: false }
+      : overallPct < 75
+        ? { bar: "linear-gradient(90deg, #f59e0b, #fbbf24)", accent: "#fbbf24", bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.2)", dotColor: "#fbbf24", dotGlow: "0 0 8px rgba(251,191,36,0.6)", shimmer: "none", isDefault: false }
+        : { bar: "linear-gradient(90deg, #10b981, #34d399)", accent: "#34d399", bg: "rgba(16,185,129,0.08)", border: "rgba(16,185,129,0.2)", dotColor: "#34d399", dotGlow: "0 0 8px rgba(52,211,153,0.6)", shimmer: "none", isDefault: false };
 
   return (
     <>
@@ -200,7 +200,7 @@ export function ChecklistPanel({
               {/* Doc rows */}
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                 {cat.documents.map(doc => (
-                  <DocRow
+                  <DocChecklistRow
                     key={doc.id}
                     doc={doc}
                     isActive={activeDocId === doc.id}

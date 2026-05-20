@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────
-// ChecklistWelcomeState
+// DocChecklistEmptyState
 // Drop-in replacement for the right-panel idle state.
 // Matches the UploadSlot animation vocabulary exactly:
 //   pulseRing, shimmer, floatUp, iconBounce → all reused here.
@@ -60,7 +60,7 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
   },
 ];
 
-export function ChecklistWelcomeState({
+export function DocChecklistEmptyState({
   totalDocs,
   requiredTotal,
   visaTypeName,
