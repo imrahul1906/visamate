@@ -15,23 +15,18 @@ import {
   CoverLetterInputs,
   CountryVisit,
   ApplicantContext,
-  fmtDate,
-  fmtDateEnd,
-  fmtMonthYear,
-  today,
   isEmployed,
   isSponsored,
   isStudent,
   isNocNeeded,
 } from "@/features/documents/cover_letter/coverLetterService";
+import { fmtDate, fmtDateEnd, fmtMonthYear, today } from "../util/dateFormatting";
+import { hint } from "../util/textFormatting";
 import { COVER_LETTER_TEMPLATES } from "./coverLetterTemplates";
 
 // Re-export date helpers and profile checks so existing importers of
 // coverLetterUtils don't need to change their import paths.
 export { fmtDate, fmtDateEnd, fmtMonthYear, today, isEmployed, isStudent, isSponsored, isNocNeeded };
-
-/** Wrap an editorial note in the hint marker syntax. */
-const hint = (msg: string) => `[[HINT: ${msg}]]`;
 
 // ─────────────────────────────────────────────────────────────
 // Seed function

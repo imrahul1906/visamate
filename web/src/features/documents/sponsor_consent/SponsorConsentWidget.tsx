@@ -17,8 +17,8 @@ import {
   seedConsentState,
   type SponsorConsentInputs,
   type SeededConsentState,
-  fmtDate,
 } from "./sponsorConsentService";
+import { fmtDate } from "../util/dateFormatting";
 import { buildSponsorConsentDocx } from "./sponsorConsentDocx";
 import {
   SponsorConsentPreview,
@@ -204,8 +204,8 @@ export default function SponsorConsentWidget({
                   ctx.sponsorAccompanying === "accompanying"
                     ? "Yes — travelling together"
                     : ctx.sponsorAccompanying === "staying"
-                    ? "No — sponsor stays behind"
-                    : ""
+                      ? "No — sponsor stays behind"
+                      : ""
                 }
               />
             </div>

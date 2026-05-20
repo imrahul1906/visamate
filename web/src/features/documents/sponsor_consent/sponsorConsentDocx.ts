@@ -6,7 +6,7 @@
  * Mirrors coverLetterDocx.ts architecture exactly.
  */
 
-import { stripHints } from "./sponsorConsentService";
+import { stripHints } from "../util/textFormatting";
 
 // ─────────────────────────────────────────────────────────────
 // Input shape

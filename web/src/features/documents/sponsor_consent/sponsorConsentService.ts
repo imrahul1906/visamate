@@ -5,6 +5,9 @@
  * Pure data — no React, no side effects.
  */
 
+import { today, fmtDate, fmtDob } from "../util/dateFormatting";
+import { hint, stripHints } from "../util/textFormatting";
+
 // ─────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────
@@ -32,44 +35,6 @@ export interface SponsorConsentInputs {
   travelEndDate: string;        // "YYYY-MM-DD"  (derived: start + duration - 1)
   travelDuration: string;       // number of days as string
   purposeOfVisit: string;       // "explore tourist spots and cultural landmarks"
-}
-
-// ─────────────────────────────────────────────────────────────
-// Date helpers
-// ─────────────────────────────────────────────────────────────
-
-export function today(): string {
-  return new Date().toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-export function fmtDate(dateStr: string): string {
-  if (!dateStr) return "[Date]";
-  const d = new Date(dateStr + "T00:00:00");
-  if (isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-export function fmtDob(dateStr: string): string {
-  if (!dateStr) return "[DOB]";
-  return fmtDate(dateStr);
-}
-
-// ─────────────────────────────────────────────────────────────
-// Hint helper — amber editorial callouts, stripped before .docx
-// ─────────────────────────────────────────────────────────────
-
-export const hint = (msg: string) => `[[HINT: ${msg}]]`;
-
-export function stripHints(text: string): string {
-  return text.replace(/\[\[HINT:[^\]]*\]\]/g, "").replace(/\s{2,}/g, " ").trim();
 }
 
 // ─────────────────────────────────────────────────────────────

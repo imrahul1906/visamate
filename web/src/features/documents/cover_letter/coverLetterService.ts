@@ -7,6 +7,9 @@
  * Consumed by: CoverLetterWidget, coverLetterInputs, coverLetterPreview
  */
 
+import { fmtDate, fmtDateEnd, today, fmtMonthYear } from "../util/dateFormatting";
+import { stripHints, hint } from "../util/textFormatting";
+
 // ─────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────
@@ -87,65 +90,7 @@ export interface LetterPreviewState {
   lSigPassport: string;
 }
 
-/**
- * Strip all [[ ... ]] editorial hint annotations from a string before writing
- * to docx. The preview renders these as styled callouts; the document must not
- * contain them.
- */
-export function stripHints(text: string): string {
-  return text.replace(/\[\[HINT:[^\]]*\]\]/g, "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
-}
 
-// ─────────────────────────────────────────────────────────────
-// Date helpers
-// ─────────────────────────────────────────────────────────────
-
-/** Format an ISO date string as "1 March 2025" */
-export function fmtDate(iso: string | undefined): string {
-  if (!iso) return "[DATE]";
-  const d = new Date(iso + "T00:00:00");
-  return d.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-/** Add (days - 1) to an ISO date string and format the result */
-export function fmtDateEnd(iso: string | undefined, days: number): string {
-  if (!iso) return "[DATE]";
-  const d = new Date(iso + "T00:00:00");
-  d.setDate(d.getDate() + days - 1);
-  return d.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-/** Today's date formatted as "10 May 2026" */
-export function today(): string {
-  return new Date().toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-/**
- * Format a "YYYY-MM" month string as "June 2025".
- * Returns empty string if input is blank.
- */
-export function fmtMonthYear(ym: string): string {
-  if (!ym) return "";
-  const [year, month] = ym.split("-");
-  const y = Number(year);
-  const m = Number(month);
-  // Guard: both parts must be valid numbers — prevents "Invalid date" in preview
-  if (!year || !month || isNaN(y) || isNaN(m) || m < 1 || m > 12) return "";
-  const d = new Date(y, m - 1, 1);
-  return d.toLocaleDateString("en-GB", { month: "long", year: "numeric" });
-}
 
 // ─────────────────────────────────────────────────────────────
 // Profile helpers
