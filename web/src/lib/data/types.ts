@@ -104,6 +104,7 @@ export interface VisaType {
   note?: string;
 
   maxStayDays?: number;
+  processingTime?: string | null;
 
   vfsCharges?: VfsCharges;
   process?: VisaProcess;

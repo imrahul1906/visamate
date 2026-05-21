@@ -172,15 +172,15 @@ Displays visa-specific metadata when no document is selected.
 | File | Purpose |
 |------|---------|
 | **VisaOverviewPanel.tsx** | Shows visa fees, processing time, required documents summary. |
-| **useVisaOverviewData.ts** | Transforms visa type data for display. |
-| **FeeBreakdown.tsx** | Fee structure visualization. |
-| **PaymentInstructionCard.tsx** | Payment details and instructions. |
-| **ProcessFlag.tsx** | Country/processing time indicator. |
-| **EmptyState.tsx** | Placeholder when no document selected. |
-| **icons.tsx** | Icon definitions. |
-| **palette.ts** | Color scheme. |
-| **primitives.tsx** | Base UI primitives. |
-| **utils.ts** | Helper functions. |
+| **useOverviewData.ts** | Transforms visa type data for display. |
+| **OverviewFeeBreakdown.tsx** | Fee structure visualization. |
+| **OverviewPaymentCard.tsx** | Payment details and instructions. |
+| **OverviewRequirementBadge.tsx** | Country/processing time indicator. |
+| **OverviewEmptyState.tsx** | Placeholder when no document selected. |
+| **OverviewIcons.tsx** | Icon definitions. |
+| **overviewPalette.ts** | Color scheme. |
+| **OverviewPrimitives.tsx** | Base UI primitives. |
+| **overviewUtils.ts** | Helper functions. |
 | **index.ts** | Public exports. |
 
 ---

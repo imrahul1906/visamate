@@ -1,10 +1,10 @@
-// visa-overview/primitives.tsx
+// visa-overview/OverviewPrimitives.tsx
 //
 // Tiny reusable display atoms: SectionLabel, Tag, StatCard.
 // No business logic — pure presentational components.
 
 import { T } from "@/components/shared/theme";
-import { PALETTE, type PaletteKey } from "./palette";
+import { PALETTE, type PaletteKey } from "./overviewPalette";
 
 // ── SectionLabel ──────────────────────────────────────────────────────────────
 

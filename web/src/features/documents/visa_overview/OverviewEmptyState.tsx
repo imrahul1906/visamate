@@ -1,10 +1,10 @@
-// visa-overview/EmptyState.tsx
+// visa-overview/OverviewEmptyState.tsx
 //
 // Shown when visaType is null — no document selected yet.
 
 import { T } from "@/components/shared/theme";
 
-export function EmptyState() {
+export function OverviewEmptyState() {
   return (
     <div
       style={{

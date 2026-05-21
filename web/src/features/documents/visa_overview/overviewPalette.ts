@@ -1,4 +1,4 @@
-// visa-overview/palette.ts
+// visa-overview/overviewPalette.ts
 //
 // Semantic colour tokens used across all VisaOverviewPanel sub-components.
 // No visa-specific knowledge lives here — purely design tokens.

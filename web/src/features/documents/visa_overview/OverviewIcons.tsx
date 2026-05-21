@@ -1,4 +1,4 @@
-// visa-overview/icons.tsx
+// visa-overview/OverviewIcons.tsx
 //
 // Lightweight inline SVG icons used throughout the VisaOverviewPanel.
 // Each is a zero-prop component — size and colour are inherited via currentColor.

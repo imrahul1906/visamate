@@ -1,14 +1,14 @@
-// visa-overview/FeeBreakdown.tsx
+// visa-overview/OverviewFeeBreakdown.tsx
 //
-// Fee display components: FeeRow, TotalRow, and the composed FeeBreakdownSection.
+// Fee display components: FeeRow, TotalRow, and the composed OverviewFeeBreakdown.
 // Responsibility: render fee data from JSON — no derivation, no business logic.
 
 import type { VisaType } from "@/lib/data/types";
 import { T } from "@/components/shared/theme";
-import { PALETTE } from "./palette";
-import { Tag } from "./primitives";
-import { InfoIcon } from "./icons";
-import { fmtCurrency } from "./utils";
+import { PALETTE } from "./overviewPalette";
+import { Tag } from "./OverviewPrimitives";
+import { InfoIcon } from "./OverviewIcons";
+import { fmtCurrency } from "./overviewUtils";
 
 // ── FeeRow ────────────────────────────────────────────────────────────────────
 
@@ -123,9 +123,9 @@ export function TotalRow({ total, currency }: { total: number; currency: string 
   );
 }
 
-// ── FeeBreakdownSection ───────────────────────────────────────────────────────
+// ── OverviewFeeBreakdown ───────────────────────────────────────────────────────
 
-interface FeeBreakdownSectionProps {
+interface OverviewFeeBreakdownProps {
   visaType: VisaType;
   currency: string;
   hasFees: boolean;
@@ -136,7 +136,7 @@ interface FeeBreakdownSectionProps {
   courierFee: number;
 }
 
-export function FeeBreakdownSection({
+export function OverviewFeeBreakdown({
   visaType,
   currency,
   hasFees,
@@ -145,7 +145,7 @@ export function FeeBreakdownSection({
   totalMin,
   totalMax,
   courierFee,
-}: FeeBreakdownSectionProps) {
+}: OverviewFeeBreakdownProps) {
   const vfs = visaType.vfsCharges;
 
   return (

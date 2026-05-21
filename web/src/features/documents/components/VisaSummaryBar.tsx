@@ -7,13 +7,13 @@ import { createPortal } from "react-dom";
 import type { VisaType } from "@/lib/data/types";
 import { T } from "@/components/shared/theme";
 
-import { PALETTE } from "../visa_overview/palette";
-import { SectionLabel, StatCard } from "../visa_overview/primitives";
-import { FeeBreakdownSection } from "../visa_overview/FeeBreakdown";
-import { ProcessFlag } from "../visa_overview/ProcessFlag";
-import { PaymentInstructionCard } from "../visa_overview/PaymentInstructionCard";
-import { AlertIcon } from "../visa_overview/icons";
-import { useVisaOverviewData } from "../visa_overview/useVisaOverviewData";
+import { PALETTE } from "../visa_overview/overviewPalette";
+import { SectionLabel, StatCard } from "../visa_overview/OverviewPrimitives";
+import { OverviewFeeBreakdown } from "../visa_overview/OverviewFeeBreakdown";
+import { OverviewRequirementBadge } from "../visa_overview/OverviewRequirementBadge";
+import { OverviewPaymentCard } from "../visa_overview/OverviewPaymentCard";
+import { AlertIcon } from "../visa_overview/OverviewIcons";
+import { useOverviewData } from "../visa_overview/useOverviewData";
 
 interface VisaOverviewStripProps {
   embedded: boolean;
@@ -22,6 +22,7 @@ interface VisaOverviewStripProps {
   locationName: string;
   locationCode?: string;
   totalDocs: number;
+  totalDone?: number;
   requiredDone: number;
   requiredTotal: number;
   uploadCount: number;
@@ -49,7 +50,7 @@ function DrawerPortal({
     currency, lastUpdated, hasFees, courierFee,
     totalMin, totalMax, visaFeeRefundable, serviceChargeRefundable,
     stats, processFlags, paymentInstructions,
-  } = useVisaOverviewData(visaType, locationCode);
+  } = useOverviewData(visaType, locationCode);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -176,7 +177,7 @@ function DrawerPortal({
               <SectionLabel>Requirements</SectionLabel>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {processFlags.map(flag => (
-                  <ProcessFlag key={flag.label} label={flag.label} required={flag.required} />
+                  <OverviewRequirementBadge key={flag.label} label={flag.label} required={flag.required} />
                 ))}
               </div>
             </div>
@@ -185,7 +186,7 @@ function DrawerPortal({
           {(hasFees || visaType.vfsCharges?.serviceCharge || visaType.vfsCharges?.courierCharges) && (
             <div>
               <SectionLabel>Fee breakdown</SectionLabel>
-              <FeeBreakdownSection
+              <OverviewFeeBreakdown
                 visaType={visaType} currency={currency} hasFees={hasFees}
                 visaFeeRefundable={visaFeeRefundable} serviceChargeRefundable={serviceChargeRefundable}
                 totalMin={totalMin} totalMax={totalMax} courierFee={courierFee}
@@ -228,7 +229,7 @@ function DrawerPortal({
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {paymentInstructions.map((instr, i) => (
-                    <PaymentInstructionCard key={i} instruction={instr} fallbackCurrency={currency} />
+                    <OverviewPaymentCard key={i} instruction={instr} fallbackCurrency={currency} />
                   ))}
                 </div>
               </div>
@@ -355,7 +356,7 @@ export function VisaSummaryBar({
   useEffect(() => { setMounted(true); }, []);
 
   const { currency, totalMin, totalMax, processFlags } =
-    useVisaOverviewData(visaType ?? ({} as VisaType));
+    useOverviewData(visaType ?? ({} as VisaType));
 
   const fees = visaType?.fees;
 

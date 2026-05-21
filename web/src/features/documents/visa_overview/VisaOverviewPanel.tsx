@@ -12,14 +12,14 @@
 import type { VisaType, RequirementsData } from "@/lib/data/types";
 import { T } from "@/components/shared/theme";
 
-import { PALETTE } from "./palette";
-import { SectionLabel, StatCard } from "./primitives";
-import { FeeBreakdownSection } from "./FeeBreakdown";
-import { ProcessFlag } from "./ProcessFlag";
-import { PaymentInstructionCard } from "./PaymentInstructionCard";
-import { EmptyState } from "./EmptyState";
-import { AlertIcon } from "./icons";
-import { useVisaOverviewData } from "./useVisaOverviewData";
+import { PALETTE } from "./overviewPalette";
+import { SectionLabel, StatCard } from "./OverviewPrimitives";
+import { OverviewFeeBreakdown } from "./OverviewFeeBreakdown";
+import { OverviewRequirementBadge } from "./OverviewRequirementBadge";
+import { OverviewPaymentCard } from "./OverviewPaymentCard";
+import { OverviewEmptyState } from "./OverviewEmptyState";
+import { AlertIcon } from "./OverviewIcons";
+import { useOverviewData } from "./useOverviewData";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +50,7 @@ export default function VisaOverviewPanel({
   selectedLocationCode,
   requirementsData,
 }: VisaOverviewPanelProps) {
-  if (!visaType) return <EmptyState />;
+  if (!visaType) return <OverviewEmptyState />;
 
   const {
     currency,
@@ -64,7 +64,7 @@ export default function VisaOverviewPanel({
     stats,
     processFlags,
     paymentInstructions,
-  } = useVisaOverviewData(visaType, selectedLocationCode, requirementsData);
+  } = useOverviewData(visaType, selectedLocationCode, requirementsData);
 
   return (
     <div
@@ -174,7 +174,7 @@ export default function VisaOverviewPanel({
           <SectionLabel>Requirements</SectionLabel>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {processFlags.map((flag) => (
-              <ProcessFlag key={flag.label} label={flag.label} required={flag.required} />
+              <OverviewRequirementBadge key={flag.label} label={flag.label} required={flag.required} />
             ))}
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function VisaOverviewPanel({
       {(hasFees || visaType.vfsCharges?.serviceCharge || visaType.vfsCharges?.courierCharges) && (
         <div>
           <SectionLabel>Fee breakdown</SectionLabel>
-          <FeeBreakdownSection
+          <OverviewFeeBreakdown
             visaType={visaType}
             currency={currency}
             hasFees={hasFees}
@@ -259,7 +259,7 @@ export default function VisaOverviewPanel({
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {paymentInstructions.map((instr, i) => (
-              <PaymentInstructionCard
+              <OverviewPaymentCard
                 key={i}
                 instruction={instr}
                 fallbackCurrency={currency}

@@ -1,4 +1,4 @@
-// visa-overview/useVisaOverviewData.ts
+// visa-overview/useOverviewData.ts
 //
 // Custom hook that derives all display-ready data from the raw VisaType JSON.
 // Responsibility: data transformation only — no JSX, no side-effects.
@@ -9,15 +9,15 @@
 // they are centre-specific rules and showing them unconditionally is misleading.
 
 import type { VisaType, PaymentInstruction, RequirementsData } from "@/lib/data/types";
-import { parseRefundability, toTitleCase } from "./utils";
-import type { StatCardProps } from "./primitives";
+import { parseRefundability, toTitleCase } from "./overviewUtils";
+import type { StatCardProps } from "./OverviewPrimitives";
 
 interface ProcessFlag {
   label: string;
   required: boolean;
 }
 
-export interface VisaOverviewData {
+export interface OverviewData {
   currency: string;
   lastUpdated: string | null;
   // fees
@@ -37,13 +37,13 @@ export interface VisaOverviewData {
   paymentInstructions: PaymentInstruction[];
 }
 
-export function useVisaOverviewData(
+export function useOverviewData(
   visaType: VisaType,
   /** Uppercase VFS centre code, e.g. "GURUGRAM". Pass null/undefined when no centre is selected. */
   selectedLocationCode?: string | null,
   /** Per-centre requirements data — processingDays is read from here when available. */
   requirementsData?: RequirementsData | null,
-): VisaOverviewData {
+): OverviewData {
   const proc = visaType.process?.default;
   const vfs  = visaType.vfsCharges;
 

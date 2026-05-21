@@ -1,4 +1,4 @@
-// visa-overview/ProcessFlag.tsx
+// visa-overview/OverviewRequirementBadge.tsx
 //
 // Renders a single boolean process requirement as a scannable pill badge.
 //
@@ -7,15 +7,15 @@
 //   "Biometrics · Not Required" is instantly scannable — subject then status.
 //   Green check = good news (not required); red cross = heads-up (required).
 
-import { PALETTE } from "./palette";
-import { CheckIcon, CrossIcon } from "./icons";
+import { PALETTE } from "./overviewPalette";
+import { CheckIcon, CrossIcon } from "./OverviewIcons";
 
-interface ProcessFlagProps {
+interface OverviewRequirementBadgeProps {
   label: string;
   required: boolean;
 }
 
-export function ProcessFlag({ label, required }: ProcessFlagProps) {
+export function OverviewRequirementBadge({ label, required }: OverviewRequirementBadgeProps) {
   const palette = required ? PALETTE.red : PALETTE.green;
   return (
     <span

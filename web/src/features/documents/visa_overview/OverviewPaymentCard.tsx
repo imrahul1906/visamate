@@ -1,29 +1,29 @@
-// visa-overview/PaymentInstructionCard.tsx
+// visa-overview/OverviewPaymentCard.tsx
 //
 // Renders a single centre-specific payment instruction block.
 // Displays: payment mode, payable-to, drop-off offices, draft rules, and notes.
 //
 // Note: `instruction.vfsCenterCode` is used for filtering upstream (in
-// useVisaOverviewData) — it is NOT displayed here since the card is already
+// useOverviewData) — it is NOT displayed here since the card is already
 // shown only when the centre matches. `dropOffOffices` is displayed so the
 // user knows exactly which offices within their centre have this exception.
 
 import type { PaymentInstruction } from "@/lib/data/types";
 import { T } from "@/components/shared/theme";
-import { PALETTE } from "./palette";
-import { Tag } from "./primitives";
-import { AlertIcon } from "./icons";
-import { fmtCurrency, toTitleCase, toProperCase } from "./utils";
+import { PALETTE } from "./overviewPalette";
+import { Tag } from "./OverviewPrimitives";
+import { AlertIcon } from "./OverviewIcons";
+import { fmtCurrency, toTitleCase, toProperCase } from "./overviewUtils";
 
-interface PaymentInstructionCardProps {
+interface OverviewPaymentCardProps {
   instruction: PaymentInstruction;
   fallbackCurrency: string;
 }
 
-export function PaymentInstructionCard({
+export function OverviewPaymentCard({
   instruction,
   fallbackCurrency,
-}: PaymentInstructionCardProps) {
+}: OverviewPaymentCardProps) {
   const dropOffOffices = instruction.dropOffOffices ?? [];
   const rules          = instruction.rules ?? [];
   const notes          = instruction.notes ?? [];
