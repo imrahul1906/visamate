@@ -117,8 +117,6 @@ export default function DocumentChecklistWidget({
 // ─────────────────────────────────────────────────────────────
 
 const widgetStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
-
   .dcw-wrap {
     font-family: 'DM Sans', sans-serif;
     font-weight: 400;
@@ -267,8 +265,7 @@ const widgetStyles = `
   }
 
   /* Spinner */
-  @keyframes dcw-spin { to { transform: rotate(360deg); } }
-  .dcw-spin { animation: dcw-spin 0.8s linear infinite; }
+  .dcw-spin { animation: spin 0.8s linear infinite; }
 `;
 
 const inlineStyles = {

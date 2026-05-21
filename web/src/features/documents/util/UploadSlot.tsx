@@ -57,31 +57,7 @@ export default function UploadSlot({
           animation: "uploadSuccess 400ms cubic-bezier(0.34,1.56,0.64,1) both",
         }}
       >
-        <style>{`
-          @keyframes uploadSuccess {
-            from { opacity: 0; transform: scale(0.95) translateY(4px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
-          }
-          @keyframes shimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position: 200% center; }
-          }
-          @keyframes pulseRing {
-            0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
-            70%  { box-shadow: 0 0 0 8px rgba(99,102,241,0); }
-            100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
-          }
-          @keyframes floatUp {
-            from { opacity: 0; transform: translateY(6px); }
-            to   { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes iconBounce {
-            0%   { transform: translateY(0); }
-            30%  { transform: translateY(-3px); }
-            60%  { transform: translateY(1px); }
-            100% { transform: translateY(0); }
-          }
-        `}</style>
+
 
         {/* Green file icon */}
         <div style={{
@@ -138,25 +114,7 @@ export default function UploadSlot({
         transition: "opacity 380ms ease, transform 380ms cubic-bezier(0.34,1.2,0.64,1)",
       }}
     >
-      <style>{`
-        @keyframes shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-        @keyframes pulseRing {
-          0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.35); }
-          70%  { box-shadow: 0 0 0 7px rgba(99,102,241,0); }
-          100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
-        }
-        @keyframes iconFloat {
-          0%, 100% { transform: translateY(0px); }
-          50%       { transform: translateY(-2px); }
-        }
-        @keyframes uploadSuccess {
-          from { opacity: 0; transform: scale(0.95) translateY(4px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-      `}</style>
+
 
       <div
         role="button"

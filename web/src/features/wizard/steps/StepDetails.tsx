@@ -11,6 +11,7 @@
 
 import React from "react";
 import { useApplicant } from "@/lib/context/ApplicantContext";
+import { T, font } from "@/components/shared/theme";
 import { ToggleGroup } from "@/components/shared/ToggleChip";
 
 interface Props {
@@ -86,9 +87,9 @@ export default function StepDetails({ sponsorship, profile, compact, onSelect }:
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       {!compact && (
         <div style={{ marginBottom: 4 }}>
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginBottom: 2 }}>Step 4</div>
-          <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 500, margin: 0 }}>Tell us about your trip</h2>
-          <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>A few more details to find your documents</p>
+          <div style={{ color: T.muted, fontSize: 10, marginBottom: 2 }}>Step 4</div>
+          <h2 style={{ color: T.text, fontSize: 16, fontWeight: 500, margin: 0 }}>Tell us about your trip</h2>
+          <p style={{ color: T.muted2, fontSize: 12, marginTop: 4 }}>A few more details to find your documents</p>
         </div>
       )}
 
@@ -107,7 +108,7 @@ export default function StepDetails({ sponsorship, profile, compact, onSelect }:
       />
 
       {(!activeSponsor || !activeProfile) && (
-        <p style={{ color: "rgba(255,255,255,0.22)", fontSize: 11, margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
+        <p style={{ color: "rgba(255,255,255,0.22)", fontSize: 11, margin: 0, fontFamily: font.sans }}>
           Select both options above to continue
         </p>
       )}

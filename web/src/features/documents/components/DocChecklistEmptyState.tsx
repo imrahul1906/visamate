@@ -8,8 +8,9 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from "react";
+import { T, font } from "@/components/shared/theme";
 
-const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string; glow: string }[] = [
+const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string; glow: string; bgHover: string }[] = [
   {
     icon: (
       <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
@@ -19,8 +20,9 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Select a document",
     sub: "Tap any item on the left to see what's needed",
-    color: "#818cf8",
-    glow: "rgba(99,102,241,0.18)",
+    color: T.indigoLight,
+    glow: T.indigoGlow,
+    bgHover: "rgba(99,102,241,0.07)",
   },
   {
     icon: (
@@ -31,8 +33,9 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Mark items done",
     sub: "Check off docs as you collect them",
-    color: "#4ade80",
-    glow: "rgba(74,222,128,0.15)",
+    color: T.green,
+    glow: T.greenBorder,
+    bgHover: T.greenBg,
   },
   {
     icon: (
@@ -43,8 +46,9 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Upload your files",
     sub: "Attach digital copies to build your folder",
-    color: "#f59e0b",
-    glow: "rgba(245,158,11,0.15)",
+    color: T.amber,
+    glow: T.amberBorder,
+    bgHover: T.amberBg,
   },
   {
     icon: (
@@ -55,8 +59,9 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Download as ZIP",
     sub: "Export everything in one click when ready",
-    color: "#38bdf8",
-    glow: "rgba(56,189,248,0.15)",
+    color: T.blue,
+    glow: T.blueBorder,
+    bgHover: T.blueBg,
   },
 ];
 
@@ -87,45 +92,7 @@ export function DocChecklistEmptyState({
       position: "relative", overflow: "hidden",
     }}>
 
-      {/* ── Keyframes ─────────────────────────────────────────── */}
-      <style>{`
-        @keyframes pulseRing {
-          0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.35); }
-          70%  { box-shadow: 0 0 0 9px rgba(99,102,241,0); }
-          100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
-        }
-        @keyframes shimmer {
-          0%   { background-position: -200% center; }
-          100% { background-position: 200% center; }
-        }
-        @keyframes iconFloat {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          40%       { transform: translateY(-3px) rotate(-3deg); }
-          70%       { transform: translateY(1px) rotate(1deg); }
-        }
-        @keyframes floatUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes orb-drift-a {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33%       { transform: translate(18px, -12px) scale(1.05); }
-          66%       { transform: translate(-10px, 8px) scale(0.97); }
-        }
-        @keyframes orb-drift-b {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          40%       { transform: translate(-14px, 16px) scale(1.04); }
-          75%       { transform: translate(10px, -6px) scale(0.98); }
-        }
-        @keyframes stepReveal {
-          from { opacity: 0; transform: translateX(-8px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes badge-pulse {
-          0%, 100% { opacity: 0.7; }
-          50%       { opacity: 1; }
-        }
-      `}</style>
+
 
       {/* ── Ambient background orbs ───────────────────────────── */}
       <div style={{
@@ -182,7 +149,7 @@ export function DocChecklistEmptyState({
           }} />
           <svg
             width="28" height="28" fill="none"
-            stroke="#818cf8" strokeWidth={1.5} viewBox="0 0 24 24"
+            stroke={T.indigoLight} strokeWidth={1.5} viewBox="0 0 24 24"
             style={{ animation: "iconFloat 3.2s ease-in-out infinite" }}
           >
             <path strokeLinecap="round" strokeLinejoin="round"
@@ -198,7 +165,7 @@ export function DocChecklistEmptyState({
           borderRadius: 999,
           padding: "2px 7px",
           fontSize: 10, fontWeight: 700,
-          color: "#fff", fontFamily: "'DM Sans', sans-serif",
+          color: "#fff", fontFamily: font.sans,
           letterSpacing: "0.03em",
           animation: "badge-pulse 3s ease-in-out infinite",
           boxShadow: "0 2px 8px rgba(99,102,241,0.4)",
@@ -215,9 +182,9 @@ export function DocChecklistEmptyState({
         marginBottom: 8,
       }}>
         <h2 style={{
-          fontFamily: "'DM Serif Display', serif",
+          fontFamily: font.serif,
           fontSize: 20, fontWeight: 400,
-          color: "rgba(255,255,255,0.9)",
+          color: T.text,
           margin: 0, lineHeight: 1.3,
           letterSpacing: "-0.01em",
         }}>
@@ -234,19 +201,19 @@ export function DocChecklistEmptyState({
         display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
       }}>
         <p style={{
-          fontSize: 13, color: "rgba(255,255,255,0.4)",
+          fontSize: 13, color: T.muted,
           margin: 0, lineHeight: 1.7, maxWidth: 300,
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: font.sans,
         }}>
           Everything you need for {countryName}
         </p>
 
         {/* Inline stat pills */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
-          <Pill color="#818cf8" bg="rgba(99,102,241,0.1)" border="rgba(99,102,241,0.22)">
+          <Pill color={T.indigoLight} bg={T.indigoGlow} border="rgba(99,102,241,0.22)">
             {requiredTotal} required
           </Pill>
-          <Pill color="rgba(255,255,255,0.35)" bg="rgba(255,255,255,0.04)" border="rgba(255,255,255,0.09)">
+          <Pill color={T.muted} bg="rgba(255,255,255,0.04)" border={T.border}>
             {totalDocs - requiredTotal} optional
           </Pill>
         </div>
@@ -278,11 +245,11 @@ export function DocChecklistEmptyState({
                 overflow: "hidden",
                 transition: "border-color 200ms ease, background 200ms ease, box-shadow 200ms ease",
                 background: isHovered
-                  ? `rgba(${step.color === "#818cf8" ? "99,102,241" : step.color === "#4ade80" ? "74,222,128" : step.color === "#f59e0b" ? "245,158,11" : "56,189,248"},0.07)`
+                  ? step.bgHover
                   : "rgba(255,255,255,0.03)",
                 border: isHovered
                   ? `1px solid ${step.color}44`
-                  : "1px solid rgba(255,255,255,0.07)",
+                  : `1px solid ${T.border}`,
                 boxShadow: isHovered
                   ? `0 4px 16px ${step.glow}`
                   : "none",
@@ -306,7 +273,7 @@ export function DocChecklistEmptyState({
                 background: isHovered ? `${step.glow}` : "rgba(255,255,255,0.05)",
                 border: isHovered
                   ? `1px solid ${step.color}55`
-                  : "1px solid rgba(255,255,255,0.08)",
+                  : `1px solid ${T.border2}`,
                 color: isHovered ? step.color : "rgba(255,255,255,0.3)",
               }}>
                 {step.icon}
@@ -317,8 +284,8 @@ export function DocChecklistEmptyState({
                 <p style={{
                   fontSize: 12.5, fontWeight: 700,
                   margin: "0 0 2px",
-                  fontFamily: "'DM Sans', sans-serif",
-                  color: isHovered ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.62)",
+                  fontFamily: font.sans,
+                  color: isHovered ? T.text : T.muted2,
                   transition: "color 200ms ease",
                   letterSpacing: "-0.005em",
                 }}>
@@ -326,8 +293,8 @@ export function DocChecklistEmptyState({
                 </p>
                 <p style={{
                   fontSize: 11, margin: 0,
-                  fontFamily: "'DM Sans', sans-serif",
-                  color: isHovered ? "rgba(255,255,255,0.38)" : "rgba(255,255,255,0.28)",
+                  fontFamily: font.sans,
+                  color: isHovered ? T.muted : "rgba(255,255,255,0.28)",
                   transition: "color 200ms ease",
                   lineHeight: 1.4,
                 }}>
@@ -341,10 +308,10 @@ export function DocChecklistEmptyState({
                 width: 20, height: 20, borderRadius: 6,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 10, fontWeight: 700,
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: font.sans,
                 transition: "all 200ms ease",
                 background: isHovered ? `${step.color}22` : "rgba(255,255,255,0.04)",
-                border: isHovered ? `1px solid ${step.color}44` : "1px solid rgba(255,255,255,0.07)",
+                border: isHovered ? `1px solid ${step.color}44` : `1px solid ${T.border}`,
                 color: isHovered ? step.color : "rgba(255,255,255,0.2)",
               }}>
                 {i + 1}
@@ -365,7 +332,7 @@ export function DocChecklistEmptyState({
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM5.25 10.5a7.5 7.5 0 0114.97-.699" />
         </svg>
         <span style={{
-          fontSize: 10.5, fontFamily: "'DM Sans', sans-serif",
+          fontSize: 10.5, fontFamily: font.sans,
           color: "rgba(255,255,255,0.5)",
         }}>
           Select any document on the left to get started
@@ -392,7 +359,7 @@ function Pill({
       display: "inline-flex", alignItems: "center",
       padding: "3px 9px", borderRadius: 999,
       fontSize: 10.5, fontWeight: 600,
-      fontFamily: "'DM Sans', sans-serif",
+      fontFamily: font.sans,
       letterSpacing: "0.02em",
       background: bg,
       border: `1px solid ${border}`,

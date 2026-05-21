@@ -11,6 +11,7 @@ import { getVisaTypes } from "@/lib/data/repository";
 import type { VisaType } from "@/lib/data/types";
 import { SelectCard } from "@/components/shared/ToggleChip";
 import { useApplicant } from "@/lib/context/ApplicantContext";
+import { T, font } from "@/components/shared/theme";
 
 interface Props {
   countryCode: string | null;
@@ -95,9 +96,9 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
   const emptyStyle: React.CSSProperties = {
     padding:   "28px 0",
     textAlign: "center",
-    color:     "rgba(255,255,255,0.3)",
+    color:     T.muted,
     fontSize:  12,
-    fontFamily: "'DM Sans', sans-serif",
+    fontFamily: font.sans,
   };
 
   if (!countryCode) return <div style={emptyStyle}>Please select a country first.</div>;
@@ -108,9 +109,9 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
     <div>
       {!compact && (
         <div style={{ marginBottom: 20 }}>
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginBottom: 2 }}>Step 2</div>
-          <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 500, margin: 0 }}>Select Visa Type</h2>
-          <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 4 }}>What type of visa do you need?</p>
+          <div style={{ color: T.muted, fontSize: 10, marginBottom: 2 }}>Step 2</div>
+          <h2 style={{ color: T.text, fontSize: 16, fontWeight: 500, margin: 0 }}>Select Visa Type</h2>
+          <p style={{ color: T.muted2, fontSize: 12, marginTop: 4 }}>What type of visa do you need?</p>
         </div>
       )}
 

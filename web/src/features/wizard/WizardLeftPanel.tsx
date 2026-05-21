@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { T } from "@/components/shared/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -68,17 +69,17 @@ const T_LOOP_PAUSE    = 1400;
 
 // ─── Colours ──────────────────────────────────────────────────────────────────
 
-const PURPLE      = "#6c5ce7";
+const PURPLE      = T.purple;
 const PURPLE_SOFT = "rgba(108,92,231,0.15)";
 const PURPLE_RING = "rgba(108,92,231,0.35)";
 const WHITE_85    = "rgba(255,255,255,0.85)";
-const WHITE_55    = "rgba(255,255,255,0.55)";
-const WHITE_35    = "rgba(255,255,255,0.35)";
+const WHITE_55    = T.muted2;
+const WHITE_35    = T.muted;
 const WHITE_18    = "rgba(255,255,255,0.18)";
-const WHITE_10    = "rgba(255,255,255,0.10)";
-const WHITE_07    = "rgba(255,255,255,0.07)";
+const WHITE_10    = T.border2;
+const WHITE_07    = T.border;
 const WHITE_04    = "rgba(255,255,255,0.04)";
-const GREEN       = "#4ade80";
+const GREEN       = T.green;
 
 // ─── Keyframes ────────────────────────────────────────────────────────────────
 

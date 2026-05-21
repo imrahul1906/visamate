@@ -350,18 +350,7 @@ export default function VisaFormWidget({
       onClick={(e) => e.stopPropagation()}
       style={{ fontFamily: font.sans, background: T.surface, borderTop: `1px solid ${T.border}` }}
     >
-      {/* Scrollbar styles */}
-      <style>{`
-        .vfw-left-scroll::-webkit-scrollbar { width: 4px; }
-        .vfw-left-scroll::-webkit-scrollbar-track { background: transparent; }
-        .vfw-left-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-        .vfw-left-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
-        .vfw-right-scroll::-webkit-scrollbar { width: 4px; }
-        .vfw-right-scroll::-webkit-scrollbar-track { background: transparent; }
-        .vfw-right-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-        .vfw-right-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
-        @keyframes vfw-spin { to { transform: rotate(360deg); } }
-      `}</style>
+
 
       {/* ── Single merged topbar: back · search · collapse toggles ── */}
       {(() => {
@@ -536,7 +525,7 @@ export default function VisaFormWidget({
             stroke={accentColor}
             strokeWidth={2}
             viewBox="0 0 24 24"
-            style={{ animation: "vfw-spin 0.9s linear infinite", opacity: 0.7 }}
+            style={{ animation: "spin 0.9s linear infinite", opacity: 0.7 }}
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
           </svg>
@@ -556,13 +545,11 @@ export default function VisaFormWidget({
         >
           {/* Left: field list */}
           <div
-            className="vfw-left-scroll"
+            className="vm-scroll-indigo"
             style={{
               borderRight: `1px solid ${T.border}`,
               overflowY: "auto",
               background: T.surface,
-              scrollbarWidth: "thin",
-              scrollbarColor: `rgba(99,102,241,0.30) transparent`,
             }}
           >
             <FormFieldList
@@ -580,12 +567,10 @@ export default function VisaFormWidget({
 
           {/* Right: field detail */}
           <div
-            className="vfw-right-scroll"
+            className="vm-scroll-indigo"
             style={{
               overflowY: "auto",
               background: T.surface,
-              scrollbarWidth: "thin",
-              scrollbarColor: `rgba(99,102,241,0.30) transparent`,
             }}
           >
             <FormFieldDetail

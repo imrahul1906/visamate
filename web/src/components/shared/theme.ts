@@ -33,6 +33,14 @@ export const T = {
   purple: "#6c5ce7",
   purpleLight: "#8b7cf6",
   purpleSoft: "#a89cef",
+  purpleBg: "rgba(108,92,231,0.18)",
+  purpleBgMuted: "rgba(108,92,231,0.12)",
+  purpleBorder: "rgba(108,92,231,0.6)",
+  purpleBorderSoft: "rgba(108,92,231,0.35)",
+  purpleIconBg: "rgba(108,92,231,0.25)",
+  purpleShadow: "rgba(108,92,231,0.4)",
+  purpleGradient: "linear-gradient(135deg, #6c5ce7 0%, #8b7cf6 100%)",
+  purpleGradientLight: "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)",
 
   // Text
   text: "#f1f5f9",
@@ -50,6 +58,11 @@ export const T = {
   amberBg: "rgba(251,191,36,0.1)",
   amberBorder: "rgba(251,191,36,0.3)",
 
+  // Semantic — blue (info / zip)
+  blue: "#38bdf8",
+  blueBg: "rgba(56,189,248,0.1)",
+  blueBorder: "rgba(56,189,248,0.25)",
+
   // Semantic — red (error / remove)
   red: "#ef4444",
   redBg: "rgba(239,68,68,0.1)",
@@ -61,10 +74,8 @@ export const T = {
 // ─────────────────────────────────────────────────────────────
 
 export const font = {
-  sans: "'DM Sans', sans-serif",
-  serif: "'DM Serif Display', serif",
-  // Google Fonts import string — paste inside <style> once per page
-  googleImport: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap",
+  sans: "var(--font-dm-sans), 'DM Sans', sans-serif",
+  serif: "var(--font-dm-serif-display), 'DM Serif Display', serif",
 } as const;
 
 // ─────────────────────────────────────────────────────────────

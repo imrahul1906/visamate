@@ -166,7 +166,6 @@ export default function SponsorConsentWidget({
   return (
     <>
       <style>{STYLES}</style>
-      <style>{`@keyframes cl-spin { to { transform: rotate(360deg); } }`}</style>
 
       {/* ── SELECT SCREEN ── */}
       {step === "select" && (

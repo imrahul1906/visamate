@@ -1,6 +1,6 @@
 "use client";
 
-// web\src\features\documents\PhotoSpecWidget.tsx
+import { T } from "@/components/shared/theme";
 
 interface PhotoSpec {
   widthMm: number;
@@ -100,7 +100,7 @@ export default function PhotoSpecWidget({
         </div>
 
         {/* Spec list */}
-        <div style={{ fontSize: 12, color: "#4b5563", lineHeight: 1.8, flex: 1, minWidth: 160 }}>
+        <div style={{ fontSize: 12, color: T.muted2, lineHeight: 1.8, flex: 1, minWidth: 160 }}>
           {[
             ["Size", `${heightMm} mm (H) × ${widthMm} mm (W)`],
             ["Background", background],
@@ -119,12 +119,12 @@ export default function PhotoSpecWidget({
       </div>
 
       <div style={{
-        marginTop: 20, background: "#fef3c7", border: "1px solid #fcd34d",
+        marginTop: 20, background: T.amberBg, border: `1px solid ${T.amberBorder}`,
         borderRadius: 8, padding: "8px 12px",
         display: "flex", gap: 8, alignItems: "center",
       }}>
         <span style={{ fontSize: 16 }}>📌</span>
-        <span style={{ fontSize: 11, color: "#92400e", fontWeight: 500 }}>
+        <span style={{ fontSize: 11, color: T.amber, fontWeight: 500 }}>
           Physical print required — digital upload not accepted for this item.
         </span>
       </div>

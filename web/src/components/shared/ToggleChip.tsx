@@ -37,6 +37,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { T, font } from "@/components/shared/theme";
 
 // ─────────────────────────────────────────────────────────────
 // ToggleChip — compact pill button (from StepDetails)
@@ -68,27 +69,27 @@ export function ToggleChip({ id, label, icon, selected, onSelect, disabled }: To
         padding: "8px 13px",
         borderRadius: 10,
         border: selected
-          ? "0.5px solid rgba(108,92,231,0.6)"
+          ? `0.5px solid ${T.purpleBorder}`
           : hovered
-            ? "0.5px solid rgba(108,92,231,0.35)"
-            : "0.5px solid rgba(255,255,255,0.1)",
+            ? `0.5px solid ${T.purpleBorderSoft}`
+            : `0.5px solid ${T.border}`,
         background: selected
-          ? "rgba(108,92,231,0.18)"
+          ? T.purpleBg
           : hovered
             ? "rgba(255,255,255,0.07)"
             : "rgba(255,255,255,0.04)",
-        color: selected ? "#a89cef" : hovered ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.5)",
+        color: selected ? T.purpleSoft : hovered ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.5)",
         fontSize: 12,
         fontWeight: 500,
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.5 : 1,
         transition: "all 0.15s",
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: font.sans,
         whiteSpace: "nowrap",
       }}
     >
       {icon && (
-        <span style={{ color: selected ? "#a89cef" : "rgba(255,255,255,0.35)", display: "flex", alignItems: "center" }}>
+        <span style={{ color: selected ? T.purpleSoft : T.muted, display: "flex", alignItems: "center" }}>
           {icon}
         </span>
       )}
@@ -137,7 +138,7 @@ export function ToggleGroup({
           marginBottom: 10,
           textTransform: "uppercase",
           letterSpacing: "0.06em",
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: font.sans,
         }}
       >
         {label}
@@ -211,12 +212,12 @@ export function SelectCard({
         padding: "12px 14px",
         borderRadius: 12,
         border: selected
-          ? "0.5px solid rgba(108,92,231,0.6)"
+          ? `0.5px solid ${T.purpleBorder}`
           : hovered && !disabled
-            ? "0.5px solid rgba(108,92,231,0.35)"
-            : "0.5px solid rgba(255,255,255,0.1)",
+            ? `0.5px solid ${T.purpleBorderSoft}`
+            : `0.5px solid ${T.border}`,
         background: selected
-          ? "rgba(108,92,231,0.12)"
+          ? T.purpleBgMuted
           : hovered && !disabled
             ? "rgba(255,255,255,0.05)"
             : "rgba(255,255,255,0.03)",
@@ -235,8 +236,8 @@ export function SelectCard({
               width: 34,
               height: 34,
               borderRadius: 9,
-              background: selected ? "rgba(108,92,231,0.25)" : "rgba(255,255,255,0.07)",
-              color: selected ? "#a89cef" : "rgba(255,255,255,0.4)",
+              background: selected ? T.purpleIconBg : "rgba(255,255,255,0.07)",
+              color: selected ? T.purpleSoft : "rgba(255,255,255,0.4)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -253,10 +254,10 @@ export function SelectCard({
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
               style={{
-                color: selected ? "#fff" : "rgba(255,255,255,0.75)",
+                color: selected ? T.text : "rgba(255,255,255,0.75)",
                 fontSize: 13,
                 fontWeight: 500,
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: font.sans,
               }}
             >
               {label}
@@ -266,11 +267,11 @@ export function SelectCard({
                 style={{
                   fontSize: 10,
                   fontWeight: 700,
-                  color: "rgba(255,255,255,0.38)",
+                  color: T.muted,
                   background: "rgba(255,255,255,0.06)",
                   padding: "1px 6px",
                   borderRadius: 6,
-                  fontFamily: "'DM Sans', sans-serif",
+                  fontFamily: font.sans,
                 }}
               >
                 {badge}
@@ -280,10 +281,10 @@ export function SelectCard({
           {description && (
             <div
               style={{
-                color: "rgba(255,255,255,0.3)",
+                color: T.muted,
                 fontSize: 11,
                 marginTop: 2,
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: font.sans,
               }}
             >
               {description}
@@ -299,13 +300,13 @@ export function SelectCard({
           height: 16,
           borderRadius: "50%",
           flexShrink: 0,
-          border: selected ? "none" : "1.5px solid rgba(255,255,255,0.2)",
-          background: selected ? "#6c5ce7" : "transparent",
+          border: selected ? "none" : `1.5px solid ${T.border2}`,
+          background: selected ? T.purple : "transparent",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           transition: "all 0.15s",
-          boxShadow: selected ? "0 2px 8px rgba(108,92,231,0.4)" : "none",
+          boxShadow: selected ? `0 2px 8px ${T.purpleShadow}` : "none",
         }}
       >
         {selected && (

@@ -15,51 +15,10 @@ export default function Logo({ size = "md", showBadge = false, className }: Logo
   const wordmarkSize = size === "sm" ? "14.5px" : "15.5px";
 
   return (
-    <>
-      <style>{`
-        .vm-logo-icon {
-          display: flex; align-items: center; justify-content: center;
-          background: linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%);
-          box-shadow: 0 0 0 1px rgba(108,92,231,0.5), 0 4px 14px rgba(108,92,231,0.35);
-          flex-shrink: 0; position: relative; overflow: hidden;
-        }
-        .vm-logo-icon::before {
-          content: '';
-          position: absolute; inset: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 60%);
-          border-radius: inherit;
-        }
-        .vm-logo-wordmark {
-          font-weight: 600; color: rgba(255,255,255,0.93);
-          letter-spacing: -0.025em; line-height: 1;
-        }
-        .vm-logo-wordmark span { color: #a78bfa; }
-
-        .vm-badge {
-          display: inline-flex; align-items: center; gap: 5px;
-          background: rgba(108,92,231,0.14);
-          border: 0.5px solid rgba(108,92,231,0.38);
-          border-radius: 20px; padding: 3px 9px 3px 6px;
-          font-size: 10.5px; font-weight: 500;
-          color: #a89cef; letter-spacing: 0.01em;
-          margin-left: 4px;
-        }
-        .vm-badge-dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: #6c5ce7;
-          box-shadow: 0 0 6px rgba(108,92,231,0.8);
-          animation: vm-pulse 2.2s ease-in-out infinite;
-        }
-        @keyframes vm-pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.55; transform: scale(0.85); }
-        }
-      `}</style>
-
-      <div
-        className={className}
-        style={{ display: "flex", alignItems: "center", gap: 9 }}
-      >
+    <div
+      className={className}
+      style={{ display: "flex", alignItems: "center", gap: 9 }}
+    >
         <div
           className="vm-logo-icon"
           style={{ width: iconSize, height: iconSize, borderRadius: iconRadius }}
@@ -86,6 +45,5 @@ export default function Logo({ size = "md", showBadge = false, className }: Logo
           </span>
         )}
       </div>
-    </>
   );
 }

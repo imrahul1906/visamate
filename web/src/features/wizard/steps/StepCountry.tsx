@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import type { CountryCatalogEntry } from "@/lib/data/repository";
-import { scrollbarCSS } from "@/components/shared/theme";
+
 import { useApplicant } from "@/lib/context/ApplicantContext";
 
 interface Props {
@@ -116,7 +116,6 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
   // Shared country list JSX
   const countryList = (
     <>
-      <style>{scrollbarCSS}</style>
       <div className="vm-scroll-hidden" style={listScrollStyle}>
         {filtered.length === 0 ? (
           <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "20px 0", margin: 0 }}>
@@ -154,7 +153,6 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
         {hintRow}
         {/* Scrollable: only the country list */}
         <div className="vm-scroll-hidden" style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", scrollBehavior: "smooth" }}>
-          <style>{scrollbarCSS}</style>
           <div className="vm-scroll-hidden" style={{ display: "flex", flexDirection: "column", gap: 6, paddingRight: 1 }}>
             {filtered.length === 0 ? (
               <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "20px 0", margin: 0 }}>

@@ -63,8 +63,6 @@ export default function SiteFooter() {
   return (
     <footer style={{ fontFamily: "'DM Sans', sans-serif", background: "#070514", borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
-
         .vm-footer-inner {
           max-width: 1100px; margin: 0 auto;
           padding: 60px 28px 0;
