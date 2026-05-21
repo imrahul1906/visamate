@@ -1,22 +1,10 @@
 /**
- * docInputValidation.ts
+ * Validators.ts
  *
- * Shared, field-level validation helpers for the cover letter builder.
- * Import these wherever you need per-field validation rules.
- *
- * Usage:
- *   import { validators, applyValidation } from "./coverLetterValidation";
- *
- *   // Block non-digit keystrokes on a phone input:
- *   <input onKeyDown={validators.phone.onKeyDown} onChange={...} />
- *
- *   // Validate a value on blur / submit:
- *   const err = validators.phone.validate(value);  // returns string | null
+ * Shared, field-level validation helpers.
  */
 
-/* ─────────────────────────────────────────────────────────────────────
-   Types
-──────────────────────────────────────────────────────────────────────── */
+import type React from "react";
 
 export interface FieldValidator {
   /** Returns an error message, or null if the value is valid. */
@@ -191,9 +179,6 @@ export const validators = {
 
 /**
  * Runs a list of validators in order and returns the first error, or null.
- *
- * @example
- *   const err = applyValidation(value, [validators.required, validators.email]);
  */
 export function applyValidation(
   value: string,

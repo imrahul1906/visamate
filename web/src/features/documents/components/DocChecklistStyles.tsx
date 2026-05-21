@@ -1,4 +1,4 @@
-import { scrollbarCSS } from "@/components/shared/theme";
+import { scrollbarCSS } from "@/lib/theme";
 
 export function DocChecklistStyles() {
   return (

@@ -1,9 +1,9 @@
 "use client";
 
-// app/documents/UploadSlot.tsx
+// web/src/features/documents/components/UploadSlot.tsx
 
 import { useRef, useState, useEffect } from "react";
-import type { UploadsMap } from "../../../types/document";
+import type { UploadsMap } from "@/types/document";
 
 // ─────────────────────────────────────────────────────────────
 // UploadSlot — premium, attention-commanding upload CTA.

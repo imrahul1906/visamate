@@ -7,7 +7,7 @@ import type { LocationCatalogEntry } from "@/lib/data/repository";
 import type { VfsCenterInfo } from "@/lib/data/types";
 
 import { useApplicant } from "@/lib/context/ApplicantContext";
-import { T, font, shadow } from "@/components/shared/theme";
+import { T, font, shadow } from "@/lib/theme";
 
 interface Props {
   countryCode: string | null;
@@ -406,17 +406,12 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
   const [loading, setLoading] = useState(!!countryCode);
   const [drawerInfo, setDrawerInfo] = useState<VfsCenterInfo | null>(null);
 
-  const [prevCountryCode, setPrevCountryCode] = useState(countryCode);
-  if (countryCode !== prevCountryCode) {
-    setPrevCountryCode(countryCode);
+  useEffect(() => {
     setLoading(!!countryCode);
     if (!countryCode) {
       setLocations([]);
+      return;
     }
-  }
-
-  useEffect(() => {
-    if (!countryCode) return;
     getLocationsForCountry(countryCode)
       .then(async (locs) => {
         const withCenters = await Promise.all(

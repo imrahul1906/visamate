@@ -1,4 +1,4 @@
-import { T, font } from "@/components/shared/theme";
+import { T, font } from "@/lib/theme";
 
 interface LoadingStateProps {
   embedded: boolean;

@@ -6,7 +6,14 @@
  * Mirrors letterDocxExporter.ts architecture exactly.
  */
 
-import { stripHints } from "../util/textFormatting";
+import { stripHints } from "../utils/textFormatting";
+import {
+  LETTER_PAGE_SIZE,
+  LETTER_MARGIN,
+  createPara,
+  createMultiPara,
+  createSigLine,
+} from "@/lib/utils/docx";
 
 // ─────────────────────────────────────────────────────────────
 // Input shape
@@ -43,42 +50,29 @@ export async function buildSponsorConsentDocx(data: SponsorConsentDocxData): Pro
 
   const clean = (s: string) => stripHints(s);
 
-  // ── Paragraph helpers ──────────────────────────────────────
+  // ── Paragraph helpers mapping to global docx builders ─────
 
-  const para = (text: string, opts?: { bold?: boolean; size?: number; spacing?: number; align?: typeof AlignmentType[keyof typeof AlignmentType] }) =>
-    new Paragraph({
-      children: [
-        new TextRun({
-          text: clean(text),
-          bold: opts?.bold,
-          size: opts?.size ?? 24,
-          font: "Times New Roman",
-        }),
-      ],
-      alignment: opts?.align,
-      spacing: { after: opts?.spacing ?? 120 },
+  const para = (
+    text: string,
+    opts?: {
+      bold?: boolean;
+      size?: number;
+      spacing?: number;
+      align?: typeof AlignmentType[keyof typeof AlignmentType];
+    }
+  ) =>
+    createPara(clean(text), {
+      bold: opts?.bold,
+      size: opts?.size,
+      spacingAfter: opts?.spacing,
+      align: opts?.align,
     });
 
-  /** Split multi-line strings into separate Paragraphs */
   const multiPara = (text: string, spacing = 120) =>
-    clean(text)
-      .split("\n")
-      .map(
-        (line) =>
-          new Paragraph({
-            children: [new TextRun({ text: line, size: 24, font: "Times New Roman" })],
-            spacing: { after: spacing },
-          })
-      );
+    createMultiPara(clean(text), { spacingAfter: spacing });
 
   const sigLine = (label: string, value: string) =>
-    new Paragraph({
-      children: [
-        new TextRun({ text: `${label}: `, bold: true, size: 24, font: "Times New Roman" }),
-        new TextRun({ text: clean(value), size: 24, font: "Times New Roman" }),
-      ],
-      spacing: { after: 80 },
-    });
+    createSigLine(label, clean(value));
 
   // ── Document children ──────────────────────────────────────
 
@@ -146,8 +140,8 @@ export async function buildSponsorConsentDocx(data: SponsorConsentDocxData): Pro
       {
         properties: {
           page: {
-            size: { width: 12240, height: 15840 }, // US Letter
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 },
+            size: LETTER_PAGE_SIZE, // US Letter
+            margin: LETTER_MARGIN, // 1 inch
           },
         },
         children,

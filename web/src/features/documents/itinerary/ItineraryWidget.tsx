@@ -11,7 +11,7 @@
 import { useMemo, useState, useEffect } from "react";
 import type { ItineraryCityMap } from "@/lib/data/types";
 import { useApplicant } from "@/lib/context/ApplicantContext";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import {
   dateForDay,
   fmtDateLong,
@@ -30,7 +30,7 @@ import {
   downloadDocxBlob,
 } from "./itineraryDocxService";
 import type { ItineraryRowData } from "./itineraryDocxService";
-import { validators } from "../util/docInputValidation";
+import { validators } from "@/lib/utils/validators";
 
 export default function ItineraryWidget({
   countryName,

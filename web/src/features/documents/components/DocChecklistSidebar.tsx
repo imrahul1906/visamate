@@ -1,4 +1,4 @@
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import type { DocumentData, UploadsMap } from "../../../types/document";
 import { DocChecklistRow, getDocBadge } from "./DocChecklistRow";
 

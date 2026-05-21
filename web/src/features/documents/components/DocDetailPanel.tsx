@@ -1,10 +1,10 @@
 import { useRef, useEffect } from "react";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import type { DocumentItem, UploadsMap } from "../../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
-import { DocHelper } from "../DocumentHelper";
-import type { PhotoSpec } from "../DocumentHelper";
-import UploadSlot from "../util/UploadSlot";
+import { DocHelper } from "./DocHelper";
+import type { PhotoSpec } from "./DocHelper";
+import UploadSlot from "./UploadSlot";
 
 interface FocusDrawerProps {
   visibleDoc: DocumentItem;

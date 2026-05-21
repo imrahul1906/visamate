@@ -11,7 +11,7 @@ import { getVisaTypes } from "@/lib/data/repository";
 import type { VisaType } from "@/lib/data/types";
 import { SelectCard } from "@/components/shared/ToggleChip";
 import { useApplicant } from "@/lib/context/ApplicantContext";
-import { T, font } from "@/components/shared/theme";
+import { T, font } from "@/lib/theme";
 
 interface Props {
   countryCode: string | null;
@@ -74,17 +74,12 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
   const [visaTypes, setVisaTypes] = useState<VisaType[]>([]);
   const [loading, setLoading]     = useState(!!countryCode);
 
-  const [prevCountryCode, setPrevCountryCode] = useState(countryCode);
-  if (countryCode !== prevCountryCode) {
-    setPrevCountryCode(countryCode);
+  useEffect(() => {
     setLoading(!!countryCode);
     if (!countryCode) {
       setVisaTypes([]);
+      return;
     }
-  }
-
-  useEffect(() => {
-    if (!countryCode) return;
     getVisaTypes(countryCode)
       .then(setVisaTypes)
       .catch(err => {

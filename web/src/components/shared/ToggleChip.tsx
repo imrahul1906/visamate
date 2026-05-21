@@ -37,7 +37,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { T, font } from "@/components/shared/theme";
+import { T, font } from "@/lib/theme";
 
 // ─────────────────────────────────────────────────────────────
 // ToggleChip — compact pill button (from StepDetails)

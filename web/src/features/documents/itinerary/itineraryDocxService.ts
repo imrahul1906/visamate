@@ -18,6 +18,8 @@
 import type { ItineraryCityMap } from "@/lib/data/types";
 import type { ItineraryItem, AccommodationMap } from "./itineraryService";
 import { dateForDay } from "./itineraryService";
+import { A4_PAGE_SIZE, A4_MARGIN } from "@/lib/utils/docx";
+import { triggerDownload } from "@/lib/utils/download";
 
 // ─────────────────────────────────────────────────────────────
 // Shared data types
@@ -145,10 +147,8 @@ export async function buildItineraryDocxBlob(
   } = await import("docx");
 
   // ── Page geometry (A4, 20 mm margins) ──
-  // A4: 11906 x 16838 DXA  |  margin 1134 DXA ≈ 20 mm
-  // Content width = 11906 - 2 × 1134 = 9638 DXA
-  const PAGE_W = 11906;
-  const MARGIN = 1134;
+  const PAGE_W = A4_PAGE_SIZE.width;
+  const MARGIN = A4_MARGIN.top;
   const CONTENT_W = PAGE_W - MARGIN * 2; // 9638
 
   // ── Column widths (must sum to CONTENT_W = 9638) ──
@@ -456,12 +456,5 @@ export async function buildItineraryDocxBlob(
 /** Triggers a browser download of the generated .docx blob. */
 export function downloadDocxBlob(blob: Blob, countryName: string): void {
   const filename = `${countryName.toLowerCase().replace(/\s+/g, "_")}_travel_itinerary.docx`;
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  triggerDownload(blob, filename);
 }

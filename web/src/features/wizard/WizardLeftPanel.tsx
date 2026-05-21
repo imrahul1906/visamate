@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

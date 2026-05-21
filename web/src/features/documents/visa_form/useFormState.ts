@@ -19,6 +19,7 @@ import {
   toggleDone as toggleDonePure,
   getProgressStats,
   isDownloadableForm,
+  copyExample as copyExamplePure,
 } from "@/features/documents/visa_form/formService";
 import type { SectionMap } from "@/features/documents/visa_form/formService";
 
@@ -81,28 +82,20 @@ export function useFormState(doc: DocumentItem): FormState {
   const [fieldsLoading, setFieldsLoading] = useState(false);
   const [fieldsLoaded, setFieldsLoaded] = useState(false);
 
-  const [prevFormKey, setPrevFormKey] = useState(formInfo?.formFillDataKey);
-  const [prevHelperOpen, setPrevHelperOpen] = useState(helperOpen);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  if (prevFormKey !== formInfo?.formFillDataKey) {
-    setPrevFormKey(formInfo?.formFillDataKey);
+  useEffect(() => {
     setFieldsLoaded(false);
     setAllFields([]);
     setActiveFieldId(null);
     setSearchQuery("");
     setDoneFields(new Set());
     setFieldsLoading(false);
-  }
-
-  if (prevHelperOpen !== helperOpen) {
-    setPrevHelperOpen(helperOpen);
-    if (helperOpen && !fieldsLoaded) {
-      setFieldsLoading(true);
-    }
-  }
+  }, [formInfo?.formFillDataKey]);
 
   useEffect(() => {
     if (!helperOpen || fieldsLoaded) return;
+    setFieldsLoading(true);
     getFormFillFields(formInfo?.formFillDataKey).then((fields) => {
       setAllFields(fields);
       setFieldsLoading(false);
@@ -113,6 +106,15 @@ export function useFormState(doc: DocumentItem): FormState {
       }
     });
   }, [helperOpen, formInfo?.formFillDataKey, fieldsLoaded]);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const searchRef = useRef<HTMLInputElement>(null);
 
   // ── Derived ─────────────────────────────────────────────────
@@ -132,9 +134,15 @@ export function useFormState(doc: DocumentItem): FormState {
     setCollapsedSections((prev) => toggleSectionPure(prev, sectionName));
 
   const copyExample = (example: string, id: string) => {
-    navigator.clipboard.writeText(example).catch(() => {});
+    if (copyTimeoutRef.current) {
+      clearTimeout(copyTimeoutRef.current);
+    }
+    navigator.clipboard.writeText(example).catch(() => { });
     setCopiedId(id);
-    setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1800);
+    copyTimeoutRef.current = setTimeout(() => {
+      setCopiedId(null);
+      copyTimeoutRef.current = null;
+    }, 1800);
   };
 
   return {

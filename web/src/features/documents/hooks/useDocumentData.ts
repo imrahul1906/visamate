@@ -43,33 +43,20 @@ export function useDocumentData({
     hasRequiredParams ? null : "Missing required parameters (country, visaType, location)."
   );
 
-  const [prevParams, setPrevParams] = useState({ country, visaType, location, sponsorship });
-
-  const paramsChanged =
-    prevParams.country !== country ||
-    prevParams.visaType !== visaType ||
-    prevParams.location !== location ||
-    prevParams.sponsorship !== sponsorship;
-
-  if (paramsChanged) {
-    setPrevParams({ country, visaType, location, sponsorship });
+  useEffect(() => {
     setData(null);
     setItineraryData(null);
     setVisaTypeData(null);
     setRequirementsData(null);
-    if (!hasRequiredParams) {
+
+    if (!country || !visaType || !location) {
       setError("Missing required parameters (country, visaType, location).");
       setLoading(false);
-    } else {
-      setError(null);
-      setLoading(true);
-    }
-  }
-
-  useEffect(() => {
-    if (!country || !visaType || !location) {
       return;
     }
+
+    setError(null);
+    setLoading(true);
 
     Promise.all([
       getRequirementsData(country, visaType, location),

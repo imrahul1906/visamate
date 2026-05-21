@@ -49,6 +49,7 @@ export interface ValidationErrors {
 export function dateForDay(startDate: string, dayNumber: number): string {
   if (!startDate) return `Day ${dayNumber}`;
   const dt = new Date(startDate + "T00:00:00");
+  if (isNaN(dt.getTime())) return `Day ${dayNumber}`;
   dt.setDate(dt.getDate() + dayNumber - 1);
   const dd = String(dt.getDate()).padStart(2, "0");
   const mm = String(dt.getMonth() + 1).padStart(2, "0");
@@ -60,7 +61,10 @@ export function dateForDay(startDate: string, dayNumber: number): string {
  * Formats a date string as "1 March 2025" for document headers.
  */
 export function fmtDateLong(iso: string): string {
-  return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", {
+  if (!iso) return "[Date]";
+  const dt = new Date(iso + "T00:00:00");
+  if (isNaN(dt.getTime())) return iso;
+  return dt.toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",

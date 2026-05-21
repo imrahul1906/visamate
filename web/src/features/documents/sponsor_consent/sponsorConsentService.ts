@@ -5,8 +5,8 @@
  * Pure data — no React, no side effects.
  */
 
-import { today, fmtDate, fmtDob } from "../util/dateFormatting";
-import { hint } from "../util/textFormatting";
+import { today, fmtDate, fmtDob } from "@/lib/utils/date";
+import { hint } from "../utils/textFormatting";
 
 // ─────────────────────────────────────────────────────────────
 // Types

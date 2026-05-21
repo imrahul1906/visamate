@@ -3,7 +3,7 @@
 // Tiny reusable display atoms: SectionLabel, Tag, StatCard.
 // No business logic — pure presentational components.
 
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import { PALETTE, type PaletteKey } from "./overviewPalette";
 
 // ── SectionLabel ──────────────────────────────────────────────────────────────

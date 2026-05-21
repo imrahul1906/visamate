@@ -6,7 +6,7 @@
  * only replace the implementations here — component code stays the same.
  *
  * Pattern:
- *   JSON phase  → static import + Object.values(...).find(...)
+ *   JSON phase  → dynamic import() + Object.values(...).find(...)
  *   DB phase    → replace function bodies with: await db.table.findFirst(...)
  *
  * All functions are async. Even though data is static JSON right now,
@@ -32,40 +32,12 @@ import type {
   RoutingEntry,
   VfsCenterInfo,
   RequirementsData,
+  ItineraryPlacesData,
 } from "./types";
-
-// ─── Static JSON imports (replace these imports when moving to DB) ─────────
-import japanInfo from "../../data/countries/japan/info.json";
-import japanVisaTypes from "../../data/countries/japan/visa-types.json";
-import japanRoutingDelhi from "../../data/countries/japan/routing/delhi.json";
-import delhiVfsCenter from "../../data/vfs_center/delhi.json";
-import japanTouristDelhi from "../../data/requirements/japan-tourist-delhi.json";
-import japanTouristMumbai from "../../data/requirements/japan-tourist-mumbai.json";
-import japanTouristKolkata from "../../data/requirements/japan-tourist-kolkata.json"
-import japanTouristChennai from "../../data/requirements/japan-tourist-chennai.json"
-import japanTouristBengaluru from "../../data/requirements/japan-tourist-bengaluru.json"
-import mumbaiVfsCenter from "../../data/vfs_center/mumbai.json";
-import chennaiVfsCenter from "../../data/vfs_center/chennai.json"
-import bengaluruVfsCenter from "../../data/vfs_center/bengaluru.json"
-import kolkataVfsCenter from "../../data/vfs_center/kolkata.json"
-import japanItineraryPlaces from "../../data/countries/japan/itinerary-places.json";
-
-
-// ── NEW: Form fill field JSON imports ──────────────────────────────────────
-// Add one import per country/visa-type JSON file as they land.
-// Convention: data/countries/<country>/<KEY>.json
-import jpTouristVisaFormFields from "../../data/countries/japan/jp-tourist-visa-form-fields.json";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SECTION 1 — UI CATALOG DATA
 // Visual/display metadata only. Never mixes with structured DB-like data.
-//
-// LOCATION_CATALOG = every city we may ever support (name + photo).
-// It is NOT the source of truth for what's available right now.
-// VFS_CENTER_STORE (below) is the gatekeeper — only cities with a real
-// data file in that store are shown to users.
-//
-// On DB migration: replace with SELECT code, name, photo FROM locations
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface CountryCatalogEntry {
@@ -81,7 +53,6 @@ export interface LocationCatalogEntry {
   photo: string;
 }
 
-// On DB migration: seed this into a `countries` table
 const COUNTRY_CATALOG: CountryCatalogEntry[] = [
   {
     code: "JP",
@@ -121,10 +92,6 @@ const COUNTRY_CATALOG: CountryCatalogEntry[] = [
   },
 ];
 
-// Full catalog of cities we may support in the future.
-// Adding a city here does NOT make it visible to users.
-// It also needs a real entry in VFS_CENTER_STORE below.
-// On DB migration: seed this into a `locations` table
 const LOCATION_CATALOG: LocationCatalogEntry[] = [
   {
     code: "DELHI",
@@ -158,69 +125,8 @@ const LOCATION_CATALOG: LocationCatalogEntry[] = [
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════════════════
-// SECTION 2 — STRUCTURED DATA STORE (JSON → DB)
-// These flat arrays simulate DB table rows.
-// On DB migration: replace each array with a Prisma model / table.
-// ═══════════════════════════════════════════════════════════════════════════
-
-// Simulates: SELECT * FROM country_info
-const COUNTRY_INFO_STORE: CountryInfo[] = [
-  japanInfo as CountryInfo,
-];
-
-// Simulates: SELECT * FROM country_visa_types
-const COUNTRY_VISA_TYPES_STORE: CountryVisaTypes[] = [
-  japanVisaTypes as CountryVisaTypes,
-];
-
-// Simulates: SELECT * FROM routing_entries
-const ROUTING_STORE: RoutingEntry[] = [
-  japanRoutingDelhi as RoutingEntry,
-];
-
-// Simulates: SELECT * FROM requirements
-const REQUIREMENTS_STORE: RequirementsData[] = [
-  japanTouristDelhi as RequirementsData,
-  japanTouristMumbai as RequirementsData,
-  japanTouristBengaluru as RequirementsData,
-  japanTouristChennai as RequirementsData,
-  japanTouristKolkata as RequirementsData,
-];
-
-// ─── VFS Center Store ──────────────────────────────────────────────────────
-interface VfsCenterStoreEntry {
-  locationCode: string;  // uppercase; must match LOCATION_CATALOG code exactly
-  data: VfsCenterInfo;
-}
-
-const VFS_CENTER_STORE: VfsCenterStoreEntry[] = [
-  { locationCode: "DELHI", data: delhiVfsCenter as VfsCenterInfo },
-  { locationCode: "MUMBAI", data: mumbaiVfsCenter as VfsCenterInfo },
-  { locationCode: "BENGALURU", data: bengaluruVfsCenter as VfsCenterInfo },
-  { locationCode: "CHENNAI", data: chennaiVfsCenter as VfsCenterInfo },
-  { locationCode: "KOLKATA", data: kolkataVfsCenter as VfsCenterInfo },
-];
-
-// ─── Itinerary Places Store ────────────────────────────────────────────────
-import type { ItineraryPlacesData } from "./types";
-
-const ITINERARY_PLACES_STORE: ItineraryPlacesData[] = [
-  japanItineraryPlaces as ItineraryPlacesData,
-];
-
-// ─── Form Fill Fields Store ────────────────────────────────────────────────
-// Each entry is the raw JSON for one form-fill data key.
-// The `key` field in each JSON file is the lookup handle — it must match
-// exactly what the document's `formFillDataKey` field contains.
-//
-// To add a new form:
-//   1. Drop the JSON file at data/countries/<country>/<KEY>.json
-//   2. Add an import above (near the other form field imports)
-//   3. Push it into this array — that's it.
-//
-// On DB migration:
-//   return await db.formFields.findFirst({ where: { key: dataKey } });
+// Statically define the active VFS codes to avoid bundler bloating.
+const ACTIVE_VFS_CODES = new Set(["DELHI", "MUMBAI", "BENGALURU", "CHENNAI", "KOLKATA"]);
 
 interface FormFieldsJsonRaw {
   key: string;
@@ -240,34 +146,13 @@ interface FormFieldsJsonRaw {
   }>;
 }
 
-const FORM_FIELDS_STORE: FormFieldsJsonRaw[] = [
-  jpTouristVisaFormFields as FormFieldsJsonRaw,
-  // Add more as you create them:
-  // krTouristVisaFormFields as FormFieldsJsonRaw,
-];
-
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 3 — KEY & VALIDATION HELPERS
+// SECTION 2 — KEY & VALIDATION HELPERS
 // ═══════════════════════════════════════════════════════════════════════════
 
 function normalizeCode(code: string | undefined | null): string {
   if (!code || code.trim() === "") return "";
   return code.trim().toUpperCase();
-}
-
-function buildRoutingKey(
-  countryCode: string | undefined | null,
-  locationCode: string | undefined | null
-): string {
-  return `${normalizeCode(countryCode)}_${normalizeCode(locationCode)}`;
-}
-
-function buildRequirementKey(
-  countryCode: string | undefined | null,
-  visaTypeCode: string | undefined | null,
-  locationCode: string | undefined | null
-): string {
-  return `${normalizeCode(countryCode)}_${normalizeCode(visaTypeCode)}_${normalizeCode(locationCode)}`;
 }
 
 function assertParam(value: string | undefined | null, name: string): void {
@@ -277,7 +162,7 @@ function assertParam(value: string | undefined | null, name: string): void {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 4 — PUBLIC API
+// SECTION 3 — PUBLIC API
 // All functions are async. Signatures are stable — components never change.
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -314,34 +199,21 @@ export async function getCountryInfo(
   countryCode: string
 ): Promise<CountryInfo | null> {
   assertParam(countryCode, "countryCode");
-
-  const result = COUNTRY_INFO_STORE.find(
-    (c) => normalizeCode(c.code) === normalizeCode(countryCode)
-  ) ?? null;
-
-  if (!result) {
-    console.warn(`[repository] getCountryInfo: no data found for countryCode="${countryCode}"`);
+  const cc = normalizeCode(countryCode);
+  if (cc === "JP") {
+    return (await import("../../data/countries/japan/info.json")).default as CountryInfo;
   }
 
-  return result;
+  console.warn(`[repository] getCountryInfo: no data found for countryCode="${countryCode}"`);
+  return null;
 }
 
 /**
  * Visa types available for a given country.
  */
 export async function getVisaTypes(countryCode: string): Promise<VisaType[]> {
-  assertParam(countryCode, "countryCode");
-
-  const record = COUNTRY_VISA_TYPES_STORE.find(
-    (c) => normalizeCode(c.countryCode) === normalizeCode(countryCode)
-  );
-
-  if (!record) {
-    console.warn(`[repository] getVisaTypes: no visa types found for countryCode="${countryCode}"`);
-    return [];
-  }
-
-  return record.visaTypes;
+  const record = await getCountryVisaTypes(countryCode);
+  return record?.visaTypes ?? [];
 }
 
 /**
@@ -351,28 +223,21 @@ export async function getCountryVisaTypes(
   countryCode: string
 ): Promise<CountryVisaTypes | null> {
   assertParam(countryCode, "countryCode");
-
-  const result = COUNTRY_VISA_TYPES_STORE.find(
-    (c) => normalizeCode(c.countryCode) === normalizeCode(countryCode)
-  ) ?? null;
-
-  if (!result) {
-    console.warn(`[repository] getCountryVisaTypes: no record found for countryCode="${countryCode}"`);
+  const cc = normalizeCode(countryCode);
+  if (cc === "JP") {
+    return (await import("../../data/countries/japan/visa-types.json")).default as CountryVisaTypes;
   }
 
-  return result;
+  console.warn(`[repository] getCountryVisaTypes: no record found for countryCode="${countryCode}"`);
+  return null;
 }
 
 /**
  * All locations that have real VFS center data.
  */
 export async function getAllLocations(): Promise<LocationCatalogEntry[]> {
-  const activeCodes = new Set(
-    VFS_CENTER_STORE.map((entry) => normalizeCode(entry.locationCode))
-  );
-
   return LOCATION_CATALOG.filter(
-    (loc) => activeCodes.has(normalizeCode(loc.code))
+    (loc) => ACTIVE_VFS_CODES.has(normalizeCode(loc.code))
   );
 }
 
@@ -385,10 +250,6 @@ export async function getLocationsForCountry(
   assertParam(countryCode, "countryCode");
 
   const cc = normalizeCode(countryCode);
-  const activeCodes = new Set(
-    VFS_CENTER_STORE.map((entry) => normalizeCode(entry.locationCode))
-  );
-
   const info = await getCountryInfo(countryCode);
   let allowedVfs: Set<string> | null = null;
 
@@ -398,20 +259,18 @@ export async function getLocationsForCountry(
   }
 
   if (!allowedVfs) {
-    const forCountry = ROUTING_STORE.filter(
-      (r) => normalizeCode(r.countryCode) === cc
-    );
-    allowedVfs = new Set(
-      forCountry
-        .map((r) => normalizeCode(r.locationCode))
-        .filter((c) => c !== "")
-    )
+    // Fallback to JP active centers if not explicitly configured
+    if (cc === "JP") {
+      allowedVfs = new Set(["DELHI", "MUMBAI", "BENGALURU", "CHENNAI", "KOLKATA"]);
+    } else {
+      allowedVfs = new Set();
+    }
   }
 
   const validLocations = LOCATION_CATALOG.filter(
     (loc) => {
       const code = normalizeCode(loc.code);
-      return allowedVfs!.has(code) && activeCodes.has(normalizeCode(loc.code))
+      return allowedVfs!.has(code) && ACTIVE_VFS_CODES.has(code);
     }
   );
 
@@ -431,19 +290,25 @@ export async function getVfsCenterInfo(
   locationCode: string
 ): Promise<VfsCenterInfo | null> {
   assertParam(locationCode, "locationCode");
+  const lc = normalizeCode(locationCode);
 
-  const entry = VFS_CENTER_STORE.find(
-    (e) => normalizeCode(e.locationCode) === normalizeCode(locationCode)
-  );
-
-  if (!entry) {
-    console.warn(
-      `[repository] getVfsCenterInfo: no VFS center found for locationCode="${locationCode}"`
-    );
-    return null;
+  switch (lc) {
+    case "DELHI":
+      return (await import("../../data/vfs_center/delhi.json")).default as VfsCenterInfo;
+    case "MUMBAI":
+      return (await import("../../data/vfs_center/mumbai.json")).default as VfsCenterInfo;
+    case "BENGALURU":
+      return (await import("../../data/vfs_center/bengaluru.json")).default as VfsCenterInfo;
+    case "CHENNAI":
+      return (await import("../../data/vfs_center/chennai.json")).default as VfsCenterInfo;
+    case "KOLKATA":
+      return (await import("../../data/vfs_center/kolkata.json")).default as VfsCenterInfo;
+    default:
+      console.warn(
+        `[repository] getVfsCenterInfo: no VFS center found for locationCode="${locationCode}"`
+      );
+      return null;
   }
-
-  return entry.data;
 }
 
 /**
@@ -456,19 +321,17 @@ export async function getRoutingEntry(
   assertParam(countryCode, "countryCode");
   assertParam(locationCode, "locationCode");
 
-  const key = buildRoutingKey(countryCode, locationCode);
+  const cc = normalizeCode(countryCode);
+  const lc = normalizeCode(locationCode);
 
-  const result = ROUTING_STORE.find(
-    (r) => buildRoutingKey(r.countryCode, r.locationCode) === key
-  ) ?? null;
-
-  if (!result) {
-    console.warn(
-      `[repository] getRoutingEntry: no routing found for countryCode="${countryCode}", locationCode="${locationCode}"`
-    );
+  if (cc === "JP" && lc === "DELHI") {
+    return (await import("../../data/countries/japan/routing/delhi.json")).default as RoutingEntry;
   }
 
-  return result;
+  console.warn(
+    `[repository] getRoutingEntry: no routing found for countryCode="${countryCode}", locationCode="${locationCode}"`
+  );
+  return null;
 }
 
 /**
@@ -483,20 +346,29 @@ export async function getRequirementsData(
   assertParam(visaTypeCode, "visaTypeCode");
   assertParam(locationCode, "locationCode");
 
-  const key = buildRequirementKey(countryCode, visaTypeCode, locationCode);
+  const cc = normalizeCode(countryCode);
+  const vc = normalizeCode(visaTypeCode);
+  const lc = normalizeCode(locationCode);
 
-  const result = REQUIREMENTS_STORE.find(
-    (r) =>
-      buildRequirementKey(r.countryCode, r.visaTypeCode, r.locationCode) === key
-  ) ?? null;
-
-  if (!result) {
-    console.warn(
-      `[repository] getRequirementsData: no requirements found for countryCode="${countryCode}", visaTypeCode="${visaTypeCode}", locationCode="${locationCode}"`
-    );
+  if (cc === "JP" && vc === "TOURIST") {
+    switch (lc) {
+      case "DELHI":
+        return (await import("../../data/requirements/japan-tourist-delhi.json")).default as RequirementsData;
+      case "MUMBAI":
+        return (await import("../../data/requirements/japan-tourist-mumbai.json")).default as RequirementsData;
+      case "BENGALURU":
+        return (await import("../../data/requirements/japan-tourist-bengaluru.json")).default as RequirementsData;
+      case "CHENNAI":
+        return (await import("../../data/requirements/japan-tourist-chennai.json")).default as RequirementsData;
+      case "KOLKATA":
+        return (await import("../../data/requirements/japan-tourist-kolkata.json")).default as RequirementsData;
+    }
   }
 
-  return result;
+  console.warn(
+    `[repository] getRequirementsData: no requirements found for countryCode="${countryCode}", visaTypeCode="${visaTypeCode}", locationCode="${locationCode}"`
+  );
+  return null;
 }
 
 /**
@@ -506,18 +378,16 @@ export async function getItineraryPlaces(
   countryCode: string
 ): Promise<ItineraryPlacesData | null> {
   assertParam(countryCode, "countryCode");
+  const cc = normalizeCode(countryCode);
 
-  const result = ITINERARY_PLACES_STORE.find(
-    (p) => normalizeCode(p.countryCode) === normalizeCode(countryCode)
-  ) ?? null;
-
-  if (!result) {
-    console.warn(
-      `[repository] getItineraryPlaces: no data found for countryCode="${countryCode}".`
-    );
+  if (cc === "JP") {
+    return (await import("../../data/countries/japan/itinerary-places.json")).default as ItineraryPlacesData;
   }
 
-  return result;
+  console.warn(
+    `[repository] getItineraryPlaces: no data found for countryCode="${countryCode}".`
+  );
+  return null;
 }
 
 // ─── Form Fill Field Types ─────────────────────────────────────────────────
@@ -534,34 +404,22 @@ export interface FormFillField {
 
 /**
  * Flat list of form-fill fields for a given data key.
- *
- * The `dataKey` must exactly match the `key` field at the root of the JSON
- * (e.g. "JP_TOURIST_VISA_FORM_FIELDS_V1"). This is what `doc.form.formFillDataKey`
- * should contain.
- *
- * Returns [] when the key is not found — never throws — so the widget
- * degrades gracefully instead of crashing.
- *
- * DB equivalent:
- *   const record = await db.formFields.findFirst({ where: { key: dataKey } });
- *   return record ? flattenSections(record.sections) : [];
- *
- * To add a new form:
- *   1. Import the JSON at the top of this file
- *   2. Push it into FORM_FIELDS_STORE
- *   Done — no other changes needed anywhere.
  */
 export async function getFormFillFields(
   dataKey: string | null | undefined
 ): Promise<FormFillField[]> {
   if (!dataKey || dataKey.trim() === "") return [];
 
-  const record = FORM_FIELDS_STORE.find((r) => r.key === dataKey.trim());
+  const key = dataKey.trim();
+  let record: FormFieldsJsonRaw | null = null;
+
+  if (key === "JP_TOURIST_VISA_FORM_FIELDS_V1") {
+    record = (await import("../../data/countries/japan/jp-tourist-visa-form-fields.json")).default as FormFieldsJsonRaw;
+  }
 
   if (!record) {
     console.warn(
-      `[repository] getFormFillFields: no form fields found for dataKey="${dataKey}". ` +
-      `Import the JSON and add it to FORM_FIELDS_STORE.`
+      `[repository] getFormFillFields: no form fields found for dataKey="${dataKey}".`
     );
     return [];
   }
@@ -582,19 +440,6 @@ export async function getFormFillFields(
 
 /**
  * A single visa type for a given country + visa type code.
- *
- * Primary data source for VisaOverviewPanel.
- *
- * Usage in parent component:
- *   const visaType = await getVisaType(countryCode, visaTypeCode);
- *   <VisaOverviewPanel visaType={visaType} countryName={...} visaTypeName={...} />
- *
- * Returns null when not found — panel handles this gracefully with EmptyState.
- *
- * DB equivalent:
- *   return await db.visaTypes.findFirst({
- *     where: { countryCode, code: visaTypeCode }
- *   });
  */
 export async function getVisaType(
   countryCode: string,
@@ -603,15 +448,15 @@ export async function getVisaType(
   assertParam(countryCode, "countryCode");
   assertParam(visaTypeCode, "visaTypeCode");
 
-  const record = COUNTRY_VISA_TYPES_STORE.find(
-    (c) => normalizeCode(c.countryCode) === normalizeCode(countryCode)
-  );
+  const cc = normalizeCode(countryCode);
+  const vc = normalizeCode(visaTypeCode);
 
+  const record = await getCountryVisaTypes(cc);
   if (!record) return null;
 
   const found =
     record.visaTypes.find(
-      (v) => normalizeCode(v.code) === normalizeCode(visaTypeCode)
+      (v) => normalizeCode(v.code) === vc
     ) ?? null;
 
   if (!found) {
@@ -625,17 +470,6 @@ export async function getVisaType(
 
 /**
  * All visa types for a country filtered by category.
- *
- * Useful for future category-filter UI (e.g. "Show only SHORT_STAY visas").
- * Category matching is case-insensitive and normalised.
- *
- * Example:
- *   const shortStay = await getVisaTypesByCategory("JP", "SHORT_STAY");
- *
- * DB equivalent:
- *   return await db.visaTypes.findMany({
- *     where: { countryCode, category }
- *   });
  */
 export async function getVisaTypesByCategory(
   countryCode: string,

@@ -3,7 +3,7 @@
 // Semantic colour tokens used across all VisaOverviewPanel sub-components.
 // No visa-specific knowledge lives here — purely design tokens.
 
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 
 export const PALETTE = {
   indigo:  { text: "#818cf8", bg: "rgba(99,102,241,0.08)",   border: "rgba(99,102,241,0.2)"  },

@@ -2,9 +2,10 @@
 
 // web\src\features\documents\DocumentsContent.tsx
 import { useCallback, useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useApplicant } from "@/lib/context/ApplicantContext";
 
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import type { UploadsMap } from "../../types/document";
 
 import { useDocumentData } from "./hooks/useDocumentData";
@@ -19,7 +20,7 @@ import { LoadingState, ErrorState } from "./components/DocLoadingStates";
 import { SubmissionGuideState } from "./SubmissionGuideState";
 import { DocChecklistEmptyState } from "./components/DocChecklistEmptyState";
 
-import { downloadAllFiles } from "./util/downloadAllFiles";
+import { downloadAllFiles } from "./utils/downloadAllFiles";
 
 // ─────────────────────────────────────────────────────────────
 // Props
@@ -38,37 +39,46 @@ export interface DocumentsContentProps {
 }
 
 export default function DocumentsContent(props: DocumentsContentProps = {}) {
-  const params = useSearchParams();
+  const { ctx } = useApplicant();
   const router = useRouter();
 
-  const country = props.country ?? params.get("country") ?? "";
-  const countryName = props.countryName ?? params.get("countryName") ?? params.get("country") ?? "—";
-  const visaType = props.visaType ?? params.get("visaType") ?? "";
-  const visaTypeName = props.visaTypeName ?? params.get("visaTypeName") ?? params.get("visaType") ?? "—";
-  const location = props.location ?? params.get("location") ?? "";
-  const locationName = props.locationName ?? params.get("locationName") ?? params.get("location") ?? "—";
-  const sponsorship = props.sponsorship ?? params.get("sponsorship") ?? "SELF";
+  const country = props.country ?? ctx.country ?? "";
+  const countryName = props.countryName ?? props.country ?? "—";
+  const visaType = props.visaType ?? ctx.visaType ?? "";
+  const visaTypeName = props.visaTypeName ?? ctx.visaTypeName ?? "—";
+  const location = props.location ?? ctx.vfsCenter ?? "";
+  const locationName = props.locationName ?? props.location ?? "—";
+  const sponsorship = props.sponsorship ?? ctx.sponsorshipType ?? "SELF";
 
-  // ── Sponsor consent prefill — sourced from wizard params / props ──────────
+  // Derive travelEndDate using date math if travelStartDate and duration are present
+  const deriveEndDate = (startDate: string, durationDays: number): string => {
+    if (!startDate || !durationDays) return "";
+    const d = new Date(startDate + "T00:00:00");
+    if (isNaN(d.getTime())) return "";
+    d.setDate(d.getDate() + durationDays - 1);
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  };
+
+  // ── Sponsor consent prefill — sourced from wizard context / props ──────────
   // These keys mirror SponsorConsentInputs so the widget can pre-populate
   // the letter without a separate input screen.
   const sponsorConsentPrefill: Record<string, string> = {
     destination: countryName !== "—" ? countryName : country,
-    sponsorName: params.get("sponsorName") ?? "",
-    sponsorCity: params.get("sponsorCity") ?? "",
-    sponsorPassport: params.get("sponsorPassport") ?? "",
-    sponsorDob: params.get("sponsorDob") ?? "",
-    sponsorMobile: params.get("sponsorMobile") ?? "",
-    sponsorRelationship: params.get("sponsorRel") ?? params.get("sponsorRelationship") ?? "",
-    applicantName: params.get("applicantName") ?? "",
-    applicantPassport: params.get("applicantPassport") ?? "",
-    applicantDob: params.get("applicantDob") ?? "",
-    travelStartDate: params.get("travelStartDate") ?? "",
-    travelEndDate: params.get("travelEndDate") ?? "",
-    travelDuration: params.get("travelDuration") ?? "",
-    purposeOfVisit: params.get("purposeOfVisit") ?? "",
-    sponsorshipReason: params.get("sponsorshipReason") ?? "",
-    sponsorAccompanying: params.get("sponsorAccompanying") ?? "",
+    sponsorName: ctx.sponsorName || "",
+    sponsorCity: ctx.sponsorCity || "",
+    sponsorPassport: ctx.sponsorPassport || "",
+    sponsorDob: ctx.sponsorDob || "",
+    sponsorMobile: ctx.sponsorMobile || "",
+    sponsorRelationship: ctx.sponsorRel || "",
+    applicantName: ctx.applicantName || "",
+    applicantPassport: ctx.passportNo || "",
+    applicantDob: ctx.applicantDob || "",
+    travelStartDate: ctx.travelStartDate || "",
+    travelEndDate: ctx.travelStartDate && ctx.travelDuration ? deriveEndDate(ctx.travelStartDate, ctx.travelDuration) : "",
+    travelDuration: ctx.travelDuration ? String(ctx.travelDuration) : "",
+    purposeOfVisit: ctx.purpose || "",
+    sponsorshipReason: ctx.sponsorshipReason || "",
+    sponsorAccompanying: ctx.sponsorAccompanying || "",
   };
 
   // ── State ─────────────────────────────────────────────────────

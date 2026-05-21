@@ -1,11 +1,11 @@
-// src/app/shared/theme.ts
+// src/lib/theme.ts
 //
 // Single source of truth for all design tokens used across the app.
 // Import this wherever you need colors, typography, or spacing — never
 // redeclare the palette locally again.
 //
 // Usage:
-//   import { T, font, radius, shadow } from "@/app/shared/theme";
+//   import { T, font, radius, shadow } from "@/lib/theme";
 //   style={{ background: T.surface, color: T.text }}
 
 // ─────────────────────────────────────────────────────────────

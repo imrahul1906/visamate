@@ -1,6 +1,6 @@
 "use client";
 
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 
 interface PhotoSpec {
   widthMm: number;

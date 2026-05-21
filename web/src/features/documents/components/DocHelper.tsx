@@ -1,14 +1,16 @@
 "use client";
 
-import type { DocumentItem, UploadsMap } from "../../types/document";
+// web/src/features/documents/components/DocHelper.tsx
+
+import type { DocumentItem, UploadsMap } from "@/types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
-import PhotoSpecWidget from "./PhotoSpecWidget";
-import VisaFormWidget from "./visa_form/VisaFormWidget";
-import UploadSlot from "./util/UploadSlot";
-import ItineraryWidget from "./itinerary/ItineraryWidget";
-import CoverLetterBuilder from "./cover_letter/CoverLetterBuilder";
-import SponsorConsentWidget from "./sponsor_consent/SponsorConsentWidget";
-import DocumentChecklistWidget from "./DocumentChecklistWidget";
+import PhotoSpecWidget from "../PhotoSpecWidget";
+import VisaFormWidget from "../visa_form/VisaFormWidget";
+import UploadSlot from "./UploadSlot";
+import ItineraryWidget from "../itinerary/ItineraryWidget";
+import CoverLetterBuilder from "../cover_letter/CoverLetterBuilder";
+import SponsorConsentWidget from "../sponsor_consent/SponsorConsentWidget";
+import DocumentChecklistWidget from "../DocumentChecklistWidget";
 
 // ─────────────────────────────────────────────────────────────
 // PhotoSpec — mirrors the shape in the requirements JSON.

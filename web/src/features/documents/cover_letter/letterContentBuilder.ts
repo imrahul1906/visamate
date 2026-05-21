@@ -20,13 +20,24 @@ import {
   isStudent,
   isNocNeeded,
 } from "@/features/documents/cover_letter/letterValidation";
-import { fmtDate, fmtDateEnd, fmtMonthYear, today } from "../util/dateFormatting";
-import { hint } from "../util/textFormatting";
+import { fmtDate, fmtDateEnd, fmtMonthYear, today } from "@/lib/utils/date";
+import { hint } from "../utils/textFormatting";
 import { COVER_LETTER_TEMPLATES } from "./letterBoilerplate";
 
 // Re-export date helpers and profile checks so existing importers of
 // letterContentBuilder don't need to change their import paths.
 export { fmtDate, fmtDateEnd, fmtMonthYear, today, isEmployed, isStudent, isSponsored, isNocNeeded };
+
+// ─────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────
+
+function formatSponsorDob(sponsorDob?: string | null): string {
+  if (!sponsorDob) return hint("Add sponsor's date of birth");
+  const dobDate = new Date(sponsorDob + "T00:00:00");
+  if (isNaN(dobDate.getTime())) return sponsorDob;
+  return dobDate.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+}
 
 // ─────────────────────────────────────────────────────────────
 // Seed function
@@ -118,7 +129,7 @@ export function seedLetterState(
       `• Relationship: ${inputs.sponsorRel || "[Relationship]"}\n` +
       `• Nationality: Indian\n` +
       `• Passport Number: ${inputs.sponsorPassport || hint("Add sponsor's passport number")}\n` +
-      `• Date of Birth: ${inputs.sponsorDob ? new Date(inputs.sponsorDob + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : hint("Add sponsor's date of birth")}\n\n` +
+      `• Date of Birth: ${formatSponsorDob(inputs.sponsorDob)}\n\n` +
       `Copies of their passport, bank statements, and sponsorship letter are enclosed.`,
     lSigName: ctx.applicantName || "[Name]",
     lSigPassport: ctx.passportNo || "[Passport No]",

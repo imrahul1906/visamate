@@ -8,7 +8,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from "react";
-import { T, font } from "@/components/shared/theme";
+import { T, font } from "@/lib/theme";
 
 const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string; glow: string; bgHover: string }[] = [
   {

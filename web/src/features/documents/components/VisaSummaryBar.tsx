@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { VisaType } from "@/lib/data/types";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 
 import { PALETTE } from "../visa_overview/overviewPalette";
 import { SectionLabel, StatCard } from "../visa_overview/OverviewPrimitives";

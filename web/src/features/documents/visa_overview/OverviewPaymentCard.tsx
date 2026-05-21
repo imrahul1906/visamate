@@ -9,7 +9,7 @@
 // user knows exactly which offices within their centre have this exception.
 
 import type { PaymentInstruction } from "@/lib/data/types";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import { PALETTE } from "./overviewPalette";
 import { Tag } from "./OverviewPrimitives";
 import { AlertIcon } from "./OverviewIcons";

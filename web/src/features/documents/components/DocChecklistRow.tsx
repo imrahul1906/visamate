@@ -1,5 +1,5 @@
 import Badge from "@/components/shared/Badge";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import type { DocumentItem } from "../../../types/document";
 
 interface DocRowProps {

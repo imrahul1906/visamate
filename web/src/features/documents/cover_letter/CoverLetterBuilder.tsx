@@ -33,6 +33,7 @@ import { seedLetterState, fmtDate, fmtDateEnd, today } from "./letterContentBuil
 import { Contact } from "./LetterFormFields";
 import { STYLES } from "./letterStyles";
 import { COVER_LETTER_TEMPLATES } from "./letterBoilerplate";
+import { triggerDownload } from "@/lib/utils/download";
 
 /* ═══════════════════════════ MAIN WIDGET ═══════════════════════════ */
 export default function CoverLetterBuilder({
@@ -170,20 +171,25 @@ export default function CoverLetterBuilder({
   }, [reseedFromContext]);
 
   /* ── Fields that are written to context immediately on change ── */
-  const LIVE_SYNC_FIELDS: Partial<Record<keyof CoverLetterInputs, keyof typeof ctx>> = {
-    sponsorName: "sponsorName",
-    sponsorRel: "sponsorRel",
-    sponsorPassport: "sponsorPassport",
-    sponsorDob: "sponsorDob",
+  /* -- Fields synced immediately on change (mostly selects/toggles) -- */
+  const IMMEDIATE_SYNC_FIELDS: Partial<Record<keyof CoverLetterInputs, keyof typeof ctx>> = {
     sponsorAccompanying: "sponsorAccompanying",
-    departureCity: "departureCity",
-    designation: "designation",
-    companyName: "companyName",
-    institutionName: "institutionName",
     married: "married",
     parentsInIndia: "parentsInIndia",
     hasChildren: "hasChildren",
     purpose: "purpose",
+  };
+
+  /* -- Fields synced on blur (text inputs to avoid typing lag) -- */
+  const BLUR_SYNC_FIELDS: Partial<Record<keyof CoverLetterInputs, keyof typeof ctx>> = {
+    departureCity: "departureCity",
+    designation: "designation",
+    companyName: "companyName",
+    institutionName: "institutionName",
+    sponsorName: "sponsorName",
+    sponsorRel: "sponsorRel",
+    sponsorPassport: "sponsorPassport",
+    sponsorDob: "sponsorDob",
     hotelName: "hotelName",
   };
 
@@ -194,8 +200,16 @@ export default function CoverLetterBuilder({
       const e = validateCoverLetterInputs({ ...inputs, [key]: value });
       setErrors(e);
     }
-    // Sync select fields to ApplicantContext immediately so other widgets can read them
-    const ctxKey = LIVE_SYNC_FIELDS[key];
+    // Sync select/toggle fields to ApplicantContext immediately
+    const ctxKey = IMMEDIATE_SYNC_FIELDS[key];
+    if (ctxKey) {
+      update({ [ctxKey]: value });
+    }
+  }
+
+  /* ── Handle input blur (sync text fields to context) ── */
+  function handleInputBlur<K extends keyof CoverLetterInputs>(key: K, value: CoverLetterInputs[K]) {
+    const ctxKey = BLUR_SYNC_FIELDS[key];
     if (ctxKey) {
       update({ [ctxKey]: value });
     }
@@ -322,16 +336,8 @@ export default function CoverLetterBuilder({
         hasDependant: inputs.hasDependant,
       });
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `Japan_Visa_Cover_Letter_${(lSigName || ctx.applicantName || "applicant").replace(/\s+/g, "_")}.docx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
       const filename = `Japan_Visa_Cover_Letter_${(lSigName || ctx.applicantName || "applicant").replace(/\s+/g, "_")}.docx`;
+      triggerDownload(blob, filename);
       onDocxReady?.(new File([blob], filename, {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       }));
@@ -448,6 +454,7 @@ export default function CoverLetterBuilder({
             sponsorshipType={ctx.sponsorshipType || undefined}
             contacts={inputs.contacts}
             onChange={handleInputChange}
+            onBlur={handleInputBlur}
             onAddContact={() => setInputs((p) => ({ ...p, contacts: [...p.contacts, { name: "", rel: "", phone: "", email: "" }] }))}
             onUpdateContact={(idx, c) => setInputs((p) => ({ ...p, contacts: p.contacts.map((x, j) => (j === idx ? c : x)) }))}
             onRemoveContact={(idx) => setInputs((p) => ({ ...p, contacts: p.contacts.filter((_, j) => j !== idx) }))}

@@ -2,7 +2,7 @@
 //
 // Shown when visaType is null — no document selected yet.
 
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 
 export function OverviewEmptyState() {
   return (

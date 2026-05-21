@@ -4,7 +4,7 @@
 // Responsibility: render fee data from JSON — no derivation, no business logic.
 
 import type { VisaType } from "@/lib/data/types";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 import { PALETTE } from "./overviewPalette";
 import { Tag } from "./OverviewPrimitives";
 import { InfoIcon } from "./OverviewIcons";

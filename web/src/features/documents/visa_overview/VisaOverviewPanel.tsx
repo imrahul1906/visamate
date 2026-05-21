@@ -10,7 +10,7 @@
 //     them correctly. Pass null / undefined when no centre is selected yet.
 
 import type { VisaType, RequirementsData } from "@/lib/data/types";
-import { T } from "@/components/shared/theme";
+import { T } from "@/lib/theme";
 
 import { PALETTE } from "./overviewPalette";
 import { SectionLabel, StatCard } from "./OverviewPrimitives";

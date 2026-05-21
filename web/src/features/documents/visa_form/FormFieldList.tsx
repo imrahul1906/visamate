@@ -7,7 +7,7 @@
  * Purely presentational — all actions are passed in as callbacks.
  */
 
-import { T, font } from "@/components/shared/theme";
+import { T, font } from "@/lib/theme";
 import type { FormFillField } from "../../../lib/data/repository";
 import type { SectionMap } from "@/features/documents/visa_form/formService";
 import FormSectionIcon from "./FormSectionIcon";

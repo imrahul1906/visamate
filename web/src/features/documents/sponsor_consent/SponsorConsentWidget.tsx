@@ -17,7 +17,8 @@ import {
   seedConsentState,
   type SponsorConsentInputs,
 } from "./sponsorConsentService";
-import { fmtDate } from "../util/dateFormatting";
+import { fmtDate } from "@/lib/utils/date";
+import { triggerDownload } from "@/lib/utils/download";
 import { buildSponsorConsentDocx } from "./sponsorConsentDocx";
 import {
   SponsorConsentPreview,
@@ -125,18 +126,7 @@ export default function SponsorConsentWidget({
 
   // ── Download handler ──────────────────────────────────────
 
-  async function triggerDownload(blob: Blob, filename: string) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 1000);
-  }
+
 
   async function handleBuilderDownload() {
     if (!previewState) return;

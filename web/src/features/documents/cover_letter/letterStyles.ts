@@ -5,7 +5,7 @@
  * Injected via <style> tag in CoverLetterBuilder.tsx
  */
 
-import { T, font, radius } from "@/components/shared/theme";
+import { T, font, radius } from "@/lib/theme";
 
 export const STYLES = `
   :root {

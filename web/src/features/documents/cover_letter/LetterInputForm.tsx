@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { Contact, ContactRow, CountryVisit, CountryVisitRow } from "./LetterFormFields";
 import type { CoverLetterInputs, ValidationErrors } from "./letterValidation";
 import { isEmployed, isStudent, isSponsored } from "./letterValidation";
-import { validators, validateContact } from "../util/docInputValidation";
+import { validators, validateContact } from "@/lib/utils/validators";
 
 export interface CoverLetterInputsStepProps {
   inputs: CoverLetterInputs;
@@ -21,6 +21,7 @@ export interface CoverLetterInputsStepProps {
   sponsorshipType?: string;
   contacts: Contact[];
   onChange: <K extends keyof CoverLetterInputs>(key: K, value: CoverLetterInputs[K]) => void;
+  onBlur?: <K extends keyof CoverLetterInputs>(key: K, value: CoverLetterInputs[K]) => void;
   onAddContact: () => void;
   onUpdateContact: (idx: number, contact: Contact) => void;
   onRemoveContact: (idx: number) => void;
@@ -51,6 +52,7 @@ export function CoverLetterInputsStep({
   sponsorshipType,
   contacts,
   onChange,
+  onBlur,
   onAddContact,
   onUpdateContact,
   onRemoveContact,
@@ -158,7 +160,10 @@ export function CoverLetterInputsStep({
                 placeholder="e.g. New Delhi"
                 value={inputs.departureCity}
                 onChange={(e) => onChange("departureCity", e.target.value)}
-                onBlur={(e) => validateField("departureCity", e.target.value)}
+                onBlur={(e) => {
+                  validateField("departureCity", e.target.value);
+                  onBlur?.("departureCity", e.target.value);
+                }}
               />
             </div>
 
@@ -271,7 +276,10 @@ export function CoverLetterInputsStep({
                   placeholder="e.g. Software Engineer"
                   value={inputs.designation}
                   onChange={(e) => onChange("designation", e.target.value)}
-                  onBlur={(e) => validateField("designation", e.target.value)}
+                  onBlur={(e) => {
+                    validateField("designation", e.target.value);
+                    onBlur?.("designation", e.target.value);
+                  }}
                 />
               </div>
               <div className="cl-field">
@@ -283,6 +291,7 @@ export function CoverLetterInputsStep({
                   placeholder="e.g. Infosys Ltd."
                   value={inputs.companyName}
                   onChange={(e) => onChange("companyName", e.target.value)}
+                  onBlur={(e) => onBlur?.("companyName", e.target.value)}
                 />
               </div>
             </div>
@@ -305,7 +314,10 @@ export function CoverLetterInputsStep({
                 placeholder="e.g. IIT Delhi"
                 value={inputs.institutionName}
                 onChange={(e) => onChange("institutionName", e.target.value)}
-                onBlur={(e) => validateField("institutionName", e.target.value)}
+                onBlur={(e) => {
+                  validateField("institutionName", e.target.value);
+                  onBlur?.("institutionName", e.target.value);
+                }}
               />
             </div>
           </div>
@@ -332,7 +344,10 @@ export function CoverLetterInputsStep({
                       placeholder="e.g. Rahul Sharma"
                       value={inputs.sponsorName}
                       onChange={(e) => onChange("sponsorName", e.target.value)}
-                      onBlur={(e) => validateField("sponsorName", e.target.value)}
+                      onBlur={(e) => {
+                        validateField("sponsorName", e.target.value);
+                        onBlur?.("sponsorName", e.target.value);
+                      }}
                     />
                   </div>
                   <div className="cl-field">
@@ -347,6 +362,7 @@ export function CoverLetterInputsStep({
                       placeholder="e.g. Father, Brother"
                       value={inputs.sponsorRel}
                       onChange={(e) => onChange("sponsorRel", e.target.value)}
+                      onBlur={(e) => onBlur?.("sponsorRel", e.target.value)}
                     />
                   </div>
                 </div>
@@ -366,7 +382,10 @@ export function CoverLetterInputsStep({
                         const cleaned = validators.passport.sanitise?.(e.target.value) ?? e.target.value;
                         onChange("sponsorPassport", cleaned);
                       }}
-                      onBlur={(e) => validateField("sponsorPassport", e.target.value)}
+                      onBlur={(e) => {
+                        validateField("sponsorPassport", e.target.value);
+                        onBlur?.("sponsorPassport", e.target.value);
+                      }}
                       onKeyDown={validators.passport.onKeyDown}
                       maxLength={8}
                     />
@@ -379,6 +398,7 @@ export function CoverLetterInputsStep({
                       max={new Date().toISOString().split("T")[0]}
                       value={inputs.sponsorDob || ""}
                       onChange={(e) => onChange("sponsorDob", e.target.value)}
+                      onBlur={(e) => onBlur?.("sponsorDob", e.target.value)}
                     />
                   </div>
                 </div>

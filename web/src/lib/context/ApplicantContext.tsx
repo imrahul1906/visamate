@@ -8,7 +8,7 @@
 // Every widget reads with useApplicant() and writes with update().
 // No UI — this file is pure state.
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { ApplicantData } from "@/types/applicant";
 
 export type { ApplicantData };
@@ -77,14 +77,50 @@ const ApplicantContext = createContext<ApplicantContextValue>({
   reset: () => { },
 });
 
+const STORAGE_KEY = "visamate_applicant_data";
+
 /* ─── Provider — wrap your page/app root with this ─── */
 export function ApplicantProvider({ children }: { children: ReactNode }) {
   const [ctx, setCtx] = useState<ApplicantData>(defaults);
 
-  const update = (patch: Partial<ApplicantData>) =>
-    setCtx((prev) => ({ ...prev, ...patch }));
+  // Load from sessionStorage on client mount to be hydration safe
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = sessionStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setCtx((prev) => ({ ...prev, ...parsed }));
+        }
+      } catch (e) {
+        console.error("Failed to load applicant data from sessionStorage", e);
+      }
+    }
+  }, []);
 
-  const reset = () => setCtx(defaults);
+  const update = (patch: Partial<ApplicantData>) =>
+    setCtx((prev) => {
+      const next = { ...prev, ...patch };
+      if (typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        } catch (e) {
+          console.error("Failed to save applicant data to sessionStorage", e);
+        }
+      }
+      return next;
+    });
+
+  const reset = () => {
+    setCtx(defaults);
+    if (typeof window !== "undefined") {
+      try {
+        sessionStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        console.error("Failed to remove applicant data from sessionStorage", e);
+      }
+    }
+  };
 
   return (
     <ApplicantContext.Provider value={{ ctx, update, reset }}>

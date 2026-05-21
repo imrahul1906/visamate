@@ -11,7 +11,7 @@
 
 import React from "react";
 import { useApplicant } from "@/lib/context/ApplicantContext";
-import { T, font } from "@/components/shared/theme";
+import { T, font } from "@/lib/theme";
 import { ToggleGroup } from "@/components/shared/ToggleChip";
 
 interface Props {

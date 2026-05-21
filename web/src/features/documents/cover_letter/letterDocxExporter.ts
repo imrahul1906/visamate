@@ -9,6 +9,12 @@
 
 import type { Contact } from "./LetterFormFields";
 import { isSponsored } from "./letterValidation";
+import {
+  LETTER_PAGE_SIZE,
+  LETTER_MARGIN,
+  createPara,
+  createMultiPara,
+} from "@/lib/utils/docx";
 
 // ─────────────────────────────────────────────────────────────
 // Input shape
@@ -83,16 +89,10 @@ export async function buildCoverLetterDocx(data: CoverLetterDocxData): Promise<B
   // ── Paragraph helpers ──────────────────────────────────────
 
   const para = (text: string, opts?: { bold?: boolean; size?: number; spacing?: number }) =>
-    new Paragraph({
-      children: [
-        new TextRun({
-          text,
-          bold: opts?.bold,
-          size: opts?.size ?? 24,
-          font: "Times New Roman",
-        }),
-      ],
-      spacing: { after: opts?.spacing ?? 120 },
+    createPara(text, {
+      bold: opts?.bold,
+      size: opts?.size,
+      spacingAfter: opts?.spacing,
     });
 
   const sectionHeading = (text: string) =>
@@ -116,13 +116,7 @@ export async function buildCoverLetterDocx(data: CoverLetterDocxData): Promise<B
 
   /** Split a multi-line string into separate Paragraphs (never use \n in TextRun) */
   const multiPara = (text: string, spacing = 120) =>
-    text.split("\n").map(
-      (line) =>
-        new Paragraph({
-          children: [new TextRun({ text: line, size: 24, font: "Times New Roman" })],
-          spacing: { after: spacing },
-        })
-    );
+    createMultiPara(text, { spacingAfter: spacing });
 
   // ── Table helpers ──────────────────────────────────────────
 
@@ -360,8 +354,8 @@ export async function buildCoverLetterDocx(data: CoverLetterDocxData): Promise<B
       {
         properties: {
           page: {
-            size: { width: 12240, height: 15840 }, // US Letter
-            margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 }, // 1 inch
+            size: LETTER_PAGE_SIZE, // US Letter
+            margin: LETTER_MARGIN, // 1 inch
           },
         },
         children,

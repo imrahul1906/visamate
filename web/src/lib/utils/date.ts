@@ -1,5 +1,5 @@
 /**
- * Shared date formatting utilities for document services
+ * Shared date formatting and calculation utilities
  */
 
 const DATE_LOCALE = "en-GB";
@@ -34,6 +34,7 @@ export function fmtDob(dateStr?: string | null): string {
 export function fmtDateEnd(iso: string | undefined, days: number): string {
     if (!iso) return "[date]";
     const d = new Date(iso + "T00:00:00");
+    if (isNaN(d.getTime())) return iso;
     d.setDate(d.getDate() + days - 1);
     return d.toLocaleDateString(DATE_LOCALE, DATE_FORMAT_OPTIONS);
 }
