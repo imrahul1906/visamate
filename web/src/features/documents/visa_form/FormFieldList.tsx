@@ -1,5 +1,5 @@
 /**
- * FieldList.tsx
+ * FormFieldList.tsx
  *
  * The left-hand scrollable panel: renders collapsible section headers
  * and the individual field rows (with checkbox, label, warning dot).
@@ -9,8 +9,8 @@
 
 import { T, font } from "@/components/shared/theme";
 import type { FormFillField } from "../../../lib/data/repository";
-import type { SectionMap } from "@/features/documents/visa_form/visaFormService";
-import SectionIcon from "./SectionIcon";
+import type { SectionMap } from "@/features/documents/visa_form/formService";
+import FormSectionIcon from "./FormSectionIcon";
 
 interface Props {
   sections: SectionMap;
@@ -24,7 +24,7 @@ interface Props {
   onToggleSection: (sectionName: string) => void;
 }
 
-export default function FieldList({
+export default function FormFieldList({
   sections,
   searchQuery,
   activeFieldId,
@@ -98,7 +98,7 @@ export default function FieldList({
                   flexShrink: 0,
                 }}
               >
-                <SectionIcon section={sectionName} />
+                <FormSectionIcon section={sectionName} />
               </span>
 
               {/* Section name — readable, not screaming */}

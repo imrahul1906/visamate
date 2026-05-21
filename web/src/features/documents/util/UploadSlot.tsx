@@ -15,6 +15,7 @@ export default function UploadSlot({
   uploads,
   onUpload,
   onRemove,
+  noBorder = false,
 }: {
   docId: string;
   docName?: string;
@@ -22,6 +23,7 @@ export default function UploadSlot({
   uploads: UploadsMap;
   onUpload: (docId: string, file: File) => void;
   onRemove: (docId: string) => void;
+  noBorder?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -46,9 +48,9 @@ export default function UploadSlot({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          marginTop: 12,
-          paddingTop: 12,
-          borderTop: "1px solid rgba(255,255,255,0.06)",
+          marginTop: noBorder ? 0 : 12,
+          paddingTop: noBorder ? 0 : 12,
+          borderTop: noBorder ? "none" : "1px solid rgba(255,255,255,0.06)",
           display: "flex",
           alignItems: "center",
           gap: 10,
@@ -128,9 +130,9 @@ export default function UploadSlot({
     <div
       onClick={e => e.stopPropagation()}
       style={{
-        marginTop: 12,
-        paddingTop: 12,
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        marginTop: noBorder ? 0 : 12,
+        paddingTop: noBorder ? 0 : 12,
+        borderTop: noBorder ? "none" : "1px solid rgba(255,255,255,0.06)",
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(6px)",
         transition: "opacity 380ms ease, transform 380ms cubic-bezier(0.34,1.2,0.64,1)",

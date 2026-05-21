@@ -150,14 +150,12 @@ Provides guidance and form-fill assistance for visa application forms.
 
 | File | Purpose |
 |------|---------|
-| **VisaFormWidget.tsx** | Main widget container. Routes to form steps or displays download link. |
-| **visaFormService.ts** | Form field definitions, step logic, field hints. |
-| **useVisaFormState.ts** | Manages form state (current step, filled fields). |
-| **FieldList.tsx** | Displays form fields for current step. |
-| **FieldDetail.tsx** | Individual field UI with label, example, hint, warning. |
-| **FormStepBanner.tsx** | Step progress indicator (e.g., "Step 3 of 5"). |
-| **HelperHeader.tsx** | Header for the form widget. |
-| **SectionIcon.tsx** | Icon component for form sections. |
+| **VisaFormWidget.tsx** | Main widget container. Offers selection options (download/online) and boots the helper checklist. |
+| **formService.ts** | Pure utilities: search, filtering, and progress statistics. |
+| **useFormState.ts** | Hook managing form-fill helper state (lazy loading fields, filter criteria, checklist progress). |
+| **FormFieldList.tsx** | Scrollable checklist of collapsible form sections and fields. |
+| **FormFieldDetail.tsx** | Panel displaying details, guidance, example, and warnings for a selected field. |
+| **FormSectionIcon.tsx** | Renders context-aware icons for form sections. |
 
 #### **itinerary/** - Travel Itinerary Generation
 Generates travel itineraries for visa-required countries like Japan, France.

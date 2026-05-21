@@ -1,5 +1,5 @@
 /**
- * useVisaFormState.ts
+ * useFormState.ts
  *
  * Custom hook — owns every piece of state and derived data for the Visa Form
  * Fill Helper. Keeps VisaFormWidget.tsx as a pure layout shell.
@@ -19,10 +19,10 @@ import {
   toggleDone as toggleDonePure,
   getProgressStats,
   isDownloadableForm,
-} from "@/features/documents/visa_form/visaFormService";
-import type { SectionMap } from "@/features/documents/visa_form/visaFormService";
+} from "@/features/documents/visa_form/formService";
+import type { SectionMap } from "@/features/documents/visa_form/formService";
 
-export interface VisaFormState {
+export interface FormState {
   // Data
   allFields: FormFillField[];
   filteredFields: FormFillField[];
@@ -35,7 +35,7 @@ export interface VisaFormState {
   // Search
   searchQuery: string;
   setSearchQuery: (q: string) => void;
-  searchRef: React.RefObject<HTMLInputElement>;
+  searchRef: React.RefObject<HTMLInputElement | null>;
 
   // Active field
   activeFieldId: string | null;
@@ -64,7 +64,7 @@ export interface VisaFormState {
   isDownloadable: boolean;
 }
 
-export function useVisaFormState(doc: DocumentItem): VisaFormState {
+export function useFormState(doc: DocumentItem): FormState {
   const formInfo = doc.form;
   const isDownloadable = isDownloadableForm(formInfo?.type);
 

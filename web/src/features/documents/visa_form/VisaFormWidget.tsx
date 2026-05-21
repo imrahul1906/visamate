@@ -18,9 +18,9 @@
 import { useState } from "react";
 import type { DocumentItem } from "@/types/document";
 import { T, font } from "@/components/shared/theme";
-import { useVisaFormState } from "./useVisaFormState";
-import FieldList from "./FieldList";
-import FieldDetail from "./FieldDetail";
+import { useFormState } from "./useFormState";
+import FormFieldList from "./FormFieldList";
+import FormFieldDetail from "./FormFieldDetail";
 
 export default function VisaFormWidget({
   doc,
@@ -36,7 +36,7 @@ export default function VisaFormWidget({
   const [mode, setMode] = useState<"select" | "helper">("select");
 
   /* ── All form state lives here ── */
-  const state = useVisaFormState(doc);
+  const state = useFormState(doc);
 
   /* ── When user clicks "Open helper", open it ── */
   const handleOpenHelper = () => {
@@ -82,7 +82,7 @@ export default function VisaFormWidget({
               fontFamily: font.sans,
             }}
           >
-            {doc.title ?? "Visa Form"}
+            {doc.name ?? "Visa Form"}
           </p>
 
           {/* Title */}
@@ -118,7 +118,7 @@ export default function VisaFormWidget({
 
             {/* ── Card 1: Form action ── */}
             <a
-              href={isDownloadable ? formInfo?.downloadUrl : formInfo?.onlineUrl}
+              href={(isDownloadable ? formInfo?.downloadUrl : formInfo?.onlineUrl) ?? undefined}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -547,7 +547,7 @@ export default function VisaFormWidget({
               scrollbarColor: `rgba(99,102,241,0.30) transparent`,
             }}
           >
-            <FieldList
+            <FormFieldList
               sections={state.sections}
               searchQuery={state.searchQuery}
               activeFieldId={state.activeFieldId}
@@ -570,7 +570,7 @@ export default function VisaFormWidget({
               scrollbarColor: `rgba(99,102,241,0.30) transparent`,
             }}
           >
-            <FieldDetail
+            <FormFieldDetail
               activeField={state.activeField}
               allFields={state.allFields}
               doneFields={state.doneFields}

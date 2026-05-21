@@ -264,6 +264,26 @@ export function DocDetailPanel({
           scrollbarColor: "rgba(99,102,241,0.35) transparent",
         }}
       >
+        {/* DocHelper handles all specialWidget types — upload slot suppressed here */}
+        {visibleDoc.specialWidget && (
+          <div style={{ marginBottom: 20 }}>
+            <DocHelper
+              doc={visibleDoc}
+              color={activeCategory?.color ?? T.indigo}
+              uploads={uploads}
+              photoSpec={photoSpec}
+              onUpload={onUpload}
+              onRemove={onRemove}
+              onItineraryReady={onItineraryReady}
+              onCoverLetterReady={onCoverLetterReady}
+              onSponsorConsentReady={onSponsorConsentReady}
+              itineraryData={itineraryData}
+              sponsorConsentPrefill={sponsorConsentPrefill}
+              hideUpload
+            />
+          </div>
+        )}
+
         {/* What you need */}
         {(visibleDoc.notes || visibleDoc.tips?.length) && (
           <div style={{ marginBottom: 20 }}>
@@ -506,22 +526,6 @@ export function DocDetailPanel({
           </div>
         )}
 
-        {/* DocHelper handles all specialWidget types — upload slot suppressed here */}
-        <DocHelper
-          doc={visibleDoc}
-          color={activeCategory?.color ?? T.indigo}
-          uploads={uploads}
-          photoSpec={photoSpec}
-          onUpload={onUpload}
-          onRemove={onRemove}
-          onItineraryReady={onItineraryReady}
-          onCoverLetterReady={onCoverLetterReady}
-          onSponsorConsentReady={onSponsorConsentReady}
-          itineraryData={itineraryData}
-          sponsorConsentPrefill={sponsorConsentPrefill}
-          hideUpload
-        />
-
         {/* Upload slot — standalone card for docs with no What You Need section */}
         {!(visibleDoc.notes || visibleDoc.tips?.length) && !visibleDoc.noUpload && (
           <div style={{
@@ -529,7 +533,7 @@ export function DocDetailPanel({
             border: "0.5px solid rgba(255,255,255,0.11)",
             borderRadius: 14,
             overflow: "hidden",
-            padding: "0 14px",
+            padding: "14px",
             boxShadow: "0 4px 6px rgba(0,0,0,0.25), 0 12px 28px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.06) inset",
           }}>
             <UploadSlot
@@ -539,6 +543,7 @@ export function DocDetailPanel({
               uploads={uploads}
               onUpload={(_docId, file) => onUpload(file)}
               onRemove={(_docId) => onRemove()}
+              noBorder
             />
           </div>
         )}

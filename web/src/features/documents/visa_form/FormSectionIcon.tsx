@@ -1,11 +1,11 @@
 /**
- * SectionIcon.tsx
+ * FormSectionIcon.tsx
  *
  * Renders a small contextual SVG icon based on the section name string.
  * Pure presentational — no state, no side-effects.
  */
 
-export default function SectionIcon({ section }: { section: string }) {
+export default function FormSectionIcon({ section }: { section: string }) {
   const s = section.toLowerCase();
 
   if (s.includes("personal"))

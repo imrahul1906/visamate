@@ -1,5 +1,5 @@
 /**
- * FieldDetail.tsx
+ * FormFieldDetail.tsx
  *
  * The right-hand detail panel. When no field is selected it shows an empty
  * state prompt; otherwise it renders the field's full guidance: section
@@ -11,7 +11,7 @@
 
 import { T, font } from "@/components/shared/theme";
 import type { FormFillField } from "../../../lib/data/repository";
-import SectionIcon from "./SectionIcon";
+import FormSectionIcon from "./FormSectionIcon";
 
 interface Props {
   activeField: FormFillField | null;
@@ -24,7 +24,7 @@ interface Props {
   onCopyExample: (example: string, id: string) => void;
 }
 
-export default function FieldDetail({
+export default function FormFieldDetail({
   activeField,
   allFields,
   doneFields,
@@ -88,7 +88,7 @@ export default function FieldDetail({
             fontFamily: font.sans,
           }}
         >
-          <SectionIcon section={activeField.section} />
+          <FormSectionIcon section={activeField.section} />
         </span>
         <span
           style={{
