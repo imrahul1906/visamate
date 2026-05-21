@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
 import { T } from "@/components/shared/theme";
-import Badge from "@/components/shared/Badge";
 import type { DocumentItem, UploadsMap } from "../../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import { DocHelper } from "../DocumentHelper";
@@ -10,7 +9,6 @@ import UploadSlot from "../util/UploadSlot";
 interface FocusDrawerProps {
   visibleDoc: DocumentItem;
   activeCategory: { label: string; color: string } | null | undefined;
-  checked: Record<string, boolean>;
   uploads: UploadsMap;
   activeDocIndex: number;
   totalDocs: number;
@@ -21,7 +19,6 @@ interface FocusDrawerProps {
   /** Photo spec for the current doc — resolved from RequirementsData by the parent */
   photoSpec?: PhotoSpec | null;
   onClose: () => void;
-  onToggleDone: (id: string) => void;
   onUpload: (file: File) => void;
   onRemove: () => void;
   onItineraryReady: (file: File) => void;
@@ -36,7 +33,6 @@ interface FocusDrawerProps {
 export function DocDetailPanel({
   visibleDoc,
   activeCategory,
-  checked,
   uploads,
   activeDocIndex,
   totalDocs,
@@ -46,7 +42,6 @@ export function DocDetailPanel({
   itineraryData,
   photoSpec,
   onClose,
-  onToggleDone,
   onUpload,
   onRemove,
   onItineraryReady,
@@ -56,7 +51,6 @@ export function DocDetailPanel({
   onNext,
   sponsorConsentPrefill,
 }: FocusDrawerProps) {
-  const isDone = !!checked[visibleDoc.id];
   const shimmerRef = useRef<HTMLDivElement>(null);
 
   // Fire the border shimmer each time a new document is selected
@@ -517,8 +511,8 @@ export function DocDetailPanel({
                     docName={visibleDoc.name}
                     color={activeCategory?.color ?? T.indigo}
                     uploads={uploads}
-                    onUpload={(_docId, file) => onUpload(file)}
-                    onRemove={(_docId) => onRemove()}
+                    onUpload={(...args) => onUpload(args[1])}
+                    onRemove={() => onRemove()}
                   />
                 </div>
               )}
@@ -541,8 +535,8 @@ export function DocDetailPanel({
               docName={visibleDoc.name}
               color={activeCategory?.color ?? T.indigo}
               uploads={uploads}
-              onUpload={(_docId, file) => onUpload(file)}
-              onRemove={(_docId) => onRemove()}
+              onUpload={(...args) => onUpload(args[1])}
+              onRemove={() => onRemove()}
               noBorder
             />
           </div>

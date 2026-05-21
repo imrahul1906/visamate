@@ -4,8 +4,8 @@
 // Responsibility: data transformation only — no JSX, no side-effects.
 //
 // selectedLocationCode: the VFS centre the user has selected (e.g. "GURUGRAM").
-// Payment instructions are filtered to only those whose applicableCenters list
-// includes the selected centre. If no centre is selected, none are shown —
+// Payment instructions are filtered to only those whose vfsCenterCode
+// matches the selected centre. If no centre is selected, none are shown —
 // they are centre-specific rules and showing them unconditionally is misleading.
 
 import type { VisaType, PaymentInstruction, RequirementsData } from "@/lib/data/types";
@@ -32,7 +32,7 @@ export interface OverviewData {
   // display cards
   stats: StatCardProps[];
   processFlags: ProcessFlag[];
-  // Only instructions whose applicableCenters includes selectedLocationCode.
+  // Only instructions whose vfsCenterCode matches selectedLocationCode.
   // Empty when no centre is selected or no instructions match.
   paymentInstructions: PaymentInstruction[];
 }

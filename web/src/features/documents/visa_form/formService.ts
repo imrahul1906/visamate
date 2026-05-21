@@ -76,7 +76,11 @@ export function toggleSection(
   sectionName: string
 ): Set<string> {
   const next = new Set(collapsed);
-  next.has(sectionName) ? next.delete(sectionName) : next.add(sectionName);
+  if (next.has(sectionName)) {
+    next.delete(sectionName);
+  } else {
+    next.add(sectionName);
+  }
   return next;
 }
 
@@ -89,7 +93,11 @@ export function toggleSection(
  */
 export function toggleDone(done: Set<string>, id: string): Set<string> {
   const next = new Set(done);
-  next.has(id) ? next.delete(id) : next.add(id);
+  if (next.has(id)) {
+    next.delete(id);
+  } else {
+    next.add(id);
+  }
   return next;
 }
 

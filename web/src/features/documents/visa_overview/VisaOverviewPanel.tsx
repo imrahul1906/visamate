@@ -50,8 +50,6 @@ export default function VisaOverviewPanel({
   selectedLocationCode,
   requirementsData,
 }: VisaOverviewPanelProps) {
-  if (!visaType) return <OverviewEmptyState />;
-
   const {
     currency,
     lastUpdated,
@@ -64,7 +62,9 @@ export default function VisaOverviewPanel({
     stats,
     processFlags,
     paymentInstructions,
-  } = useOverviewData(visaType, selectedLocationCode, requirementsData);
+  } = useOverviewData(visaType ?? ({} as VisaType), selectedLocationCode, requirementsData);
+
+  if (!visaType) return <OverviewEmptyState />;
 
   return (
     <div

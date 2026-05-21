@@ -346,14 +346,16 @@ export function VisaSummaryBar({
   visaTypeName,
   locationName,
   locationCode,
-  totalDocs,
   visaType,
   processingDays,
 }: VisaOverviewStripProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   const { currency, totalMin, totalMax, processFlags } =
     useOverviewData(visaType ?? ({} as VisaType));

@@ -1,6 +1,6 @@
 import Badge from "@/components/shared/Badge";
 import { T } from "@/components/shared/theme";
-import type { DocumentItem, UploadsMap } from "../../../types/document";
+import type { DocumentItem } from "../../../types/document";
 
 interface DocRowProps {
   doc: DocumentItem;
@@ -13,8 +13,6 @@ interface DocRowProps {
 }
 
 export function DocChecklistRow({ doc, isActive, isDone, isUploaded, badge, onSelect, onToggle }: DocRowProps) {
-  const isOptional = doc.status !== "required";
-
   let rowClass = "vm-doc-row";
   if (isActive) rowClass += " vm-active";
   if (isDone) rowClass += " vm-done";

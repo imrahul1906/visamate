@@ -8,7 +8,7 @@ import StepLocation from "./steps/StepLocation";
 import StepDetails from "./steps/StepDetails";
 import DocumentsContent from "../documents/DocumentsContent";
 import FlightAnimation from "./FlightAnimation";
-import { ApplicantProvider, useApplicant } from "@/lib/context/ApplicantContext";
+import { useApplicant } from "@/lib/context/ApplicantContext";
 import { getAllCountries, type CountryCatalogEntry } from "@/lib/data/repository";
 import type { WizardSelections } from "@/types/wizard";
 
@@ -35,7 +35,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   }, []);
 
   const [activeStep, setActiveStep]                   = useState(0);
-  const [displayStep, setDisplayStep]                 = useState(0);
+  const [, setDisplayStep]                 = useState(0);
   const [animState, setAnimState]                     = useState<"idle" | "exit" | "enter">("idle");
   const [direction, setDirection]                     = useState<1 | -1>(1);
   const animLock                                      = useRef(false);
@@ -83,15 +83,36 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   ];
 
   const handleCountrySelect = (code: string | null, name: string | null) => {
-    if (code !== selectedCountry) update({ visaType: "", visaTypeName: "" });
     setSelectedCountry(code);
     setSelectedCountryName(name);
-    if (!code) { setSelectedVisa(null); setSelectedVisaName(null); }
+    setSelectedVisa(null);
+    setSelectedVisaName(null);
+    setSelectedLocation(null);
+    setSponsorship(null);
+    setProfile(null);
+    update({
+      country: code || "",
+      visaType: "",
+      visaTypeName: "",
+      vfsCenter: "",
+      sponsorshipType: null,
+      applicantProfile: null,
+    });
   };
 
   const handleVisaSelect = (code: string | null, name: string | null) => {
     setSelectedVisa(code);
     setSelectedVisaName(name);
+    setSelectedLocation(null);
+    setSponsorship(null);
+    setProfile(null);
+    update({
+      visaType: code || "",
+      visaTypeName: name || "",
+      vfsCenter: "",
+      sponsorshipType: null,
+      applicantProfile: null,
+    });
   };
 
   const handleDetailsSelect = (sp: string | null, pr: string | null) => {
@@ -309,7 +330,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
             <div style={{
               position: "absolute", inset: 0,
               overflowY: "auto", overflowX: "hidden",
-              WebkitOverflowScrolling: "touch" as any,
+              WebkitOverflowScrolling: "touch",
               scrollBehavior: "smooth",
               scrollbarWidth: "none",
               msOverflowStyle: "none",
@@ -470,7 +491,7 @@ function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => v
 // ─── DocumentsSection ─────────────────────────────────────────────────────────
 
 function DocumentsSection({ sectionRef, visible, selections }: {
-  sectionRef: React.RefObject<HTMLDivElement>;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
   visible: boolean;
   selections: WizardSelections;
 }) {
@@ -535,18 +556,16 @@ export default function VisaMateLanding() {
   };
 
   return (
-    <ApplicantProvider>
-      <div style={{ fontFamily: "'DM Sans', 'Inter', sans-serif", margin: 0, padding: 0 }}>
-        <style>{`
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          input::placeholder { color: rgba(255,255,255,0.25); }
-          @media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr !important; } }
-        `}</style>
-        <Hero onShowDocuments={handleShowDocuments} />
-        {docsVisible && wizardSelections && (
-          <DocumentsSection sectionRef={docsSectionRef} visible={docsVisible} selections={wizardSelections} />
-        )}
-      </div>
-    </ApplicantProvider>
+    <div style={{ fontFamily: "'DM Sans', 'Inter', sans-serif", margin: 0, padding: 0 }}>
+      <style>{`
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        input::placeholder { color: rgba(255,255,255,0.25); }
+        @media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
+      <Hero onShowDocuments={handleShowDocuments} />
+      {docsVisible && wizardSelections && (
+        <DocumentsSection sectionRef={docsSectionRef} visible={docsVisible} selections={wizardSelections} />
+      )}
+    </div>
   );
 }

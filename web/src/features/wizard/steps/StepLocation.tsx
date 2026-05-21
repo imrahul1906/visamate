@@ -47,12 +47,11 @@ function HoursRow({ label, slot }: { label: string; slot: { days: string; time: 
 // ─── Center detail modal ──────────────────────────────────────────────────────
 function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => void }) {
   const [visible, setVisible] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches);
   const center = info.vfsCenter;
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
-    setIsMobile(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
@@ -217,7 +216,7 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
           <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
         </svg>
         <p style={{ fontSize: 11, color: "rgba(168,156,239,0.8)", lineHeight: 1.6, margin: 0 }}>
-          We'll include all center rules in your personalised document checklist before your appointment.
+          We&apos;ll include all center rules in your personalised document checklist before your appointment.
         </p>
       </div>
     </>
@@ -249,7 +248,6 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
 function LocationRow({
   loc,
   centerName,
-  centerAddress,
   centerInfo,
   isSelected,
   onSelect,
@@ -257,7 +255,6 @@ function LocationRow({
 }: {
   loc: LocationCatalogEntry;
   centerName: string;
-  centerAddress: string;
   centerInfo: VfsCenterInfo | null;
   isSelected: boolean;
   onSelect: () => void;
@@ -305,6 +302,7 @@ function LocationRow({
         position: "relative",
       }}>
         {loc.photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={loc.photo}
             alt={loc.city}
@@ -405,16 +403,20 @@ function LocationRow({
 export default function StepLocation({ countryCode, selectedLocation, onSelect, compact }: Props) {
   const { update } = useApplicant();
   const [locations, setLocations] = useState<LocationWithCenter[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!!countryCode);
   const [drawerInfo, setDrawerInfo] = useState<VfsCenterInfo | null>(null);
 
-  useEffect(() => {
+  const [prevCountryCode, setPrevCountryCode] = useState(countryCode);
+  if (countryCode !== prevCountryCode) {
+    setPrevCountryCode(countryCode);
+    setLoading(!!countryCode);
     if (!countryCode) {
       setLocations([]);
-      update({ vfsCenter: "" });
-      return;
     }
-    setLoading(true);
+  }
+
+  useEffect(() => {
+    if (!countryCode) return;
     getLocationsForCountry(countryCode)
       .then(async (locs) => {
         const withCenters = await Promise.all(
@@ -449,7 +451,7 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
     : {
         display: "flex", flexDirection: "column", gap: 6,
         maxHeight: 300, overflowY: "auto",
-        WebkitOverflowScrolling: "touch" as any,
+        WebkitOverflowScrolling: "touch",
         scrollBehavior: "smooth",
         paddingRight: 1,
       };
@@ -461,7 +463,7 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
           <div style={{ marginBottom: 18 }}>
             <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>Step 3</div>
             <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>Where will you apply from?</h2>
-            <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Select the city where you'll submit your application</p>
+            <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Select the city where you&apos;ll submit your application</p>
           </div>
         )}
 
@@ -477,14 +479,13 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
         {/* Location list */}
         <style>{scrollbarCSS}</style>
         <div className="vm-scroll-hidden" style={listScrollStyle}>
-          {locations.map(({ loc, centerName, centerAddress, centerInfo }) => {
+          {locations.map(({ loc, centerName, centerInfo }) => {
             const isSelected = selectedLocation === loc.code;
             return (
               <LocationRow
                 key={loc.code}
                 loc={loc}
                 centerName={centerName}
-                centerAddress={centerAddress}
                 centerInfo={centerInfo}
                 isSelected={isSelected}
                 onSelect={() => {

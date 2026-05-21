@@ -46,7 +46,7 @@ export function mapRequirementsToDocumentData(
   locationName: string,
   sponsorship: string,
 ): DocumentData {
-  const categories: DocumentCategory[] = req.documentSections
+  const categories: DocumentCategory[] = (req.documentSections ?? [])
     .filter(section => {
       if (!section.applicableWhen) return true;
       if (section.applicableWhen.sponsorship)
@@ -86,7 +86,7 @@ export function mapRequirementsToDocumentData(
           specialWidget: SPECIAL_WIDGETS[doc.code] ?? undefined,
           photoSpecRef: doc.photoSpecRef ?? undefined,
           // FIX: carry through the checklist download URL from the raw JSON doc
-          checkListDownloadUrl: doc.check_list_download_Url ?? undefined,
+          checkListDownloadUrl: doc?.check_list_download_Url ?? undefined,
         };
       });
 

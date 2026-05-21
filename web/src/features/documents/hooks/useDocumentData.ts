@@ -32,22 +32,44 @@ export function useDocumentData({
   visaTypeName,
   locationName,
 }: UseDocumentDataParams): UseDocumentDataResult {
+  const hasRequiredParams = Boolean(country && visaType && location);
+
   const [data, setData] = useState<DocumentData | null>(null);
   const [itineraryData, setItineraryData] = useState<ItineraryPlacesData | null>(null);
   const [visaTypeData, setVisaTypeData] = useState<VisaType | null>(null);
   const [requirementsData, setRequirementsData] = useState<RequirementsData | null>(null); // ← new
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(hasRequiredParams);
+  const [error, setError] = useState<string | null>(
+    hasRequiredParams ? null : "Missing required parameters (country, visaType, location)."
+  );
+
+  const [prevParams, setPrevParams] = useState({ country, visaType, location, sponsorship });
+
+  const paramsChanged =
+    prevParams.country !== country ||
+    prevParams.visaType !== visaType ||
+    prevParams.location !== location ||
+    prevParams.sponsorship !== sponsorship;
+
+  if (paramsChanged) {
+    setPrevParams({ country, visaType, location, sponsorship });
+    setData(null);
+    setItineraryData(null);
+    setVisaTypeData(null);
+    setRequirementsData(null);
+    if (!hasRequiredParams) {
+      setError("Missing required parameters (country, visaType, location).");
+      setLoading(false);
+    } else {
+      setError(null);
+      setLoading(true);
+    }
+  }
 
   useEffect(() => {
     if (!country || !visaType || !location) {
-      setError("Missing required parameters (country, visaType, location).");
-      setLoading(false);
       return;
     }
-
-    setLoading(true);
-    setError(null);
 
     Promise.all([
       getRequirementsData(country, visaType, location),

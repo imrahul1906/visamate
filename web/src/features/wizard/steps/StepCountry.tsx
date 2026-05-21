@@ -38,7 +38,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       gap: 6,
       paddingRight: 1,
       overflowY: "auto",
-      WebkitOverflowScrolling: "touch" as any,
+      WebkitOverflowScrolling: "touch",
       scrollBehavior: "smooth",
       // flex: 1 is set on the wrapper div below
     }
@@ -48,7 +48,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       gap: 6,
       maxHeight: 300,
       overflowY: "auto",
-      WebkitOverflowScrolling: "touch" as any,
+      WebkitOverflowScrolling: "touch",
       scrollBehavior: "smooth",
       paddingRight: 1,
     };
@@ -153,7 +153,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
         {searchBar}
         {hintRow}
         {/* Scrollable: only the country list */}
-        <div className="vm-scroll-hidden" style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch" as any, scrollBehavior: "smooth" }}>
+        <div className="vm-scroll-hidden" style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", scrollBehavior: "smooth" }}>
           <style>{scrollbarCSS}</style>
           <div className="vm-scroll-hidden" style={{ display: "flex", flexDirection: "column", gap: 6, paddingRight: 1 }}>
             {filtered.length === 0 ? (
@@ -268,6 +268,7 @@ function CountryRow({
         position: "relative",
       }}>
         {c.photo && (
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={c.photo} alt={c.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         )}
         {!c.photo && (

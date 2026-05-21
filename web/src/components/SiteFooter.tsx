@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 
 const FOOTER_LINKS = {
@@ -143,9 +144,9 @@ export default function SiteFooter() {
         <div className="vm-footer-top">
           {/* Brand column */}
           <div className="vm-footer-brand">
-            <a href="/" className="vm-footer-logo-link">
+            <Link href="/" className="vm-footer-logo-link">
               <Logo size="sm" />
-            </a>
+            </Link>
             <p className="vm-footer-tagline">
               Personalised visa document checklists, powered by official embassy data and AI.
             </p>

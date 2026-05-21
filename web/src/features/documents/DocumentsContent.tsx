@@ -96,7 +96,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     const allD = data.categories.flatMap(c => c.documents);
     const requiredD = allD.filter(d => d.status === "required");
     if (requiredD.length > 0 && requiredD.every(d => checked[d.id])) {
-      setActiveDocId(null);
+      setTimeout(() => setActiveDocId(null), 0);
     }
   }, [checked, data, activeDocId]);
 
@@ -104,26 +104,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const toggleDoc = useCallback((id: string) => {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }));
   }, []);
-
-  const toggleDocAndAdvance = useCallback((id: string) => {
-    setChecked(prev => {
-      const next = { ...prev, [id]: !prev[id] };
-      if (next[id] && data) {
-        const allD = data.categories.flatMap(c => c.documents);
-        const requiredD = allD.filter(d => d.status === "required");
-        const allRequiredDone = requiredD.every(d => next[d.id]);
-
-        if (!allRequiredDone) {
-          // Advance to next unchecked required doc
-          const currentIdx = allD.findIndex(d => d.id === id);
-          const nextDoc = allD.slice(currentIdx + 1).find(d => !next[d.id] && d.status === "required");
-          if (nextDoc) setTimeout(() => setActiveDocId(nextDoc.id), 0);
-        }
-        // If allRequiredDone, the useEffect above will close the drawer reactively
-      }
-      return next;
-    });
-  }, [data]);
 
   const handleUpload = useCallback((docId: string, file: File) => {
     setUploads(prev => ({ ...prev, [docId]: file }));
@@ -305,7 +285,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
               <DocDetailPanel
                 visibleDoc={visibleDoc}
                 activeCategory={activeCategory}
-                checked={checked}
                 uploads={uploads}
                 activeDocIndex={activeDocIndex}
                 totalDocs={allDocs.length}
@@ -315,7 +294,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 itineraryData={itineraryData}
                 photoSpec={photoSpec}
                 onClose={() => setActiveDocId(null)}
-                onToggleDone={toggleDocAndAdvance}
                 onUpload={(file) => handleUpload(visibleDoc.id, file)}
                 onRemove={() => handleRemove(visibleDoc.id)}
                 onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}

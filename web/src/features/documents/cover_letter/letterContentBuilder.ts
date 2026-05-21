@@ -117,8 +117,8 @@ export function seedLetterState(
       `• Full Name: ${inputs.sponsorName || "[Sponsor Name]"}\n` +
       `• Relationship: ${inputs.sponsorRel || "[Relationship]"}\n` +
       `• Nationality: Indian\n` +
-      `• Passport Number: ${(inputs as any).sponsorPassport || hint("Add sponsor's passport number")}\n` +
-      `• Date of Birth: ${(inputs as any).sponsorDob ? new Date((inputs as any).sponsorDob + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : hint("Add sponsor's date of birth")}\n\n` +
+      `• Passport Number: ${inputs.sponsorPassport || hint("Add sponsor's passport number")}\n` +
+      `• Date of Birth: ${inputs.sponsorDob ? new Date(inputs.sponsorDob + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) : hint("Add sponsor's date of birth")}\n\n` +
       `Copies of their passport, bank statements, and sponsorship letter are enclosed.`,
     lSigName: ctx.applicantName || "[Name]",
     lSigPassport: ctx.passportNo || "[Passport No]",
@@ -134,7 +134,7 @@ export function seedLetterState(
     lSecFinance: COVER_LETTER_TEMPLATES.secFinance,
     lSecFinanceIntro: COVER_LETTER_TEMPLATES.secFinanceIntro,
     lSecIncome: COVER_LETTER_TEMPLATES.secIncome,
-    lIncomeContent: buildIncomeSection(inputs, country, vfsCenter),
+    lIncomeContent: buildIncomeSection(inputs, country),
     lSecAssets: COVER_LETTER_TEMPLATES.secAssets,
     lAssetsContent: buildFinanceSection(inputs, country),
     lSecSponsor: COVER_LETTER_TEMPLATES.secSponsor,
@@ -263,8 +263,7 @@ export function buildDependantSection(
 /** Helper function to build income section */
 function buildIncomeSection(
   inputs: CoverLetterInputs,
-  country: string,
-  _vfsCenter: string
+  country: string
 ): string {
   if (isEmployed(inputs.applicantProfile)) {
     return (

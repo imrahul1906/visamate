@@ -71,22 +71,26 @@ export default function StepVisaType({ countryCode, selectedVisa, onSelect, comp
   const {update} = useApplicant();
 
   const [visaTypes, setVisaTypes] = useState<VisaType[]>([]);
-  const [loading, setLoading]     = useState(false);
+  const [loading, setLoading]     = useState(!!countryCode);
 
-  useEffect(() => {
+  const [prevCountryCode, setPrevCountryCode] = useState(countryCode);
+  if (countryCode !== prevCountryCode) {
+    setPrevCountryCode(countryCode);
+    setLoading(!!countryCode);
     if (!countryCode) {
       setVisaTypes([]);
-      update({ visaType: "", visaTypeName: "" });
-      return;
     }
-    setLoading(true);
+  }
+
+  useEffect(() => {
+    if (!countryCode) return;
     getVisaTypes(countryCode)
       .then(setVisaTypes)
       .catch(err => {
         console.error(`[StepVisaType] Failed to load visa types for ${countryCode}:`, err);
       })
       .finally(() => setLoading(false));
-  }, [countryCode, update]);
+  }, [countryCode]);
 
   const emptyStyle: React.CSSProperties = {
     padding:   "28px 0",

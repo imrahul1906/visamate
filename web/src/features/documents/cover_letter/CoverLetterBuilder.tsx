@@ -15,14 +15,13 @@
  * - letterValidation.ts: Business logic, validation, paragraph builders
  */
 
-import { useState, useEffect, useRef } from "react";
-import { useApplicant } from "@/lib/context/ApplicantContext";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useApplicant, type ApplicantData } from "@/lib/context/ApplicantContext";
 import { CoverLetterInputsStep } from "./LetterInputForm";
 import { LetterPreviewEditor } from "./LetterPreviewEditor";
 import {
   validateCoverLetterInputs,
   validateLetterPreview,
-  isSponsored as isSponsoredFn,
 } from "@/features/documents/cover_letter/letterValidation";
 import { buildCoverLetterDocx } from "@/features/documents/cover_letter/letterDocxExporter";
 import type {
@@ -55,7 +54,7 @@ export default function CoverLetterBuilder({
   const [inputs, setInputs] = useState<CoverLetterInputs>({
     departureCity: ctx.departureCity || "",
     countriesVisited: Array.isArray(ctx.countriesVisited) ? ctx.countriesVisited : [],
-    travellingWith: (ctx.travellingWith as any) || "alone",
+    travellingWith: (ctx.travellingWith as "alone" | "with") || "alone",
     companion: ctx.companion || "",
     applicantProfile: ctx.applicantProfile || "",
     designation: ctx.designation || "",
@@ -64,10 +63,10 @@ export default function CoverLetterBuilder({
     sponsorshipType: ctx.sponsorshipType || "",   // always seeded from ctx
     sponsorName: ctx.sponsorName || "",
     sponsorRel: ctx.sponsorRel || "",
-    sponsorAccompanying: (ctx.sponsorAccompanying as any) || "staying",
-    married: (ctx.married as any) || "no",
-    parentsInIndia: (ctx.parentsInIndia as any) || "yes",
-    hasChildren: (ctx.hasChildren as any) || "no",
+    sponsorAccompanying: (ctx.sponsorAccompanying as "accompanying" | "staying" | null) || "staying",
+    married: (ctx.married as "yes" | "no") || "no",
+    parentsInIndia: (ctx.parentsInIndia as "yes" | "no") || "yes",
+    hasChildren: (ctx.hasChildren as "yes" | "no") || "no",
     contacts: ctx.contacts?.length ? ctx.contacts : [{ name: "", rel: "", phone: "", email: "" }],
     purpose: ctx.purpose || "",
     hotelName: ctx.hotelName || "",
@@ -120,8 +119,6 @@ export default function CoverLetterBuilder({
   const [lFinance, setLFinance] = useState("");
   const [lSecSponsor, setLSecSponsor] = useState(COVER_LETTER_TEMPLATES.secSponsor);
   const [lSponsor, setLSponsor] = useState("");
-  const [lSponsorPassport, setLSponsorPassport] = useState("");
-  const [lSponsorDob, setLSponsorDob] = useState("");
   const [lSecDependant, setLSecDependant] = useState("Information Relating to the Dependants Applying with Me");
   const [lDependant, setLDependant] = useState("");
   const [lSecContacts, setLSecContacts] = useState(COVER_LETTER_TEMPLATES.secContacts);
@@ -136,14 +133,12 @@ export default function CoverLetterBuilder({
   const [unfilled, setUnfilled] = useState<string[]>([]);
 
   /* ── Re-sync local state whenever context fields change ── */
-  const { applicantProfile, sponsorshipType } = ctx;
-
-  const reseedFromContext = () => {
+  const reseedFromContext = useCallback(() => {
     if (stepRef.current === "letter") return;
-    setInputs({
+    setInputs((prev) => ({
       departureCity: ctx.departureCity || "",
       countriesVisited: Array.isArray(ctx.countriesVisited) ? ctx.countriesVisited : [],
-      travellingWith: (ctx.travellingWith as any) || "alone",
+      travellingWith: (ctx.travellingWith as "alone" | "with") || "alone",
       companion: ctx.companion || "",
       applicantProfile: ctx.applicantProfile || "",
       designation: ctx.designation || "",
@@ -152,26 +147,27 @@ export default function CoverLetterBuilder({
       sponsorshipType: ctx.sponsorshipType || "",
       sponsorName: ctx.sponsorName || "",
       sponsorRel: ctx.sponsorRel || "",
-      sponsorAccompanying: (ctx.sponsorAccompanying as any) || "staying",
-      married: (ctx.married as any) || "no",
-      parentsInIndia: (ctx.parentsInIndia as any) || "yes",
-      hasChildren: (ctx.hasChildren as any) || "no",
-      contacts: ctx.contacts?.length ? ctx.contacts : inputs.contacts,
+      sponsorAccompanying: (ctx.sponsorAccompanying as "accompanying" | "staying" | null) || "staying",
+      married: (ctx.married as "yes" | "no") || "no",
+      parentsInIndia: (ctx.parentsInIndia as "yes" | "no") || "yes",
+      hasChildren: (ctx.hasChildren as "yes" | "no") || "no",
+      contacts: ctx.contacts?.length ? ctx.contacts : prev.contacts,
       purpose: ctx.purpose || "",
       hotelName: ctx.hotelName || "",
-      bankBalance: inputs.bankBalance,
-      hasDependant: inputs.hasDependant,
+      bankBalance: prev.bankBalance,
+      hasDependant: prev.hasDependant,
       dependantName: "",
       dependantDob: "",
       dependantPassport: "",
       dependantRelationship: "",
-      sponsorPassport: ctx.sponsorPassport || inputs.sponsorPassport || "",
-      sponsorDob: ctx.sponsorDob || inputs.sponsorDob || "",
-    });
-  };
+      sponsorPassport: ctx.sponsorPassport || prev.sponsorPassport || "",
+      sponsorDob: ctx.sponsorDob || prev.sponsorDob || "",
+    }));
+  }, [ctx]);
 
-  useEffect(reseedFromContext, []);
-  useEffect(reseedFromContext, [applicantProfile, sponsorshipType]);
+  useEffect(() => {
+    reseedFromContext();
+  }, [reseedFromContext]);
 
   /* ── Fields that are written to context immediately on change ── */
   const LIVE_SYNC_FIELDS: Partial<Record<keyof CoverLetterInputs, keyof typeof ctx>> = {
@@ -192,7 +188,7 @@ export default function CoverLetterBuilder({
   };
 
   /* ── Handle input changes ── */
-  function handleInputChange(key: keyof CoverLetterInputs, value: any) {
+  function handleInputChange<K extends keyof CoverLetterInputs>(key: K, value: CoverLetterInputs[K]) {
     setInputs((prev) => ({ ...prev, [key]: value }));
     if (attempted) {
       const e = validateCoverLetterInputs({ ...inputs, [key]: value });
@@ -234,7 +230,7 @@ export default function CoverLetterBuilder({
       departureCity: inputs.departureCity,
       countriesVisited: inputs.countriesVisited,
       travellingWith: inputs.travellingWith,
-      companion: inputs.companion,
+      companion: inputs.companion as ApplicantData["companion"],
       designation: inputs.designation,
       companyName: inputs.companyName,
       institutionName: inputs.institutionName,
@@ -248,11 +244,6 @@ export default function CoverLetterBuilder({
       hotelName: inputs.hotelName,
       bankBalance: inputs.bankBalance,
       purpose: inputs.purpose,
-      hasDependant: inputs.hasDependant,
-      dependantName: inputs.dependantName,
-      dependantDob: inputs.dependantDob,
-      dependantPassport: inputs.dependantPassport,
-      dependantRelationship: inputs.dependantRelationship,
       sponsorPassport: inputs.sponsorPassport || "",
       sponsorDob: inputs.sponsorDob || "",
     });
@@ -272,8 +263,6 @@ export default function CoverLetterBuilder({
     setLAssetsContent(seeded.lAssetsContent as string);
     setLFinance(seeded.lFinance as string);
     setLSponsor(seeded.lSponsor as string);
-    setLSponsorPassport(inputs.sponsorPassport || "");
-    setLSponsorDob(inputs.sponsorDob || "");
     setLDependant(seeded.lDependant as string);
     setLSecDependant(seeded.lSecDependant as string);
     setLSigName(seeded.lSigName as string);
@@ -324,12 +313,12 @@ export default function CoverLetterBuilder({
         lSecImmigration, lImmigration,
         lSecFamily, lFamilyTies,
         lSecEconomic, lEconomicTies,
-        lSecFinance, lSecFinanceIntro, lSecIncome, lIncomeContent, lSecAssets, lAssetsContent, lFinance,
+        lSecFinance, lSecFinanceIntro, lSecIncome, lFinance,
         lSecSponsor, lSponsor,
         lSecDependant, lDependant,
         lSecContacts, lContactsNote, lContacts,
         lClosing, lSigName, lSigPassport,
-        sponsorshipType: ctx.sponsorshipType,
+        sponsorshipType: ctx.sponsorshipType || "",
         hasDependant: inputs.hasDependant,
       });
 
@@ -363,7 +352,7 @@ export default function CoverLetterBuilder({
         <div className="cl-select">
           <div className="cl-select-inner">
             <p className="cl-select-sub">
-              We'll pre-fill everything we already know — name, dates, cities, passport — and ask only for what's missing.
+              We&apos;ll pre-fill everything we already know — name, dates, cities, passport — and ask only for what&apos;s missing.
               Takes under 2 minutes.
             </p>
 
@@ -464,7 +453,6 @@ export default function CoverLetterBuilder({
             onRemoveContact={(idx) => setInputs((p) => ({ ...p, contacts: p.contacts.filter((_, j) => j !== idx) }))}
             onProceed={handleProceed}
             onBack={() => gotoStep("select")}
-            hasDependant={inputs.hasDependant}
             dependants={dependants}
             onAddDependant={() => setDependants((prev) => [...prev, { name: "", relationship: "", dob: "", passport: "" }])}
             onUpdateDependant={(idx, d) => setDependants((prev) => prev.map((x, j) => (j === idx ? d : x)))}
@@ -561,10 +549,6 @@ export default function CoverLetterBuilder({
             setLSecSponsor={setLSecSponsor}
             lSponsor={lSponsor}
             setLSponsor={setLSponsor}
-            lSponsorPassport={lSponsorPassport}
-            setLSponsorPassport={setLSponsorPassport}
-            lSponsorDob={lSponsorDob}
-            setLSponsorDob={setLSponsorDob}
             lSecDependant={lSecDependant}
             setLSecDependant={setLSecDependant}
             lDependant={lDependant}
@@ -586,7 +570,6 @@ export default function CoverLetterBuilder({
             downloading={downloading}
             unfilled={unfilled}
             sponsorshipType={ctx.sponsorshipType || undefined}
-            applicantProfile={ctx.applicantProfile || undefined}
             hasDependant={inputs.hasDependant}
           />
         </div>

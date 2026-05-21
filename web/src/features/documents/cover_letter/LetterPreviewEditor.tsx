@@ -9,7 +9,7 @@
 
 import React from "react";
 import { Contact, InlinePara } from "./LetterFormFields";
-import { isSponsored, isEmployed, isStudent } from "./letterValidation";
+import { isSponsored } from "./letterValidation";
 
 export interface CoverLetterPreviewProps {
   // Paragraph/section states
@@ -75,10 +75,7 @@ export interface CoverLetterPreviewProps {
   setLSecSponsor: (v: string) => void;
   lSponsor: string;
   setLSponsor: (v: string) => void;
-  lSponsorPassport: string;
-  setLSponsorPassport: (v: string) => void;
-  lSponsorDob: string;
-  setLSponsorDob: (v: string) => void;
+
   lSecDependant: string;
   setLSecDependant: (v: string) => void;
   lDependant: string;
@@ -102,7 +99,6 @@ export interface CoverLetterPreviewProps {
   unfilled?: string[];
   // Sponsorship context
   sponsorshipType?: string;
-  applicantProfile?: string;
   hasDependant?: string;
 }
 
@@ -169,10 +165,7 @@ export function LetterPreviewEditor({
   setLSecSponsor,
   lSponsor,
   setLSponsor,
-  lSponsorPassport,
-  setLSponsorPassport,
-  lSponsorDob,
-  setLSponsorDob,
+
   lSecDependant,
   setLSecDependant,
   lDependant,
@@ -194,12 +187,9 @@ export function LetterPreviewEditor({
   downloading,
   unfilled = [],
   sponsorshipType,
-  applicantProfile,
   hasDependant,
 }: CoverLetterPreviewProps) {
   const isSpon = isSponsored(sponsorshipType || "");
-  const isEmp = isEmployed(applicantProfile || "");
-  const isStu = isStudent(applicantProfile || "");
   const hasDep = hasDependant === "yes";
 
   return (

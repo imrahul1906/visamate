@@ -39,8 +39,6 @@ export async function buildSponsorConsentDocx(data: SponsorConsentDocxData): Pro
     Paragraph,
     TextRun,
     AlignmentType,
-    BorderStyle,
-    WidthType,
   } = await import("docx");
 
   const clean = (s: string) => stripHints(s);

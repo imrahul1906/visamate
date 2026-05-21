@@ -32,7 +32,6 @@ import type { ItineraryRowData } from "./itineraryDocxService";
 import { validators } from "../util/docInputValidation";
 
 export default function ItineraryWidget({
-  color,
   countryName,
   cities,
   typeColors,
@@ -61,7 +60,6 @@ export default function ItineraryWidget({
   /* ── Download state ── */
   const [docxGenerated, setDocxGenerated] = useState(false);
   const [downloading, setDownloading] = useState(false);
-  const [addedPlaceId, setAddedPlaceId] = useState<string | null>(null);
   const [customActivityInput, setCustomActivityInput] = useState("");
 
   /* ── Context-backed fields (local state to avoid swallowed keystrokes) ── */
@@ -99,11 +97,10 @@ export default function ItineraryWidget({
   }, [itinerary]);
 
   /* ── Derived ── */
-  const cityPlaces = cities[selectedCity]?.places ?? [];
-  const filteredPlaces = useMemo(
-    () => cityPlaces.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase())),
-    [cityPlaces, searchQuery]
-  );
+  const filteredPlaces = useMemo(() => {
+    const cityPlaces = cities[selectedCity]?.places ?? [];
+    return cityPlaces.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [cities, selectedCity, searchQuery]);
   const allDaysList = Array.from({ length: days }, (_, i) => i + 1);
   const accomForDay = (d: number) => accommodations[d] ?? { hotelName: "", hotelContact: "" };
   const setAccom = (d: number, field: "hotelName" | "hotelContact", value: string) => {
@@ -127,28 +124,14 @@ export default function ItineraryWidget({
   const [editablePassport, setEditablePassport] = useState(passportNo);
   const [editableDateRange, setEditableDateRange] = useState("");
   const [editableSponsor, setEditableSponsor] = useState(ctx.sponsorName ?? "");
-  const [editingCell, setEditingCell] = useState<string | null>(null);
+  const [, setEditingCell] = useState<string | null>(null);
+  const [prevMode, setPrevMode] = useState(mode);
 
   // Derived: is this applicant sponsored?
   // sponsorshipType is null by default (ApplicantContext). The wizard sets it to a string
   // when any sponsorship type is selected. We also guard on sponsorName being present
   // so the field never shows for self-funded applicants even if wizard sets a stale value.
-  const isSponsored = !!ctx.sponsorshipType && ctx.sponsorshipType !== "self" && ctx.sponsorshipType !== "none" && ctx.sponsorshipType !== "self-funded";
-
-  // Sync editable rows when entering preview
-  useEffect(() => {
-    if (mode === "preview") {
-      setEditableRows(previewRows.map(r => ({ ...r, activities: [...r.activities] })));
-      setEditableApplicant(applicantName);
-      setEditablePassport(passportNo);
-      setEditableDateRange(travelDateRange);
-      // Sync sponsor from context — only matters if sponsored
-      if (ctx.sponsorshipType) {
-        setEditableSponsor(ctx.sponsorName ?? "");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
+  const isSponsored = ctx.sponsorshipType === "sponsored";
 
   const updateEditableRow = (idx: number, field: keyof ItineraryRowData, value: string | string[] | boolean) => {
     setEditableRows(rows => rows.map((r, i) => i === idx ? { ...r, [field]: value } : r));
@@ -180,8 +163,6 @@ export default function ItineraryWidget({
     const updated = addPlaceFn(itinerary, activeDay, selectedCity, placeId);
     if (updated === itinerary) return;
     setItinerary(updated);
-    setAddedPlaceId(placeId);
-    setTimeout(() => setAddedPlaceId(null), 1200);
   };
 
   const addCustomActivity = (name: string) => {
@@ -243,6 +224,19 @@ export default function ItineraryWidget({
       })}`;
     })()
     : "";
+
+  if (prevMode !== mode) {
+    setPrevMode(mode);
+    if (mode === "preview") {
+      setEditableRows(previewRows.map(r => ({ ...r, activities: [...r.activities] })));
+      setEditableApplicant(applicantName);
+      setEditablePassport(passportNo);
+      setEditableDateRange(travelDateRange);
+      if (ctx.sponsorshipType) {
+        setEditableSponsor(ctx.sponsorName ?? "");
+      }
+    }
+  }
 
   /* ═══════════════════════════ RENDER ═══════════════════════════ */
   return (

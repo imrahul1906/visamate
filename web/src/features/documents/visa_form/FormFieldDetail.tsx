@@ -15,23 +15,15 @@ import FormSectionIcon from "./FormSectionIcon";
 
 interface Props {
   activeField: FormFillField | null;
-  allFields: FormFillField[];
-  doneFields: Set<string>;
   copiedId: string | null;
   accentColor: string;
-  onToggleDone: (id: string) => void;
-  onSelectField: (id: string) => void;
   onCopyExample: (example: string, id: string) => void;
 }
 
 export default function FormFieldDetail({
   activeField,
-  allFields,
-  doneFields,
   copiedId,
   accentColor,
-  onToggleDone,
-  onSelectField,
   onCopyExample,
 }: Props) {
   if (!activeField) {

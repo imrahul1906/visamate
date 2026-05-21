@@ -398,6 +398,7 @@ export default function WizardLeftPanel() {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardRef  = useRef<HTMLDivElement>(null);
+  const advanceStepRef = useRef<(fromIdx: number) => void>(() => {});
 
   const schedule = useCallback((fn: () => void, delay: number) => {
     timerRef.current = setTimeout(fn, delay);
@@ -442,7 +443,7 @@ export default function WizardLeftPanel() {
           schedule(() => {
             setClicking(false); setSelectedCountryIdx(0); setHoverCountryIdx(null);
             setPhase("selected");
-            schedule(() => advanceStep(idx), T_SELECTED_HOLD);
+            schedule(() => advanceStepRef.current(idx), T_SELECTED_HOLD);
           }, T_CLICK_HOLD);
         }, T_CURSOR_TRAVEL);
       }
@@ -455,7 +456,7 @@ export default function WizardLeftPanel() {
           schedule(() => {
             setClicking(false); setSelectedVisaIdx(0); setHoverVisaIdx(null);
             setPhase("selected");
-            schedule(() => advanceStep(idx), T_SELECTED_HOLD);
+            schedule(() => advanceStepRef.current(idx), T_SELECTED_HOLD);
           }, T_CLICK_HOLD);
         }, T_CURSOR_TRAVEL);
       }
@@ -468,7 +469,7 @@ export default function WizardLeftPanel() {
           schedule(() => {
             setClicking(false); setSelectedLocIdx(0); setHoverLocIdx(null);
             setPhase("selected");
-            schedule(() => advanceStep(idx), T_SELECTED_HOLD);
+            schedule(() => advanceStepRef.current(idx), T_SELECTED_HOLD);
           }, T_CLICK_HOLD);
         }, T_CURSOR_TRAVEL);
       }
@@ -488,7 +489,7 @@ export default function WizardLeftPanel() {
                 schedule(() => {
                   setClicking(false); setSelectedProfile("employed"); setHoverTarget(null);
                   setPhase("selected");
-                  schedule(() => advanceStep(idx), T_SELECTED_HOLD);
+                  schedule(() => advanceStepRef.current(idx), T_SELECTED_HOLD);
                 }, T_CLICK_HOLD);
               }, T_CURSOR_TRAVEL);
             }, 500);
@@ -512,8 +513,11 @@ export default function WizardLeftPanel() {
         runStep(nextIdx);
       }
     }, T_ADVANCE + 200);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedule, runStep]);
+
+  useEffect(() => {
+    advanceStepRef.current = advanceStep;
+  }, [advanceStep]);
 
   useEffect(() => {
     const init = setTimeout(() => runStep(0), 600);

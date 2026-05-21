@@ -141,7 +141,6 @@ export async function buildItineraryDocxBlob(
     WidthType,
     ShadingType,
     VerticalAlign,
-    HeadingLevel,
     LevelFormat,
   } = await import("docx");
 
@@ -446,10 +445,8 @@ export async function buildItineraryDocxBlob(
     ],
   });
 
-  const buffer = await Packer.toBuffer(doc);
-  return new Blob([buffer], {
-    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  });
+  const blob = await Packer.toBlob(doc);
+  return blob;
 }
 
 // ─────────────────────────────────────────────────────────────

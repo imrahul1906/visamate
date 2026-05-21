@@ -17,22 +17,28 @@ export function useDrawerAnimation(activeDocId: string | null): UseDrawerAnimati
 
     if (activeDocId === null) {
       // Closing: fade out, then clear visibleDocId
-      setDrawerOpacity(0);
-      setDrawerTranslateY(8);
+      setTimeout(() => {
+        setDrawerOpacity(0);
+        setDrawerTranslateY(8);
+      }, 0);
       animFrameRef.current = setTimeout(() => setVisibleDocId(null), 220);
     } else if (visibleDocId === null) {
       // Opening fresh: set content immediately, then fade in
-      setVisibleDocId(activeDocId);
-      setDrawerOpacity(0);
-      setDrawerTranslateY(10);
+      setTimeout(() => {
+        setVisibleDocId(activeDocId);
+        setDrawerOpacity(0);
+        setDrawerTranslateY(10);
+      }, 0);
       animFrameRef.current = setTimeout(() => {
         setDrawerOpacity(1);
         setDrawerTranslateY(0);
       }, 16); // next paint
     } else {
       // Switching docs: fade out → swap → fade in
-      setDrawerOpacity(0);
-      setDrawerTranslateY(6);
+      setTimeout(() => {
+        setDrawerOpacity(0);
+        setDrawerTranslateY(6);
+      }, 0);
       animFrameRef.current = setTimeout(() => {
         setVisibleDocId(activeDocId);
         setDrawerTranslateY(-6); // come from slightly above for direction feel

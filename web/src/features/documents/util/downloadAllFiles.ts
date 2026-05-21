@@ -11,7 +11,6 @@ import type { DocumentItem, UploadsMap } from "../../../types/document";
 
 export async function downloadAllFiles(uploads: UploadsMap, allDocs: DocumentItem[]) {
   try {
-    // @ts-ignore — optional peer dep
     const JSZip = (await import("jszip")).default;
     const zip = new JSZip();
     const folder = zip.folder("visa-documents")!;

@@ -11,10 +11,8 @@ import type { DocumentItem } from "../../types/document";
 
 export default function DocumentChecklistWidget({
   doc,
-  color,
 }: {
   doc: DocumentItem;
-  color: string;
 }) {
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);

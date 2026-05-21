@@ -56,11 +56,15 @@ export function ContactRow({
   idx,
   onChange,
   onRemove,
+  phoneError,
+  emailError,
 }: {
   contact: Contact;
   idx: number;
   onChange: (c: Contact) => void;
   onRemove: () => void;
+  phoneError?: string;
+  emailError?: string;
 }) {
   return (
     <div className="cl-contact-row">
@@ -78,13 +82,13 @@ export function ContactRow({
         onChange={(e) => onChange({ ...contact, rel: e.target.value })}
       />
       <input
-        className="cl-input cl-contact-field"
+        className={`cl-input cl-contact-field${phoneError ? " cl-input--error" : ""}`}
         placeholder="+91 XXXXX XXXXX"
         value={contact.phone}
         onChange={(e) => onChange({ ...contact, phone: e.target.value })}
       />
       <input
-        className="cl-input cl-contact-field"
+        className={`cl-input cl-contact-field${emailError ? " cl-input--error" : ""}`}
         placeholder="email@example.com"
         value={contact.email}
         onChange={(e) => onChange({ ...contact, email: e.target.value })}

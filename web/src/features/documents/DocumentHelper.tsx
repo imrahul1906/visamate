@@ -59,7 +59,6 @@ export function DocHelper({
   onCoverLetterReady,
   onSponsorConsentReady,
   itineraryData,
-  sponsorConsentPrefill,
   hideUpload,
 }: DocHelperProps) {
   const wrappedUploads: UploadsMap = uploads;
@@ -86,7 +85,7 @@ export function DocHelper({
 
       {/* Document checklist widget */}
       {doc.specialWidget === "document_checklist" && (
-        <DocumentChecklistWidget doc={doc} color={color} />
+        <DocumentChecklistWidget doc={doc} />
       )}
 
       {/* Itinerary builder */}
@@ -109,7 +108,6 @@ export function DocHelper({
       {doc.specialWidget === "sponsor_consent" && (
         <SponsorConsentWidget
           color={color}
-          prefill={sponsorConsentPrefill as any}
           onDocxReady={file => onSponsorConsentReady(file)}
         />
       )}

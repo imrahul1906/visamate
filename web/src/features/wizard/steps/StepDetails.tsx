@@ -9,11 +9,13 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useApplicant } from "@/lib/context/ApplicantContext";
 import { ToggleGroup } from "@/components/shared/ToggleChip";
 
 interface Props {
+  sponsorship?: string | null;
+  profile?: string | null;
   compact?: boolean;
   onSelect?: (sponsorship: string | null, profile: string | null) => void;
 }
@@ -64,22 +66,20 @@ const profileOptions = [
 
 // ─── Component ────────────────────────────────────────────────
 
-export default function StepDetails({ compact, onSelect }: Props) {
+export default function StepDetails({ sponsorship, profile, compact, onSelect }: Props) {
   const { ctx, update } = useApplicant();
 
-  const [localSponsor, setLocalSponsor] = useState<string | null>(ctx.sponsorshipType ?? null);
-  const [localProfile, setLocalProfile] = useState<string | null>(ctx.applicantProfile ?? null);
+  const activeSponsor = sponsorship !== undefined ? sponsorship : ctx.sponsorshipType;
+  const activeProfile = profile !== undefined ? profile : ctx.applicantProfile;
 
   const handleSponsor = (id: string | null) => {
-    setLocalSponsor(id);
     update({ sponsorshipType: id as typeof ctx.sponsorshipType });
-    onSelect?.(id, localProfile);
+    onSelect?.(id, activeProfile);
   };
 
   const handleProfile = (id: string | null) => {
-    setLocalProfile(id);
     update({ applicantProfile: id as typeof ctx.applicantProfile });
-    onSelect?.(localSponsor, id);
+    onSelect?.(activeSponsor, id);
   };
 
   return (
@@ -95,18 +95,18 @@ export default function StepDetails({ compact, onSelect }: Props) {
       <ToggleGroup
         label="Trip sponsorship"
         options={sponsorshipOptions}
-        selected={localSponsor}
+        selected={activeSponsor}
         onSelect={handleSponsor}
       />
 
       <ToggleGroup
         label="Your profile"
         options={profileOptions}
-        selected={localProfile}
+        selected={activeProfile}
         onSelect={handleProfile}
       />
 
-      {(!localSponsor || !localProfile) && (
+      {(!activeSponsor || !activeProfile) && (
         <p style={{ color: "rgba(255,255,255,0.22)", fontSize: 11, margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
           Select both options above to continue
         </p>

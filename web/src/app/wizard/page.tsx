@@ -1,6 +1,11 @@
-// app/wizard/page.tsx
+// src/app/wizard/page.tsx
 import VisaMateLanding from "../../features/wizard/WizardAccordion";
+import { ApplicantProvider } from "@/lib/context/ApplicantContext";
 
 export default function WizardPage() {
-  return <VisaMateLanding />;
+  return (
+    <ApplicantProvider>
+      <VisaMateLanding />
+    </ApplicantProvider>
+  );
 }

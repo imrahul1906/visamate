@@ -16,7 +16,6 @@ import { useApplicant } from "@/lib/context/ApplicantContext";
 import {
   seedConsentState,
   type SponsorConsentInputs,
-  type SeededConsentState,
 } from "./sponsorConsentService";
 import { fmtDate } from "../util/dateFormatting";
 import { buildSponsorConsentDocx } from "./sponsorConsentDocx";
@@ -53,7 +52,6 @@ function deriveEndDate(startDate: string, durationDays: number): string {
 
 export default function SponsorConsentWidget({
   onDocxReady,
-  color = "#6366f1",
 }: SponsorConsentWidgetProps) {
   const { ctx } = useApplicant();
 
@@ -175,7 +173,7 @@ export default function SponsorConsentWidget({
         <div className="cl-select">
           <div className="cl-select-inner">
             <p className="cl-select-sub">
-              We'll pre-fill everything we already know — sponsor, applicant, destination, dates — and
+              We&apos;ll pre-fill everything we already know — sponsor, applicant, destination, dates — and
               insert{" "}
               <span style={{ color: "var(--iw-amber)" }}>amber hint callouts</span> wherever
               information is still missing.

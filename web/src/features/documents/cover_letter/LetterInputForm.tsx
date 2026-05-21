@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { Contact, ContactRow, CountryVisit, CountryVisitRow } from "./LetterFormFields";
 import type { CoverLetterInputs, ValidationErrors } from "./letterValidation";
 import { isEmployed, isStudent, isSponsored } from "./letterValidation";
-import { validators, validateContact, type ContactErrors } from "../util/docInputValidation";
+import { validators, validateContact } from "../util/docInputValidation";
 
 export interface CoverLetterInputsStepProps {
   inputs: CoverLetterInputs;
@@ -20,13 +20,12 @@ export interface CoverLetterInputsStepProps {
   applicantProfile?: string;
   sponsorshipType?: string;
   contacts: Contact[];
-  onChange: (key: keyof CoverLetterInputs, value: any) => void;
+  onChange: <K extends keyof CoverLetterInputs>(key: K, value: CoverLetterInputs[K]) => void;
   onAddContact: () => void;
   onUpdateContact: (idx: number, contact: Contact) => void;
   onRemoveContact: (idx: number) => void;
   onProceed: () => void;
   onBack: () => void;
-  hasDependant?: string;
   dependants: Dependant[];
   onAddDependant: () => void;
   onUpdateDependant: (idx: number, d: Dependant) => void;
@@ -57,7 +56,6 @@ export function CoverLetterInputsStep({
   onRemoveContact,
   onProceed,
   onBack,
-  hasDependant,
   dependants,
   onAddDependant,
   onUpdateDependant,
@@ -168,11 +166,11 @@ export function CoverLetterInputsStep({
             <div className="cl-field">
               <label className="cl-label">Travelling</label>
               <div className="cl-toggle-row">
-                {["alone", "with"].map((v) => (
+                {(["alone", "with"] as const).map((v) => (
                   <button
                     key={v}
                     className={`cl-toggle-btn${inputs.travellingWith === v ? " cl-toggle-btn--active" : ""}`}
-                    onClick={() => onChange("travellingWith", v as any)}
+                    onClick={() => onChange("travellingWith", v)}
                   >
                     {v === "alone" ? "Alone" : "With someone"}
                   </button>
@@ -355,7 +353,7 @@ export function CoverLetterInputsStep({
                 <div className="cl-field-row">
                   <div className="cl-field">
                     <label className="cl-label">
-                      Sponsor's passport number
+                      Sponsor&apos;s passport number
                       {fieldErrors.sponsorPassport && (
                         <span className="cl-field-err">{fieldErrors.sponsorPassport}</span>
                       )}
@@ -363,10 +361,10 @@ export function CoverLetterInputsStep({
                     <input
                       className={`cl-input${fieldErrors.sponsorPassport ? " cl-input--error" : ""}`}
                       placeholder="e.g. P1234567"
-                      value={(inputs as any).sponsorPassport || ""}
+                      value={inputs.sponsorPassport || ""}
                       onChange={(e) => {
                         const cleaned = validators.passport.sanitise?.(e.target.value) ?? e.target.value;
-                        onChange("sponsorPassport" as any, cleaned);
+                        onChange("sponsorPassport", cleaned);
                       }}
                       onBlur={(e) => validateField("sponsorPassport", e.target.value)}
                       onKeyDown={validators.passport.onKeyDown}
@@ -374,13 +372,13 @@ export function CoverLetterInputsStep({
                     />
                   </div>
                   <div className="cl-field">
-                    <label className="cl-label">Sponsor's date of birth</label>
+                    <label className="cl-label">Sponsor&apos;s date of birth</label>
                     <input
                       className="cl-input cl-input--date"
                       type="date"
                       max={new Date().toISOString().split("T")[0]}
-                      value={(inputs as any).sponsorDob || ""}
-                      onChange={(e) => onChange("sponsorDob" as any, e.target.value)}
+                      value={inputs.sponsorDob || ""}
+                      onChange={(e) => onChange("sponsorDob", e.target.value)}
                     />
                   </div>
                 </div>
@@ -390,14 +388,14 @@ export function CoverLetterInputsStep({
             <div className="cl-field" style={{ marginTop: 8 }}>
               <label className="cl-label">Is your sponsor travelling with you?</label>
               <div className="cl-toggle-row">
-                {[
+                {([
                   ["staying", "Staying in India"],
                   ["accompanying", "Accompanying me"],
-                ].map(([v, l]) => (
+                ] as const).map(([v, l]) => (
                   <button
                     key={v}
                     className={`cl-toggle-btn${inputs.sponsorAccompanying === v ? " cl-toggle-btn--active" : ""}`}
-                    onClick={() => onChange("sponsorAccompanying", v as any)}
+                    onClick={() => onChange("sponsorAccompanying", v)}
                   >
                     {l}
                   </button>
@@ -413,14 +411,14 @@ export function CoverLetterInputsStep({
           <div className="cl-field">
             <label className="cl-label">Is a dependant (e.g. spouse, child) applying with you?</label>
             <div className="cl-toggle-row">
-              {[
+              {([
                 ["no", "No — just me"],
                 ["yes", "Yes — add dependant(s)"],
-              ].map(([v, l]) => (
+              ] as const).map(([v, l]) => (
                 <button
                   key={v}
                   className={`cl-toggle-btn${inputs.hasDependant === v ? " cl-toggle-btn--active" : ""}`}
-                  onClick={() => onChange("hasDependant", v as any)}
+                  onClick={() => onChange("hasDependant", v)}
                 >
                   {l}
                 </button>
@@ -506,11 +504,11 @@ export function CoverLetterInputsStep({
             <div className="cl-ties-item">
               <label className="cl-label">Married?</label>
               <div className="cl-toggle-row cl-toggle-row--sm">
-                {["yes", "no"].map((v) => (
+                {(["yes", "no"] as const).map((v) => (
                   <button
                     key={v}
                     className={`cl-toggle-btn${inputs.married === v ? " cl-toggle-btn--active" : ""}`}
-                    onClick={() => onChange("married", v as any)}
+                    onClick={() => onChange("married", v)}
                   >
                     {v === "yes" ? "Yes" : "No"}
                   </button>
@@ -520,11 +518,11 @@ export function CoverLetterInputsStep({
             <div className="cl-ties-item">
               <label className="cl-label">Parents in India?</label>
               <div className="cl-toggle-row cl-toggle-row--sm">
-                {["yes", "no"].map((v) => (
+                {(["yes", "no"] as const).map((v) => (
                   <button
                     key={v}
                     className={`cl-toggle-btn${inputs.parentsInIndia === v ? " cl-toggle-btn--active" : ""}`}
-                    onClick={() => onChange("parentsInIndia", v as any)}
+                    onClick={() => onChange("parentsInIndia", v)}
                   >
                     {v === "yes" ? "Yes" : "No"}
                   </button>
@@ -534,11 +532,11 @@ export function CoverLetterInputsStep({
             <div className="cl-ties-item">
               <label className="cl-label">Children?</label>
               <div className="cl-toggle-row cl-toggle-row--sm">
-                {["yes", "no"].map((v) => (
+                {(["yes", "no"] as const).map((v) => (
                   <button
                     key={v}
                     className={`cl-toggle-btn${inputs.hasChildren === v ? " cl-toggle-btn--active" : ""}`}
-                    onClick={() => onChange("hasChildren", v as any)}
+                    onClick={() => onChange("hasChildren", v)}
                   >
                     {v === "yes" ? "Yes" : "No"}
                   </button>

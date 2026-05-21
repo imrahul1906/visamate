@@ -6,7 +6,7 @@
  */
 
 import { today, fmtDate, fmtDob } from "../util/dateFormatting";
-import { hint, stripHints } from "../util/textFormatting";
+import { hint } from "../util/textFormatting";
 
 // ─────────────────────────────────────────────────────────────
 // Types
@@ -93,9 +93,7 @@ export interface SeededConsentState {
 export function seedConsentState(inputs: SponsorConsentInputs): SeededConsentState {
   const dest = inputs.destination || "[Country]";
   const visaLabel = inputs.visaTypeName || "Temporary Visitor Visa for Tourism";
-  const rel = inputs.sponsorRelationship
-    ? inputs.sponsorRelationship.charAt(0).toUpperCase() + inputs.sponsorRelationship.slice(1)
-    : "[Relationship]";
+
 
   const durationStr = inputs.travelDuration ? `${inputs.travelDuration} days` : "[X] days";
   const startFmt = fmtDate(inputs.travelStartDate);

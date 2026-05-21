@@ -255,14 +255,17 @@ function normalizeCode(code: string | undefined | null): string {
   return code.trim().toUpperCase();
 }
 
-function buildRoutingKey(countryCode: string, locationCode: string): string {
+function buildRoutingKey(
+  countryCode: string | undefined | null,
+  locationCode: string | undefined | null
+): string {
   return `${normalizeCode(countryCode)}_${normalizeCode(locationCode)}`;
 }
 
 function buildRequirementKey(
-  countryCode: string,
-  visaTypeCode: string,
-  locationCode: string
+  countryCode: string | undefined | null,
+  visaTypeCode: string | undefined | null,
+  locationCode: string | undefined | null
 ): string {
   return `${normalizeCode(countryCode)}_${normalizeCode(visaTypeCode)}_${normalizeCode(locationCode)}`;
 }

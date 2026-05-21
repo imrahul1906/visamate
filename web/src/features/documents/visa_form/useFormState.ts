@@ -81,23 +81,39 @@ export function useFormState(doc: DocumentItem): FormState {
   const [fieldsLoading, setFieldsLoading] = useState(false);
   const [fieldsLoaded, setFieldsLoaded] = useState(false);
 
+  const [prevFormKey, setPrevFormKey] = useState(formInfo?.formFillDataKey);
+  const [prevHelperOpen, setPrevHelperOpen] = useState(helperOpen);
+
+  if (prevFormKey !== formInfo?.formFillDataKey) {
+    setPrevFormKey(formInfo?.formFillDataKey);
+    setFieldsLoaded(false);
+    setAllFields([]);
+    setActiveFieldId(null);
+    setSearchQuery("");
+    setDoneFields(new Set());
+    setFieldsLoading(false);
+  }
+
+  if (prevHelperOpen !== helperOpen) {
+    setPrevHelperOpen(helperOpen);
+    if (helperOpen && !fieldsLoaded) {
+      setFieldsLoading(true);
+    }
+  }
+
   useEffect(() => {
     if (!helperOpen || fieldsLoaded) return;
-    setFieldsLoading(true);
     getFormFillFields(formInfo?.formFillDataKey).then((fields) => {
       setAllFields(fields);
       setFieldsLoading(false);
       setFieldsLoaded(true);
+      if (fields.length > 0) {
+        setActiveFieldId((curr) => curr || fields[0].id);
+        setCollapsedSections(getInitialCollapsedSections(fields));
+      }
     });
-  }, [helperOpen, formInfo?.formFillDataKey]);
+  }, [helperOpen, formInfo?.formFillDataKey, fieldsLoaded]);
   const searchRef = useRef<HTMLInputElement>(null);
-
-  // Auto-select first field and initialise section collapse once data arrives
-  useEffect(() => {
-    if (allFields.length === 0) return;
-    if (!activeFieldId) setActiveFieldId(allFields[0].id);
-    setCollapsedSections(getInitialCollapsedSections(allFields));
-  }, [allFields]);
 
   // ── Derived ─────────────────────────────────────────────────
   const filteredFields = filterFields(allFields, searchQuery);

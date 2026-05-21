@@ -38,7 +38,7 @@ export type SpecialWidget =
 export interface DocumentItem {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   status: "required" | "optional";
   category: string;
   tips?: string[];

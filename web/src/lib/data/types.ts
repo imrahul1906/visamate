@@ -210,6 +210,14 @@ export interface DocumentItem {
   };
   photoSpecRef?: string;
   formUrl?: string;
+  form?: {
+    type: string;
+    downloadUrl?: string | null;
+    onlineUrl?: string | null;
+    requiresPrint?: boolean;
+    formFillDataKey?: string | null;
+  };
+  check_list_download_Url?: string;
 }
 
 export interface DocumentSection {
@@ -232,7 +240,7 @@ export interface RequirementsData {
   processingDays?: number | string | null;
   processingDaysExpress?: number | string | null;
   fees?: Record<string, unknown>;
-  photoSpecifications?: PhotoSpec;
+  photoSpecifications?: Record<string, PhotoSpec>;
   documentSections?: DocumentSection[];
   importantNotes?: unknown[];
   metadata?: Record<string, unknown>;

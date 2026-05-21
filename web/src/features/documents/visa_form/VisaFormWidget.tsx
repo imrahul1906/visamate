@@ -34,13 +34,32 @@ export default function VisaFormWidget({
 
   /* ── Top-level screen mode ── */
   const [mode, setMode] = useState<"select" | "helper">("select");
-
   /* ── All form state lives here ── */
-  const state = useFormState(doc);
+  const {
+    sections,
+    activeField,
+    fieldsLoading,
+    searchQuery,
+    setSearchQuery,
+    searchRef,
+    activeFieldId,
+    setActiveFieldId,
+    doneFields,
+    toggleDone,
+    totalFields,
+    allDone,
+    copiedId,
+    copyExample,
+    setHelperOpen,
+    collapsedSections,
+    setCollapsedSections,
+    toggleSection,
+    isDownloadable,
+  } = useFormState(doc);
 
   /* ── When user clicks "Open helper", open it ── */
   const handleOpenHelper = () => {
-    state.setHelperOpen(true); // triggers lazy field load in the hook
+    setHelperOpen(true); // triggers lazy field load in the hook
     setMode("helper");
   };
 
@@ -48,12 +67,11 @@ export default function VisaFormWidget({
     setMode("select");
   };
 
-  const isDownloadable = state.isDownloadable;
   const hasHelper = !!formInfo?.formFillDataKey;
 
   /* ══════════════════════════════════════════════════════════
      SELECT SCREEN — two option cards
-  ══════════════════════════════════════════════════════════ */
+     ══════════════════════════════════════════════════════════ */
   if (mode === "select") {
     return (
       <div
@@ -136,7 +154,7 @@ export default function VisaFormWidget({
                 color: T.muted2,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = T.border2;
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.28)";
                 (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
               }}
               onMouseLeave={(e) => {
@@ -326,7 +344,7 @@ export default function VisaFormWidget({
 
   /* ══════════════════════════════════════════════════════════
      HELPER SCREEN
-  ══════════════════════════════════════════════════════════ */
+     ══════════════════════════════════════════════════════════ */
   return (
     <div
       onClick={(e) => e.stopPropagation()}
@@ -347,10 +365,10 @@ export default function VisaFormWidget({
 
       {/* ── Single merged topbar: back · search · collapse toggles ── */}
       {(() => {
-        const sectionNames = Object.keys(state.sections);
+        const sectionNames = Object.keys(sections);
         const allCollapsed =
           sectionNames.length > 0 &&
-          sectionNames.every((s) => state.collapsedSections.has(s));
+          sectionNames.every((s) => collapsedSections.has(s));
 
         return (
           <div
@@ -407,7 +425,7 @@ export default function VisaFormWidget({
             <div style={{ flex: 1 }} />
 
             {/* Search */}
-            {!state.fieldsLoading && (
+            {!fieldsLoading && (
               <div
                 style={{
                   display: "flex",
@@ -423,9 +441,9 @@ export default function VisaFormWidget({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
                 <input
-                  ref={state.searchRef}
-                  value={state.searchQuery}
-                  onChange={(e) => state.setSearchQuery(e.target.value)}
+                  ref={searchRef}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search fields…"
                   style={{
                     border: "none",
@@ -437,9 +455,9 @@ export default function VisaFormWidget({
                     fontFamily: font.sans,
                   }}
                 />
-                {state.searchQuery && (
+                {searchQuery && (
                   <button
-                    onClick={() => state.setSearchQuery("")}
+                    onClick={() => setSearchQuery("")}
                     style={{
                       border: "none",
                       background: "transparent",
@@ -457,10 +475,10 @@ export default function VisaFormWidget({
             )}
 
             {/* Collapse toggle */}
-            {!state.fieldsLoading && sectionNames.length > 1 && (
+            {!fieldsLoading && sectionNames.length > 1 && (
               <button
                 onClick={() =>
-                  state.setCollapsedSections(
+                  setCollapsedSections(
                     allCollapsed ? new Set() : new Set(sectionNames)
                   )
                 }
@@ -499,7 +517,7 @@ export default function VisaFormWidget({
       })()}
 
       {/* ── Loading spinner ── */}
-      {state.fieldsLoading && (
+      {fieldsLoading && (
         <div
           style={{
             padding: "36px 20px",
@@ -527,7 +545,7 @@ export default function VisaFormWidget({
       )}
 
       {/* ── Two-column helper body ── */}
-      {!state.fieldsLoading && state.totalFields > 0 && (
+      {!fieldsLoading && totalFields > 0 && (
         <div
           style={{
             display: "grid",
@@ -548,15 +566,15 @@ export default function VisaFormWidget({
             }}
           >
             <FormFieldList
-              sections={state.sections}
-              searchQuery={state.searchQuery}
-              activeFieldId={state.activeFieldId}
-              doneFields={state.doneFields}
-              collapsedSections={state.collapsedSections}
+              sections={sections}
+              searchQuery={searchQuery}
+              activeFieldId={activeFieldId}
+              doneFields={doneFields}
+              collapsedSections={collapsedSections}
               accentColor={accentColor}
-              onSelectField={state.setActiveFieldId}
-              onToggleDone={state.toggleDone}
-              onToggleSection={state.toggleSection}
+              onSelectField={setActiveFieldId}
+              onToggleDone={toggleDone}
+              onToggleSection={toggleSection}
             />
           </div>
 
@@ -571,21 +589,17 @@ export default function VisaFormWidget({
             }}
           >
             <FormFieldDetail
-              activeField={state.activeField}
-              allFields={state.allFields}
-              doneFields={state.doneFields}
-              copiedId={state.copiedId}
+              activeField={activeField}
+              copiedId={copiedId}
               accentColor={accentColor}
-              onToggleDone={state.toggleDone}
-              onSelectField={state.setActiveFieldId}
-              onCopyExample={state.copyExample}
+              onCopyExample={copyExample}
             />
           </div>
         </div>
       )}
 
       {/* ── All-done banner ── */}
-      {!state.fieldsLoading && state.allDone && (
+      {!fieldsLoading && allDone && (
         <div
           style={{
             margin: "0 16px 16px",
@@ -600,7 +614,7 @@ export default function VisaFormWidget({
         >
           <span style={{ fontSize: 16 }}>🎉</span>
           <p style={{ fontSize: 12, fontWeight: 600, color: T.green, margin: 0, fontFamily: font.sans }}>
-            All {state.totalFields} fields marked as filled! Your form is ready to submit.
+            All {totalFields} fields marked as filled! Your form is ready to submit.
           </p>
         </div>
       )}
@@ -610,13 +624,22 @@ export default function VisaFormWidget({
 
 /* ── Utility: convert a hex color to "r,g,b" for rgba() ── */
 function hexToRgb(hex: string): string {
+  const fallback = "99,102,241"; // Indigo default fallback
+  if (!hex || typeof hex !== "string" || !hex.startsWith("#")) {
+    return fallback;
+  }
   const clean = hex.replace("#", "");
+  if (clean.length !== 3 && clean.length !== 6) {
+    return fallback;
+  }
   if (clean.length === 3) {
     const [r, g, b] = clean.split("").map((c) => parseInt(c + c, 16));
+    if (isNaN(r) || isNaN(g) || isNaN(b)) return fallback;
     return `${r},${g},${b}`;
   }
   const r = parseInt(clean.slice(0, 2), 16);
   const g = parseInt(clean.slice(2, 4), 16);
   const b = parseInt(clean.slice(4, 6), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return fallback;
   return `${r},${g},${b}`;
 }

@@ -51,7 +51,7 @@ export default function FormFieldList({
         </svg>
         <p style={{ fontSize: 11, margin: 0, fontFamily: font.sans }}>
           No fields match<br />
-          <strong style={{ color: T.muted2 }}>"{searchQuery}"</strong>
+          <strong style={{ color: T.muted2 }}>&quot;{searchQuery}&quot;</strong>
         </p>
       </div>
     );
