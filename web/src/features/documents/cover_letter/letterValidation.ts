@@ -72,6 +72,7 @@ export interface ApplicantContext {
   visaType: string;
   visaTypeName: string;
   country: string;
+  countryName?: string;
   vfsCenter: string;
 }
 

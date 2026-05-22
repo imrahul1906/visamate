@@ -88,7 +88,7 @@ export default function SponsorConsentWidget({
       applicantDob: ctx.applicantDob,
 
       // Trip
-      destination: ctx.country,
+      destination: ctx.countryName || ctx.country,
       visaTypeName: ctx.visaTypeName,
       travelStartDate: ctx.travelStartDate,
       travelEndDate: deriveEndDate(ctx.travelStartDate, ctx.travelDuration),
@@ -175,7 +175,7 @@ export default function SponsorConsentWidget({
               <ContextItem label="Sponsor Name" value={ctx.sponsorName} fallback="Not provided — add in builder" />
               <ContextItem label="Sponsor Passport" value={ctx.sponsorPassport} fallback="Not provided — add in builder" />
               <ContextItem label="Relationship" value={ctx.sponsorRel} fallback="Not provided — add in builder" />
-              <ContextItem label="Destination" value={ctx.country} />
+              <ContextItem label="Destination" value={ctx.countryName || ctx.country} />
               <ContextItem label="Visa Type" value={ctx.visaTypeName} fallback="Not provided" />
               <ContextItem
                 label="Travel Period"

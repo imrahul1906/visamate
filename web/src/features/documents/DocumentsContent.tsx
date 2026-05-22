@@ -43,11 +43,11 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const router = useRouter();
 
   const country = props.country ?? ctx.country ?? "";
-  const countryName = props.countryName ?? props.country ?? "—";
+  const countryName = props.countryName ?? ctx.countryName ?? props.country ?? ctx.country ?? "—";
   const visaType = props.visaType ?? ctx.visaType ?? "";
   const visaTypeName = props.visaTypeName ?? ctx.visaTypeName ?? "—";
   const location = props.location ?? ctx.vfsCenter ?? "";
-  const locationName = props.locationName ?? props.location ?? "—";
+  const locationName = props.locationName ?? props.location ?? ctx.vfsCenter ?? "—";
   const sponsorship = props.sponsorship ?? ctx.sponsorshipType ?? "SELF";
 
   // Derive travelEndDate using date math if travelStartDate and duration are present

@@ -303,7 +303,7 @@ export default function CoverLetterBuilder({
       sponsorshipType: ctx.sponsorshipType || "",
       visaType: ctx.visaType || "",
       visaTypeName: ctx.visaTypeName || "",
-      country: ctx.country || "",
+      country: ctx.countryName || ctx.country || "",
       vfsCenter: ctx.vfsCenter || "",
     };
   }

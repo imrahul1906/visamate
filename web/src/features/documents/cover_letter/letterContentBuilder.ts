@@ -57,7 +57,7 @@ export function seedLetterState(
   const citiesStr = (ctx.cities || []).join(", ") || "[Cities]";
   const flightCity = (ctx.cities && ctx.cities[0]) || "[City]";
   const visaTypeName = ctx.visaTypeName || "[Visa Type Name]";
-  const country = ctx.country || "[Country]";
+  const country = ctx.countryName || ctx.country || "[Country]";
   const vfsCenter = ctx.vfsCenter || "";
 
   // Build doc rows

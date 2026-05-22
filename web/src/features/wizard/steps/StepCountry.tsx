@@ -3,7 +3,6 @@
 import React, { useState, useMemo } from "react";
 import type { CountryCatalogEntry } from "@/lib/data/repository";
 
-import { useApplicant } from "@/lib/context/ApplicantContext";
 
 interface Props {
   allCountries: CountryCatalogEntry[] | undefined | null;
@@ -13,7 +12,6 @@ interface Props {
 }
 
 export default function StepCountry({ allCountries, selectedCountry, onSelect, compact }: Props) {
-  const { update } = useApplicant();
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -134,7 +132,6 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
                   const countryCode = isSelected ? null : c.code;
                   const countryName = isSelected ? null : c.name;
                   onSelect(countryCode, countryName);
-                  update({ country: countryName ?? "" });
                 }}
               />
             );
@@ -171,7 +168,6 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
                       const countryCode = isSelected ? null : c.code;
                       const countryName = isSelected ? null : c.name;
                       onSelect(countryCode, countryName);
-                      update({ country: countryName ?? "" });
                     }}
                   />
                 );
