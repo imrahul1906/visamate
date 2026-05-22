@@ -10,8 +10,8 @@
 .vm-scroll-indigo::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.65); }
 .vm-scroll-indigo { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.35) transparent; }
 
-.vm-scroll-hidden::-webkit-scrollbar { display: none; }
-.vm-scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
+.vm-scroll-hidden::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+.vm-scroll-hidden { scrollbar-width: none !important; -ms-overflow-style: none !important; }
 
 /* ─── Consolidated Keyframe Animations ─── */
 @keyframes spin {

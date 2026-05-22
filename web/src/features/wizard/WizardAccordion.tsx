@@ -178,7 +178,8 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
         @keyframes flightFadeIn { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:scale(1); } }
         .flight-enter { animation: flightFadeIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards; }
 
-        .wizard-scroll::-webkit-scrollbar { display: none; }
+        .wizard-scroll::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        .wizard-scroll { scrollbar-width: none !important; -ms-overflow-style: none !important; }
       `}</style>
 
       <div
@@ -298,18 +299,21 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
             )}
 
             {/* Wizard step content — never unmounted; fades out behind the flight map */}
-            <div style={{
-              position: "absolute", inset: 0,
-              overflowY: "auto", overflowX: "hidden",
-              WebkitOverflowScrolling: "touch",
-              scrollBehavior: "smooth",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              // Hidden (not removed) while flight plays — preserves all step state
-              opacity: showFlight ? 0 : 1,
-              pointerEvents: showFlight ? "none" : "auto",
-              transition: "opacity 0.25s ease",
-            }}>
+            <div
+              className="vm-scroll-hidden"
+              style={{
+                position: "absolute", inset: 0,
+                overflowY: "auto", overflowX: "hidden",
+                WebkitOverflowScrolling: "touch",
+                scrollBehavior: "smooth",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                // Hidden (not removed) while flight plays — preserves all step state
+                opacity: showFlight ? 0 : 1,
+                pointerEvents: showFlight ? "none" : "auto",
+                transition: "opacity 0.25s ease",
+              }}
+            >
               <div
                 className={
                   animState === "exit"
