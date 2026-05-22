@@ -1,537 +1,322 @@
-# Documents Feature
+# 📂 VisaMate Documents Feature — Developer Guide & Widget Catalog
 
-## Overview
-
-The **Documents** feature is a comprehensive visa document management and checklist system that helps users organize, track, and prepare all required visa documentation. It provides an interactive checklist interface with specialized widgets for different document types, file upload capabilities, and document generation tools.
-
-### Purpose
-- **Document Checklist**: Displays country/visa-type-specific document requirements
-- **Document Tracking**: Tracks completion status (required vs. optional, checked vs. unchecked)
-- **File Management**: Handles file uploads for submittable documents
-- **Specialized Tools**: Provides embedded widgets for:
-  - Photo specifications visualization
-  - Visa application form generation & guidance
-  - Travel itinerary generation
-  - Cover letter generation
-- **Document Export**: Bulk download of all uploaded files as ZIP
+This guide provides an in-depth technical walkthrough of the **Documents** checklist, the split-panel master-detail UI, and the client-side document generation widgets in VisaMate. Read this to understand the React props, state shapes, custom hooks, and dynamic ZIP aggregation engine.
 
 ---
 
-## Architecture
+## 🔍 1. Subsystem Architecture & Split-Panel UI Flow
 
-### High-Level Flow
+The Documents screen employs a high-fidelity, dual-panel master-detail layout designed to keep the user context intact while building visa assets.
 
-```
-User Navigates to Documents Page
-           ↓
-DocumentsContent (Container Component)
-           ↓
-┌─────────────────────────────────────────┐
-│        useDocumentData Hook              │
-│  - Loads requirements from repository    │
-│  - Fetches visa type & itinerary data    │
-│  - Maps to DocumentData shape            │
-└─────────────────────────────────────────┘
-           ↓
-┌─────────────────────────────────────────┐
-│   Left Panel (Checklist)                 │
-│  - DocChecklistSidebar                       │
-│  - Document categories & items          │
-│  - Toggle completion status             │
-└─────────────────────────────────────────┘
-           ↓
-    User Selects Document
-           ↓
-┌─────────────────────────────────────────┐
-│   Right Panel (Focus Drawer)            │
-│  - DocDetailPanel with selected doc        │
-│  - DocHelper routes to correct widget   │
-│  - Upload/Download/Generate options    │
-└─────────────────────────────────────────┘
-           ↓
-┌─────────────────────────────────────────┐
-│   Special Widgets (conditional)         │
-│  - PhotoSpecWidget                      │
-│  - VisaFormWidget                       │
-│  - ItineraryWidget                      │
-│  - CoverLetterBuilder                    │
-│  - UploadSlot (default)                 │
-└─────────────────────────────────────────┘
-           ↓
-    User Downloads All Files (ZIP)
-           ↓
-        Exit Feature
+```mermaid
+graph TD
+    classDef container fill:#3b82f6,stroke:#1d4ed8,color:#fff,stroke-width:2px;
+    classDef component fill:#10b981,stroke:#047857,color:#fff,stroke-width:2px;
+    classDef widget fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px;
+    classDef context fill:#8b5cf6,stroke:#6d28d9,color:#fff,stroke-width:2px;
+
+    Entry["DocumentsContent<br/>(DocumentsContent.tsx)"]:::container
+    
+    %% Left Panel
+    Sidebar["DocChecklistSidebar.tsx<br/>(Left List Panel)"]:::component
+    Row["DocChecklistRow.tsx<br/>(Checklist Rows)"]:::component
+    Sidebar --> Row
+    
+    %% Right Panel Drawer
+    Detail["DocDetailPanel.tsx<br/>(Right Detail Drawer)"]:::component
+    Router["DocHelper.tsx<br/>(Widget Switcher Router)"]:::component
+    Detail --> Router
+    
+    %% Specialized Widgets
+    W1["PhotoSpecWidget.tsx"]:::widget
+    W2["VisaFormWidget.tsx"]:::widget
+    W3["ItineraryWidget.tsx"]:::widget
+    W4["CoverLetterBuilder.tsx"]:::widget
+    W5["SponsorConsentWidget.tsx"]:::widget
+    W6["DocumentChecklistWidget.tsx"]:::widget
+    W7["UploadSlot.tsx (Fallback File Drop)"]:::widget
+    
+    Router --> W1 & W2 & W3 & W4 & W5 & W6 & W7
+    
+    Entry --> Sidebar
+    Entry --> Detail
+    
+    %% State Hook Connections
+    Entry -.->|"useApplicant()"| AppCtx["ApplicantContext Provider"]:::context
 ```
 
-### Component Hierarchy
-
-```
-DocumentsContent (Main Container)
-  ├── DocumentsHeader (Title + Stats + Download Button)
-  ├── StatStrip (Summary of required/optional/uploaded)
-  ├── UploadProgressBanner (Upload progress indicator)
-  ├── DocChecklistCompleteBanner (Required documents completion bar)
-  └── Two-Panel Layout
-      ├── LEFT: DocChecklistSidebar
-      │    └── Category Groups
-      │         └── DocChecklistRow items (clickable)
-      └── RIGHT: DocDetailPanel (animated)
-           ├── Drawer Header (with category badge)
-           ├── DocHelper (routes to special widget or upload slot)
-           │    ├── PhotoSpecWidget
-           │    ├── VisaFormWidget
-           │    ├── ItineraryWidget
-           │    ├── CoverLetterBuilder
-           │    └── UploadSlot (default)
-           └── Drawer Footer (prev/next navigation)
-```
+### Component Breakdown
+* **[DocumentsContent.tsx](file:///d:/visamate/web/src/features/documents/DocumentsContent.tsx)**: The orchestrator component. It queries the local repositories for visa requirements, holds the user's checklist state, computes progress percentages, and handles zip compilation.
+* **[DocChecklistSidebar.tsx](file:///d:/visamate/web/src/features/documents/components/DocChecklistSidebar.tsx)**: Renders the categorized documents sidebar panel. Features progress bars per category group.
+* **[DocChecklistRow.tsx](file:///d:/visamate/web/src/features/documents/components/DocChecklistRow.tsx)**: Displays individual checklist items with state indicators (`Required`, `Optional`, `Uploaded`, `Hardcopy`) and tooltips.
+* **[DocDetailPanel.tsx](file:///d:/visamate/web/src/features/documents/components/DocDetailPanel.tsx)**: Renders the slide-out focused workspace. Triggers CSS shimmer animations when switching active documents.
+* **[DocHelper.tsx](file:///d:/visamate/web/src/features/documents/components/DocHelper.tsx)**: Contextually resolves the `doc.specialWidget` key and mounts the correct builder or a standard file drag-and-drop slot.
 
 ---
 
-## File Structure & Descriptions
+## ⚙️ 2. Core API, State & Props
 
-### Root Level Files
+### Component Props: `DocumentsContentProps`
+The controller accepts props to override the global context. This allows it to run embedded in check-in screens or stand alone.
 
-| File | Purpose |
-|------|---------|
-| **DocumentsContent.tsx** | Main container component. Manages state (checked docs, uploads, active doc), orchestrates data loading, renders two-panel layout. Entry point for the feature. |
-| **DocumentHelper.tsx** | Routes a single document to its appropriate widget based on `specialWidget` type (photo_spec, visa_form, itinerary, cover_letter, or default upload). |
-| **PhotoSpecWidget.tsx** | Displays visual guidelines for passport photo dimensions (45×35mm) with interactive overlay. |
-| **mapRequirements.ts** | Transforms raw `RequirementsData` from repository into `DocumentData` shape with categories, items, and metadata. Maps doc codes to special widget types. |
+```typescript
+export interface DocumentsContentProps {
+  embedded?: boolean;          // Suppresses outer navbar margins and footer branding
+  country?: string;            // ISO 2-letter country code (e.g., "JP")
+  countryName?: string;        // Friendly country name (e.g., "Japan")
+  visaType?: string;           // Visa category identifier (e.g., "TOURIST")
+  visaTypeName?: string;       // Friendly visa type description (e.g., "Tourist Visa")
+  location?: string;           // Submission center code (e.g., "MUMBAI")
+  locationName?: string;       // Submission center description
+  sponsorship?: string;        // Sponsorship status ("SELF" | "SPONSORED")
+  profile?: string;            // Profession profile ("employed" | "student" | "self-employed")
+}
+```
 
-### Components (`/components`)
+### React Component State Shape
+Within [DocumentsContent.tsx](file:///d:/visamate/web/src/features/documents/DocumentsContent.tsx), state is structured as follows:
 
-| File | Purpose |
-|------|---------|
-| **DocChecklistSidebar.tsx** | Left-side panel showing organized document categories and individual checklist items with toggle buttons and upload indicators. |
-| **DocDetailPanel.tsx** | Right-side animated drawer displaying a single selected document with header, helper widget, and prev/next navigation. |
-| **DocChecklistRow.tsx** | Individual document row in the checklist with status indicator, checkbox, upload icon, and optional badge. |
-| **DocumentsHeader.tsx** | Hero section with title, visa details, overall progress, upload stats, and download-all button. |
-| **DocChecklistStyles.tsx** | Global CSS styles injected into DOM for checklist styling. |
-| **StatStrip.tsx** | Horizontal stats bar showing required/optional/uploaded counts. |
-| **UploadProgressBanner.tsx** | Motivational banner showing file upload progress percentage. |
-| **DocChecklistCompleteBanner.tsx** | Progress bar showing completion of required documents. |
-| **DocLoadingStates.tsx** | Error and loading state UI components. |
+1. **`checked`** (`Record<string, boolean>`): Tracks completion checkmarks. Keys are unique document IDs.
+   ```json
+   {
+     "JP_TOURIST_PASSPORT": true,
+     "JP_TOURIST_ITINERARY": false
+   }
+   ```
+2. **`uploads`** (`UploadsMap`): Maps document IDs to local JavaScript `File` objects created during inline generation or uploaded via the drop zone:
+   ```typescript
+   export type UploadsMap = Record<string, File>;
+   ```
+3. **`activeDocId`** (`string | null`): Keeps track of the selected document ID for the detail drawer.
+4. **`downloadingZip`** (`boolean`): Triggers global loading overlays during ZIP packaging cycles.
 
-### Hooks (`/hooks`)
-
-| File | Purpose |
-|------|---------|
-| **useDocumentData.ts** | Fetches country requirements, visa type data, and itinerary data from repository. Maps requirements to DocumentData shape. Handles loading/error states. |
-| **useDrawerAnimation.ts** | Manages DocDetailPanel animation state (opacity, slide). Returns `{visibleDocId, drawerOpacity, drawerTranslateY}`. |
-| **useKeyboardNav.ts** | Keyboard navigation (arrow keys to move between documents). |
-
-### Utilities (`/util`)
-
-| File | Purpose |
-|------|---------|
-| **UploadSlot.tsx** | Default file upload interface with drag-drop support. Validates file and triggers `onUpload` callback. |
-| **downloadAllFiles.ts** | Collects all uploaded files and creates a ZIP download with organized folder structure. |
-
-### Feature Subdirectories
-
-#### **cover_letter/** - Cover Letter Generation
-Generates professional cover letters for visa applications.
-
-| File | Purpose |
-|------|---------|
-| **CoverLetterBuilder.tsx** | Main widget container (embedded in DocHelper). |
-| **LetterInputForm.tsx** | Form UI for collecting applicant info (name, qualifications, etc.). |
-| **letterValidation.ts** | Business logic: templates, variable interpolation, validation. |
-| **letterDocxExporter.ts** | DOCX file generation using document structure. |
-| **coverLetterPreview.tsx** | Live preview of generated letter. |
-| **LetterFormFields.tsx** | Reusable components (input fields, buttons, etc.). |
-| **letterBoilerplate.ts** | Letter templates with placeholders. |
-| **letterContentBuilder.ts** | Utility functions (formatting, validation). |
-| **letterStyles.ts** | Styling module. |
-
-#### **visa_form/** - Visa Application Form Assistant
-Provides guidance and form-fill assistance for visa application forms.
-
-| File | Purpose |
-|------|---------|
-| **VisaFormWidget.tsx** | Main widget container. Offers selection options (download/online) and boots the helper checklist. |
-| **formService.ts** | Pure utilities: search, filtering, and progress statistics. |
-| **useFormState.ts** | Hook managing form-fill helper state (lazy loading fields, filter criteria, checklist progress). |
-| **FormFieldList.tsx** | Scrollable checklist of collapsible form sections and fields. |
-| **FormFieldDetail.tsx** | Panel displaying details, guidance, example, and warnings for a selected field. |
-| **FormSectionIcon.tsx** | Renders context-aware icons for form sections. |
-
-#### **itinerary/** - Travel Itinerary Generation
-Generates travel itineraries for visa-required countries like Japan, France.
-
-| File | Purpose |
-|------|---------|
-| **ItineraryWidget.tsx** | Main widget container with interactive itinerary builder/preview. |
-| **itineraryService.ts** | Itinerary logic: day-by-day activities, place recommendations, formatting. |
-| **itineraryDocxService.ts** | Generates DOCX file from itinerary data. |
-
-#### **visa_overview/** - Visa Information Panel
-Displays visa-specific metadata when no document is selected.
-
-| File | Purpose |
-|------|---------|
-| **VisaOverviewPanel.tsx** | Shows visa fees, processing time, required documents summary. |
-| **useOverviewData.ts** | Transforms visa type data for display. |
-| **OverviewFeeBreakdown.tsx** | Fee structure visualization. |
-| **OverviewPaymentCard.tsx** | Payment details and instructions. |
-| **OverviewRequirementBadge.tsx** | Country/processing time indicator. |
-| **OverviewEmptyState.tsx** | Placeholder when no document selected. |
-| **OverviewIcons.tsx** | Icon definitions. |
-| **overviewPalette.ts** | Color scheme. |
-| **OverviewPrimitives.tsx** | Base UI primitives. |
-| **overviewUtils.ts** | Helper functions. |
-| **index.ts** | Public exports. |
+### Derived State Math
+Every state change triggers recalculation of derived progress:
+* `totalDone`: `allDocs.filter(d => checked[d.id]).length`
+* `requiredDone`: `requiredDocs.filter(d => checked[d.id]).length`
+* `overallPct`: `(totalDone / allDocs.length) * 100`
+* `uploadCount`: `Object.keys(uploads).length`
 
 ---
 
-## Important Methods & Functions
+## 🎨 3. Specialized Widget Catalog
 
-### DocumentsContent.tsx
+When a document requires specialized data assembly rather than a plain image/PDF upload, `DocHelper.tsx` mounts a custom builder widget:
 
-#### State Management
-```typescript
-const [checked, setChecked] = useState<Record<string, boolean>>({})
-// Tracks which documents user has marked "done"
+| Widget Code | Component File | Description & Capabilities | Pre-fill Inputs Sourced |
+| :--- | :--- | :--- | :--- |
+| **`photo_spec`** | [PhotoSpecWidget.tsx](file:///d:/visamate/web/src/features/documents/PhotoSpecWidget.tsx) | Displays dimension canvas guides, age checks, and face percentages for passports. | `requirementsData.photoSpecifications` |
+| **`visa_form`** | [VisaFormWidget.tsx](file:///d:/visamate/web/src/features/documents/visa_form/VisaFormWidget.tsx) | Step-by-step assistant for official paper forms. Provides copy buttons and field hints. | `repository.getFormFillFields()` |
+| **`itinerary`** | [ItineraryWidget.tsx](file:///d:/visamate/web/src/features/documents/itinerary/ItineraryWidget.tsx) | Interactive day-by-day trip builder. Maps points of interest and exports Word files. | `ctx.travelStartDate`, `ctx.travelDuration` |
+| **`cover_letter`** | [CoverLetterBuilder.tsx](file:///d:/visamate/web/src/features/documents/cover_letter/CoverLetterBuilder.tsx) | Seeder letter builder and interactive editor that exports `.docx` files. | `ctx.applicantName`, `ctx.passportNo` |
+| **`sponsor_consent`**| [SponsorConsentWidget.tsx](file:///d:/visamate/web/src/features/documents/sponsor_consent/SponsorConsentWidget.tsx) | Generates a notarization-ready sponsorship declaration letter. | `ctx.sponsorName`, `ctx.sponsorPassport` |
+| **`document_checklist`**| [DocumentChecklistWidget.tsx](file:///d:/visamate/web/src/features/documents/DocumentChecklistWidget.tsx) | Renders verification checklists and links directly to official embassy templates. | `requirementsData.checklistSpec` |
 
-const [uploads, setUploads] = useState<UploadsMap>({})
-// Maps docId → File for uploaded documents
+---
 
-const [activeDocId, setActiveDocId] = useState<string | null>(null)
-// Currently selected/displayed document in drawer
+## 💾 4. Client-Side ZIP Aggregate Generator
+
+The document exporter aggregates all uploaded and generated files client-side into a structured folder hierarchy without hitting a server.
+
+```
+[User Clicks "Download All"]
+            │
+            ▼
+Extract files from 'uploads' state map
+            │
+            ▼
+Group files into folder paths:
+ - COMMON category ─────► "Common Documents/"
+ - FINANCIALS category ──► "Financial Documents/"
+ - SPONSORED category ───► "Sponsor Documents/"
+            │
+            ▼
+Read File buffers ──► Write to JSZip tree
+            │
+            ▼
+Trigger browser saveAs() (file-saver)
 ```
 
-#### Key Handlers
-
-| Function | Purpose |
-|----------|---------|
-| `toggleDoc(id)` | Toggle document's completion status (checked/unchecked). |
-| `toggleDocAndAdvance(id)` | Toggle status AND auto-advance to next incomplete required doc. |
-| `handleUpload(docId, file)` | Store uploaded file in `uploads` state. |
-| `handleRemove(docId)` | Delete uploaded file from `uploads` state. |
-| `handleDownloadAll()` | Collects all uploads and triggers ZIP download. |
-| `handleItineraryReady(docId, file)` | Stores generated itinerary file. |
-
-#### Derived Values
-```typescript
-const allDocs = data?.categories.flatMap(c => c.documents) ?? []
-// Flattened list of all documents
-
-const requiredDocs = allDocs.filter(d => d.status === "required")
-// Subset: required documents only
-
-const totalDone = allDocs.filter(d => checked[d.id]).length
-// Count of checked documents
-
-const uploadCount = Object.keys(uploads).length
-// Number of uploaded files
-
-const overallPct = allDocs.length ? (totalDone / allDocs.length) * 100 : 0
-// Completion percentage
-```
-
-### useDocumentData.ts
+The aggregate logic is isolated in [downloadAllFiles.ts](file:///d:/visamate/web/src/features/documents/utils/downloadAllFiles.ts). It lazy-loads `jszip` and `file-saver` dynamically:
 
 ```typescript
-export function useDocumentData({
-  country, visaType, location, sponsorship,
-  countryName, visaTypeName, locationName,
-}): UseDocumentDataResult
-```
+import type { DocumentItem } from "@/types/document";
 
-**Purpose**: Orchestrates data loading.
-
-**Steps**:
-1. Validates required params (country, visaType, location)
-2. Calls `Promise.all()` to fetch in parallel:
-   - `getRequirementsData(country, visaType, location, sponsorship)`
-   - `getItineraryPlaces(country)` (if applicable)
-   - `getVisaType(country, visaType)` (if applicable)
-3. Maps requirements via `mapRequirementsToDocumentData()`
-4. Sets state: `data`, `itineraryData`, `visaTypeData`
-5. Returns: `{ data, itineraryData, visaTypeData, loading, error }`
-
-### mapRequirements.ts
-
-```typescript
-export function mapRequirementsToDocumentData(
-  req: RequirementsData,
-  countryName, visaTypeName, locationName, sponsorship
-): DocumentData
-```
-
-**Purpose**: Transform raw requirements JSON into DocumentData shape.
-
-**Logic**:
-1. Filters requirement sections by sponsorship type
-2. For each section, maps to `DocumentCategory` with icon/color metadata
-3. For each document in section:
-   - Assigns category
-   - Checks `SPECIAL_WIDGETS` map to determine widget type
-   - Checks `NO_UPLOAD_CODES` to set `noUpload` flag
-   - Extracts status (required/optional), format, tips, etc.
-4. Returns structured `DocumentData` ready for UI consumption
-
-### downloadAllFiles.ts
-
-```typescript
 export async function downloadAllFiles(
-  uploads: UploadsMap,
+  uploads: Record<string, File>,
   allDocs: DocumentItem[]
-): Promise<void>
-```
+): Promise<void> {
+  const JSZip = (await import("jszip")).default;
+  const zip = new JSZip();
 
-**Purpose**: Bundle uploaded files into a ZIP and trigger browser download.
+  for (const doc of allDocs) {
+    const file = uploads[doc.id];
+    if (!file) continue;
 
-**Steps**:
-1. Creates ZIP archive with folder structure (by category)
-2. Iterates `uploads` map, finds doc metadata, organizes by category
-3. Calls browser's download API
-4. Cleans up memory
+    // Resolve human-friendly folder names
+    const folderName = doc.category.replace(/_/g, " ").toLowerCase();
+    const formattedFolder = folderName.charAt(0).toUpperCase() + folderName.slice(1);
+    
+    const folder = zip.folder(formattedFolder);
+    folder?.file(file.name, file);
+  }
 
----
-
-## Data Flow
-
-### 1. **Entry Point**: DocumentsContent Component
-- User navigates to `/documents` page
-- `DocumentsContent` is rendered
-- Props may be injected (embedded mode) or read from URL search params
-- Initial state: all counters at 0, no uploads, no active doc
-
-### 2. **Data Loading** (useDocumentData Hook)
-```
-country, visaType, location, sponsorship
-           ↓
-Promise.all([
-  getRequirementsData(),
-  getItineraryPlaces(),
-  getVisaType()
-])
-           ↓
-mapRequirementsToDocumentData()
-           ↓
-DocumentData { categories: [...], documents: [...] }
-```
-
-### 3. **Render Checklist** (DocChecklistSidebar)
-```
-categories (grouped by color/icon)
-           ↓
-For each category:
-  render DocChecklistRow for each document
-           ↓
-DocChecklistRow displays:
-- Checkbox (reflects checked state)
-- Document name
-- Status badge (required/optional)
-- Upload indicator (if file uploaded)
-- Description & tips (expandable)
-```
-
-### 4. **Select Document** (setActiveDocId)
-```
-User clicks DocChecklistRow or prev/next button
-           ↓
-setActiveDocId(docId)
-           ↓
-Triggers DocDetailPanel animation
-           ↓
-DocDetailPanel renders with visibleDoc
-```
-
-### 5. **Route to Widget** (DocHelper)
-```
-visibleDoc.specialWidget switch:
-  ├─ "photo_spec"    → PhotoSpecWidget
-  ├─ "visa_form"     → VisaFormWidget
-  ├─ "itinerary"     → ItineraryWidget
-  ├─ "cover_letter"  → CoverLetterBuilder
-  └─ undefined       → UploadSlot (default)
-```
-
-### 6. **User Interaction**
-**Option A: Check Document**
-```
-DocChecklistSidebar → toggleDoc() or toggleDocAndAdvance()
-           ↓
-setChecked({ ...prev, [id]: !prev[id] })
-           ↓
-UI updates: checkbox, progress bars refresh
-           ↓
-If toggleDocAndAdvance: auto-advance to next incomplete doc
-```
-
-**Option B: Upload File**
-```
-UploadSlot (or generated doc from widget) → onUpload(file)
-           ↓
-handleUpload(docId, file)
-           ↓
-setUploads({ ...prev, [docId]: file })
-           ↓
-UI updates: upload count, progress bars refresh
-           ↓
-File stored in state (not yet submitted)
-```
-
-**Option C: Generate Document**
-```
-CoverLetterBuilder/ItineraryWidget → onItineraryReady(file)
-           ↓
-handleItineraryReady(docId, file)
-           ↓
-setUploads({ ...prev, [docId]: file })
-           ↓
-File ready for download (or manual save)
-```
-
-### 7. **Exit Point**: Download & Leave
-
-**Option A: Download All**
-```
-User clicks "Download All" button
-           ↓
-handleDownloadAll()
-           ↓
-downloadAllFiles(uploads, allDocs)
-           ↓
-Browser downloads ZIP
-           ↓
-User can close page or continue
-```
-
-**Option B: Go Back**
-```
-Click "Edit selections" back button OR
-DocDetailPanel close button (embedded context)
-           ↓
-router.push("/wizard") OR close drawer
-           ↓
-Return to wizard for different country/visa/location
+  const content = await zip.generateAsync({ type: "blob" });
+  const { saveAs } = (await import("file-saver")).default;
+  saveAs(content, "visamate_visa_application_package.zip");
+}
 ```
 
 ---
 
-## Entry & Exit Points
+## ⚙️ 5. Custom Hooks Deep Dive
 
-### Entry Points
+### A. `useDocumentData`
+Loads database JSON rules dynamically.
+* **Path**: [useDocumentData.ts](file:///d:/visamate/web/src/features/documents/hooks/useDocumentData.ts)
+* **Signature**:
+  ```typescript
+  export function useDocumentData(params: {
+    country: string;
+    visaType: string;
+    location: string;
+    sponsorship: string;
+    countryName: string;
+    visaTypeName: string;
+    locationName: string;
+  }): {
+    data: DocumentData | null;
+    itineraryData: ItineraryPlacesData | null;
+    visaTypeData: VisaType | null;
+    requirementsData: RequirementsData | null;
+    loading: boolean;
+    error: string | null;
+  }
+  ```
 
-1. **Standalone Page**: User navigates to `/documents`
-   - URL params: `?country=...&visaType=...&location=...&sponsorship=...`
-   - `DocumentsContent` reads params and renders full page with back button
+### B. `useDrawerAnimation`
+Calculates GPU-accelerated transition properties to prevent lag during detail panel slide-ins.
+* **Path**: [useDrawerAnimation.ts](file:///d:/visamate/web/src/features/documents/hooks/useDrawerAnimation.ts)
+* **Signature**:
+  ```typescript
+  export function useDrawerAnimation(activeDocId: string | null): {
+    visibleDocId: string | null;
+    drawerOpacity: number;
+    drawerTranslateY: number;
+  }
+  ```
 
-2. **Embedded in Wizard**: `DocumentsContent` rendered inside `WizardAccordion`
-   - Props injected: `country`, `visaType`, `location`, `sponsorship`, `embedded=true`
-   - No back button; animated accordion section
-   - Drawer spans full accordion height
-
-3. **Direct Props Injection**: For testing or custom integrations
-   - Pass `DocumentsContentProps` directly
-   - Props override URL params
-
-### Exit Points
-
-1. **"Edit Selections" Back Button**
-   - Visible when: `!props.embedded` (standalone page mode)
-   - Action: `router.push("/wizard")`
-   - Flow: Return to wizard for different country/visa selection
-
-2. **Close Drawer / Mobile Back**
-   - Visible when: document is selected (`activeDocId !== null`)
-   - Action: `setActiveDocId(null)` OR `setActiveDocId(prev)` for prev doc
-   - Flow: Return to overview panel or previous document
-
-3. **Download All Files**
-   - User clicks "Download All" button
-   - Action: `handleDownloadAll()` → triggers ZIP download
-   - Flow: Files delivered to user; may close page or continue
-
-4. **Auto-Exit on Completion** (Optional Business Logic)
-   - Could be implemented: if `requiredDone === requiredTotal`, show completion modal with "Proceed to Submission" button
-   - Currently: User must manually navigate away
-
----
-
-## Key Concepts & Design Patterns
-
-### 1. **Two-Panel Responsive Layout**
-- **Desktop**: Checklist (left) + Drawer (right), both visible
-- **Mobile**: Toggle between left (checklist) and right (drawer) with full-width overlay
-- Controlled via `isMobile` state and conditional CSS
-
-### 2. **Drawer Animation**
-- `useDrawerAnimation` provides `drawerOpacity` and `drawerTranslateY` values
-- Applied to DocDetailPanel for smooth entry/exit transitions
-- Uses CSS `transition` for hardware-accelerated animation
-
-### 3. **Special Widgets**
-- Each document can have a "special widget" (photo_spec, visa_form, itinerary, cover_letter)
-- Widgets are embedded in the DocHelper component
-- Widgets can generate files (itinerary, cover letter DOCX) which are stored in `uploads`
-- Default widget is `UploadSlot` (file upload input)
-
-### 4. **State Management**
-- Uses React `useState` (no Redux/Context overhead)
-- Parent (`DocumentsContent`) owns state; passes callbacks to children
-- State lives in component, not in global context
-- UploadsMap is in-memory; files are not persisted to backend (by design)
-
-### 5. **Data Mapping**
-- Raw requirements JSON (from repository) → DocumentData (UI-ready)
-- Mapping logic in `mapRequirements.ts` is pure and testable
-- SPECIAL_WIDGETS and NO_UPLOAD_CODES maps are centralized for easy updates
-
-### 6. **Responsive Design**
-- Mobile-first CSS approach
-- Conditional rendering based on `isMobile` state
-- Full-screen overlay drawer on mobile; side-by-side on desktop
-- Hidden checklist on mobile when drawer is open
+### C. `useKeyboardNav`
+Binds global keyboard shortcuts when the documents view is mounted.
+* **Path**: [useKeyboardNav.ts](file:///d:/visamate/web/src/features/documents/hooks/useKeyboardNav.ts)
+* **Signature**:
+  ```typescript
+  export function useKeyboardNav(params: {
+    data: DocumentData | null;
+    activeDocId: string | null;
+    setActiveDocId: (id: string | null) => void;
+  }): void
+  ```
+  * **Controls**: `ArrowUp`/`ArrowDown` navigates checklist, `Space` checks/unchecks rows, `Escape` closes details.
 
 ---
 
-## Integration Points
+## 🛠️ 6. Future Modifications Guide
 
-### With Other Features
+### Scenario A: Adding a New Dedicated Builder Widget
+To wire in a custom builder (e.g. a `HotelVoucherBuilder`):
+1. **Extend Types**: Open [document.ts](file:///d:/visamate/web/src/types/document.ts) and add the widget type to `SpecialWidget`:
+   ```typescript
+   export type SpecialWidget =
+     | "photo_spec"
+     | "visa_form"
+     | "itinerary"
+     | "cover_letter"
+     | "document_checklist"
+     | "sponsor_consent"
+     | "hotel_voucher"; // Add here
+   ```
+2. **Add Requirement Mapper Code**: Open [mapRequirements.ts](file:///d:/visamate/web/src/features/documents/mapRequirements.ts) and register the mapping logic:
+   ```typescript
+   export const SPECIAL_WIDGETS: Record<string, SpecialWidget> = {
+     // ...
+     HOTEL_RESERVATION: "hotel_voucher",
+   };
+   ```
+3. **Mount in Switcher**: Open [DocHelper.tsx](file:///d:/visamate/web/src/features/documents/components/DocHelper.tsx) and import your component:
+   ```tsx
+   {doc.specialWidget === "hotel_voucher" && (
+     <HotelVoucherBuilder
+       color={color}
+       onFileReady={(file) => onUpload(file)}
+     />
+   )}
+   ```
 
-| Feature | Integration | Location |
-|---------|-----------|----------|
-| **Wizard** | DocumentsContent embedded in WizardAccordion | `features/wizard/` |
-| **Applicant Context** | Could consume applicant data for cover letter | `lib/context/ApplicantContext.tsx` |
-| **Data Repository** | Fetches requirements, visa types, itineraries | `lib/data/repository.ts` |
-| **Document Types** | Uses document type definitions | `src/types/document.ts` |
-
-### External Dependencies
-
-- **Next.js**: Navigation (`useRouter`, `useSearchParams`), client-side rendering
-- **File API**: Blob, ZIP creation (via JSZip or native ZIP libs)
-- **DOCX Generation**: For itinerary & cover letter exports (if using docx library)
+### Scenario B: Customizing Group Themes and Colors
+Checklist categories are colored dynamically. To change group themes, modify `SECTION_META` in [mapRequirements.ts](file:///d:/visamate/web/src/features/documents/mapRequirements.ts):
+```typescript
+export const SECTION_META: Record<string, { icon: string; color: string }> = {
+  COMMON: { icon: "passport", color: "#6366f1" },           // Indigo
+  SELF_SPONSORED: { icon: "finance", color: "#10b981" },    // Emerald
+  SPONSORED: { icon: "finance", color: "#0ea5e9" },         // Sky
+};
+```
 
 ---
 
-## Common Customization Points
+## 🛠️ 7. Troubleshooting & Debugging
 
-1. **Add New Special Widget**
-   - Add type to `SpecialWidget` union in `types/document.ts`
-   - Add entry to `SPECIAL_WIDGETS` map in `mapRequirements.ts`
-   - Create new component in appropriate subdirectory
-   - Add case to `DocHelper` switch statement
+Open the browser's Developer Tools Console (`F12`) on the documents page to run these diagnostic routines:
 
-2. **Change Styling**
-   - `DocChecklistStyles.tsx` injects global CSS
-   - Component inline styles use `theme.ts` color tokens
-   - Update `T` (theme) references for consistent theming
+### Inspecting Local Hook State (React Fiber query)
+Because state hook variables are kept inside closures, run this snippet in the browser console to extract the active checklist state directly from the DOM tree:
+```javascript
+(function inspectChecklistState() {
+  const element = document.querySelector(".vm-two-panel");
+  if (!element) return console.error("Documents checklist DOM node not found.");
+  
+  const reactKey = Object.keys(element).find(k => k.startsWith("__reactFiber$") || k.startsWith("__reactContainer$"));
+  if (!reactKey) return console.error("React Fiber node key not found.");
+  
+  let node = element[reactKey];
+  while (node && !node.memoizedState) { node = node.return; }
+  
+  if (node && node.memoizedState) {
+    let hooksState = [];
+    let currentHook = node.memoizedState;
+    while (currentHook) {
+      hooksState.push(currentHook.memoizedState);
+      currentHook = currentHook.next;
+    }
+    console.log("=== Active Checklist States ===");
+    console.log("Checked items map:", hooksState[0]);
+    console.log("Uploaded files map:", hooksState[1]);
+    console.log("Active selected doc ID:", hooksState[3]);
+  } else {
+    console.warn("Could not traverse Fiber state hooks.");
+  }
+})();
+```
 
-3. **Modify Checklist Layout**
-   - `DocChecklistSidebar.tsx` controls category grouping and DocChecklistRow rendering
-   - `DocChecklistRow.tsx` is the individual row component
-
-4. **Extend File Upload**
-   - Modify `UploadSlot.tsx` for additional validation
-   - Update `downloadAllFiles.ts` for different archive structure
+### Programmatic Checklist Override
+To mock/simulate a fully completed checklist for testing final layouts and PDF builders:
+```javascript
+(function checkAllRows() {
+  const checkboxes = document.querySelectorAll(".vm-checklist-checkbox");
+  if (!checkboxes.length) return console.log("No checklist checkboxes found in DOM.");
+  checkboxes.forEach(cb => {
+    if (!cb.checked) {
+      cb.click(); // Triggers react onClick handlers safely
+    }
+  });
+  console.log(`Successfully checked ${checkboxes.length} rows.`);
+})();
+```
 
 ---
 
-## Summary
+## 🔒 8. Security & Data Privacy Sandboxing
 
-The **Documents** feature is a sophisticated, modular system for visa document management. It combines a responsive checklist interface with specialized widgets for document generation, file uploads, and interactive guidance. The architecture prioritizes modularity (separate subdirectories for cover letter, visa form, itinerary, visa overview), clean data flow (requirements → DocumentData → UI), and extensibility (special widgets, customizable mappings).
+* **Sandbox Boundary**: All uploaded/generated files reside exclusively in React state as transient binary streams. Files are never stored on the server.
+* **Eviction Cycle**: Triggering `reset()` or clicking "Start Fresh" removes all file object references from memory and clears local storage keys immediately.

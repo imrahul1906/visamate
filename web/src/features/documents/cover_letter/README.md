@@ -1,404 +1,282 @@
-# Cover Letter Builder for Japan Visa Application
+# ✉️ VisaMate Cover Letter Builder — Developer Guide & Exporter Engine
 
-## Description
-
-The **Cover Letter Builder** is a specialized feature that helps visa applicants generate, customize, and download professional cover letters for Japan Temporary Visitor Visa applications. The builder provides a guided two-step workflow:
-
-1. **Step 1 (Inputs)**: Collects applicant information (travel details, employment/education, family ties, financial situation, sponsorship info)
-2. **Step 2 (Preview & Edit)**: Generates a pre-filled cover letter with full inline editing capabilities
-
-The generated letter is context-aware, automatically tailoring content based on applicant profile (employed, self-employed, student), sponsorship status, and family situation. Users can customize every paragraph and export the final document as a Word (.docx) file.
+This guide walks through the architecture, seeder heuristics, editor states, and DOCX generation pipeline of the **Cover Letter Builder** in VisaMate. Read this to understand how wizard inputs are transformed into formatted paragraphs and exported to Word documents.
 
 ---
 
-## Current Architecture
+## 🔍 1. Architecture & Component Flow
 
-### Core Design Pattern
+The Cover Letter builder splits assembly into two distinct steps: Step 1 (Interactive Input Gathering) and Step 2 (Editable WYSIWYG letter preview).
 
-The module follows a **separation of concerns** architecture with distinct responsibility layers:
+```mermaid
+graph TD
+    classDef container fill:#3b82f6,stroke:#1d4ed8,color:#fff,stroke-width:2px;
+    classDef component fill:#10b981,stroke:#047857,color:#fff,stroke-width:2px;
+    classDef util fill:#f59e0b,stroke:#d97706,color:#fff,stroke-width:2px;
+    classDef export fill:#8b5cf6,stroke:#6d28d9,color:#fff,stroke-width:2px;
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  CoverLetterBuilder (Main Orchestrator)                      │
-│  - State management (inputs, letter preview, validation)    │
-│  - Step flow control (select → inputs → letter)             │
-│  - Delegates to sub-components and services                 │
-└─────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│ coverLetterInputs│ │ coverLetterPreview│ │ letterValidation
-│ (React Component)│ │ (React Component) │ │ (Pure Logic)
-│ - Form UI        │ │ - Letter display  │ │ - Validation
-│ - Input handling │ │ - Inline editing  │ │ - Builders
-└──────────────────┘ └──────────────────┘ └──────────────────┘
-        │                     │
-        └─────────────────────┴─────────────────────┐
-                              │
-                    ┌─────────┴─────────┐
-                    │                   │
-                    ▼                   ▼
-        ┌──────────────────────┐ ┌──────────────────────┐
-        │ letterDocxExporter      │ │ LetterFormFields
-        │ (Export Logic)       │ │ (Reusable UI Blocks)
-        └──────────────────────┘ │ - InlinePara
-                                 │ - ContactRow
-                    ┌────────────┴──────────────────┐
-                    │                               │
-                    ▼                               ▼
-        ┌──────────────────────┐ ┌──────────────────────┐
-        │ letterBoilerplate │ │ letterContentBuilder
-        │ (Static Defaults)    │ │ (Helpers & Seeding)
-        │ - Section headings   │ │ - Date formatting
-        │ - Default bullets    │ │ - State initialization
-        └──────────────────────┘ └──────────────────────┘
-                                         │
-                                         ▼
-                        ┌────────────────────────────┐
-                        │ letterStyles          │
-                        │ (Injected CSS)             │
-                        │ - Dark mode theming        │
-                        │ - Form & preview styling   │
-                        └────────────────────────────┘
+    Orchestrator["CoverLetterBuilder<br/>(CoverLetterBuilder.tsx)"]:::container
+    
+    Inputs["coverLetterInputs.tsx<br/>(Form Fields Panel)"]:::component
+    Preview["coverLetterPreview.tsx<br/>(WYSIWYG Inline Editor)"]:::component
+    
+    Seeder["letterContentBuilder.ts<br/>(Text Seeder Engine)"]:::util
+    Templates["letterBoilerplate.ts<br/>(Paragraph Blueprints)"]:::util
+    
+    Validation["letterValidation.ts<br/>(Schema Verification)"]:::export
+    Exporter["letterDocxExporter.ts<br/>(docx Exporter Engine)"]:::export
+
+    Orchestrator --> Inputs
+    Orchestrator --> Preview
+    
+    Inputs --> Seeder
+    Seeder --> Templates
+    
+    Preview --> Validation
+    Preview --> Exporter
 ```
 
-### Key Concepts
-
-- **No circular dependencies**: Exported types and utilities are organized to allow imports without creating loops
-- **Pure business logic**: `letterValidation.ts` contains all validation and paragraph-building logic—fully unit-testable
-- **Inline editing**: All letter sections and paragraphs are editable directly in the preview (no separate edit mode)
-- **Context-aware generation**: Content dynamically includes/excludes sections based on applicant profile and sponsorship
-- **Template-driven**: Default text comes from a single `letterBoilerplate.ts` source of truth
-
----
-
-## File Information
-
-### 1. **CoverLetterBuilder.tsx** (Main Orchestrator)
-**Role**: Top-level React component that orchestrates the entire workflow  
-**Responsibilities**:
-- Manages the multi-step flow: "select" → "inputs" → "letter"
-- Holds all UI state (inputs, letter preview fields, validation errors)
-- Bridges the ApplicantContext with form state
-- Coordinates step transitions and generates initial letter content
-- Handles export via `buildCoverLetterDocx`
-
-**Key State**:
-- `step`: Tracks current UI step
-- `inputs`: Form data (travel, employment, family, etc.)
-- `errors`: Validation messages
-- `l*` prefixed states: Editable letter sections (lHeading, lIntro, lBullets, etc.)
-
-**Imports From**: service, inputs component, preview component, templates, utils, docx builder
+### Component Breakdown
+* **[CoverLetterBuilder.tsx](file:///d:/visamate/web/src/features/documents/cover_letter/CoverLetterBuilder.tsx)**: Manages step state (`activeStep = 1 | 2`), form values, and paragraphs state.
+* **[coverLetterInputs.tsx](file:///d:/visamate/web/src/features/documents/cover_letter/components/coverLetterInputs.tsx)**: Displays profile-specific inputs (employment certificates, sponsor data).
+* **[coverLetterPreview.tsx](file:///d:/visamate/web/src/features/documents/cover_letter/components/coverLetterPreview.tsx)**: Displays the WYSIWYG editor. Renders blocks inside auto-expanding textareas.
+* **[letterContentBuilder.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterContentBuilder.ts)**: Evaluates user parameters and resolves paragraph contents from the blueprints.
+* **[letterDocxExporter.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterDocxExporter.ts)**: Interacts with the `docx` library. Cleans raw strings and writes them as open XML nodes.
 
 ---
 
-### 2. **coverLetterInputs.tsx** (Step 1: Data Collection)
-**Role**: React component for the first wizard step  
-**Responsibilities**:
-- Renders form UI for collecting applicant information
-- Groups fields into sections: Travel, Employment/Education, Sponsorship, Family, Contacts
-- Shows/hides conditional fields (e.g., sponsor details only if sponsored)
-- Displays validation errors if user attempts to proceed without required fields
-- Calls `onProceed` callback to transition to Step 2
+## ⚙️ 2. Input Schemas, Validation & Seed Mapping
 
-**Conditional Logic**:
-- Shows "Company Name" only if `applicantProfile === "employed"`
-- Shows "Institution Name" only if `applicantProfile === "student"`
-- Shows "Sponsor Name/Rel" only if `sponsorshipType === "sponsored"`
-- Emergency contacts section is always editable
+When the builder mounts, Step 1 forms are pre-filled by pulling attributes from the global `ApplicantContext`.
 
-**Imports From**: LetterFormFields, letterValidation (for profile checks)
+### Form Inputs Interface: `CoverLetterInputs`
+Tracks inputs inside [CoverLetterBuilder.tsx](file:///d:/visamate/web/src/features/documents/cover_letter/CoverLetterBuilder.tsx):
 
----
-
-### 3. **coverLetterPreview.tsx** (Step 2: Letter Editing)
-**Role**: React component for viewing and editing the generated cover letter  
-**Responsibilities**:
-- Displays the complete cover letter layout
-- Makes every paragraph, field, and section inline-editable
-- Provides conditional sections based on sponsorship/profile
-- Shows "Unfilled Required Fields" warning if download is attempted with missing data
-- Handles download action
-
-**Editable Elements**:
-- Heading, recipient block, date, subject, salutation
-- Introduction, bullet points
-- All 10+ letter sections (purpose, immigration history, family ties, finance, etc.)
-- Contact list (add/remove/edit contacts)
-- Signature fields (name, passport number)
-- Closing statement
-
-**Imports From**: LetterFormFields, letterValidation (for profile checks)
-
----
-
-### 4. **letterValidation.ts** (Pure Business Logic)
-**Role**: Core logic layer with no React dependencies  
-**Responsibilities**:
-- Defines TypeScript interfaces for inputs, validation, and context
-- Provides validation functions for form data and letter preview completeness
-- Implements profile check helpers: `isEmployed()`, `isStudent()`, `isSponsored()`
-- Includes date formatting utilities: `fmtDate()`, `fmtDateEnd()`, `today()`
-- Paragraph builders for dynamic content generation based on applicant profile
-
-**Key Types**:
-- `LetterInputForm`: User-provided form data
-- `ApplicantContext`: From ApplicantContext (applicant name, travel dates, cities, visa type, etc.)
-- `ValidationErrors`: Field-level error messages
-- `LetterPreviewState`: Fields that must be non-empty before export
-
-**Key Functions**:
-- `validateCoverLetterInputs()`: Checks required fields in step 1
-- `validateLetterPreview()`: Checks required fields before download
-- `isEmployed()`, `isStudent()`, `isSponsored()`: Profile classification helpers
-- `fmtDate()`, `fmtDateEnd()`: ISO date to "1 March 2025" format conversions
-- Paragraph builders (internal): Generate section content based on inputs
-
-**Imports From**: None (pure logic, no external dependencies)
-
----
-
-### 5. **letterDocxExporter.ts** (Export Engine)
-**Role**: Converts letter state to a Word document  
-**Responsibilities**:
-- Async builder function that generates a .docx file as a Blob
-- Uses the `docx` npm package to create formatted Word documents
-- Applies proper formatting: headings, bold text, numbered lists, contact tables
-- Generates conditional sections based on sponsorship status
-- Creates formatted contact table with 4-column layout (Name, Relation, Phone, Email)
-
-**Main Export**:
-- `buildCoverLetterDocx(data)`: Takes a `CoverLetterDocxData` object and returns a Promise<Blob>
-
-**Imports From**: LetterFormFields (Contact type), letterValidation (isSponsored check), docx package
-
----
-
-### 6. **LetterFormFields.tsx** (Reusable UI Building Blocks)
-**Role**: Presentational components with no business logic  
-**Responsibilities**:
-- Provides reusable input components for the builder
-- Auto-resizing textarea for paragraph editing
-- Inline field component for single-line text (with placeholder)
-- Contact row component for managing emergency contact entries
-
-**Components**:
-- `InlinePara`: Multi-line auto-resizing textarea for paragraphs
-- `ContactRow`: Editable row for contact entries (name, relation, phone, email)
-
-**Imports From**: React hooks (useState, useRef, useEffect)
-
----
-
-### 7. **letterBoilerplate.ts** (Static Content Repository)
-**Role**: Single source of truth for all default/template text  
-**Responsibilities**:
-- Exports `COVER_LETTER_TEMPLATES` object with all static strings
-- Defines section headings (e.g., "The Purpose of my Visit")
-- Defines section intros (explanatory text before editable content)
-- Defines default bullet points and support documents
-- Defines closing statement template
-
-**Key Values**:
-- `heading`: "COVER LETTER"
-- `toBlock`: Recipient details (Embassy of Japan, Delhi)
-- `salutation`: "To whom it may concern,"
-- `closing`: Closing statement with signature block
-- Section templates: `secDocs`, `secPurpose`, `secFinance`, `secSponsor`, etc.
-- Intro texts for each section
-
-**Imports From**: None
-
----
-
-### 8. **letterContentBuilder.ts** (Helper Functions & State Seeding)
-**Role**: Utility functions for initialization and formatting  
-**Responsibilities**:
-- Re-exports date and profile check helpers from `letterValidation`
-- Provides `seedLetterState()` function: generates initial letter preview state from inputs + context
-- Builds context-aware default content for bullets and document rows
-
-**Key Function: `seedLetterState(inputs, ctx)`**
-- Takes `CoverLetterInputs` and `ApplicantContext`
-- Returns an object mapping field names to initial values for all `l*` states
-- Auto-generates bulleted intro (4 default + sponsor info if applicable + contacts)
-- Auto-generates supporting documents list (tailored to profile)
-- Creates subject line with applicant name
-- Builds intro paragraph with cities visited, visa type, etc.
-- Intelligently builds family ties description based on marital/parent/children status
-
-**Imports From**: letterValidation, letterBoilerplate
-
----
-
-### 9. **letterStyles.ts** (Stylesheet)
-**Role**: All CSS for the cover letter builder  
-**Responsibilities**:
-- Defines CSS variables for dark mode theming (colors, spacing, fonts)
-- Styles for each component: select screen, input form, preview letter, buttons
-- Responsive layout rules
-- Inline field styling (transparent background until focused)
-- Print-friendly styles for .docx export preview
-
-**Key CSS Classes**:
-- `.cl-select`: Initial selection screen
-- `.cl-inputs-body`: Step 1 form layout
-- `.cl-letter`: Step 2 letter container
-- `.cl-inline-field`, `.cl-inline-para`: Editable content
-- `.cl-topbar`, `.cl-section`, `.cl-field-row`: Layout scaffolding
-- `.cl-step`, `.cl-step-line`: Progress indicator
-
-**Injected Into**: CoverLetterBuilder as a `<style>` tag
-
----
-
-## Important Method Descriptions
-
-### In `letterValidation.ts`
-
-#### `validateCoverLetterInputs(inputs: CoverLetterInputs): ValidationErrors`
-Validates form data before allowing transition to step 2.
-- Checks required fields: `departureCity`, `countries Visited`, `applicantProfile`, `purpose`, `bankBalance`
-- Conditional checks: If employed, `companyName` is required; if student, `institutionName` is required
-- If sponsored, `sponsorName`, `sponsorRel` are required
-- Returns object where keys are field names and values are error messages (empty object = all valid)
-
-#### `validateLetterPreview(state: LetterPreviewState): ValidationErrors`
-Validates letter before download.
-- Ensures 4 critical fields are non-empty: `lPurposeDetail`, `lFinance`, `lSigName`, `lSigPassport`
-- Returns errors if any field is blank
-
-#### `isEmployed(profile: string): boolean` / `isStudent()` / `isSponsored()`
-Profile classification helpers. Used throughout to conditionally include/exclude content and form fields.
-
-#### `fmtDate(iso: string): string`
-Converts ISO date ("2025-03-01") to formatted string ("1 March 2025").
-- Uses `en-GB` locale for consistent formatting
-- Returns "[DATE]" placeholder if input is undefined
-
-#### `fmtDateEnd(iso: string, days: number): string`
-Converts ISO date + duration to end date formatted string.
-- Adds `(days - 1)` to the start date, then formats
-- Used to display trip end date ("15 May 2025") from start date and duration
-
-### In `letterContentBuilder.ts`
-
-#### `seedLetterState(inputs, ctx): Object`
-The "brain" of content generation. Builds initial letter preview state by:
-1. Extracting context data (cities, visa type, applicant name)
-2. Building family description string based on married/parents/children flags
-3. Creating context-aware document rows (NOC if employed, sponsor docs if sponsored, etc.)
-4. Building bullet points (always 4 defaults + sponsor info if applicable + contacts)
-5. Creating intro paragraph with applicant name and trip details
-6. Generating subject line and other section intros
-
-**Returns**: Object like `{ lHeading: "...", lToBlock: "...", lIntro: "...", ... }`
-
-### In `letterDocxExporter.ts`
-
-#### `buildCoverLetterDocx(data: CoverLetterDocxData): Promise<Blob>`
-Async function that generates a .docx Blob.
-- Dynamically imports the `docx` package (for code splitting)
-- Builds document structure: heading, recipient block, date, subject, salutation, sections
-- Creates numbered lists for bullets and documents
-- Conditional sections: sponsor section only if sponsored
-- Contact table with 4-column layout
-- Returns Blob ready for download
-
-### In `CoverLetterBuilder.tsx`
-
-#### `handleProceedToLetter()`
-Triggered when user clicks "Preview Letter" in step 1.
-- Validates inputs via `validateCoverLetterInputs()`
-- If errors, sets `attempted = true` to show validation messages
-- If valid, calls `seedLetterState()` to generate initial letter preview state
-- Sets all `l*` states from seeded data
-- Transitions to step 2
-
-#### `handleDownload()`
-Triggered when user clicks "Download" in step 2.
-- Checks for unfilled required fields via `validateLetterPreview()`
-- Shows warning if data is incomplete
-- If valid, calls `buildCoverLetterDocx()` with all current `l*` states
-- Downloads resulting Blob as file (named with applicant name + date)
-
----
-
-## Entry Point
-
-**Primary Entry**: `CoverLetterBuilder` (default export from `CoverLetterBuilder.tsx`)
-
-**How It's Used**:
-1. Imported by the parent Documents feature or via dynamic lazy loading
-2. Expects `useApplicant()` context to be available (provides `ctx` and `update`)
-3. Renders a self-contained widget that manages its own state and UI
-4. Initial step is "select" (displays overview + "Build Letter" button)
-
-**Required Context**:
-- `ApplicantContext` (from `@/lib/context/ApplicantContext`) must be wrapping the component
-- Provides: applicant name, passport number, travel start date, duration, cities, profile type, visa type, etc.
-
-**Example Integration**:
-```tsx
-import CoverLetterBuilder from "@/features/documents/cover_letter/CoverLetterBuilder";
-
-export default function DocumentsPage() {
-  return (
-    <ApplicantContextProvider>
-      {/* Other document widgets */}
-      <CoverLetterBuilder />
-    </ApplicantContextProvider>
-  );
+```typescript
+export interface CoverLetterInputs {
+  applicantProfile: "employed" | "student" | "self-employed" | null;
+  companyName?: string;
+  designation?: string;
+  institutionName?: string;
+  sponsorshipType: "self" | "sponsored" | null;
+  bankBalance?: string;
+  departureCity?: string;
+  countriesVisited: Array<{ country: string; month: string }>;
+  travellingWith: "alone" | "with";
+  companion?: "mother" | "father" | "spouse" | "friend" | "";
+  hasDependant: "yes" | "no";
+  sponsorName?: string;
+  sponsorRel?: string;
+  sponsorPassport?: string;
+  sponsorDob?: string;
+  sponsorMobile?: string;
+  sponsorCity?: string;
+  sponsorAccompanying?: "accompanying" | "staying" | null;
+  sponsorshipReason?: string;
 }
 ```
 
----
-
-## Exit Point
-
-**Primary Exit**: Browser file download via `buildCoverLetterDocx()` → Blob → download trigger
-
-**Flow**:
-1. User completes step 2 preview and clicks "Download"
-2. Validation passes
-3. `buildCoverLetterDocx()` is called with current letter state
-4. Docx library generates a formatted Word document Blob
-5. Browser triggers download dialog
-6. File saved as: `{applicant_name}_Cover_Letter_{date}.docx`
-
-**Secondary Exit**: User clicks "Back" button
-- Returns to previous step (inputs → select, or preview → inputs)
-- All state is retained (user can resume editing)
-
-**Data Persistence**:
-- Letter state is held in React component state only (not persisted to storage)
-- When user leaves the page, draft is lost
-- Applicant context data is preserved via `ApplicantContext`
-- Suggestion: For phase 2, integrate localStorage or backend API to save drafts
+### Seeding Heuristics (`seedLetterState`)
+The seeder transforms form inputs into paragraph blocks based on the following patterns:
+1. **Visa Details**: Resolves trip metrics:
+   * departure city -> arrival city.
+   * duration -> number of days.
+2. **Immigration History Formatting**: Evaluates `countriesVisited`:
+   * *If visits exist*: `"In the past five years, I have successfully traveled to and returned from: UK (October 2024), Japan (June 2023)..."`
+   * *If empty*: `"I have maintained a clean immigration record and have not traveled internationally in the last five years."`
+3. **Economic Ties Builder**: Builds confidence in return motivations:
+   * *Employed*: `"I am currently employed at [Tech Corp] as [Software Engineer], drawing an annual income. I have a sanctioned leave of absence..."`
+   * *Student*: `"I am currently enrolled at [National University]... I must return to resume classes on [Date]..."`
 
 ---
 
-## Design Decisions
+## 🎨 3. WYSIWYG Editor State & Hints Safeguards
 
-### Why Pure Business Logic?
-- `letterValidation.ts` has no React dependencies, making it trivially unit-testable
-- Validation, formatting, and paragraph building can be tested independently of UI
-- Easy to reuse logic in other contexts (backend, CLI, etc.)
+### Editable Paragraph Blocks
+Paragraphs are saved in component state as key-value pairs matching sections of the letter:
 
-### Why Inline Editing?
-- Users expect WYSIWYG editing (what you see is what you download)
-- No separate edit/preview modes to confuse the UX
-- Real-time visual feedback as users type
+```typescript
+export interface CoverLetterParagraphs {
+  lIntro: string;       // Date, Address, Subject
+  lSalutation: string;  // "Dear Sir/Madam,"
+  lPurpose: string;     // Purpose & travel details
+  lFinance: string;     // Salary & sponsorship text
+  lItinerary: string;   // Outline of stay cities
+  lImmigration: string; // Previous travel history
+  lTies: string;        // Local economic ties
+  lConclusion: string;  // Contact info & request
+  lDocRows: string;     // Attachments checklist text
+}
+```
 
-### Why Seed State?
-- Initial letter content is intelligently generated from inputs + context
-- Dramatically reduces blank-page friction
-- Users see a complete, valid letter immediately—they refine, not write from scratch
+### Hint Blocks (`[[HINT: ...]]`)
+To guide users through adding manual details:
+* The seeder embeds text cues like `[[HINT: Specify your home town family ties here]]` into editable states.
+* The preview highlight matches these codes and wraps them in amber warning blocks in the UI.
+* **Safety Exporter Regex**: If a user leaves hints inside the textareas, [letterDocxExporter.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterDocxExporter.ts) runs a clean-up pattern before writing the Word file:
+  ```typescript
+  export function stripHints(text: string): string {
+    return text.replace(/\[\[HINT:.*?\]\]/gi, "").trim();
+  }
+  ```
 
-### Why Conditional Sections?
-- Cover letters vary significantly by applicant profile (employed vs. student vs. sponsored)
-- Showing irrelevant sections confuses users
-- Dynamic generation keeps the letter focused and concise
+---
+
+## 💾 4. Word Document DOCX Exporter Engine
+
+The DOCX builder outputs formatted OpenXML files directly in the browser.
+
+```
+[User Clicks "Export DOCX"]
+            │
+            ▼
+Strip [[HINT: ...]] strings from all paragraphs
+            │
+            ▼
+Build docx Document:
+- Page Margins: 1440 twips (1 inch)
+- Page Font: Arial (11pt / 22pt line spacing)
+            │
+            ▼
+Append Header details (Date, Embassy address, Subject line)
+            │
+            ▼
+Map paragraph arrays into docx.Paragraph nodes
+            │
+            ▼
+Convert bullet lines (lDocRows) into docx.BulletList nodes
+            │
+            ▼
+Generate binary ArrayBuffer ──► Trigger FileSaver prompt
+```
+
+### Layout Specs (Twips Metrics)
+Word layouts are defined in **Twips** (one-twentieth of a point). Key metrics configured in [letterDocxExporter.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterDocxExporter.ts):
+* **Margins**: `1440` twips (1.0 inch) on all sides.
+* **Line Spacing**: `240` twips (1.0 lines) or `360` twips (1.5 lines).
+* **Space After Paragraphs**: `120` twips (6pt) to ensure clean readability without double-spacing.
+
+---
+
+## 🛠️ 5. Future Modifications Guide
+
+### Scenario A: Adding a New Input Field (e.g. "Tax Identification Number")
+To capture and embed a tax ID into the letter layout:
+1. **Update Forms Interface**: Add the key to the inputs interface inside [letterValidation.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterValidation.ts):
+   ```typescript
+   export interface CoverLetterInputs {
+     // ...
+     taxId?: string;
+   }
+   ```
+2. **Bind Input Fields**: Add the input field component to [coverLetterInputs.tsx](file:///d:/visamate/web/src/features/documents/cover_letter/components/coverLetterInputs.tsx):
+   ```tsx
+   <InputField
+     label="Tax Identification Number (PAN)"
+     value={inputs.taxId || ""}
+     onChange={(val) => onChange({ taxId: val })}
+   />
+   ```
+3. **Inject in Seeder**: Open [letterContentBuilder.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterContentBuilder.ts) and add the field into the financial paragraph construction:
+   ```typescript
+   // Inside seedLetterState
+   return {
+     // ...
+     lFinance: `My financial details are verified. My Tax Identification Number is ${inputs.taxId || "[PAN Number]"}. ` + buildFinanceBlock(inputs),
+   };
+   ```
+
+### Scenario B: Customizing Document Typography and Spacings
+To change default fonts or styles, update the constructor in [letterDocxExporter.ts](file:///d:/visamate/web/src/features/documents/cover_letter/utils/letterDocxExporter.ts):
+```typescript
+const doc = new Document({
+  styles: {
+    default: {
+      document: {
+        run: {
+          font: "Calibri", // Change default font family
+          size: 22,        // 11pt font size (22 half-points)
+          color: "2D3748", // Dark slate color
+        },
+      },
+    },
+  },
+  sections: [
+    {
+      properties: {
+        page: {
+          margin: { top: 1440, bottom: 1440, left: 1440, right: 1440 },
+        },
+      },
+      children: [
+        // Paragraph components go here
+      ],
+    },
+  ],
+});
+```
+
+---
+
+## 🛠️ 6. Troubleshooting & Debugging
+
+Open the browser's Developer Tools Console (`F12`) on the Cover Letter route to run these diagnostic tools:
+
+### Printing the Seeder Outputs
+To inspect what text blocks were created by the seeding builder based on active wizard details:
+```javascript
+(function dumpCoverLetterState() {
+  const previewContainer = document.querySelector(".vm-cover-letter-panel");
+  if (!previewContainer) return console.log("Cover Letter Builder panel not found.");
+  
+  // Query all paragraph inputs in the preview panel
+  const textareas = previewContainer.querySelectorAll(".vm-inline-textarea");
+  console.log(`Found ${textareas.length} editable paragraphs in editor:`);
+  
+  textareas.forEach((area, i) => {
+    console.log(`--- [Paragraph ${i + 1}] ---`);
+    console.log(area.value.trim());
+  });
+})();
+```
+
+### Running Validation Schemas Manually
+To check validation outputs against mock data profiles:
+```javascript
+(async function runValidationTests() {
+  const validator = await import("/web/src/features/documents/cover_letter/utils/letterValidation.ts");
+  
+  // Emulate an employed applicant without designation
+  const mockInputs = {
+    applicantProfile: "employed",
+    companyName: "Google",
+    designation: "", // Triggers validation error
+    sponsorshipType: "self",
+    travellingWith: "alone",
+    hasDependant: "no",
+    countriesVisited: []
+  };
+  
+  const results = validator.validateCoverLetterInputs(mockInputs);
+  console.log("Validation Results:", results.valid ? "PASSED" : "FAILED");
+  console.table(results.errors);
+})();
+```
+
+### Inspecting Under-the-Hood XML Structures
+To inspect what ZIP archive nodes are created by `docx` before download:
+```javascript
+(async function testDocxBuffer() {
+  console.log("Testing DOCX generator buffer conversion...");
+  const mockParagraphs = {
+    lIntro: "Date: 22 May 2026\nTo the Embassy of Japan",
+    lSalutation: "Dear Sir/Madam,",
+    lPurpose: "I am writing to request a tourist visa.",
+    lDocRows: "1. Passport\n2. Itinerary"
+  };
+  
+  const exporter = await import("/web/src/features/documents/cover_letter/utils/letterDocxExporter.ts");
+  const blob = await exporter.generateLetterDocx(mockParagraphs);
+  console.log(`Successfully generated DOCX Blob! Size: ${blob.size} bytes. Type: ${blob.type}`);
+})();
+```

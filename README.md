@@ -1,10 +1,10 @@
-# Visa Assistant Platform – Technical Documentation
+# 🌍 VisaMate: Visa Assistant Platform — Developer Guide & Product Spec
 
-**Version:** 2.0 | **Last Updated:** 2026-04-24
+**Version:** 2.0 | **Last Updated:** 2026-05-22
 
 ---
 
-## 1. Project Overview
+## 🔍 1. Project Overview
 
 A web-based platform that helps users in India prepare for visa applications without relying on agents. The system provides step-by-step guidance, personalized document requirements, and generates supporting documents (cover letter, itinerary, checklist), enabling users to confidently complete official visa applications.
 
@@ -14,7 +14,66 @@ A web-based platform that helps users in India prepare for visa applications wit
 
 ---
 
-## 2. Problem Statement
+## 📦 2. Monorepo Architecture & Setup
+
+VisaMate is managed as an **npm workspaces monorepo**. All frontend application code, validation schemas, and scrapers are unified in a single repository.
+
+```mermaid
+graph TD
+    classDef root fill:#3b82f6,stroke:#1d4ed8,color:#fff,stroke-width:2px;
+    classDef package fill:#10b981,stroke:#047857,color:#fff,stroke-width:2px;
+
+    Root["Monorepo Root<br/>(package.json)"]:::root --> Web["Next.js Web App<br/>(web/)"]:::package
+    Root --> Scripts["Itinerary Place Generator<br/>(scripts/itenrary)"]:::package
+    Root --> Schemas["JSON Validation Schemas<br/>(schemas/)"]:::package
+```
+
+### Folder Structure
+* **[web/](file:///d:/visamate/web)**: Next.js 15+ frontend web application containing wizard steps, interactive checklists, and DOCX/PDF builders.
+* **[scripts/](file:///d:/visamate/scripts)**: Utility scripts (such as the itinerary scraper and Wikidata/Wikipedia enrichment pipeline).
+* **[schemas/](file:///d:/visamate/schemas)**: JSON schema specifications for validating country databases and requirements.
+
+---
+
+## ⚡ 3. Getting Started & Development
+
+> [!IMPORTANT]
+> All build and development commands must be run from the **root `VisaMate/` folder**, not inside subfolders.
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+This single command installs dependencies for **all packages** in the monorepo. Shared dependencies are hoisted to the root `node_modules/` for efficiency.
+
+### 2. Start the Development Server
+```bash
+npm run dev
+```
+
+### 3. Build for Production
+```bash
+npm run build
+```
+
+### 4. Start Production Server
+```bash
+npm run start
+```
+
+### 5. Run the Itinerary Generator Script
+```bash
+npm run generate
+```
+
+### 6. Lint the Web App
+```bash
+npm run lint
+```
+
+---
+
+## ❓ 4. Problem Statement
 
 ### User Pain Points:
 - Don't understand visa requirements clearly (fragmented info across websites)
@@ -30,7 +89,7 @@ A web-based platform that helps users in India prepare for visa applications wit
 
 ---
 
-## 3. Solution Overview
+## 💡 5. Solution Overview
 
 A **guided visa preparation platform** that:
 - ✅ Simplifies requirements (country → visa type → checklist)
@@ -42,9 +101,9 @@ A **guided visa preparation platform** that:
 
 ---
 
-## 4. Core Features (MVP)
+## ✨ 6. Core Features (MVP)
 
-### 4.1 Visa Selection Flow (Entry Point)
+### 6.1 Visa Selection Flow (Entry Point)
 
 **User selects:**
 1. Destination country (dropdown/search)
@@ -59,7 +118,7 @@ A **guided visa preparation platform** that:
 
 ---
 
-### 4.2 Personalized Requirements Engine
+### 6.2 Personalized Requirements Engine
 
 **Displays for selected country + visa type + scenario:**
 
@@ -97,7 +156,7 @@ A **guided visa preparation platform** that:
 
 ---
 
-### 4.3 Guided Form Flow (Core Value Add)
+### 6.3 Guided Form Flow (Core Value Add)
 
 **Step-by-step form wizard** (not dropdown help):
 
@@ -156,7 +215,7 @@ Step 7: Review & Generate
 
 ---
 
-### 4.4 Application Form Assistance
+### 6.4 Application Form Assistance
 
 **Three different methods based on country:**
 
@@ -179,7 +238,7 @@ Guide shows:
 │ → Your answer: John Doe                         │
 │ → Format: UPPERCASE preferred                   │
 │ → [Copy to clipboard]                           │
-│                                                  ���
+│                                                  │
 │ Field 2: "Passport Number"                      │
 │ → Your answer: N1234567                         │
 │ → Note: Match exactly from passport            │
@@ -211,9 +270,9 @@ Flow:
 4. Your system in another tab shows guidance
 
 Parallel guidance:
-┌────────────���────────────────────────────────────┐
+┌──────────────────────────────┬──────────────────┐
 │ OFFICIAL PORTAL              │ YOUR GUIDANCE    │
-├───────────────���──────────────┼──────────────────┤
+├──────────────────────────────┼──────────────────┤
 │ [VFS Portal]                 │                  │
 │ Question: Passport No?       │ → Enter:         │
 │ [__________]                 │   N1234567       │
@@ -258,7 +317,7 @@ Action for MVP: Research and implement only if clearly applicable
 
 ---
 
-### 4.5 Document Generator
+### 6.5 Document Generator
 
 #### **a) Cover Letter Generator**
 
@@ -298,7 +357,7 @@ Example output (Work Visa to Japan):
 │ Yours sincerely,                       │
 │ John Doe                               │
 │                                        │
-└────────────────��───────────────────────┘
+└────────────────────────────────────────┘
 
 Output formats:
 ├── DOCX (Microsoft Word) → User can edit
@@ -437,7 +496,7 @@ Interactive features:
 
 ---
 
-### 4.6 Visa Kit Download (ZIP Bundle)
+### 6.6 Visa Kit Download (ZIP Bundle)
 
 **After user completes flow:**
 
@@ -466,7 +525,7 @@ Storage: User's device only (not on server)
 
 ---
 
-### 4.7 Session & Progress Management
+### 6.7 Session & Progress Management
 
 #### **Storage Strategy:**
 
@@ -537,7 +596,7 @@ Session Recovery:
 
 ---
 
-### 4.8 Smart Assist Mode
+### 6.8 Smart Assist Mode
 
 **For countries with online portals:**
 
@@ -579,9 +638,9 @@ Example scenario:
 
 ---
 
-## 5. Data Strategy
+## 📊 7. Data Strategy
 
-### 5.1 Initial Data Collection
+### 7.1 Initial Data Collection
 
 **MVP Launch Countries: 2-3**
 ```
@@ -603,7 +662,7 @@ Tier 1 (High demand, well-documented):
 
 ---
 
-### 5.2 Data Structure
+### 7.2 Data Structure
 
 **Database Schema (PostgreSQL):**
 
@@ -674,7 +733,7 @@ Scraper Logs Table:
 
 ---
 
-### 5.3 Change Detection System
+### 7.3 Change Detection System
 
 #### **Monitoring Strategy:**
 
@@ -733,47 +792,57 @@ If keyword text changes significantly:
 Step 1: Script detects change (2 AM daily)
         ↓
 Step 2: Send alert notification
-        ├── Slack: "⚠️ Japan Work Visa page changed"
-        ├── Email: Change summary
-        └── Dashboard: Shows pending changes
-        ↓
-Step 3: Admin manually reviews change
-        ├── Visits VFS page
-        ├── Reads full requirements
-        ├── Notes what changed
-        └── Categorizes severity
-        ↓
-Step 4: Categorize change
-        ├── "Minor" (formatting, typo)
-        │   └── Log and skip update
-        ├── "Important" (new doc, fee change)
-        │   └── Update DB + test
-        └── "Structural" (form redesign)
-            └── Deep review + test required
-        ↓
-Step 5: Update database
-        ├── Modify affected records
-        ├── Update timestamp
-        ├── Test changes in frontend
-        └── Document change in logs
-        ↓
-Step 6: Notify users (optional)
-        └── "Japan requirements updated, review here"
+        ├── Slack: "⚠�**API Specifications Table:**
+
+| Method | Path | Request Body / Query Params | Response Format (JSON) | Cache Strategy |
+| :--- | :--- | :--- | :--- | :--- |
+| **`GET`** | `/api/countries` | None | `Array<{ code: string, name: string, supported: boolean }>` | Server-side: `s-maxage=86400` (1 day) |
+| **`GET`** | `/api/countries/:code/visa-types` | None | `Array<{ id: string, name: string, validityYears: number }>` | Server-side: `s-maxage=86400` (1 day) |
+| **`GET`** | `/api/visa-types/:id/requirements` | `?location=MUMBAI&profile=employed` | `{ feeInr: number, processingDays: number, docs: DocumentItem[] }` | Server-side: `s-maxage=3600` (1 hour) |
+| **`POST`** | `/api/generate/cover-letter` | `{ paragraphs: CoverLetterParagraphs }` | `Blob` (raw `.docx` file byte buffer) | Client-only (No Server Cache / No PII Storage) |
+| **`POST`** | `/api/generate/itinerary` | `{ startDate: string, duration: number, cities: string[] }` | `Blob` (raw `.docx` file byte buffer) | Client-only |
+| **`POST`** | `/api/generate/visa-kit` | Form file streams aggregated | `Blob` (structured ZIP container) | Client-only |
+| **`GET`** | `/api/health` | None | `{ status: "ok", lastScraperRun: string }` | Disabled (`no-store, no-cache`) |
+
+---
+
+### 8.3 API & State Integration Lifecycle
+
+This diagram demonstrates how frontend UI components, global context persistence, server-side APIs, and client-side exporters interact during the application preparation lifecycle.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as Applicant (Browser)
+    participant UI as Front-End Components
+    participant Ctx as useApplicant (React State)
+    participant Store as Browser LocalStorage
+    participant NextJS as Next.js API Routes (Server)
+    participant DB as PostgreSQL Database
+    participant Gen as Client Exporter (docx / jszip)
+
+    User->>UI: Select Country / Visa / Scenario
+    UI->>Ctx: update({ country: 'JP', visaType: 'TOURIST' })
+    Ctx->>Store: storage.set() auto-save applicant data
+    User->>UI: Fill Wizard Step 1-4 & Click Submit
+    UI->>NextJS: GET /api/visa-types/JP_TOURIST/requirements?location=DELHI
+    NextJS->>DB: Query rules, fees, timelines
+    DB-->>NextJS: Returns raw SQL spec
+    NextJS-->>UI: Cache-controlled JSON response (TTL: 1 day)
+    UI->>Ctx: Hydrate requirements data in context
+    User->>UI: Generate Supporting Documents (e.g., Cover Letter)
+    UI->>Gen: Request Word Document Exporter
+    Gen->>Gen: Compile docx structures & strip [[HINT: ...]] markers
+    Gen-->>User: Trigger saveAs() direct download (No Server PII upload)
+    User->>UI: Click "Download Visa Kit (ZIP)"
+    UI->>Gen: Read checked rows & uploads state
+    Gen->>Gen: Aggregates files into folder hierarchy
+    Gen-->>User: Trigger saveAs(zip) direct download
 ```
 
 ---
 
-#### **Automation Script (Pseudo-code):**
-
-```python
-Run daily at 2 AM UTC:
-
-for each (country, visa_type):
-    url = get_vfs_url(country, visa_type)
-    
-    # Fetch current page
-    current_html = fetch_page(url)
-    current_hash = md5(current_html)
+### 8.4 Database Configurationmd5(current_html)
     
     # Get previous hash from DB
     previous_hash = db.get_last_hash(country, visa_type)
@@ -797,15 +866,11 @@ for each (country, visa_type):
         status="success",
         run_at=now()
     )
-
-# Alert if scraper itself fails
-if any_failed_checks:
-    alert_admin("Scraper failed for some countries")
 ```
 
 ---
 
-### 5.4 Tiered Coverage Plan
+### 7.4 Tiered Coverage Plan
 
 **Phase 1 (MVP Launch) - Tier 1:**
 ```
@@ -845,11 +910,11 @@ Note: Later countries may have basic info only
 
 ---
 
-## 6. Technical Architecture
+## ⚙️ 8. Technical Architecture
 
-### 6.1 Frontend Architecture
+### 8.1 Frontend Architecture
 
-**Framework:** Next.js 14+ (React)
+**Framework:** Next.js 15+ (React)
 
 **Why:** 
 - Server-side rendering for initial load
@@ -863,62 +928,48 @@ Note: Later countries may have basic info only
 ├── React Hook Form (form handling)
 ├── Zod (form validation)
 ├── TailwindCSS (styling)
-├── Zustand (state management)
+├── Zustand / React Context (state management)
 ├── pdfkit or jsPDF (PDF generation, client-side)
 ├── docx.js (DOCX generation)
-├── IndexedDB wrapper (local storage)
+├── IndexedDB / localStorage wrappers (local storage)
 └── Next.js (framework)
 ```
 
 **Folder Structure:**
+The web portal code is stored inside [web/](file:///d:/visamate/web):
 ```
-frontend/
+web/
 ├── app/
-│   ├── (wizard)/
-│   │   ├── page.tsx (entry point)
-│   │   ├── country/page.tsx
-│   │   ├── visa-type/page.tsx
-│   │   ├── scenario/page.tsx
-│   │   ├── requirements/page.tsx
-│   │   └── form/[step]/page.tsx
+│   ├── page.tsx (entry point)
+│   ├── wizard/ (wizard panels)
+│   ├── documents/ (checklist)
 │   ├── api/
 │   │   ├── countries/route.ts
-│   │   ├── visa-types/route.ts
-│   │   ├── requirements/route.ts
-│   │   └── generate/[docType]/route.ts
+│   │   └── requirements/route.ts
 │   └── layout.tsx
 ├── components/
 │   ├── WizardHeader.tsx
 │   ├── ProgressBar.tsx
 │   ├── FormStep.tsx
-│   ├── DocumentPreview.tsx
 │   └── ...
 ├── lib/
-│   ├── db/
-│   │   ├── indexeddb.ts (IndexedDB wrapper)
-│   │   └── migrations.ts
+│   ├── context/
+│   │   └── ApplicantContext.tsx (state context)
 │   ├── generators/
 │   │   ├── coverLetter.ts
-│   │   ├── itinerary.ts
-│   │   ├── checklist.ts
-│   │   └── zipBundle.ts
-│   ├── api.ts (API calls to backend)
-│   └── utils.ts
+│   │   └── itinerary.ts
+│   └── utils/
+│       └── storage.ts (storage helpers)
 ├── hooks/
 │   ├── useWizardState.ts
-│   ├── useFormProgress.ts
 │   └── useSessionStorage.ts
 └── public/
-    ├── templates/
-    │   ├── coverLetterTemplate.txt
-    │   ├── itineraryTemplate.txt
-    │   └── ...
-    └── ...
+    └── templates/
 ```
 
 ---
 
-### 6.2 Backend Architecture
+### 8.2 Backend Architecture
 
 **Framework:** Node.js/Express or FastAPI
 
@@ -988,7 +1039,7 @@ GET /api/health
 
 ---
 
-### 6.3 Database
+### 8.3 Database
 
 **Choice:** PostgreSQL (managed service)
 
@@ -1018,11 +1069,11 @@ Option 4: Self-hosted on VPS
 
 **Recommendation for MVP:** Supabase Free Tier
 
-**Schema:** (See section 5.2)
+**Schema:** (See section 7.2)
 
 ---
 
-### 6.4 Change Detection Service
+### 8.4 Change Detection Service
 
 **Runs on:** GitHub Actions (free) OR Simple cron job
 
@@ -1057,7 +1108,7 @@ Maintenance: Check logs weekly
 
 ---
 
-### 6.5 Document Generation
+### 8.5 Document Generation
 
 **Method:** Client-side + Server-side
 
@@ -1116,7 +1167,7 @@ JavaScript (Browser):
 
 ---
 
-### 6.6 Deployment Architecture
+### 8.6 Deployment Architecture
 
 **Frontend Deployment:**
 ```
@@ -1177,9 +1228,9 @@ Total: ~$10/year (free tier) or ~$40/month (production)
 
 ---
 
-## 7. Privacy & Data Handling
+## 🔒 9. Privacy & Data Handling
 
-### 7.1 Data Security
+### 9.1 Data Security
 
 **Security Measures:**
 ```
@@ -1194,7 +1245,7 @@ Total: ~$10/year (free tier) or ~$40/month (production)
 
 ---
 
-### 7.2 Data Minimization
+### 9.2 Data Minimization
 
 **What we DON'T store:**
 ```
@@ -1217,7 +1268,7 @@ Total: ~$10/year (free tier) or ~$40/month (production)
 
 ---
 
-### 7.3 Data Retention
+### 9.3 Data Retention
 
 **User Session Data:**
 ```
@@ -1234,7 +1285,7 @@ Server-side Files:
 
 ---
 
-### 7.4 Privacy Policy
+### 9.4 Privacy Policy
 
 **Key Points to Document:**
 ```
@@ -1261,7 +1312,7 @@ User Rights:
 
 ---
 
-### 7.5 Compliance
+### 9.5 Compliance
 
 **Legal/Regulatory:**
 ```
@@ -1275,7 +1326,7 @@ User Rights:
 
 ---
 
-## 8. User Journey (Detailed Flow)
+## 🗺️ 10. User Journey (Detailed Flow)
 
 ```
 ┌─────────────────────────────────────────┐
@@ -1299,7 +1350,7 @@ User Rights:
 │ └─ [More countries...]                  │
 │                                         │
 │ [Next] [Skip]                           │
-└────────────────────────────────────────���┘
+└─────────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────────┐
 │ STEP 2: SELECT VISA TYPE                │
@@ -1353,7 +1404,7 @@ User Rights:
                  ↓
 ┌─────────────────────────────────────────┐
 │ STEP 5: GUIDED FORM - Personal Info    │
-├─────────────────���───────────────────────┤
+├─────────────────────────────────────────┤
 │ Progress: ███░░░░░░ 30%                 │
 │                                         │
 │ Full Name (as in passport)              │
@@ -1407,7 +1458,7 @@ User Rights:
 │ Employment Type                         │
 │ ○ Permanent ○ Contract ○ Freelance      │
 │                                         │
-�� [Back] [Generate Documents]             │
+│ [Back] [Generate Documents]             │
 └─────────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────────┐
@@ -1425,7 +1476,7 @@ User Rights:
 │ [View Cover Letter]                     │
 │ [View Checklist]                        │
 │ [Next Steps Guide]                      │
-└────────────────────��────────────────────┘
+└─────────────────────────────────────────┘
                  ↓
 ┌─────────────────────────────────────────┐
 │ FINAL STEP: WHAT'S NEXT                │
@@ -1455,7 +1506,7 @@ User Rights:
 
 ---
 
-## 9. MVP Scope (First Release - Week 1-6)
+## 🎯 11. MVP Scope (First Release)
 
 ### What's INCLUDED:
 
@@ -1576,7 +1627,7 @@ Week 4: Backend & API
 
 Week 5: Change Detection & Deployment
 ├─ Build change detection script
-��─ Set up GitHub Actions
+├─ Set up GitHub Actions
 ├─ Deploy to Vercel (frontend)
 ├─ Deploy to Render (backend)
 ├─ Test full production setup
@@ -1592,7 +1643,7 @@ Week 6: Polish & Testing
 
 ---
 
-## 10. Non-Functional Requirements
+## 📈 12. Non-Functional Requirements
 
 ### Performance
 
@@ -1619,7 +1670,7 @@ Scalability:
 
 ---
 
-### Reliability & Uptime
+### Uptime & Reliability
 
 ```
 Target Uptime: 99.5% (43 minutes downtime/month)
@@ -1688,12 +1739,12 @@ Regular Security:
 
 ---
 
-## 11. Risk Assessment & Mitigation
+## ⚠️ 13. Risk Assessment & Mitigation
 
 ### Technical Risks
 
 | Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|-----------|
+| :--- | :--- | :--- | :--- |
 | **VFS website changes frequently** | High | Medium | Change detection system monitors daily |
 | **Document generation bugs** | Medium | High | Thorough testing, user can regenerate |
 | **Database goes down** | Low | High | Use managed service (Supabase), backups |
@@ -1705,7 +1756,7 @@ Regular Security:
 ### Business Risks
 
 | Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|-----------|
+| :--- | :--- | :--- | :--- |
 | **VFS sues us** | Low | Critical | Don't scrape, only guide, disclaimer clear |
 | **Low user adoption** | Medium | High | Research market, iterate fast, marketing |
 | **Data breach** | Low | Critical | No PII stored, end-to-end privacy |
@@ -1747,7 +1798,7 @@ Regular Security:
 
 ---
 
-## 12. Success Metrics
+## 🏅 14. Success Metrics
 
 ### Launch Metrics (Week 1-4)
 
@@ -1798,7 +1849,7 @@ Regular Security:
 
 ---
 
-## 13. Future Enhancements (Post-MVP)
+## 🚀 15. Future Enhancements (Post-MVP)
 
 ### Phase 2 (Months 4-6)
 
@@ -1862,7 +1913,7 @@ Regular Security:
 
 ---
 
-## 14. Guiding Principles
+## 🧠 16. Guiding Principles
 
 These principles guide every decision:
 
@@ -1894,13 +1945,13 @@ These principles guide every decision:
 
 ---
 
-## 15. One-Line Vision
+## 🌟 17. One-Line Vision
 
 **"TurboTax for visa applications — empowering Indians to confidently apply for visas without paying agents."**
 
 ---
 
-## 16. Detailed Implementation Checklist
+## 📋 18. Detailed Implementation Checklist
 
 ### Pre-Launch Checklist (Before Week 1)
 
@@ -2023,7 +2074,7 @@ Week 6: Launch Prep
 
 ---
 
-## 17. FAQ (Anticipated User Questions)
+## 💬 19. FAQ (Anticipated User Questions)
 
 ```
 Q: Is this free?
@@ -2067,7 +2118,7 @@ A: We monitor changes. But submission follows the rules at submission
 
 ---
 
-## 18. Success Criteria for MVP Launch
+## ✅ 20. Success Criteria for MVP Launch
 
 **MVP is considered successful if:**
 
@@ -2100,7 +2151,7 @@ A: We monitor changes. But submission follows the rules at submission
 
 ---
 
-## 19. Next Steps (Before Implementation)
+## 👣 21. Next Steps
 
 ```
 1. Review this plan with team
