@@ -253,39 +253,9 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
             </div>
           </div>
 
-          {/* ── Breadcrumbs: always visible ───────────────────────────────────── */}
-          <div style={{ minHeight: (showFlight || breadcrumbs.length > 0) ? 28 : 0, marginBottom: (showFlight || breadcrumbs.length > 0) ? 10 : 0, flexShrink: 0 }}>
-            {showFlight && pendingSelections ? (
-              // Flight active: show all 3 selections as "go back to edit" chips
-              <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
-                {[
-                  { label: selectedCountryName, step: 0 },
-                  { label: selectedVisaName,    step: 1 },
-                  { label: selectedLocation,    step: 2 },
-                ].filter(b => b.label).map((b, i) => (
-                  <div
-                    key={i}
-                    onClick={() => {
-                      setFlightState("idle");
-                      setPendingSelections(null);
-                      goToStep(b.step);
-                    }}
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: 5,
-                      background: "rgba(108,92,231,0.1)",
-                      border: "0.5px solid rgba(108,92,231,0.3)",
-                      borderRadius: 20, padding: "4px 10px 4px 8px", cursor: "pointer",
-                    }}
-                  >
-                    <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                    <span style={{ color: "#a89cef", fontSize: 11 }}>{b.label}</span>
-                  </div>
-                ))}
-              </div>
-            ) : breadcrumbs.length > 0 ? (
-              // Normal wizard: show completed-step breadcrumbs
+          {/* ── Breadcrumbs: only visible when not showing flight map ─────────── */}
+          {!showFlight && breadcrumbs.length > 0 && (
+            <div style={{ minHeight: 28, marginBottom: 10, flexShrink: 0 }}>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {breadcrumbs.map((label, i) => (
                   <div key={i} onClick={() => goToStep(i)} style={{
@@ -294,15 +264,15 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
                     border: "0.5px solid rgba(108,92,231,0.3)",
                     borderRadius: 20, padding: "4px 10px 4px 8px", cursor: "pointer",
                   }}>
-                    <svg width="11" height="11" fill="none" stroke="rgba(168,156,239,0.8)" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    <svg width="10" height="10" fill="none" stroke="#4ade80" strokeWidth="3" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                     <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
                   </div>
                 ))}
               </div>
-            ) : null}
-          </div>
+            </div>
+          )}
 
           {/* ── Content area: flight map OR wizard step (both always in DOM) ──── */}
           <div style={{
@@ -320,6 +290,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
                   inline
                   countryCode={pendingSelections.country}
                   countryName={pendingSelections.countryName}
+                  originLocationCode={pendingSelections.location}
                   // No-op once landed so a re-render can't double-fire onComplete
                   onComplete={flightState === "animating" ? handleFlightComplete : () => {}}
                 />
