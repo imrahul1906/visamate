@@ -24,8 +24,14 @@ const STEP_LABELS = ["Country", "Visa type", "Location", "Details"];
 
 // ─── WizardCard ───────────────────────────────────────────────────────────────
 
-function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
-  const { update } = useApplicant();
+function WizardCard({
+  onShowDocuments,
+  onEditSelections,
+}: {
+  onShowDocuments: (s: WizardSelections) => void;
+  onEditSelections?: () => void;
+}) {
+  const { ctx, update, reset } = useApplicant();
   const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
 
   useEffect(() => {
@@ -35,7 +41,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   }, []);
 
   const [activeStep, setActiveStep]                   = useState(0);
-  const [, setDisplayStep]                 = useState(0);
+  const [, setDisplayStep]                            = useState(0);
   const [animState, setAnimState]                     = useState<"idle" | "exit" | "enter">("idle");
   const [direction, setDirection]                     = useState<1 | -1>(1);
   const animLock                                      = useRef(false);
@@ -44,8 +50,6 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   const [selectedVisa, setSelectedVisa]               = useState<string | null>(null);
   const [selectedVisaName, setSelectedVisaName]       = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation]       = useState<string | null>(null);
-  const [sponsorship, setSponsorship]                 = useState<string | null>(null);
-  const [profile, setProfile]                         = useState<string | null>(null);
 
   // ── Flight state ──────────────────────────────────────────────────────────
   // "idle"      → wizard steps shown normally
@@ -53,6 +57,166 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
   // "landed"    → flight animation frozen on last frame; user has scrolled to docs
   const [flightState, setFlightState]             = useState<"idle" | "animating" | "landed">("idle");
   const [pendingSelections, setPendingSelections] = useState<WizardSelections | null>(null);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
+  const [resumeCountryName, setResumeCountryName] = useState<string>("");
+  const [resumeVisaTypeName, setResumeVisaTypeName] = useState<string>("");
+  const isLoadedRef = useRef(false);
+
+  // Check if there is saved progress to offer resume
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedCtx = localStorage.getItem("visamate_applicant_data");
+      let hasSavedData = false;
+      let savedCountry = "";
+      let savedVisaTypeName = "";
+      if (storedCtx) {
+        try {
+          const parsed = JSON.parse(storedCtx);
+          if (parsed.country) {
+            hasSavedData = true;
+            savedCountry = parsed.country;
+            savedVisaTypeName = parsed.visaTypeName || "";
+          }
+        } catch (e) {}
+      }
+
+      if (hasSavedData) {
+        setResumeVisaTypeName(savedVisaTypeName);
+        getAllCountries().then(list => {
+          const match = list.find(c => c.code === savedCountry);
+          if (match) {
+            setResumeCountryName(match.name);
+          } else {
+            setResumeCountryName(savedCountry);
+          }
+        }).catch(() => {
+          setResumeCountryName(savedCountry);
+        });
+        setShowResumePrompt(true);
+      } else {
+        isLoadedRef.current = true;
+      }
+    }
+  }, []);
+
+  const handleResume = async () => {
+    if (typeof window !== "undefined") {
+      try {
+        const storedCard = localStorage.getItem("visamate_card_state");
+        let loadedActiveStep = 0;
+        let loadedFlightState: "idle" | "animating" | "landed" = "idle";
+        let loadedPendingSelections = null;
+
+        if (storedCard) {
+          const parsed = JSON.parse(storedCard);
+          if (parsed.activeStep !== undefined) loadedActiveStep = parsed.activeStep;
+          if (parsed.flightState !== undefined) {
+            loadedFlightState = parsed.flightState === "animating" ? "landed" : parsed.flightState;
+          }
+          if (parsed.pendingSelections !== undefined) loadedPendingSelections = parsed.pendingSelections;
+        }
+
+        const storedCtx = localStorage.getItem("visamate_applicant_data");
+        if (storedCtx) {
+          const parsed = JSON.parse(storedCtx);
+          let restoredCountry = parsed.country || "";
+          let restoredCountryName = parsed.countryName || "";
+
+          if (restoredCountry) {
+            try {
+              const list = await getAllCountries();
+              let match = list.find(c => c.code === restoredCountry);
+              if (match) {
+                restoredCountryName = match.name;
+              } else {
+                match = list.find(c => c.name.toLowerCase() === restoredCountry.toLowerCase());
+                if (match) {
+                  restoredCountry = match.code;
+                  restoredCountryName = match.name;
+                }
+              }
+            } catch (err) {
+              console.error("[handleResume] Failed to resolve country name/code:", err);
+            }
+            setSelectedCountry(restoredCountry);
+            setSelectedCountryName(restoredCountryName);
+
+            // Sync back to context
+            update({
+              country: restoredCountry,
+              countryName: restoredCountryName,
+            });
+          }
+
+          if (parsed.visaType) {
+            setSelectedVisa(parsed.visaType);
+            setSelectedVisaName(parsed.visaTypeName || "");
+          }
+          if (parsed.vfsCenter) setSelectedLocation(parsed.vfsCenter);
+        }
+
+        setActiveStep(loadedActiveStep);
+        setDisplayStep(loadedActiveStep);
+        setFlightState(loadedFlightState);
+        setPendingSelections(loadedPendingSelections);
+
+        if (loadedFlightState === "landed" && loadedPendingSelections) {
+          onShowDocuments(loadedPendingSelections);
+        }
+      } catch (e) {
+        console.error("Failed to load wizard card state from localStorage", e);
+      } finally {
+        isLoadedRef.current = true;
+        setShowResumePrompt(false);
+      }
+    }
+  };
+
+  const handleStartFresh = () => {
+    reset(); // Clear context and localStorage
+    
+    // Reset wizard card states to defaults
+    setActiveStep(0);
+    setDisplayStep(0);
+    setFlightState("idle");
+    setPendingSelections(null);
+    setSelectedCountry(null);
+    setSelectedCountryName(null);
+    setSelectedVisa(null);
+    setSelectedVisaName(null);
+    setSelectedLocation(null);
+
+    setShowResumePrompt(false);
+    isLoadedRef.current = true;
+    localStorage.removeItem("visamate_card_state");
+    onEditSelections?.();
+  };
+
+  // Set country name once countries list is loaded and selectedCountry is resolved
+  useEffect(() => {
+    if (selectedCountry && countries.length > 0 && !selectedCountryName) {
+      const countryObj = countries.find(c => c.code === selectedCountry);
+      if (countryObj) {
+        setSelectedCountryName(countryObj.name);
+      }
+    }
+  }, [selectedCountry, countries, selectedCountryName]);
+
+  // Save wizard state to localStorage on changes
+  useEffect(() => {
+    if (!isLoadedRef.current) return;
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("visamate_card_state", JSON.stringify({
+          activeStep,
+          flightState,
+          pendingSelections,
+        }));
+      } catch (e) {
+        console.error("Failed to save wizard card state to localStorage", e);
+      }
+    }
+  }, [activeStep, flightState, pendingSelections]);
 
   const goToStep = (next: number) => {
     if (animLock.current || next === activeStep) return;
@@ -72,7 +236,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
     activeStep === 0 ? !!selectedCountry :
     activeStep === 1 ? !!selectedVisa :
     activeStep === 2 ? !!selectedLocation :
-    activeStep === 3 ? !!(sponsorship && profile) :
+    activeStep === 3 ? !!(ctx.sponsorshipType && ctx.applicantProfile) :
     true;
 
   const continueLabels = [
@@ -88,24 +252,22 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
     setSelectedVisa(null);
     setSelectedVisaName(null);
     setSelectedLocation(null);
-    setSponsorship(null);
-    setProfile(null);
     update({
       country: code || "",
+      countryName: name || "",
       visaType: "",
       visaTypeName: "",
       vfsCenter: "",
       sponsorshipType: null,
       applicantProfile: null,
     });
+    setShowResumePrompt(false);
   };
 
   const handleVisaSelect = (code: string | null, name: string | null) => {
     setSelectedVisa(code);
     setSelectedVisaName(name);
     setSelectedLocation(null);
-    setSponsorship(null);
-    setProfile(null);
     update({
       visaType: code || "",
       visaTypeName: name || "",
@@ -113,11 +275,6 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
       sponsorshipType: null,
       applicantProfile: null,
     });
-  };
-
-  const handleDetailsSelect = (sp: string | null, pr: string | null) => {
-    setSponsorship(sp);
-    setProfile(pr);
   };
 
   const breadcrumbs = [selectedCountryName, selectedVisaName, selectedLocation]
@@ -133,8 +290,8 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
         visaTypeName: selectedVisaName    ?? "",
         location:     selectedLocation    ?? "",
         locationName: selectedLocation    ?? "",
-        sponsorship:  sponsorship         ?? "SELF",
-        profile:      profile             ?? "",
+        sponsorship:  ctx.sponsorshipType ?? "SELF",
+        profile:      ctx.applicantProfile ?? "",
       };
       setPendingSelections(selections);
       setFlightState("animating");
@@ -226,6 +383,28 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
               {/* Sub-label: step counter → completion message on flight */}
               <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
                 {showFlight ? "✓ All steps complete" : `Step ${activeStep + 1} of ${STEP_LABELS.length}`}
+                {selectedCountry && (
+                  <>
+                    <span style={{ margin: "0 6px" }}>•</span>
+                    <button
+                      onClick={handleStartFresh}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "rgba(168, 156, 239, 0.85)",
+                        fontSize: 10,
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        padding: 0,
+                        fontFamily: "inherit",
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.color = "#fff"}
+                      onMouseLeave={e => e.currentTarget.style.color = "rgba(168, 156, 239, 0.85)"}
+                    >
+                      Start fresh
+                    </button>
+                  </>
+                )}
               </span>
               {/* Title: current step → route label on flight */}
               <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
@@ -326,7 +505,83 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
               >
                 <div className="wizard-scroll" style={{ height: "100%" }}>
                   {activeStep === 0 && (
-                    <StepCountry allCountries={countries} selectedCountry={selectedCountry} onSelect={handleCountrySelect} compact />
+                    <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 10 }}>
+                      {showResumePrompt && (
+                        <div
+                          style={{
+                            background: "rgba(108, 92, 231, 0.1)",
+                            border: "1px solid rgba(108, 92, 231, 0.25)",
+                            borderRadius: 12,
+                            padding: "10px 14px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 12,
+                            flexShrink: 0,
+                            boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
+                            backdropFilter: "blur(8px)",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                            <div style={{ flexShrink: 0 }}>
+                              <svg width="16" height="16" fill="none" stroke="#a89cef" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                              </svg>
+                            </div>
+                            <span style={{ color: "rgba(255, 255, 255, 0.85)", fontSize: 11, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              Resume application to <strong>{resumeCountryName || "destination"}</strong>?
+                            </span>
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                            <button
+                              onClick={handleResume}
+                              style={{
+                                background: "#6c5ce7",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: 6,
+                                padding: "4px 10px",
+                                fontSize: 10,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "background 0.2s",
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = "#5b4ad4"}
+                              onMouseLeave={e => e.currentTarget.style.background = "#6c5ce7"}
+                            >
+                              Resume
+                            </button>
+                            <button
+                              onClick={handleStartFresh}
+                              style={{
+                                background: "rgba(255, 255, 255, 0.08)",
+                                color: "rgba(255, 255, 255, 0.6)",
+                                border: "0.5px solid rgba(255, 255, 255, 0.15)",
+                                borderRadius: 6,
+                                padding: "4px 8px",
+                                fontSize: 10,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
+                                e.currentTarget.style.color = "#fff";
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+                                e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
+                              }}
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div style={{ flex: 1, minHeight: 0 }}>
+                        <StepCountry allCountries={countries} selectedCountry={selectedCountry} onSelect={handleCountrySelect} compact />
+                      </div>
+                    </div>
                   )}
                   {activeStep === 1 && (
                     <StepVisaType countryCode={selectedCountry} selectedVisa={selectedVisa} onSelect={handleVisaSelect} compact />
@@ -335,7 +590,7 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
                     <StepLocation countryCode={selectedCountry} selectedLocation={selectedLocation} onSelect={setSelectedLocation} compact />
                   )}
                   {activeStep === 3 && (
-                    <StepDetails sponsorship={sponsorship} profile={profile} onSelect={handleDetailsSelect} compact />
+                    <StepDetails compact />
                   )}
                 </div>
               </div>
@@ -348,7 +603,12 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
               onClick={
                 showFlight
                   // Dismiss flight, restore wizard at step 3
-                  ? () => { setFlightState("idle"); setPendingSelections(null); goToStep(3); }
+                  ? () => {
+                      setFlightState("idle");
+                      setPendingSelections(null);
+                      goToStep(3);
+                      onEditSelections?.();
+                    }
                   : handleContinue
               }
               style={{
@@ -409,7 +669,13 @@ function WizardCard({ onShowDocuments }: { onShowDocuments: (s: WizardSelections
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => void }) {
+function Hero({
+  onShowDocuments,
+  onEditSelections,
+}: {
+  onShowDocuments: (s: WizardSelections) => void;
+  onEditSelections?: () => void;
+}) {
   return (
     <section style={{
       background: "#0a0718", minHeight: "100vh", padding: "0 32px",
@@ -457,7 +723,7 @@ function Hero({ onShowDocuments }: { onShowDocuments: (s: WizardSelections) => v
         </div>
 
         {/* Right: wizard card */}
-        <div><WizardCard onShowDocuments={onShowDocuments} /></div>
+        <div><WizardCard onShowDocuments={onShowDocuments} onEditSelections={onEditSelections} /></div>
       </div>
     </section>
   );
@@ -530,6 +796,10 @@ export default function VisaMateLanding() {
     scrollToDocs();
   };
 
+  const handleEditSelections = () => {
+    setDocsVisible(false);
+  };
+
   return (
     <div style={{ fontFamily: "'DM Sans', 'Inter', sans-serif", margin: 0, padding: 0 }}>
       <style>{`
@@ -537,7 +807,7 @@ export default function VisaMateLanding() {
         input::placeholder { color: rgba(255,255,255,0.25); }
         @media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr !important; } }
       `}</style>
-      <Hero onShowDocuments={handleShowDocuments} />
+      <Hero onShowDocuments={handleShowDocuments} onEditSelections={handleEditSelections} />
       {docsVisible && wizardSelections && (
         <DocumentsSection sectionRef={docsSectionRef} visible={docsVisible} selections={wizardSelections} />
       )}

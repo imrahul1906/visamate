@@ -13,6 +13,7 @@ export interface ApplicantData {
 
   // ── From StepCountry ──
   country: string;
+  countryName: string;
 
   // ── From StepLocation ──
   vfsCenter: string;

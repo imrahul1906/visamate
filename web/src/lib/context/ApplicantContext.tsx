@@ -25,6 +25,7 @@ const defaults: ApplicantData = {
 
   // Destination
   country: "",
+  countryName: "",
   vfsCenter: "",
 
   // Profile
@@ -83,17 +84,17 @@ const STORAGE_KEY = "visamate_applicant_data";
 export function ApplicantProvider({ children }: { children: ReactNode }) {
   const [ctx, setCtx] = useState<ApplicantData>(defaults);
 
-  // Load from sessionStorage on client mount to be hydration safe
+  // Load from localStorage on client mount to be hydration safe
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = sessionStorage.getItem(STORAGE_KEY);
+        const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
           setCtx((prev) => ({ ...prev, ...parsed }));
         }
       } catch (e) {
-        console.error("Failed to load applicant data from sessionStorage", e);
+        console.error("Failed to load applicant data from localStorage", e);
       }
     }
   }, []);
@@ -103,9 +104,9 @@ export function ApplicantProvider({ children }: { children: ReactNode }) {
       const next = { ...prev, ...patch };
       if (typeof window !== "undefined") {
         try {
-          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
         } catch (e) {
-          console.error("Failed to save applicant data to sessionStorage", e);
+          console.error("Failed to save applicant data to localStorage", e);
         }
       }
       return next;
@@ -115,9 +116,11 @@ export function ApplicantProvider({ children }: { children: ReactNode }) {
     setCtx(defaults);
     if (typeof window !== "undefined") {
       try {
-        sessionStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem("visamate_card_state");
+        localStorage.removeItem("visamate_landing_state");
       } catch (e) {
-        console.error("Failed to remove applicant data from sessionStorage", e);
+        console.error("Failed to remove applicant data from localStorage", e);
       }
     }
   };
