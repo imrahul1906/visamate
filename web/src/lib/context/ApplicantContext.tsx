@@ -10,6 +10,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { ApplicantData } from "@/types/applicant";
+import { storage, STORAGE_KEYS } from "../utils/storage";
 
 export type { ApplicantData };
 
@@ -78,7 +79,7 @@ const ApplicantContext = createContext<ApplicantContextValue>({
   reset: () => { },
 });
 
-const STORAGE_KEY = "visamate_applicant_data";
+const STORAGE_KEY = STORAGE_KEYS.APPLICANT_DATA;
 
 /* ─── Provider — wrap your page/app root with this ─── */
 export function ApplicantProvider({ children }: { children: ReactNode }) {
@@ -86,43 +87,22 @@ export function ApplicantProvider({ children }: { children: ReactNode }) {
 
   // Load from localStorage on client mount to be hydration safe
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          setCtx((prev) => ({ ...prev, ...parsed }));
-        }
-      } catch (e) {
-        console.error("Failed to load applicant data from localStorage", e);
-      }
+    const stored = storage.get<Partial<ApplicantData> | null>(STORAGE_KEY, null);
+    if (stored) {
+      setCtx((prev) => ({ ...prev, ...stored }));
     }
   }, []);
 
   const update = (patch: Partial<ApplicantData>) =>
     setCtx((prev) => {
       const next = { ...prev, ...patch };
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-        } catch (e) {
-          console.error("Failed to save applicant data to localStorage", e);
-        }
-      }
+      storage.set(STORAGE_KEY, next);
       return next;
     });
 
   const reset = () => {
     setCtx(defaults);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem("visamate_card_state");
-        localStorage.removeItem("visamate_landing_state");
-      } catch (e) {
-        console.error("Failed to remove applicant data from localStorage", e);
-      }
-    }
+    storage.clearSession();
   };
 
   return (

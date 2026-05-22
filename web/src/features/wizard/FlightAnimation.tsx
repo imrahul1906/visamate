@@ -135,6 +135,7 @@ interface FlightAnimationProps {
   countryName: string;
   onComplete: () => void;
   originLocationCode?: string;
+  isLanded?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────
@@ -161,6 +162,7 @@ export default function FlightAnimation({
   countryName,
   onComplete,
   originLocationCode,
+  isLanded = false,
 }: FlightAnimationProps) {
   const targetCode = countryCode.toUpperCase() === "UK" ? "GB" : countryCode.toUpperCase();
   const destFlag = useMemo(() => getFlagEmoji(targetCode), [targetCode]);
@@ -217,8 +219,8 @@ export default function FlightAnimation({
   );
 
   // ── Animation state ──
-  const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<"flying" | "arrived">("flying");
+  const [progress, setProgress] = useState(isLanded ? 1 : 0);
+  const [phase, setPhase] = useState<"flying" | "arrived">(isLanded ? "arrived" : "flying");
   const [statusIdx, setStatusIdx] = useState(0);
   const [particles, setParticles] = useState<Particle[]>([]);
 
@@ -267,6 +269,12 @@ export default function FlightAnimation({
 
   // ── Animate ──
   useEffect(() => {
+    if (isLanded) {
+      setProgress(1);
+      setPhase("arrived");
+      return;
+    }
+
     // Status message cycling
     const statusInterval = setInterval(() => {
       setStatusIdx((i) => Math.min(i + 1, STATUS_STEPS.length - 1));
