@@ -1,4 +1,4 @@
-// visamate/scripts/generate/utils/slug.ts
+// visamate/scripts/itinerary/utils/slug.ts
 // ─────────────────────────────────────────────────────────────
 // utils/slug.ts
 // Generates stable, deterministic slugs/IDs for place names.

@@ -380,14 +380,45 @@ export async function getItineraryPlaces(
   assertParam(countryCode, "countryCode");
   const cc = normalizeCode(countryCode);
 
-  if (cc === "JP") {
-    return (await import("../../data/countries/japan/itinerary-places.json")).default as ItineraryPlacesData;
+  const countryKeys: Record<string, string> = {
+    JP: "japan",
+    FR: "france",
+    IN: "india",
+    TH: "thailand",
+    IT: "italy",
+    US: "usa",
+    AE: "uae",
+  };
+
+  const key = countryKeys[cc];
+  if (!key) {
+    console.warn(`[repository] getItineraryPlaces: unsupported countryCode="${countryCode}"`);
+    return null;
   }
 
-  console.warn(
-    `[repository] getItineraryPlaces: no data found for countryCode="${countryCode}".`
-  );
-  return null;
+  try {
+    switch (key) {
+      case "japan":
+        return (await import("../../data/countries/japan/itinerary-places.json")).default as ItineraryPlacesData;
+      case "france":
+        return (await import("../../data/countries/france/itinerary-places.json")).default as ItineraryPlacesData;
+      case "india":
+        return (await import("../../data/countries/india/itinerary-places.json")).default as ItineraryPlacesData;
+      case "thailand":
+        return (await import("../../data/countries/thailand/itinerary-places.json")).default as ItineraryPlacesData;
+      case "italy":
+        return (await import("../../data/countries/italy/itinerary-places.json")).default as ItineraryPlacesData;
+      case "usa":
+        return (await import("../../data/countries/usa/itinerary-places.json")).default as ItineraryPlacesData;
+      case "uae":
+        return (await import("../../data/countries/uae/itinerary-places.json")).default as ItineraryPlacesData;
+      default:
+        return null;
+    }
+  } catch (err) {
+    console.warn(`[repository] getItineraryPlaces: failed to import data for country="${key}":`, err);
+    return null;
+  }
 }
 
 // ─── Form Fill Field Types ─────────────────────────────────────────────────

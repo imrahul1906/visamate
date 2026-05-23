@@ -1,4 +1,4 @@
-// visamate/scripts/itenrary/generate/pipeline/typeResolver.ts
+// visamate/scripts/itinerary/pipeline/typeResolver.ts
 //
 // Resolves a Wikipedia article description → our PlaceType.
 //

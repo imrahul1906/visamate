@@ -1,4 +1,4 @@
-// visamate/scripts/itenrary/generate/pipeline/enricher.ts
+// visamate/scripts/itinerary/pipeline/enricher.ts
 //
 // Combines WikidataPlace[] + pageview counts into EnrichedPlace[].
 // Deduplicates, ranks by Wikipedia pageviews, resolves types.
@@ -31,14 +31,20 @@ export async function enrichPlaces(
     return true;
   });
 
-  console.log(`  [enricher] ${unique.length} unique places for ${cityName}, fetching pageviews...`);
+  // Pre-filter: Sort by real sitelinkCount descending and take top 25 candidates
+  unique.sort((a, b) => b.sitelinkCount - a.sitelinkCount);
+  const candidates = unique.slice(0, 25);
 
-  // Fetch pageviews for all candidates
-  const titles = unique.map((p) => p.wikipedia).filter(Boolean);
+  console.log(
+    `  [enricher] Filtered down to ${candidates.length} top candidates for ${cityName} (from ${unique.length} unique), fetching pageviews...`
+  );
+
+  // Fetch pageviews only for the pre-filtered candidates
+  const titles = candidates.map((p) => p.wikipedia).filter(Boolean);
   const pageviewMap = await fetchPageviewsBatch(titles, 6);
 
   // Attach pageviews
-  const withViews = unique.map((p) => ({
+  const withViews = candidates.map((p) => ({
     ...p,
     pageviews: pageviewMap.get(p.wikipedia) ?? 0,
   }));

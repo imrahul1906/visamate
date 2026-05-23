@@ -1,13 +1,10 @@
-// visamate/scripts/itenrary/generate/pipeline/wikidata.ts
+// visamate/scripts/itinerary/pipeline/wikidata.ts
 //
 // Fetches tourist places per city using Wikipedia Category API
-// + MediaWiki Action API (batch page props).
-//
-// PIPELINE PER CITY:
-//   1. Category API (GET)  → page titles from "Tourist_attractions_in_X" + fallbacks
-//   2. Action API (POST, prop=pageprops|extracts) → wikibase_item + description per title
+// + MediaWiki Action API (batch page props + langlinks).
 
 import type { WikidataPlace } from "../types/index.js";
+import { getCachedData, setCachedData } from "../utils/cache.js";
 
 const WP_API = "https://en.wikipedia.org/w/api.php";
 
@@ -42,16 +39,19 @@ const TITLE_BLACKLIST = [
   "prefecture)", " expressway", "highway", "route ",
 ];
 
-// ─────────────────────────────────────────────────────────────
-// Public entry point
-// ─────────────────────────────────────────────────────────────
-
 export async function fetchWikidataPlaces(
   cityName: string,
   _wikidataId?: string,
   _regionQId?: string,
   _minSiteLinks?: number
 ): Promise<WikidataPlace[]> {
+
+  const cacheKey = `wiki_places_${cityName.toLowerCase().replace(/\s+/g, "_")}`;
+  const cached = getCachedData<WikidataPlace[]>(cacheKey);
+  if (cached) {
+    console.log(`  [wiki] Loaded ${cached.length} places from cache for ${cityName}`);
+    return cached;
+  }
 
   // Strip parenthetical suffix, e.g. "Hokkaido (Sapporo)" → "Sapporo"
   const citySlug = cityName
@@ -85,18 +85,9 @@ export async function fetchWikidataPlaces(
   const places = await fetchPageDetails(allTitles);
 
   console.log(`  [wiki] ${places.length} places resolved for ${cityName}`);
+  setCachedData(cacheKey, places);
   return places;
 }
-
-// ─────────────────────────────────────────────────────────────
-// Category members — MUST use GET
-//
-// Wikipedia's list=categorymembers does NOT accept POST.
-// Sending POST causes a silent empty response for cities whose
-// categories exist (Kyoto, Osaka, etc.) but are rejected by the
-// server's method check. Keep as GET — these URLs are short and
-// length is never an issue here.
-// ─────────────────────────────────────────────────────────────
 
 async function fetchCategoryMembers(category: string): Promise<string[]> {
   const params = new URLSearchParams({
@@ -130,16 +121,6 @@ async function fetchCategoryMembers(category: string): Promise<string[]> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Page detail batches — POST to avoid URL length limits
-//
-// Joining 50 titles with "|" in a GET querystring can exceed the
-// server's URL length limit and cause 414 / silent truncation.
-// POST with application/x-www-form-urlencoded is fully supported
-// by the MediaWiki Action API for prop= queries and has no length
-// constraint.
-// ─────────────────────────────────────────────────────────────
-
 async function fetchPageDetails(titles: string[]): Promise<WikidataPlace[]> {
   const results: WikidataPlace[] = [];
   const BATCH = 50;
@@ -160,8 +141,9 @@ async function fetchPageDetailsBatch(titles: string[]): Promise<WikidataPlace[]>
   const body = new URLSearchParams({
     action: "query",
     titles: titles.join("|"),
-    prop: "pageprops|extracts",
+    prop: "pageprops|extracts|langlinks",
     ppprop: "wikibase_item",
+    lllimit: "max",
     exintro: "1",
     exsentences: "2",
     explaintext: "1",
@@ -189,15 +171,17 @@ async function fetchPageDetailsBatch(titles: string[]): Promise<WikidataPlace[]>
       .map((p): WikidataPlace => {
         const wikipedia = p.title.replace(/ /g, "_");
         const description = (p.extract ?? "").slice(0, 300);
-        // Fall back to a stable title-based ID when wikibase_item is absent
         const wikidataId = p.pageprops?.wikibase_item ?? `wp:${wikipedia}`;
+
+        const otherLanguages = p.langlinks?.length ?? 0;
+        const sitelinkCount = otherLanguages + 1;
 
         return {
           wikidataId,
           name: p.title,
           wikidataType: description,
           wikipedia,
-          sitelinkCount: 10, // pageviews will be the real ranking signal
+          sitelinkCount,
         };
       });
   } catch (err) {
@@ -206,18 +190,7 @@ async function fetchPageDetailsBatch(titles: string[]): Promise<WikidataPlace[]>
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// fetchWithRetry
-//
-// • Manual AbortController timeout — replaces AbortSignal.timeout()
-//   which crashes on Windows / older Node versions before the request
-//   even starts, causing catch blocks to silently return [].
-//
-// • Automatic retry with exponential backoff on HTTP 429 and 5xx.
-//   Wikipedia's anonymous rate limit is generous but we hit it when
-//   firing 17 category requests back-to-back; retrying with backoff
-//   recovers cleanly without the caller knowing.
-// ─────────────────────────────────────────────────────────────
+// ── fetchWithRetry with Backoff ─────────────────────────────────────────────
 
 async function fetchWithRetry(
   url: string,
@@ -239,7 +212,8 @@ async function fetchWithRetry(
       res = await fetch(url, {
         method,
         headers: {
-          "User-Agent": "visamate-generator/1.0 (travel itinerary app)",
+          "User-Agent": "visamate-generator/2.0 (travel itinerary app; mailto:admin@visamate.com)",
+          "Accept": "application/json",
           ...(method === "POST"
             ? { "Content-Type": "application/x-www-form-urlencoded" }
             : {}),
@@ -258,7 +232,7 @@ async function fetchWithRetry(
 
     // 429 or 5xx — retry with backoff if attempts remain
     if (attempt >= maxRetries) {
-      console.warn(`    [wiki] Giving up after ${attempt} attempts (last status ${res.status})`);
+      console.warn(`    [wiki-fetch] Giving up after ${attempt} attempts (last status ${res.status})`);
       return res;
     }
 
@@ -269,15 +243,11 @@ async function fetchWithRetry(
       : Math.min(1000 * 2 ** attempt, 16_000);
 
     console.warn(
-      `    [wiki] HTTP ${res.status} — attempt ${attempt}/${maxRetries}, retrying in ${waitMs}ms…`
+      `    [wiki-fetch] HTTP ${res.status} — attempt ${attempt}/${maxRetries}, retrying in ${waitMs}ms…`
     );
     await sleep(waitMs);
   }
 }
-
-// ─────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────
 
 function isBlacklisted(title: string): boolean {
   const lower = title.toLowerCase();
@@ -288,9 +258,7 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-// ─────────────────────────────────────────────────────────────
-// Response types
-// ─────────────────────────────────────────────────────────────
+// ── Response types ─────────────────────────────────────────────────────────
 
 interface WikipediaCategoryResponse {
   query?: { categorymembers: Array<{ title: string; pageid: number }> };
@@ -306,4 +274,5 @@ interface WikipediaPage {
   missing?: string;
   extract?: string;
   pageprops?: { wikibase_item?: string };
+  langlinks?: Array<{ lang: string; '*': string }>;
 }

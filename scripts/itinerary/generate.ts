@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// visamate/scripts/itenrary/generate/generate.ts
+// visamate/scripts/itinerary/generate.ts
 //
 // Usage:
 //   pnpm generate japan
@@ -20,7 +20,7 @@ const MIN_SITELINKS   = 5;
 const CITY_DELAY_MS   = 1500;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT_DIR = join(__dirname, "..", "..", "..", "web", "src", "data", "countries");
+const OUTPUT_DIR = join(__dirname, "..", "..", "web", "src", "data", "countries");
 
 async function generateCountry(countryKey: string): Promise<void> {
   const config = COUNTRIES[countryKey];

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// visamate/scripts/generate/pipeline/pageviews.ts
+// visamate/scripts/itinerary/pipeline/pageviews.ts
 //
 // Fetches monthly Wikipedia pageview counts for a list of articles.
 // Used to rank places by real-world tourist popularity.
@@ -7,6 +7,8 @@
 // API: https://wikimedia.org/api/rest_v1/metrics/pageviews
 // Free, no auth needed, rate limit: 100 req/s (we stay well under).
 // ─────────────────────────────────────────────────────────────
+
+import { getCachedData, setCachedData } from "../utils/cache.js";
 
 const PAGEVIEWS_BASE =
   "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/all-agents";
@@ -20,6 +22,12 @@ export async function fetchPageviews(wikipediaTitle: string): Promise<number> {
   if (!wikipediaTitle) return 0;
 
   const { year, month } = lastFullMonth();
+  const cacheKey = `pageview_${wikipediaTitle.toLowerCase().replace(/[^a-z0-9]/g, "_")}_${year}_${month}`;
+  const cached = getCachedData<number>(cacheKey, 30 * 24 * 60 * 60 * 1000);
+  if (cached !== null) {
+    return cached;
+  }
+
   const mm = String(month).padStart(2, "0");
   // API granularity: monthly. Format: YYYYMMDD00 (day = "00" for monthly)
   const start = `${year}${mm}0100`;
@@ -33,20 +41,48 @@ export async function fetchPageviews(wikipediaTitle: string): Promise<number> {
     end,
   ].join("/");
 
-  try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "visamate-generator/1.0 (travel itinerary app)",
-      },
-    });
+  let attempt = 0;
+  const maxRetries = 3;
 
-    if (!res.ok) return 0; // 404 = article not found or too new
+  while (attempt < maxRetries) {
+    attempt++;
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent": "visamate-generator/1.0 (travel itinerary app)",
+        },
+      });
 
-    const json = (await res.json()) as PageviewsResponse;
-    return json.items?.[0]?.views ?? 0;
-  } catch {
-    return 0;
+      if (res.ok) {
+        const json = (await res.json()) as PageviewsResponse;
+        const views = json.items?.[0]?.views ?? 0;
+        setCachedData(cacheKey, views);
+        return views;
+      }
+
+      // If rate limited or server error, wait and retry
+      if (res.status === 429 || res.status >= 500) {
+        const retryAfter = res.headers.get("retry-after");
+        const waitMs = retryAfter
+          ? Math.ceil(parseFloat(retryAfter)) * 1000
+          : Math.min(1000 * 2 ** attempt, 8000);
+
+        console.warn(`    [pageviews] HTTP ${res.status} for ${wikipediaTitle} — attempt ${attempt}/${maxRetries}, retrying in ${waitMs}ms…`);
+        await sleep(waitMs);
+        continue;
+      }
+
+      // 404 or other client errors are permanent, don't retry
+      break;
+    } catch (err) {
+      if (attempt >= maxRetries) break;
+      const waitMs = Math.min(1000 * 2 ** attempt, 8000);
+      console.warn(`    [pageviews] Connection failed for ${wikipediaTitle} — retrying in ${waitMs}ms…`);
+      await sleep(waitMs);
+    }
   }
+
+  return 0; // Fallback to 0 if all retries fail
 }
 
 /**

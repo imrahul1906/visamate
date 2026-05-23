@@ -1,7 +1,7 @@
-# visamate/scripts/generate — Place Generator
+# visamate/scripts/itinerary — Place Generator
 
 Generates `itinerary-places.json`-compatible data for any country
-using **Wikidata SPARQL** (quality filter) + **Wikipedia Pageviews API** (popularity ranking).
+using **Wikipedia Categories** (quality filter) + **Wikipedia Pageviews API** (popularity ranking).
 Zero cost, no API keys needed.
 
 ---
@@ -11,7 +11,7 @@ Zero cost, no API keys needed.
 ```
 visamate/
 ├── scripts/
-│   ├── generate/
+│   ├── itinerary/
 │   │   ├── generate.ts             ← CLI entry point
 │   │   ├── types/
 │   │   │   └── index.ts            ← shared types (Place, City, etc.)
@@ -21,16 +21,13 @@ visamate/
 │   │   │   ├── durations.ts        ← PlaceType → visit duration
 │   │   │   └── typeColors.ts       ← PlaceType → hex color
 │   │   ├── utils/
-│   │   │   └── slug.ts             ← deterministic ID generator
+│   │   │   ├── slug.ts             ← deterministic ID generator
+│   │   │   └── cache.ts            ← filesystem cache utility
 │   │   └── pipeline/
-│   │       ├── wikidata.ts         ← SPARQL fetcher
+│   │       ├── wikidata.ts         ← Wikipedia category fetcher
 │   │       ├── pageviews.ts        ← Wikipedia pageviews ranker
-│   │       ├── typeResolver.ts     ← Q-ID/label → PlaceType
+│   │       ├── typeResolver.ts     ← description → PlaceType resolver
 │   │       └── enricher.ts         ← combines everything
-│   └── generated/
-│       ├── japan.json              ← output (gitignore or commit, your call)
-│       ├── france.json
-│       └── ...
 ```
 
 ---
@@ -42,7 +39,7 @@ Add to your root `package.json` scripts:
 ```json
 {
   "scripts": {
-    "generate": "tsx scripts/generate/generate.ts"
+    "generate": "tsx scripts/itinerary/generate.ts"
   },
   "devDependencies": {
     "tsx": "^4.0.0"
@@ -70,7 +67,7 @@ pnpm generate india
 pnpm generate all
 ```
 
-Output lands at `visamate/scripts/generated/<country>.json`.
+Output lands at `web/src/data/countries/{country}/itinerary-places.json`.
 
 ---
 
@@ -81,7 +78,7 @@ pnpm generate japan
   │
   ├─ For each city in countries.ts (Tokyo, Kyoto, Osaka...)
   │    │
-  │    ├─ wikidata.ts  → SPARQL query → up to 60 candidates
+  │    ├─ wikidata.ts  → Category API query → up to 60 candidates
   │    │                  Filter: 5+ Wikipedia language links
   │    │
   │    ├─ pageviews.ts → Wikipedia API → monthly views per article
@@ -89,9 +86,9 @@ pnpm generate japan
   │    │
   │    ├─ enricher.ts  → deduplicate → sort by pageviews → top 12
   │    │
-  │    └─ typeResolver.ts → Q-ID / label / name heuristic → PlaceType
+  │    └─ typeResolver.ts → Description/name heuristic → PlaceType
   │
-  └─ Write scripts/generated/japan.json
+  └─ Write web/src/data/countries/japan/itinerary-places.json
 ```
 
 ---
@@ -112,11 +109,11 @@ For cities where Wikidata coverage is thin (small Indian cities, rural Vietnam, 
 create a manual override file:
 
 ```
-visamate/scripts/generate/overrides/<country>.ts
+visamate/scripts/itinerary/overrides/<country>.ts
 ```
 
 ```ts
-// visamate/scripts/generate/overrides/india.ts
+// visamate/scripts/itinerary/overrides/india.ts
 export const OVERRIDES: Record<string, Place[]> = {
   varanasi: [
     { id: "ghats_varanasi", name: "Dashashwamedh Ghat", type: "Religious Site", duration: "2h" },

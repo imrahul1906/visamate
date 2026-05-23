@@ -6,7 +6,7 @@
     "web"
   ],
   "scripts": {
-    "generate": "tsx scripts/itenrary/generate/generate.ts",
+    "generate": "tsx scripts/itinerary/generate.ts",
     "dev": "npm run dev --workspace=web",
     "build": "npm run build --workspace=web",
     "start": "npm run start --workspace=web",

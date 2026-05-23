@@ -1,4 +1,4 @@
-// visamate/scripts/itenrary/generate/config/countries.ts
+// visamate/scripts/itinerary/generate/config/countries.ts
 
 export interface CityConfig {
   slug: string;          // key in output JSON, e.g. "hokkaido"
