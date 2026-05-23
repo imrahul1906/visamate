@@ -78,14 +78,17 @@ const email: FieldValidator = {
 };
 
 /**
- * Indian passport number — letter + 7 digits (e.g. P1234567).
+ * Indian passport number — 8 characters.
+ * Supports:
+ * - Traditional: 1 letter followed by 7 digits (e.g. P1234567)
+ * - ePassport: 2 letters followed by 6 digits (e.g. AD123456)
  * Force upper-case while typing.
  */
 const passport: FieldValidator = {
   validate(value) {
     if (!value) return null;
-    if (!/^[A-Z][0-9]{7}$/.test(value.toUpperCase())) {
-      return "Passport must be 1 letter followed by 7 digits (e.g. P1234567)";
+    if (!/^([A-Z][0-9]{7}|[A-Z]{2}[0-9]{6})$/.test(value.toUpperCase())) {
+      return "Passport must be 8 characters: 1 letter followed by 7 digits, or 2 letters followed by 6 digits (e.g. P1234567 or AD123456)";
     }
     return null;
   },

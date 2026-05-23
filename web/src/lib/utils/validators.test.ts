@@ -92,11 +92,15 @@ describe('validators.ts', () => {
       expect(validate('')).toBeNull();
       expect(validate('P1234567')).toBeNull();
       expect(validate('p1234567')).toBeNull(); // case-insensitive check
+      expect(validate('PA123456')).toBeNull(); // new ePassport format
+      expect(validate('pa123456')).toBeNull(); // case-insensitive ePassport
+      expect(validate('AD444444')).toBeNull(); // user example format
 
-      expect(validate('12345678')).toBe('Passport must be 1 letter followed by 7 digits (e.g. P1234567)');
-      expect(validate('PA123456')).toBe('Passport must be 1 letter followed by 7 digits (e.g. P1234567)');
-      expect(validate('P123456')).toBe('Passport must be 1 letter followed by 7 digits (e.g. P1234567)');
-      expect(validate('P12345678')).toBe('Passport must be 1 letter followed by 7 digits (e.g. P1234567)');
+      const expectedError = 'Passport must be 8 characters: 1 letter followed by 7 digits, or 2 letters followed by 6 digits (e.g. P1234567 or AD123456)';
+      expect(validate('12345678')).toBe(expectedError);
+      expect(validate('P123456')).toBe(expectedError);
+      expect(validate('P12345678')).toBe(expectedError);
+      expect(validate('PA12345')).toBe(expectedError);
     });
 
     it('should sanitise correctly', () => {
