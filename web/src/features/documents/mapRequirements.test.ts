@@ -100,7 +100,7 @@ describe('mapRequirements.ts - Dynamic Checklist Validator', () => {
 
           const sectionIds = mappedSelf.categories.map((c) => c.id);
           expect(sectionIds).toContain('COMMON');
-          if (reqData.documentSections.some((s) => s.sectionId === 'SELF_SPONSORED')) {
+          if (reqData.documentSections?.some((s) => s.sectionId === 'SELF_SPONSORED')) {
             expect(sectionIds).toContain('SELF_SPONSORED');
           }
           expect(sectionIds).not.toContain('SPONSORED');
@@ -145,7 +145,7 @@ describe('mapRequirements.ts - Dynamic Checklist Validator', () => {
 
           const sectionIds = mappedSponsored.categories.map((c) => c.id);
           expect(sectionIds).toContain('COMMON');
-          if (reqData.documentSections.some((s) => s.sectionId === 'SPONSORED')) {
+          if (reqData.documentSections?.some((s) => s.sectionId === 'SPONSORED')) {
             expect(sectionIds).toContain('SPONSORED');
           }
           expect(sectionIds).not.toContain('SELF_SPONSORED');

@@ -12,7 +12,6 @@ const TRUST = [
   { color: "#4ade80", label: "Embassy-verified" },
   { color: "#a78bfa", label: "Updated May 2026" },
   { color: "#34d399", label: "Zero Server Storage" },
-  { color: "#60a5fa", label: "AI-powered" },
 ];
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -60,11 +59,19 @@ function Hero({
           <p style={{ color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.7, margin: "0 0 30px", maxWidth: 420 }}>
             Accurate requirements sourced from official embassy data — no guesswork, no missed documents.
           </p>
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {TRUST.map(t => (
-              <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
-                <span style={{ color: "rgba(255,255,255,0.38)", fontSize: 12 }}>{t.label}</span>
+              <div key={t.label} style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 7,
+                background: "rgba(255, 255, 255, 0.03)",
+                border: "0.5px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: 20,
+                padding: "6px 14px",
+              }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+                <span style={{ color: "rgba(255, 255, 255, 0.65)", fontSize: 12, fontWeight: 500 }}>{t.label}</span>
               </div>
             ))}
           </div>

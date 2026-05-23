@@ -400,18 +400,18 @@ export async function getItineraryPlaces(
     switch (key) {
       case "japan":
         return (await import("../../data/countries/japan/itinerary-places.json")).default as ItineraryPlacesData;
-      case "france":
-        return (await import("../../data/countries/france/itinerary-places.json")).default as ItineraryPlacesData;
-      case "india":
-        return (await import("../../data/countries/india/itinerary-places.json")).default as ItineraryPlacesData;
-      case "thailand":
-        return (await import("../../data/countries/thailand/itinerary-places.json")).default as ItineraryPlacesData;
-      case "italy":
-        return (await import("../../data/countries/italy/itinerary-places.json")).default as ItineraryPlacesData;
-      case "usa":
-        return (await import("../../data/countries/usa/itinerary-places.json")).default as ItineraryPlacesData;
-      case "uae":
-        return (await import("../../data/countries/uae/itinerary-places.json")).default as ItineraryPlacesData;
+      // case "france":
+      //   return (await import("../../data/countries/france/itinerary-places.json")).default as ItineraryPlacesData;
+      // case "india":
+      //   return (await import("../../data/countries/india/itinerary-places.json")).default as ItineraryPlacesData;
+      // case "thailand":
+      //   return (await import("../../data/countries/thailand/itinerary-places.json")).default as ItineraryPlacesData;
+      // case "italy":
+      //   return (await import("../../data/countries/italy/itinerary-places.json")).default as ItineraryPlacesData;
+      // case "usa":
+      //   return (await import("../../data/countries/usa/itinerary-places.json")).default as ItineraryPlacesData;
+      // case "uae":
+      //   return (await import("../../data/countries/uae/itinerary-places.json")).default as ItineraryPlacesData;
       default:
         return null;
     }

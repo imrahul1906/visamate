@@ -552,7 +552,7 @@ export default function WizardLeftPanel() {
               boxShadow: "0 0 6px rgba(108,92,231,0.8)",
               animation: "wlp-blink 2.4s ease-in-out infinite",
             }} />
-            Embassy-verified · AI-powered
+            Embassy-verified · Zero Server Storage
           </div>
 
           <h1 style={{

@@ -1,194 +1,334 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 
-const FOOTER_LINKS = {
-  Product: [
-    { label: "How it works", href: "#how-it-works" },
-    { label: "Countries covered", href: "#countries" },
-    { label: "Visa guides", href: "#guides" },
-    { label: "Check documents", href: "/wizard" },
-  ],
-  Resources: [
-    { label: "Embassy directory", href: "#" },
-    { label: "Travel advisories", href: "#" },
-    { label: "Document templates", href: "#" },
-    { label: "FAQ", href: "#" },
-  ],
-  Legal: [
-    { label: "Privacy policy", href: "#" },
-    { label: "Terms of service", href: "#" },
-    { label: "Disclaimer", href: "#" },
-  ],
-};
-
-const TRUST_BADGES = [
+// ─── FAQ Static Data ───
+const FAQ_ITEMS = [
   {
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: "Embassy-verified data",
+    q: "How is my privacy protected?",
+    a: "VisaMate operates strictly on a Zero Server Storage model. All document uploads, form inputs, and checklist checkmarks remain entirely in your browser's local sandbox memory (localStorage). Nothing is ever sent to or stored on our servers, ensuring 100% data confidentiality."
   },
   {
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: "Updated May 2026",
+    q: "Where does the visa checklist data come from?",
+    a: "Our checklists are compiled and cross-referenced from official consulate websites, embassy circulars, and verified visa center (like VFS Global) regulations. These details are reviewed monthly by travel specialists (Sync: May 2026)."
   },
   {
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: "100% Client-Side Privacy",
-  },
-  {
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: "AI-powered intelligence",
-  },
-  {
-    icon: (
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    label: "190+ countries",
-  },
+    q: "Which countries are currently supported?",
+    a: "We fully support Japan tourist visa applications from India (covering center centers: Delhi, Mumbai, Bengaluru, Chennai, Kolkata). South Korea, Schengen Area, and United States visa builders are currently in development."
+  }
 ];
 
 export default function SiteFooter() {
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [activeLegal, setActiveLegal] = useState<"privacy" | "terms" | "disclaimer" | null>(null);
+  const [lastLegal, setLastLegal] = useState<"privacy" | "terms" | "disclaimer">("privacy");
+
+  const handleLegalToggle = (type: "privacy" | "terms" | "disclaimer") => {
+    if (activeLegal === type) {
+      setActiveLegal(null);
+    } else {
+      setActiveLegal(type);
+      setLastLegal(type);
+      setTimeout(() => {
+        const el = document.getElementById("vm-legal-drawer");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+      }, 320);
+    }
+  };
+
   return (
-    <footer style={{ fontFamily: "'DM Sans', sans-serif", background: "#070514", borderTop: "0.5px solid rgba(255,255,255,0.07)" }}>
+    <footer style={{
+      fontFamily: "'DM Sans', var(--font-dm-sans), sans-serif",
+      background: "#060410",
+      borderTop: "1px solid rgba(255,255,255,0.07)"
+    }}>
       <style>{`
         .vm-footer-inner {
           max-width: 1100px; margin: 0 auto;
-          padding: 60px 28px 0;
-        }
-        .vm-footer-top {
-          display: grid;
-          grid-template-columns: 1.8fr 1fr 1fr 1fr;
-          gap: 48px;
-          padding-bottom: 52px;
-          border-bottom: 0.5px solid rgba(255,255,255,0.06);
+          padding: 52px 24px 28px;
         }
 
+        .vm-footer-grid {
+          display: grid;
+          grid-template-columns: 1.2fr 1fr 1fr;
+          gap: 56px;
+          padding-bottom: 36px;
+        }
+        
+        /* Column 1: Brand & Description */
         .vm-footer-logo-link {
           text-decoration: none; margin-bottom: 16px; display: inline-block;
         }
         .vm-footer-tagline {
-          font-size: 13px; line-height: 1.7;
-          color: rgba(255,255,255,0.32); max-width: 240px; margin: 0 0 24px;
+          font-size: 13px; line-height: 1.65;
+          color: rgba(255,255,255,0.4); max-width: 280px; margin: 0;
         }
-
-        .vm-footer-trust {
+        
+        /* Column 2: Accordion FAQs */
+        .vm-footer-col-title {
+          font-size: 11px; font-weight: 700;
+          color: rgba(255,255,255,0.3);
+          letter-spacing: 0.08em; text-transform: uppercase;
+          margin-bottom: 18px;
+        }
+        .vm-faq-accordion {
           display: flex; flex-direction: column; gap: 10px;
         }
-        .vm-footer-trust-item {
-          display: flex; align-items: center; gap: 8px;
-          font-size: 12px; color: rgba(255,255,255,0.4);
+        .vm-faq-card {
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          padding-bottom: 8px;
         }
-        .vm-footer-trust-item svg { color: #6c5ce7; flex-shrink: 0; }
+        .vm-faq-trigger {
+          width: 100%; display: flex; align-items: center; justify-content: space-between;
+          background: transparent; border: none; padding: 4px 0;
+          text-align: left; font-size: 13px; font-weight: 600;
+          color: rgba(255,255,255,0.6); cursor: pointer;
+          transition: color 0.2s;
+        }
+        .vm-faq-trigger:hover { color: #fff; }
+        .vm-faq-trigger svg {
+          color: rgba(255,255,255,0.25);
+          transition: transform 0.25s ease;
+        }
+        .vm-faq-trigger.active svg {
+          transform: rotate(180deg);
+          color: #8b7cf6;
+        }
+        
+        /* CSS Grid Height animation wrapper */
+        .vm-faq-wrapper {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 0.3s ease-in-out;
+        }
+        .vm-faq-wrapper.active {
+          grid-template-rows: 1fr;
+        }
+        .vm-faq-answer {
+          overflow: hidden;
+          min-height: 0;
+          font-size: 12px; line-height: 1.6;
+          color: rgba(255,255,255,0.38);
+          opacity: 0;
+          padding-top: 8px;
+          transition: opacity 0.2s ease;
+        }
+        .vm-faq-wrapper.active .vm-faq-answer {
+          opacity: 1;
+        }
 
-        .vm-footer-col-title {
-          font-size: 11px; font-weight: 600;
-          color: rgba(255,255,255,0.28);
-          letter-spacing: 0.1em; text-transform: uppercase;
-          margin-bottom: 16px;
+        /* Column 3: Contact & Support */
+        .vm-support-card {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 12px; padding: 16px;
         }
-        .vm-footer-col-links {
-          display: flex; flex-direction: column; gap: 11px;
+        .vm-support-title {
+          font-size: 12.5px; font-weight: 700; color: #fff; margin-bottom: 6px;
         }
-        .vm-footer-col-link {
-          font-size: 13px; font-weight: 500;
-          color: rgba(255,255,255,0.42);
-          text-decoration: none; letter-spacing: -0.01em;
-          transition: color 0.18s ease;
+        .vm-support-desc {
+          font-size: 11.5px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 10px;
         }
-        .vm-footer-col-link:hover { color: rgba(255,255,255,0.82); }
+        .vm-support-email {
+          display: inline-block; font-size: 12.5px; font-weight: 600;
+          color: #8b7cf6; text-decoration: none; transition: color 0.2s;
+        }
+        .vm-support-email:hover { color: #a5b4fc; }
 
+        /* Inline Legal Drawer Styles */
+        .vm-legal-drawer {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 0.35s ease-in-out;
+        }
+        .vm-legal-drawer.active {
+          grid-template-rows: 1fr;
+        }
+        .vm-legal-drawer-content {
+          overflow: hidden;
+          min-height: 0;
+          padding-bottom: 24px;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .vm-legal-card {
+          background: rgba(255,255,255,0.02);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 12px; padding: 24px;
+        }
+        .vm-legal-header {
+          display: flex; align-items: center; justify-content: space-between;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          padding-bottom: 12px; margin-bottom: 14px;
+        }
+        .vm-legal-title {
+          font-size: 15px; font-weight: 600; color: #fff; margin: 0;
+        }
+        .vm-legal-close {
+          background: transparent; border: none; color: rgba(255,255,255,0.4);
+          font-size: 12px; font-weight: 600; cursor: pointer; transition: color 0.2s;
+        }
+        .vm-legal-close:hover { color: #fff; }
+        
+        .vm-legal-scrollable {
+          max-height: 200px; overflow-y: auto; padding-right: 8px;
+          font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6;
+        }
+        .vm-legal-scrollable::-webkit-scrollbar { width: 4px; }
+        .vm-legal-scrollable::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .vm-legal-scrollable h4 {
+          color: #fff; font-weight: 600; font-size: 13.5px; margin: 12px 0 4px;
+        }
+        .vm-legal-scrollable p { margin-bottom: 8px; }
+
+        /* Bottom Bar */
         .vm-footer-bottom {
           display: flex; align-items: center; justify-content: space-between;
-          padding: 20px 0 28px; gap: 16px; flex-wrap: wrap;
+          padding-top: 20px; gap: 16px; flex-wrap: wrap;
+          border-top: 1px solid rgba(255,255,255,0.05);
         }
         .vm-footer-copy {
-          font-size: 12px; color: rgba(255,255,255,0.2);
+          font-size: 12px; color: rgba(255,255,255,0.22);
           letter-spacing: -0.01em;
         }
-        .vm-footer-disclaimer {
-          font-size: 11.5px; color: rgba(255,255,255,0.18);
-          max-width: 480px; text-align: right; line-height: 1.5;
+        .vm-footer-bottom-links {
+          display: flex; align-items: center; gap: 20px;
         }
+        .vm-bottom-link {
+          font-size: 12px; color: rgba(255,255,255,0.22);
+          background: transparent; border: none; cursor: pointer; padding: 0;
+          transition: color 0.18s;
+        }
+        .vm-bottom-link:hover { color: rgba(255,255,255,0.5); }
 
-        @media (max-width: 800px) {
-          .vm-footer-top {
-            grid-template-columns: 1fr 1fr;
+        @media (max-width: 860px) {
+          .vm-footer-grid {
+            grid-template-columns: 1fr;
             gap: 36px;
           }
-          .vm-footer-brand { grid-column: 1 / -1; }
-          .vm-footer-tagline { max-width: 100%; }
-          .vm-footer-trust { flex-direction: row; flex-wrap: wrap; gap: 14px; }
-          .vm-footer-disclaimer { text-align: left; max-width: 100%; }
-        }
-        @media (max-width: 480px) {
-          .vm-footer-top { grid-template-columns: 1fr; }
-          .vm-footer-inner { padding: 40px 20px 0; }
         }
       `}</style>
 
       <div className="vm-footer-inner">
-        <div className="vm-footer-top">
-          {/* Brand column */}
-          <div className="vm-footer-brand">
+        {/* 3-Column Content Grid */}
+        <div className="vm-footer-grid">
+          {/* Col 1: Brand details & description */}
+          <div>
             <Link href="/" className="vm-footer-logo-link">
-              <Logo size="sm" />
+              <Logo size="sm" showBadge={false} />
             </Link>
             <p className="vm-footer-tagline">
-              Personalised visa document checklists, powered by official embassy data and AI.
+              Embassy-sourced visa document requirements checklists and template formats. Generated privately within your browser client.
             </p>
-            <div className="vm-footer-trust">
-              {TRUST_BADGES.map((b) => (
-                <div key={b.label} className="vm-footer-trust-item">
-                  {b.icon}
-                  <span>{b.label}</span>
-                </div>
-              ))}
+          </div>
+
+          {/* Col 2: CSS Grid Animated FAQ Accordion */}
+          <div>
+            <p className="vm-footer-col-title">FAQ & Help</p>
+            <div id="vm-faq-accordion" className="vm-faq-accordion">
+              {FAQ_ITEMS.map((item, idx) => {
+                const isActive = expandedFaq === idx;
+                return (
+                  <div key={idx} className="vm-faq-card">
+                    <button
+                      className={`vm-faq-trigger ${isActive ? "active" : ""}`}
+                      onClick={() => setExpandedFaq(isActive ? null : idx)}
+                    >
+                      <span>{item.q}</span>
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                      </svg>
+                    </button>
+                    <div className={`vm-faq-wrapper ${isActive ? "active" : ""}`}>
+                      <div className="vm-faq-answer">
+                        {item.a}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Link columns */}
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title}>
-              <p className="vm-footer-col-title">{title}</p>
-              <div className="vm-footer-col-links">
-                {links.map((link) => (
-                  <a key={link.label} href={link.href} className="vm-footer-col-link">
-                    {link.label}
-                  </a>
-                ))}
-              </div>
+          {/* Col 3: Support Details */}
+          <div>
+            <p className="vm-footer-col-title">Support</p>
+            <div className="vm-support-card">
+              <h4 className="vm-support-title">Need Help?</h4>
+              <p className="vm-support-desc">
+                For questions regarding document checklists, VFS operating hours, or data corrections, reach out to our team.
+              </p>
+              <a href="mailto:support@visamate.ai" className="vm-support-email">
+                support@visamate.ai
+              </a>
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Inline Legal Disclosure Drawer */}
+        <div id="vm-legal-drawer" className={`vm-legal-drawer ${activeLegal ? "active" : ""}`}>
+          <div className="vm-legal-drawer-content">
+            <div className="vm-legal-card" style={{ opacity: activeLegal ? 1 : 0, transition: "opacity 0.35s ease-in-out" }}>
+              <div className="vm-legal-header">
+                <h3 className="vm-legal-title">
+                  {lastLegal === "privacy" ? "Privacy Policy" : lastLegal === "terms" ? "Terms of Service" : "Disclaimer"}
+                </h3>
+                <button className="vm-legal-close" onClick={() => setActiveLegal(null)}>
+                  Dismiss [x]
+                </button>
+              </div>
+              
+              <div className="vm-legal-scrollable">
+                {lastLegal === "privacy" && (
+                  <>
+                    <p>VisaMate is committed to protecting applicant confidentiality. We operate under a strict, self-contained architecture:</p>
+                    <h4>1. Zero Database Storage</h4>
+                    <p>Your passport details, application names, travel itineraries, and visa forms are processed entirely inside your local browser runtime. They are stored within the standard `localStorage` sandbox of your browser client and are never uploaded to our servers.</p>
+                    <h4>2. Clean Session Policy</h4>
+                    <p>You can instantly delete all files and checklist selections by clicking the &ldquo;Start fresh&rdquo; button in the header navigation or by clearing your browser cache. Once cleared, the data is gone forever and cannot be recovered.</p>
+                    <h4>3. Template Generation Safety</h4>
+                    <p>Auto-generated documents (such as travel cover letters or sponsorship forms) are compiled using local Javascript logic. No file templates are cached on server databases.</p>
+                  </>
+                )}
+                {lastLegal === "terms" && (
+                  <>
+                    <p>Welcome to VisaMate. By utilizing our checklist tools, you agree to these operational terms:</p>
+                    <h4>1. Informational Service Only</h4>
+                    <p>VisaMate provides document requirements checklists and auto-fill formatting helpers. The service is provided &ldquo;as is&rdquo;. We do not guarantee visa approval, and our templates are not substitutes for legal travel advice.</p>
+                    <h4>2. Verify Embassy Circulars</h4>
+                    <p>Embassy regulations, passport collection hours, and visa fees fluctuate constantly. Users are strictly responsible for cross-referencing final checklists with the official embassy before booking flights or submitting applications.</p>
+                    <h4>3. Data Retention Limitation</h4>
+                    <p>Since we do not store customer records, we cannot retrieve lost checklists or templates. It is the user&apos;s responsibility to download generated PDFs before closing their browser session.</p>
+                  </>
+                )}
+                {lastLegal === "disclaimer" && (
+                  <>
+                    <p>Please read this disclaimer carefully before using VisaMate:</p>
+                    <h4>1. Independence from Government Bodies</h4>
+                    <p>VisaMate is an independent visa checklist and intelligence tool. We are **not affiliated, associated, authorized, endorsed by, or in any way officially connected** with VFS Global, BLS, any embassy, consulate, or governmental immigration authority.</p>
+                    <h4>2. Accuracy of Embassy Rules</h4>
+                    <p>While our database compiles requirements using official sources, embassy officers retain absolute discretion to ask for supplementary documents that may not be standard. Always confirm final submittal requirements directly at your VFS/Embassy center.</p>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom copyright & legal anchors */}
         <div className="vm-footer-bottom">
           <span className="vm-footer-copy">
             © {new Date().getFullYear()} VisaMate. All rights reserved.
           </span>
-          <p className="vm-footer-disclaimer">
-            VisaMate is not legal advice. Always verify requirements with official embassy or consulate sources before applying.
-          </p>
+          
+          <div className="vm-footer-bottom-links">
+            <button className="vm-bottom-link" onClick={() => handleLegalToggle("privacy")}>Privacy Policy</button>
+            <button className="vm-bottom-link" onClick={() => handleLegalToggle("terms")}>Terms of Service</button>
+            <button className="vm-bottom-link" onClick={() => handleLegalToggle("disclaimer")}>Disclaimer</button>
+          </div>
         </div>
       </div>
     </footer>

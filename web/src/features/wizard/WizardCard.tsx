@@ -374,28 +374,6 @@ export default function WizardCard({
               {/* Sub-label: step counter → completion message on flight */}
               <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
                 {showFlight ? "✓ All steps complete" : `Step ${activeStep + 1} of ${STEP_LABELS.length}`}
-                {selectedCountry && (
-                  <>
-                    <span style={{ margin: "0 6px" }}>•</span>
-                    <button
-                      onClick={handleStartFresh}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        color: "rgba(168, 156, 239, 0.85)",
-                        fontSize: 10,
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                        padding: 0,
-                        fontFamily: "inherit",
-                      }}
-                      onMouseEnter={e => e.currentTarget.style.color = "#fff"}
-                      onMouseLeave={e => e.currentTarget.style.color = "rgba(168, 156, 239, 0.85)"}
-                    >
-                      Start fresh
-                    </button>
-                  </>
-                )}
               </span>
               {/* Title: current step → route label on flight */}
               <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
@@ -498,78 +476,82 @@ export default function WizardCard({
                 <div className="wizard-scroll" style={{ height: "100%" }}>
                   {activeStep === 0 && (
                      <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 10 }}>
-                       {showResumePrompt && (
-                         <div
-                           style={{
-                             background: "rgba(108, 92, 231, 0.1)",
-                             border: "1px solid rgba(108, 92, 231, 0.25)",
-                             borderRadius: 12,
-                             padding: "10px 14px",
-                             display: "flex",
-                             alignItems: "center",
-                             justifyContent: "space-between",
-                             gap: 12,
-                             flexShrink: 0,
-                             boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-                             backdropFilter: "blur(8px)",
-                           }}
-                         >
-                           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                             <div style={{ flexShrink: 0 }}>
-                               <svg width="16" height="16" fill="none" stroke="#a89cef" strokeWidth="2" viewBox="0 0 24 24">
-                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                               </svg>
-                             </div>
-                             <span style={{ color: "rgba(255, 255, 255, 0.85)", fontSize: 11, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                               Resume application to <strong>{resumeCountryName || "destination"}</strong>?
-                             </span>
-                           </div>
-                           <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                             <button
-                               onClick={handleResume}
-                               style={{
-                                 background: "#6c5ce7",
-                                 color: "#fff",
-                                 border: "none",
-                                 borderRadius: 6,
-                                 padding: "4px 10px",
-                                 fontSize: 10,
-                                 fontWeight: 600,
-                                 cursor: "pointer",
-                                 transition: "background 0.2s",
-                               }}
-                               onMouseEnter={e => e.currentTarget.style.background = "#5b4ad4"}
-                               onMouseLeave={e => e.currentTarget.style.background = "#6c5ce7"}
-                             >
-                               Resume
-                             </button>
-                             <button
-                               onClick={handleStartFresh}
-                               style={{
-                                 background: "rgba(255, 255, 255, 0.08)",
-                                 color: "rgba(255, 255, 255, 0.6)",
-                                 border: "0.5px solid rgba(255, 255, 255, 0.15)",
-                                 borderRadius: 6,
-                                 padding: "4px 8px",
-                                 fontSize: 10,
-                                 fontWeight: 500,
-                                 cursor: "pointer",
-                                 transition: "all 0.2s",
-                               }}
-                               onMouseEnter={e => {
-                                 e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
-                                 e.currentTarget.style.color = "#fff";
-                               }}
-                               onMouseLeave={e => {
-                                 e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-                                 e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
-                               }}
-                             >
-                               Dismiss
-                             </button>
-                           </div>
-                         </div>
-                       )}
+                        <div
+                          style={{
+                            background: "rgba(108, 92, 231, 0.1)",
+                            border: showResumePrompt ? "1px solid rgba(108, 92, 231, 0.25)" : "1px solid transparent",
+                            borderRadius: 12,
+                            padding: showResumePrompt ? "10px 14px" : "0px 14px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 12,
+                            flexShrink: 0,
+                            boxShadow: showResumePrompt ? "0 4px 15px rgba(0, 0, 0, 0.2)" : "none",
+                            backdropFilter: showResumePrompt ? "blur(8px)" : "none",
+                            opacity: showResumePrompt ? 1 : 0,
+                            maxHeight: showResumePrompt ? 100 : 0,
+                            overflow: "hidden",
+                            marginBottom: showResumePrompt ? 10 : 0,
+                            pointerEvents: showResumePrompt ? "auto" : "none",
+                            transition: "all 0.35s ease-in-out",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                            <div style={{ flexShrink: 0 }}>
+                              <svg width="16" height="16" fill="none" stroke="#a89cef" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                              </svg>
+                            </div>
+                            <span style={{ color: "rgba(255, 255, 255, 0.85)", fontSize: 11, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              Resume application to <strong>{resumeCountryName || "destination"}</strong>?
+                            </span>
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                            <button
+                              onClick={handleResume}
+                              style={{
+                                background: "#6c5ce7",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: 6,
+                                padding: "4px 10px",
+                                fontSize: 10,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                transition: "background 0.2s",
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.background = "#5b4ad4"}
+                              onMouseLeave={e => e.currentTarget.style.background = "#6c5ce7"}
+                            >
+                              Resume
+                            </button>
+                            <button
+                              onClick={handleStartFresh}
+                              style={{
+                                background: "rgba(255, 255, 255, 0.08)",
+                                color: "rgba(255, 255, 255, 0.6)",
+                                border: "0.5px solid rgba(255, 255, 255, 0.15)",
+                                borderRadius: 6,
+                                padding: "4px 8px",
+                                fontSize: 10,
+                                fontWeight: 500,
+                                cursor: "pointer",
+                                transition: "all 0.2s",
+                              }}
+                              onMouseEnter={e => {
+                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
+                                e.currentTarget.style.color = "#fff";
+                              }}
+                              onMouseLeave={e => {
+                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+                                e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
+                              }}
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        </div>
                        <div style={{ flex: 1, minHeight: 0 }}>
                          <StepCountry allCountries={countries} selectedCountry={selectedCountry} onSelect={handleCountrySelect} compact />
                        </div>

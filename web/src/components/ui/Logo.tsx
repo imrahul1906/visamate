@@ -10,26 +10,104 @@ interface LogoProps {
 
 export default function Logo({ size = "md", showBadge = false, className }: LogoProps) {
   const iconSize = size === "sm" ? 30 : 32;
-  const iconRadius = size === "sm" ? 8 : 9;
-  const svgSize = size === "sm" ? 15 : 16;
   const wordmarkSize = size === "sm" ? "14.5px" : "15.5px";
 
   return (
     <div
-      className={className}
+      className={`vm-logo-container ${className || ""}`}
       style={{ display: "flex", alignItems: "center", gap: 9 }}
     >
         <div
-          className="vm-logo-icon"
-          style={{ width: iconSize, height: iconSize, borderRadius: iconRadius }}
+          style={{
+            width: iconSize,
+            height: iconSize,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            position: "relative",
+            overflow: "visible"
+          }}
         >
-          <svg width={svgSize} height={svgSize} fill="none" viewBox="0 0 24 24">
+          <svg width={iconSize} height={iconSize} fill="none" viewBox="0 0 32 32">
+            <defs>
+              {/* Vibrant ribbon gradient (electric blue to deep pink) */}
+              <linearGradient id="vm-logo-ribbon-grad" x1="7.5" y1="12" x2="25.5" y2="12" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#4f46e5" />
+                <stop offset="50%" stopColor="#8b5cf6" />
+                <stop offset="100%" stopColor="#ec4899" />
+              </linearGradient>
+              
+              {/* Stamp ring gradient */}
+              <linearGradient id="vm-logo-ring-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="rgba(165, 180, 252, 0.45)" />
+                <stop offset="100%" stopColor="rgba(99, 102, 241, 0.08)" />
+              </linearGradient>
+
+              {/* Glowing star/dot radial gradient */}
+              <radialGradient id="vm-logo-dot-grad" cx="17" cy="7.5" r="2" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#38bdf8" />
+                <stop offset="100%" stopColor="#818cf8" />
+              </radialGradient>
+            </defs>
+
+            {/* Dashed Passport Stamp Circle */}
+            <circle
+              className="vm-logo-ring"
+              cx="16"
+              cy="16"
+              r="14"
+              stroke="url(#vm-logo-ring-grad)"
+              strokeWidth="1.2"
+              strokeDasharray="3.5 2"
+            />
+
+            {/* Inner Concentric Stamp Ring */}
+            <circle
+              className="vm-logo-ring"
+              cx="16"
+              cy="16"
+              r="11.5"
+              stroke="url(#vm-logo-ring-grad)"
+              strokeWidth="0.8"
+              opacity="0.4"
+            />
+
+            {/* Subtle Globe Grid Lines */}
             <path
-              d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"
-              stroke="white"
-              strokeWidth="1.75"
+              d="M6 16c5 2 15 2 20 0"
+              stroke="rgba(255, 255, 255, 0.12)"
+              strokeWidth="0.8"
+            />
+            <path
+              d="M16 6c-2 5-2 15 0 20"
+              stroke="rgba(255, 255, 255, 0.12)"
+              strokeWidth="0.8"
+            />
+
+            {/* Destination Compass Dot */}
+            <circle
+              className="vm-logo-beacon"
+              cx="17"
+              cy="7.5"
+              r="2"
+              fill="url(#vm-logo-dot-grad)"
+              style={{
+                filter: "drop-shadow(0 0 4px rgba(56, 189, 248, 0.6))"
+              }}
+            />
+
+            {/* Continuous VM Monogram & Checkmark Ribbon (Smooth Bezier Curve) */}
+            <path
+              className="vm-logo-ribbon"
+              d="M7.5 12.5 C7.5 18, 9.5 21, 12.5 21 C15.2 21, 15.5 13.5, 17 13.5 C18.3 13.5, 19.3 18, 20.5 18 C21.7 18, 23.5 9.5, 25.5 9.5"
+              stroke="url(#vm-logo-ribbon-grad)"
+              strokeWidth="3.2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              style={{
+                filter: "drop-shadow(0 2px 6px rgba(139, 92, 246, 0.35))"
+              }}
             />
           </svg>
         </div>

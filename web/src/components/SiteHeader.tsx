@@ -1,182 +1,217 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Logo from "@/components/ui/Logo";
-import Button from "@/components/ui/Button";
-
-const NAV_LINKS = [
-  { label: "How it works", href: "#how-it-works" },
-  { label: "Guides", href: "#guides" },
-  { label: "Countries", href: "#countries" },
-];
+import { useApplicant } from "@/lib/context/ApplicantContext";
 
 export default function SiteHeader() {
-  const pathname = usePathname();
+  const router = useRouter();
+  const { ctx, reset } = useApplicant();
+  
   const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 24);
+    const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler, { passive: true });
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
-  const isWizard = pathname === "/wizard";
+  // Determine if a checklist is active (i.e. user has completed wizard selections)
+  const isChecklistActive = !!ctx.country || !!ctx.visaType;
+
+  const handleStartFresh = () => {
+    reset();
+    window.location.href = "/";
+  };
 
   return (
     <>
       <style>{`
         .vm-header {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-          font-family: 'DM Sans', sans-serif;
+          position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+          transition: background 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                      border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                      box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+          font-family: 'DM Sans', var(--font-dm-sans), sans-serif;
         }
         .vm-header.scrolled {
-          background: rgba(10, 7, 24, 0.86);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border-bottom: 0.5px solid rgba(255,255,255,0.08);
-          box-shadow: 0 2px 40px rgba(0,0,0,0.4);
+          background: rgba(13, 13, 31, 0.82);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
         }
         .vm-header.top {
           background: transparent;
-          border-bottom: 0.5px solid transparent;
+          border-bottom: 1px solid transparent;
         }
-
         .vm-inner {
           max-width: 1100px; margin: 0 auto;
-          height: 62px;
+          height: 64px;
           display: flex; align-items: center; justify-content: space-between;
-          padding: 0 28px;
+          padding: 0 24px;
         }
-
-        .vm-header-logo { text-decoration: none; }
-
-        /* Nav links */
-        .vm-nav { display: flex; align-items: center; gap: 2px; }
-        .vm-nav-link {
-          font-size: 13px; font-weight: 500;
-          color: rgba(255,255,255,0.48);
-          padding: 7px 13px; border-radius: 9px;
-          text-decoration: none; letter-spacing: -0.01em;
-          transition: color 0.18s ease, background 0.18s ease;
+        .vm-header-left {
+          display: flex; align-items: center; gap: 14px;
+        }
+        .vm-header-logo { text-decoration: none; display: flex; align-items: center; }
+        
+        .vm-db-status {
+          font-size: 11px; font-weight: 500;
+          color: rgba(255, 255, 255, 0.45);
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 4px 10px;
+          background: rgba(255, 255, 255, 0.02);
+          border-radius: 20px;
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          user-select: none;
+          letter-spacing: -0.01em;
+          white-space: nowrap;
           cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .vm-nav-link:hover {
-          color: rgba(255,255,255,0.9);
-          background: rgba(255,255,255,0.06);
+        .vm-db-status:hover {
+          background: rgba(108, 92, 231, 0.09);
+          border-color: rgba(108, 92, 231, 0.35);
+          color: rgba(255, 255, 255, 0.95);
+          box-shadow: 0 0 10px rgba(108, 92, 231, 0.15);
+          transform: translateY(-0.5px);
         }
-
-        .vm-divider {
-          width: 1px; height: 18px;
-          background: rgba(255,255,255,0.1);
-          margin: 0 8px;
+        .vm-pulse-dot {
+          width: 5px; height: 5px; border-radius: 50%;
+          background: #34d399;
+          box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+          animation: vm-pulse-green 2s infinite ease-in-out;
+          transition: all 0.3s ease;
         }
-
-        /* Mobile hamburger */
-        .vm-hamburger {
-          display: none; flex-direction: column; gap: 5px;
-          cursor: pointer; padding: 6px; border: none;
-          background: transparent; border-radius: 8px;
+        .vm-db-status:hover .vm-pulse-dot {
+          background: #4ade80;
+          box-shadow: 0 0 12px rgba(74, 222, 128, 1);
         }
-        .vm-hamburger span {
-          width: 22px; height: 1.5px;
-          background: rgba(255,255,255,0.65); border-radius: 2px;
-          display: block; transition: all 0.25s ease;
+        @keyframes vm-pulse-green {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.45; transform: scale(0.85); }
         }
-
-        /* Mobile drawer */
-        .vm-drawer {
-          position: fixed; top: 62px; left: 0; right: 0;
-          background: rgba(10,7,24,0.97);
-          backdrop-filter: blur(20px);
-          border-bottom: 0.5px solid rgba(255,255,255,0.08);
-          padding: 16px 28px 24px;
-          display: flex; flex-direction: column; gap: 4px;
-          transform: translateY(-8px); opacity: 0;
-          pointer-events: none;
-          transition: transform 0.25s ease, opacity 0.25s ease;
-          z-index: 99;
+        
+        .vm-header-right {
+          display: flex; align-items: center; gap: 12px;
         }
-        .vm-drawer.open {
-          transform: translateY(0); opacity: 1; pointer-events: auto;
-        }
-        .vm-drawer-link {
-          font-size: 14px; font-weight: 500;
-          color: rgba(255,255,255,0.55); padding: 11px 0;
+        .vm-header-link {
+          font-size: 12.5px; font-weight: 500;
+          color: rgba(255, 255, 255, 0.45);
           text-decoration: none;
-          border-bottom: 0.5px solid rgba(255,255,255,0.06);
-          transition: color 0.18s;
+          transition: color 0.25s ease;
+          padding: 6px 4px;
         }
-        .vm-drawer-link:hover { color: rgba(255,255,255,0.9); }
-        .vm-drawer-cta {
-          margin-top: 12px;
-          display: block; text-align: center;
-          padding: 12px;
-          background: linear-gradient(135deg, #6c5ce7 0%, #8b7cf6 100%);
-          color: #fff; text-decoration: none;
-          border-radius: 10px; font-size: 14px; font-weight: 600;
-          box-shadow: 0 4px 18px rgba(108,92,231,0.45);
+        .vm-header-link:hover {
+          color: #fff;
+        }
+        .vm-header-sep {
+          width: 1px; height: 12px;
+          background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .vm-clear-wrapper {
+          overflow: hidden;
+          display: inline-flex;
+          align-items: center;
+          white-space: nowrap;
+          width: 0;
+          opacity: 0;
+          pointer-events: none;
+          transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                      opacity 0.35s ease;
+        }
+        .vm-clear-wrapper.active {
+          width: 141px; /* Separator (1px + 24px margins) + Button (116px) */
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .vm-btn-clear {
+          font-size: 12.5px; font-weight: 600;
+          color: rgba(255, 255, 255, 0.7);
+          padding: 8px 16px; border-radius: 10px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.03);
+          cursor: pointer;
+          display: inline-flex; align-items: center; gap: 6px;
+          text-decoration: none;
+          width: 116px;
+          box-sizing: border-box;
+          transform: translateX(24px);
+          opacity: 0;
+          transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                      opacity 0.35s ease,
+                      background 0.2s ease,
+                      border-color 0.2s ease,
+                      color 0.2s ease;
+        }
+        .vm-clear-wrapper.active .vm-btn-clear {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        .vm-btn-clear:hover {
+          background: rgba(255, 255, 255, 0.06);
+          border-color: rgba(255, 255, 255, 0.15);
+          color: #fff;
         }
 
-        @media (max-width: 720px) {
-          .vm-nav { display: none; }
-          .vm-divider { display: none; }
-          .vm-header-cta { display: none; }
-          .vm-hamburger { display: flex; }
+        
+        @media (max-width: 480px) {
+          .vm-db-status { display: none; }
+          .vm-inner { padding: 0 16px; }
         }
       `}</style>
 
       <header className={`vm-header ${scrolled ? "scrolled" : "top"}`}>
         <div className="vm-inner">
-          <Link href="/" className="vm-header-logo">
-            <Logo size="md" showBadge />
-          </Link>
-
-          <nav className="vm-nav">
-            {NAV_LINKS.map(({ label, href }) => (
-              <a key={label} href={href} className="vm-nav-link">{label}</a>
-            ))}
-            <div className="vm-divider" />
-            <Button
-              href="/wizard"
-              variant={isWizard ? "ghost" : "primary"}
-              className="vm-header-cta"
+          <div className="vm-header-left">
+            <Link href="/" className="vm-header-logo">
+              <Logo size="md" showBadge={false} />
+            </Link>
+            <div
+              className="vm-db-status"
+              onClick={() => {
+                const el = document.getElementById("vm-faq-accordion");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              }}
             >
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z"
-                  stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                />
-              </svg>
-              Check Documents
-            </Button>
-          </nav>
+              <span className="vm-pulse-dot" />
+              <span>Visa rules updated: May 2026</span>
+            </div>
+          </div>
 
-          <button
-            className="vm-hamburger"
-            aria-label="Toggle menu"
-            onClick={() => setMenuOpen(o => !o)}
-          >
-            <span style={menuOpen ? { transform: "rotate(45deg) translate(4.5px, 4.5px)" } : {}} />
-            <span style={menuOpen ? { opacity: 0 } : {}} />
-            <span style={menuOpen ? { transform: "rotate(-45deg) translate(4.5px, -4.5px)" } : {}} />
-          </button>
+          <div className="vm-header-right">
+            <a
+              href="#vm-faq-accordion"
+              className="vm-header-link"
+              onClick={(e) => {
+                e.preventDefault();
+                const el = document.getElementById("vm-faq-accordion");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              }}
+            >
+              FAQs
+            </a>
+
+            <div className={`vm-clear-wrapper ${isChecklistActive ? "active" : ""}`}>
+              <span className="vm-header-sep" style={{ margin: "0 8px 0 16px" }} />
+              <button className="vm-btn-clear" onClick={handleStartFresh}>
+                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                Start fresh
+              </button>
+            </div>
+          </div>
         </div>
       </header>
-
-      <div className={`vm-drawer${menuOpen ? " open" : ""}`} aria-hidden={!menuOpen}>
-        {NAV_LINKS.map(({ label, href }) => (
-          <a key={label} href={href} className="vm-drawer-link" onClick={() => setMenuOpen(false)}>
-            {label}
-          </a>
-        ))}
-        <Link href="/wizard" className="vm-drawer-cta" onClick={() => setMenuOpen(false)}>
-          Check Documents
-        </Link>
-      </div>
     </>
   );
 }
