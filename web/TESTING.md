@@ -23,9 +23,14 @@ web/src/
 │       ├── mapRequirements.ts
 │       └── mapRequirements.test.ts   ← Integration tests for checklist parsing
 └── lib/
+    ├── data/
+    │   ├── repository.ts
+    │   └── repository.test.ts        ← DAL JSON loader integration tests
     └── utils/
         ├── date.ts
         ├── date.test.ts              ← Unit tests for date formatting/math
+        ├── docx.ts
+        ├── docx.test.ts              ← Unit tests for Word document margins & builders
         ├── smoke.test.ts             ← Vitest configuration verification
         ├── storage.ts
         ├── storage.test.ts           ← SSR-safety and localStorage tests
