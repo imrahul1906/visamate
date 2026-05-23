@@ -148,3 +148,10 @@ If packages throw resolution errors or lockfile updates conflict:
 Remove-Item -Path "node_modules", "web/node_modules" -Recurse -Force
 npm install
 ```
+
+---
+
+## 🧪 6. Testing Suite
+
+VisaMate includes a comprehensive unit and integration testing suite built on Vitest and jsdom.
+For command references, verbose test logging, and input override switches, read the [Testing Developer Guide](file:///d:/visamate/web/TESTING.md).

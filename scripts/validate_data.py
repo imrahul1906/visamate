@@ -13,7 +13,7 @@ from jsonschema import Draft7Validator, FormatChecker
 
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS = ROOT / "schemas"
-DATA = ROOT / "data"
+DATA = ROOT / "web" / "src" / "data"
 REPORTS = ROOT / "reports"
 
 

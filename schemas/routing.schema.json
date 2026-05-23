@@ -7,11 +7,18 @@
     "locationId": {"type": "string"},
     "locationCode": {"type": "string"},
     "destinationCountryId": {"type": "string"},
-    "authorityLable": {"type": "string"},
-    "states": {"type": "array"},
+    "authorityLabel": {"type": "string"},
+    "states": {"type": "array", "items": {"type": "string"}},
     "description": {"type": "string"},
-    "metadata": {"type": "object"}
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "createdAt": {"type": "string", "format": "date"},
+        "lastUpdated": {"type": "string", "format": "date"},
+        "status": {"type": "string"}
+      }
+    }
   },
-  "required": ["id","locationId","destinationCountryId","states"],
+  "required": ["id", "locationId", "destinationCountryId", "states", "authorityLabel"],
   "additionalProperties": false
 }

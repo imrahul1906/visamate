@@ -10,7 +10,10 @@
     "dev": "npm run dev --workspace=web",
     "build": "npm run build --workspace=web",
     "start": "npm run start --workspace=web",
-    "lint": "npm run lint --workspace=web"
+    "lint": "npm run lint --workspace=web",
+    "test": "npm run test --workspace=web",
+    "test:verbose": "npm run test:verbose --workspace=web",
+    "test:watch": "npm run test:watch --workspace=web"
   },
   "devDependencies": {
     "tsx": "^4.0.0"

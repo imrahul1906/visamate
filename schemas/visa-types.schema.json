@@ -15,26 +15,66 @@
           "code": {"type": "string"},
           "name": {"type": "string"},
           "category": {"type": "string"},
-          "variants": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {"type": "string"},
-                "type": {"type": "string"},
-                "maxStayDays": {"type": "integer"},
-                "validityMonths": {"type": "integer"}
+          "maxStayDays": {"type": "integer"},
+          "fees": {"type": "number"},
+          "currency": {"type": "string"},
+          "note": {"type": "string"},
+          "vfsCharges": {
+            "type": "object",
+            "properties": {
+              "serviceCharge": {
+                "type": "object",
+                "properties": {
+                  "charge": {"type": "number"},
+                  "currency": {"type": "string"},
+                  "refundable": {"type": "boolean"},
+                  "note": {"type": "string"}
+                },
+                "required": ["charge", "currency"]
               },
-              "required": ["id","type"]
+              "courierCharges": {
+                "type": "object",
+                "properties": {
+                  "charge": {"type": "number"},
+                  "currency": {"type": "string"},
+                  "optional": {"type": "boolean"},
+                  "note": {"type": "string"}
+                },
+                "required": ["charge", "currency"]
+              }
             }
           },
-          "process": {"type": "object"},
-          "metadata": {"type": "object"}
+          "process": {
+            "type": "object",
+            "properties": {
+              "default": {
+                "type": "object",
+                "properties": {
+                  "applicationMode": {"type": "string"},
+                  "biometricRequired": {"type": "boolean"},
+                  "interviewRequired": {"type": "boolean"}
+                }
+              },
+              "paymentInstructions": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "status": {"type": "string"},
+              "lastUpdated": {"type": "string"}
+            }
+          }
         },
-        "required": ["id","code","name"]
+        "required": ["id", "code", "name"]
       }
     }
   },
-  "required": ["countryId","visaTypes"],
+  "required": ["countryId", "countryCode", "countryName", "visaTypes"],
   "additionalProperties": false
 }

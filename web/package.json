@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run --silent",
+    "test:verbose": "vitest run --reporter=verbose",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "jspdf": "^4.2.1",
@@ -25,8 +28,10 @@
     "autoprefixer": "^10.5.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "jsdom": "^29.1.1",
     "postcss": "^8.5.13",
     "tailwindcss": "^4.2.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }
