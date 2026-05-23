@@ -12,14 +12,91 @@
     "visaVariantId": {"type": "string"},
     "locationId": {"type": "string"},
     "locationCode": {"type": "string"},
-    "processingDays": {"type": ["integer","null"]},
-    "processingDaysExpress": {"type": ["integer","null"]},
-    "fees": {"type": "object"},
-    "photoSpecifications": {"type": "object"},
-    "documentSections": {"type": "array"},
-    "importantNotes": {"type": "array"},
-    "metadata": {"type": "object"}
+    "processingDays": {"type": ["string", "null"]},
+    "processingDaysExpress": {"type": ["string", "null"]},
+    "fees": {
+      "type": "object",
+      "properties": {
+        "visaFeeINR": {"type": "number"},
+        "serviceChargeINR": {"type": "number"},
+        "courierReturnINR": {"type": "number"},
+        "courierReturnOptional": {"type": "boolean"},
+        "note": {"type": "string"}
+      }
+    },
+    "photoSpecifications": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "widthMm": {"type": "number"},
+          "heightMm": {"type": "number"},
+          "background": {"type": "string"},
+          "colorFormat": {"type": "string"},
+          "faceVisibilityPercent": {"type": "string"},
+          "quality": {"type": "string"},
+          "maxAgeMonths": {"type": "number"},
+          "requirements": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "documentSections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sectionId": {"type": "string"},
+          "title": {"type": "string"},
+          "applicableWhen": {"type": "object"},
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "order": {"type": "integer"},
+                "id": {"type": "string"},
+                "code": {"type": "string"},
+                "name": {"type": "string"},
+                "isRequired": {"type": "boolean"},
+                "optionality": {"type": "string"},
+                "description": {"type": "string"},
+                "notes": {"type": "string"},
+                "requirements": {"type": "array", "items": {"type": "string"}},
+                "alternativeDocuments": {"type": "array", "items": {"type": "string"}},
+                "formUrl": {"type": "string"},
+                "form": {
+                  "type": "object",
+                  "properties": {
+                    "type": {"type": "string"},
+                    "downloadUrl": {"type": ["string", "null"]},
+                    "onlineUrl": {"type": ["string", "null"]},
+                    "requiresPrint": {"type": "boolean"},
+                    "formFillDataKey": {"type": ["string", "null"]}
+                  }
+                },
+                "photoSpecRef": {"type": "string"},
+                "check_list_download_Url": {"type": "string"},
+                "applicableWhen": {"type": "object"}
+              },
+              "required": ["id", "code", "name"]
+            }
+          }
+        },
+        "required": ["sectionId", "title", "documents"]
+      }
+    },
+    "importantNotes": {"type": "array", "items": {"type": "string"}},
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "sourceUrl": {"type": "string"},
+        "lastVerified": {"type": "string"},
+        "verifiedBy": {"type": "string"},
+        "status": {"type": "string"},
+        "dataCollectionDate": {"type": "string"}
+      }
+    }
   },
-  "required": ["id","countryId","visaTypeId","locationId","documentSections"],
+  "required": ["id", "countryId", "visaTypeId", "locationId", "documentSections"],
   "additionalProperties": false
 }
