@@ -11,6 +11,7 @@ import WizardCard from "./WizardCard";
 const TRUST = [
   { color: "#4ade80", label: "Embassy-verified" },
   { color: "#a78bfa", label: "Updated May 2026" },
+  { color: "#34d399", label: "Zero Server Storage" },
   { color: "#60a5fa", label: "AI-powered" },
 ];
 

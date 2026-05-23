@@ -245,6 +245,23 @@ export default function UploadSlot({
         style={{ display: "none" }}
         onChange={e => handleFile(e.target.files?.[0])}
       />
+
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 5,
+        marginTop: 6,
+        paddingLeft: 4,
+        opacity: isActive ? 0.85 : 0.5,
+        transition: "opacity 220ms ease"
+      }}>
+        <svg width="10.5" height="10.5" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth={2.2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.55)", fontFamily: "'DM Sans', sans-serif" }}>
+          In-browser processing · Zero server storage · Your data stays local
+        </span>
+      </div>
     </div>
   );
 }

@@ -258,6 +258,25 @@ export function DocDetailPanel({
           scrollbarColor: "rgba(99,102,241,0.35) transparent",
         }}
       >
+        {/* Privacy reassurance banner */}
+        <div style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 9,
+          background: "rgba(99, 102, 241, 0.05)",
+          border: "1px solid rgba(99, 102, 241, 0.15)",
+          padding: "10px 12px",
+          borderRadius: 10,
+          marginBottom: 16,
+        }}>
+          <svg width="14" height="14" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ marginTop: 1, flexShrink: 0 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+          <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.55)", lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
+            <strong>100% In-Browser Privacy:</strong> Your details and files remain in local memory. Nothing is sent to or stored on a database.
+          </div>
+        </div>
+
         {/* DocHelper handles all specialWidget types — upload slot suppressed here */}
         {visibleDoc.specialWidget && (
           <div style={{ marginBottom: 20 }}>
