@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run",
+    "test": "vitest run --silent",
+    "test:verbose": "vitest run --reporter=verbose",
     "test:watch": "vitest"
   },
   "dependencies": {
