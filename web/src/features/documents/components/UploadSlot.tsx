@@ -36,6 +36,14 @@ export default function UploadSlot({
   const [validationError, setValidationError] = useState<string | null>(null);
   const uploaded = uploads[docId];
 
+  const formatLabel = acceptedFormats && acceptedFormats.length > 0
+    ? acceptedFormats.join(", ").toUpperCase()
+    : "PDF, JPG, PNG";
+
+  const acceptAttr = acceptedFormats && acceptedFormats.length > 0
+    ? acceptedFormats.map(ext => ext.startsWith(".") ? ext : `.${ext}`).join(",")
+    : ".pdf,.jpg,.jpeg,.png,.webp";
+
   // Entry animation trigger
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 80);
@@ -235,7 +243,11 @@ export default function UploadSlot({
             color: isActive ? "rgba(165,180,252,0.7)" : "rgba(255,255,255,0.38)",
             transition: "color 220ms ease",
           }}>
-            {dragging ? "Release to attach your file" : "Optional · PDF, JPG, PNG · Drag & drop or click"}
+            {dragging
+              ? "Release to attach your file"
+              : acceptedFormats && acceptedFormats.length > 0
+                ? "Optional (only used to help validate format & size) · Drag & drop or click"
+                : `Optional (only used to help validate format & size) · ${formatLabel} · Drag & drop or click`}
           </p>
         </div>
 
@@ -265,7 +277,7 @@ export default function UploadSlot({
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,.jpg,.jpeg,.png,.webp"
+        accept={acceptAttr}
         style={{ display: "none" }}
         onChange={e => handleFile(e.target.files?.[0])}
       />

@@ -48,6 +48,7 @@ export interface DocHelperProps {
   sponsorConsentPrefill?: Record<string, string>;
   /** Suppress the UploadSlot — used when the parent renders it inside a card instead */
   hideUpload?: boolean;
+  onHelperToggle?: (isOpen: boolean) => void;
 }
 
 export function DocHelper({
@@ -62,6 +63,7 @@ export function DocHelper({
   onSponsorConsentReady,
   itineraryData,
   hideUpload,
+  onHelperToggle,
 }: DocHelperProps) {
   const wrappedUploads: UploadsMap = uploads;
 
@@ -82,7 +84,7 @@ export function DocHelper({
 
       {/* Visa form widget */}
       {doc.specialWidget === "visa_form" && (
-        <VisaFormWidget doc={doc} color={color} />
+        <VisaFormWidget doc={doc} color={color} onHelperToggle={onHelperToggle} />
       )}
 
       {/* Document checklist widget */}

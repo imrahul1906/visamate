@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { T } from "@/lib/theme";
 import type { DocumentItem, UploadsMap } from "../../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
@@ -54,6 +54,12 @@ export function DocDetailPanel({
   isOnline = false,
 }: FocusDrawerProps) {
   const shimmerRef = useRef<HTMLDivElement>(null);
+  const [helperActive, setHelperActive] = useState(false);
+
+  // Reset helper active state when switching documents
+  useEffect(() => {
+    setHelperActive(false);
+  }, [visibleDoc.id]);
 
   // Fire the border shimmer each time a new document is selected
   useEffect(() => {
@@ -253,35 +259,45 @@ export function DocDetailPanel({
 
       {/* DRAWER BODY */}
       <div
-        className="vm-right-scroll"
-        style={{
-          flex: 1, overflowY: "auto", padding: "18px 18px 12px",
+        className={helperActive ? "" : "vm-right-scroll"}
+        style={helperActive ? {
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          padding: 0,
+        } : {
+          flex: 1,
+          overflowY: "auto",
+          padding: "18px 18px 12px",
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(99,102,241,0.35) transparent",
         }}
       >
         {/* Privacy reassurance banner */}
-        <div style={{
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 9,
-          background: "rgba(99, 102, 241, 0.05)",
-          border: "1px solid rgba(99, 102, 241, 0.15)",
-          padding: "10px 12px",
-          borderRadius: 10,
-          marginBottom: 16,
-        }}>
-          <svg width="14" height="14" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ marginTop: 1, flexShrink: 0 }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-          </svg>
-          <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.55)", lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
-            <strong>100% In-Browser Privacy:</strong> Your details and files remain in local memory. Nothing is sent to or stored on a database.
+        {!helperActive && (
+          <div style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 9,
+            background: "rgba(99, 102, 241, 0.05)",
+            border: "1px solid rgba(99, 102, 241, 0.15)",
+            padding: "10px 12px",
+            borderRadius: 10,
+            marginBottom: 16,
+          }}>
+            <svg width="14" height="14" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ marginTop: 1, flexShrink: 0 }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+            <div style={{ fontSize: "11px", color: "rgba(255, 255, 255, 0.55)", lineHeight: 1.45, fontFamily: "'DM Sans', sans-serif" }}>
+              <strong>100% In-Browser Privacy:</strong> Your details and files remain in local memory. Nothing is sent to or stored on a database.
+            </div>
           </div>
-        </div>
+        )}
 
         {/* DocHelper handles all specialWidget types — upload slot suppressed here */}
         {visibleDoc.specialWidget && (
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: helperActive ? 0 : 20, flex: helperActive ? 1 : undefined, display: helperActive ? "flex" : undefined, flexDirection: helperActive ? "column" : undefined }}>
             <DocHelper
               doc={visibleDoc}
               color={activeCategory?.color ?? T.indigo}
@@ -295,12 +311,13 @@ export function DocDetailPanel({
               itineraryData={itineraryData}
               sponsorConsentPrefill={sponsorConsentPrefill}
               hideUpload
+              onHelperToggle={setHelperActive}
             />
           </div>
         )}
 
         {/* What you need */}
-        {(visibleDoc.notes || visibleDoc.tips?.length) && (
+        {!helperActive && (visibleDoc.notes || visibleDoc.tips?.length) && (
           <div style={{ marginBottom: 20 }}>
             {/* Eyebrow row */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
@@ -475,7 +492,38 @@ export function DocDetailPanel({
                 </div>
               )}
 
-              {/* Accepted formats row */}
+              {/* Upload slot — inside the card, below the tips */}
+              {!visibleDoc.noUpload && !helperActive && (
+                <div style={{ padding: "14px" }}>
+                  {isOnline && (
+                    <div style={{
+                      display: "flex", gap: 7, alignItems: "flex-start",
+                      background: "rgba(99, 102, 241, 0.05)",
+                      border: "1px solid rgba(99, 102, 241, 0.15)",
+                      padding: "8px 10px", borderRadius: 8, marginBottom: 10,
+                    }}>
+                      <svg width="12" height="12" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <span style={{ fontSize: 9.5, color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                        <strong>Sandbox Validator:</strong> Uploading here checks formatting and file size rules. You must upload this file again on the official government website.
+                      </span>
+                    </div>
+                  )}
+                  <UploadSlot
+                    docId={visibleDoc.id}
+                    docName={visibleDoc.name}
+                    color={activeCategory?.color ?? T.indigo}
+                    uploads={uploads}
+                    onUpload={(...args) => onUpload(args[1])}
+                    onRemove={() => onRemove()}
+                    acceptedFormats={visibleDoc.acceptedFormats}
+                    maxSizeBytes={visibleDoc.maxSizeBytes}
+                  />
+                </div>
+              )}
+
+              {/* Accepted formats row — bottom banner of the card */}
               {visibleDoc.acceptedFormats && visibleDoc.acceptedFormats.length > 0 && (
                 <div style={{
                   display: "flex", alignItems: "center",
@@ -524,76 +572,96 @@ export function DocDetailPanel({
                 </div>
               )}
 
-              {/* Upload slot — flush bottom of card, hairline divider only */}
-              {!visibleDoc.noUpload && (
-                <div style={{ padding: "0 14px 14px", marginTop: -12 }}>
-                  {isOnline && (
-                    <div style={{
-                      display: "flex", gap: 7, alignItems: "flex-start",
-                      background: "rgba(99, 102, 241, 0.05)",
-                      border: "1px solid rgba(99, 102, 241, 0.15)",
-                      padding: "8px 10px", borderRadius: 8, marginBottom: 10,
-                    }}>
-                      <svg width="12" height="12" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      <span style={{ fontSize: 9.5, color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
-                        <strong>Sandbox Validator:</strong> Uploading here checks formatting and file size rules. You must upload this file again on the official government website.
-                      </span>
-                    </div>
-                  )}
-                  <UploadSlot
-                    docId={visibleDoc.id}
-                    docName={visibleDoc.name}
-                    color={activeCategory?.color ?? T.indigo}
-                    uploads={uploads}
-                    onUpload={(...args) => onUpload(args[1])}
-                    onRemove={() => onRemove()}
-                    acceptedFormats={visibleDoc.acceptedFormats}
-                    maxSizeBytes={visibleDoc.maxSizeBytes}
-                  />
-                </div>
-              )}
             </div>
           </div>
         )}
 
         {/* Upload slot — standalone card for docs with no What You Need section */}
-        {!(visibleDoc.notes || visibleDoc.tips?.length) && !visibleDoc.noUpload && (
+        {!helperActive && !(visibleDoc.notes || visibleDoc.tips?.length) && !visibleDoc.noUpload && (
           <div style={{
             background: "rgba(255,255,255,0.04)",
             border: "0.5px solid rgba(255,255,255,0.11)",
             borderRadius: 14,
             overflow: "hidden",
-            padding: "14px",
             boxShadow: "0 4px 6px rgba(0,0,0,0.25), 0 12px 28px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.06) inset",
           }}>
-            {isOnline && (
+            <div style={{ padding: "14px" }}>
+              {isOnline && (
+                <div style={{
+                  display: "flex", gap: 7, alignItems: "flex-start",
+                  background: "rgba(99, 102, 241, 0.05)",
+                  border: "1px solid rgba(99, 102, 241, 0.15)",
+                  padding: "8px 10px", borderRadius: 8, marginBottom: 10,
+                }}>
+                  <svg width="12" height="12" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <span style={{ fontSize: 9.5, color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                    <strong>Sandbox Validator:</strong> Uploading here checks formatting and file size rules. You must upload this file again on the official government website.
+                  </span>
+                </div>
+              )}
+              <UploadSlot
+                docId={visibleDoc.id}
+                docName={visibleDoc.name}
+                color={activeCategory?.color ?? T.indigo}
+                uploads={uploads}
+                onUpload={(...args) => onUpload(args[1])}
+                onRemove={() => onRemove()}
+                noBorder
+                acceptedFormats={visibleDoc.acceptedFormats}
+                maxSizeBytes={visibleDoc.maxSizeBytes}
+              />
+            </div>
+
+            {/* Accepted formats row — bottom banner of the card */}
+            {visibleDoc.acceptedFormats && visibleDoc.acceptedFormats.length > 0 && (
               <div style={{
-                display: "flex", gap: 7, alignItems: "flex-start",
-                background: "rgba(99, 102, 241, 0.05)",
-                border: "1px solid rgba(99, 102, 241, 0.15)",
-                padding: "8px 10px", borderRadius: 8, marginBottom: 10,
+                display: "flex", alignItems: "center",
+                borderTop: "0.5px solid rgba(255,255,255,0.07)",
+                padding: "10px 16px 10px 14px",
+                background: "rgba(0,0,0,0.1)",
               }}>
-                <svg width="12" height="12" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <span style={{ fontSize: 9.5, color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
-                  <strong>Sandbox Validator:</strong> Uploading here checks formatting and file size rules. You must upload this file again on the official government website.
+                <span style={{
+                  fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)",
+                  textTransform: "uppercase", letterSpacing: "0.09em",
+                  marginRight: 10, fontFamily: "'DM Sans', sans-serif",
+                  flexShrink: 0,
+                }}>
+                  Formats
                 </span>
+                <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
+                  {visibleDoc.acceptedFormats.map((fmt, i) => {
+                    const iconMap: Record<string, string> = {
+                      pdf: "ti-file-type-pdf",
+                      jpg: "ti-photo", jpeg: "ti-photo",
+                      png: "ti-photo",
+                      doc: "ti-file-type-doc", docx: "ti-file-type-doc",
+                      xls: "ti-file-type-xls", xlsx: "ti-file-type-xls",
+                    };
+                    const icon = iconMap[fmt.toLowerCase()] ?? "ti-file";
+                    return (
+                      <div key={i} style={{
+                        display: "flex", alignItems: "center", gap: 4,
+                        background: "rgba(255,255,255,0.05)",
+                        border: "0.5px solid rgba(255,255,255,0.12)",
+                        padding: "3px 9px", borderRadius: 6,
+                      }}>
+                        <i className={`ti ${icon}`} aria-hidden="true" style={{ fontSize: 12, color: "rgba(255,255,255,0.35)" }} />
+                        <span style={{
+                          fontSize: 10.5, fontWeight: 600,
+                          color: "rgba(255,255,255,0.5)",
+                          letterSpacing: "0.04em",
+                          fontFamily: "'DM Sans', sans-serif",
+                        }}>
+                          {fmt.toUpperCase()}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
-            <UploadSlot
-              docId={visibleDoc.id}
-              docName={visibleDoc.name}
-              color={activeCategory?.color ?? T.indigo}
-              uploads={uploads}
-              onUpload={(...args) => onUpload(args[1])}
-              onRemove={() => onRemove()}
-              noBorder
-              acceptedFormats={visibleDoc.acceptedFormats}
-              maxSizeBytes={visibleDoc.maxSizeBytes}
-            />
           </div>
         )}
       </div>

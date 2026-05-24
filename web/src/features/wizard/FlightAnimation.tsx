@@ -185,6 +185,9 @@ export default function FlightAnimation({
 
   const originName = useMemo(() => {
     if (originLocationCode) {
+      if (originLocationCode.toUpperCase() === "ONLINE") {
+        return "India";
+      }
       const code = originLocationCode.toLowerCase();
       return code.charAt(0).toUpperCase() + code.slice(1);
     }

@@ -274,70 +274,7 @@ export function DocChecklistEmptyState({
         </div>
       </div>
 
-      {/* ── E-Visa flow diagram ───────────────────────────────── */}
-      {isOnline && (
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          background: "rgba(255, 255, 255, 0.02)",
-          border: `1px solid ${T.border}`,
-          borderRadius: 16,
-          padding: "12px 18px",
-          margin: "18px 0 10px",
-          opacity: mounted ? 1 : 0,
-          transform: mounted ? "translateY(0)" : "translateY(10px)",
-          transition: "all 0.5s ease 0.1s",
-          position: "relative",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-        }}>
-          {/* Document 1: Photo */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <div style={{
-              width: 38, height: 38, borderRadius: 8,
-              background: "rgba(99, 102, 241, 0.1)",
-              border: "1px solid rgba(99, 102, 241, 0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: T.indigoLight, fontSize: 18
-            }}>📸</div>
-            <span style={{ fontSize: 9, color: T.muted2, fontWeight: 600, fontFamily: font.sans }}>Portrait Photo</span>
-          </div>
 
-          {/* Plus */}
-          <div style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: 14, fontWeight: 500, fontFamily: font.sans }}>+</div>
-
-          {/* Document 2: Passport Scan */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <div style={{
-              width: 38, height: 38, borderRadius: 8,
-              background: "rgba(74, 222, 128, 0.1)",
-              border: "1px solid rgba(74, 222, 128, 0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: T.green, fontSize: 18
-            }}>📖</div>
-            <span style={{ fontSize: 9, color: T.muted2, fontWeight: 600, fontFamily: font.sans }}>Passport Scan</span>
-          </div>
-
-          {/* Arrow */}
-          <div style={{ display: "flex", alignItems: "center", padding: "0 4px" }}>
-            <svg width="18" height="12" fill="none" stroke="rgba(255, 255, 255, 0.25)" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </div>
-
-          {/* Target: Online Portal */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <div style={{
-              width: 38, height: 38, borderRadius: 8,
-              background: "rgba(59, 130, 246, 0.1)",
-              border: "1px solid rgba(59, 130, 246, 0.25)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: T.blue, fontSize: 18
-            }}>🌐</div>
-            <span style={{ fontSize: 9, color: T.muted2, fontWeight: 600, fontFamily: font.sans }}>E-Visa Portal</span>
-          </div>
-        </div>
-      )}
 
       {/* ── Step cards ────────────────────────────────────────── */}
       <div style={{

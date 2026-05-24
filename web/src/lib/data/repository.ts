@@ -424,7 +424,6 @@ export async function getItineraryPlaces(
 
   const key = countryKeys[cc];
   if (!key) {
-    console.warn(`[repository] getItineraryPlaces: unsupported countryCode="${countryCode}"`);
     return null;
   }
 
