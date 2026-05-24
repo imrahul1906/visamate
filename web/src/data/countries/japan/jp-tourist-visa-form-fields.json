@@ -1,478 +1,574 @@
 {
-  "key": "JP_TOURIST_VISA_FORM_FIELDS_V1",
+  "key": "JAPAN_TOURIST_FORM_FIELDS_V1",
   "meta": {
-    "country": "Japan",
-    "visaType": "Tourist Visa",
-    "formTitle": "Visa Application Form to Enter Japan",
-    "issuingAuthority": "Ministry of Foreign Affairs of Japan",
-    "formSource": "https://assets.ctfassets.net/xxg4p8gt3sg6/2vUOdRMFiIuPueU5P8yL7S/2f0952ad2f7557ffbaba055ec04e95c9/Visa-Application-Form.pdf",
+    "country": "JAPAN",
+    "visaType": "TOURIST Visa",
+    "formTitle": "Visa Application Form - JAPAN",
+    "issuingAuthority": "Government of JAPAN",
+    "formSource": "scripts/Visa-Application-Form.pdf",
     "requiresPrint": true,
-    "lastReviewed": "2025-01"
+    "lastReviewed": "2026-05-24"
   },
   "sections": [
     {
       "id": "personal_details",
       "label": "Personal Details",
-      "icon": "person",
+      "icon": "document",
       "fields": [
         {
-          "id": "surname",
-          "label": "Surname / Family Name",
-          "hint": "Enter exactly as printed in your passport — typically all capitals.",
-          "example": "SHARMA",
+          "id": "nationality_or_citizenship",
+          "label": "Nationality or citizenship",
+          "hint": "Enter your current nationality as printed on your passport's details page.",
+          "example": "Indian",
           "warning": null,
-          "formRef": "Surname (as shown in passport)"
+          "formRef": "T50_0_",
+          "fieldType": "text"
         },
         {
-          "id": "given",
-          "label": "Given & Middle Names",
-          "hint": "Enter first and middle names exactly as printed on your passport.",
-          "example": "RAHUL KUMAR",
-          "warning": null,
-          "formRef": "Given and middle names (as shown in passport)"
+          "id": "id_no_issued_to_you_by_your_government",
+          "label": "ID No. issued to you by your government",
+          "hint": "Enter your government-issued national identity number (e.g., Aadhaar card number for Indian citizens, Social Security Number for US citizens, Resident Identity Card number). Write 'N/A' if your country does not issue one.",
+          "example": "1234-5678-9012",
+          "warning": "Do not enter your passport number here. This must be your government-issued ID card number.",
+          "formRef": "T37_0_",
+          "fieldType": "text"
         },
         {
-          "id": "other_names",
-          "label": "Other / Former Names",
-          "hint": "Any other names you are or have been known by. Write 'None' if not applicable.",
-          "example": "None",
+          "id": "given_and_middle_names_as_shown_in_passport",
+          "label": "Given and middle names (as shown in passport)",
+          "hint": "Enter your first name and middle name(s) exactly as they appear in the machine-readable zone or details page of your passport.",
+          "example": "Rahul Kumar",
           "warning": null,
-          "formRef": "Other names (including any other names you are or have been known by)"
+          "formRef": "T7_0_",
+          "fieldType": "text"
         },
         {
-          "id": "dob",
-          "label": "Date of Birth",
-          "hint": "Use DD/MM/YYYY format — same as on your passport.",
-          "example": "15/08/1990",
+          "id": "surname_as_shown_in_passport",
+          "label": "Surname (as shown in passport)",
+          "hint": "Enter your family name or surname exactly as shown in your passport.",
+          "example": "Sharma",
           "warning": null,
-          "formRef": "Date of birth (Day/Month/Year)"
+          "formRef": "T2_0_",
+          "fieldType": "text"
         },
         {
-          "id": "pob",
-          "label": "Place of Birth",
-          "hint": "City and country where you were born.",
-          "example": "New Delhi, India",
+          "id": "place_of_birth",
+          "label": "Place of birth",
+          "hint": "Enter the city and state/province/country where you were born, matching the place of birth printed in your passport.",
+          "example": "New Delhi, Delhi, India",
           "warning": null,
-          "formRef": "Place of birth (City, State or Province, Country)"
+          "formRef": "T16_0_",
+          "fieldType": "text"
         },
         {
-          "id": "sex",
-          "label": "Sex",
-          "hint": "Tick 'Male' or 'Female' to match your passport.",
-          "example": "Male",
+          "id": "former_and_or_other_nationalities_or_citizenships",
+          "label": "Former and/or other nationalities or citizenships",
+          "hint": "If you hold dual nationality or previously held another citizenship (e.g., prior to naturalization), list them here. If you have never changed your nationality, write 'N/A'.",
+          "example": "N/A",
           "warning": null,
-          "formRef": "Sex: Male / Female"
+          "formRef": "T34_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "certificate_of_eligibility_no",
+          "label": "Certificate of Eligibility No.",
+          "hint": "Leave blank or write 'N/A'. A Certificate of Eligibility (COE) is only issued by Japanese Immigration for long-term residency (work, study, spouse). It is NOT required for a standard tourist or short-term visitor visa.",
+          "example": "N/A",
+          "warning": "Standard tourist visa applicants do not have a Certificate of Eligibility. Entering a random number here will cause your application to be rejected.",
+          "formRef": "T62_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "tel",
+          "label": "Tel.",
+          "hint": "Enter your primary telephone number, including country and area codes.",
+          "example": "+91-11-2345-6789",
+          "warning": null,
+          "formRef": "T97_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "mobile_no",
+          "label": "Mobile No.",
+          "hint": "Enter your mobile phone number, including country code.",
+          "example": "+91-98765-43210",
+          "warning": null,
+          "formRef": "T3_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "address",
+          "label": "Address",
+          "hint": "Enter your current residential address where you reside. This must match the address proof you submit (e.g., utility bill, rent agreement).",
+          "example": "Flat 402, Sunrise Apartments, Sector 15, Rohini, New Delhi, 110089, India",
+          "warning": null,
+          "formRef": "T0_1_",
+          "fieldType": "text"
+        },
+        {
+          "id": "other_names_including_any_other_names_you_are_or_h",
+          "label": "Other names (including any other names you are or have been known by)",
+          "hint": "Enter any former names, maiden names (prior to marriage), aliases, or alternative spellings. If you have never used any other names, write 'N/A'.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T16_1_",
+          "fieldType": "text"
+        },
+        {
+          "id": "e_mail",
+          "label": "E-Mail",
+          "hint": "Enter your primary personal email address where you can receive status updates.",
+          "example": "rahul.sharma@example.com",
+          "warning": null,
+          "formRef": "T3_1_",
+          "fieldType": "text"
         },
         {
           "id": "marital_status",
-          "label": "Marital Status",
-          "hint": "Select one: Single, Married, Widowed, or Divorced.",
+          "label": "Marital status",
+          "hint": "Select your current legal marital status.",
           "example": "Single",
           "warning": null,
-          "formRef": "Marital status: Single / Married / Widowed / Divorced"
-        },
-        {
-          "id": "nationality",
-          "label": "Nationality / Citizenship",
-          "hint": "Your current nationality exactly as shown in the passport.",
-          "example": "Indian",
-          "warning": null,
-          "formRef": "Nationality or citizenship"
-        },
-        {
-          "id": "former_nationalities",
-          "label": "Former / Other Nationalities",
-          "hint": "List any previous or dual nationalities. Write 'None' if not applicable.",
-          "example": "None",
-          "warning": null,
-          "formRef": "Former and/or other nationalities or citizenships"
+          "formRef": "RB2_0_",
+          "fieldType": "radio"
         }
       ]
     },
     {
-      "id": "passport_info",
-      "label": "Passport Info",
-      "icon": "passport",
+      "id": "passport_details",
+      "label": "Passport Details",
+      "icon": "document",
       "fields": [
         {
-          "id": "passport_type",
-          "label": "Passport Type",
-          "hint": "Tick the correct box: Diplomatic, Official, Ordinary, or Other. Most travellers select 'Ordinary'.",
-          "example": "Ordinary",
-          "warning": null,
-          "formRef": "Passport type: Diplomatic / Official / Ordinary / Other"
-        },
-        {
-          "id": "passport_no",
-          "label": "Passport Number",
-          "hint": "The alphanumeric code on the bio-data page of your passport.",
-          "example": "P1234567",
-          "warning": null,
-          "formRef": "Passport No."
-        },
-        {
-          "id": "issue_date",
-          "label": "Passport Issue Date",
-          "hint": "DD/MM/YYYY format as printed in your passport.",
-          "example": "10/03/2020",
-          "warning": null,
-          "formRef": "Date of issue (Day/Month/Year)"
-        },
-        {
-          "id": "expiry_date",
-          "label": "Passport Expiry Date",
-          "hint": "DD/MM/YYYY format. Your passport must be valid for at least 6 months beyond your intended entry date.",
-          "example": "09/03/2030",
-          "warning": "Passport must have a minimum 6 months validity from the date you enter Japan. Renew before applying if it expires sooner.",
-          "formRef": "Date of expiry (Day/Month/Year)"
-        },
-        {
-          "id": "issue_place",
-          "label": "Place of Issue",
-          "hint": "City where the passport was issued.",
-          "example": "New Delhi",
-          "warning": null,
-          "formRef": "Place of issue"
+          "id": "date_of_expiry",
+          "label": "Date of expiry",
+          "hint": "Enter the expiration date of your passport in DD/MM/YYYY format.",
+          "example": "24/05/2034",
+          "warning": "Your passport must have at least 6 months of validity remaining from the date of your arrival in Japan.",
+          "formRef": "T59_0_",
+          "fieldType": "text"
         },
         {
           "id": "issuing_authority",
-          "label": "Issuing Authority",
-          "hint": "The authority that issued the passport, e.g., the Ministry of External Affairs.",
-          "example": "Ministry of External Affairs, India",
+          "label": "Issuing authority",
+          "hint": "Enter the authority that issued your passport exactly as printed on the details page (e.g., 'Ministry of External Affairs', 'US Department of State', 'IPS').",
+          "example": "Ministry of External Affairs",
           "warning": null,
-          "formRef": "Issuing authority"
+          "formRef": "T57_0_",
+          "fieldType": "text"
         },
         {
-          "id": "national_id",
-          "label": "National ID Number",
-          "hint": "ID number issued to you by your government (e.g., Aadhaar, PAN, NIC). Leave blank if none.",
-          "example": "ABCDE1234F",
+          "id": "passport_no",
+          "label": "Passport No.",
+          "hint": "Enter your passport number exactly as shown on the details page, including letters and numbers.",
+          "example": "Z1234567",
           "warning": null,
-          "formRef": "ID No. issued to you by your government"
-        }
-      ]
-    },
-    {
-      "id": "work_address",
-      "label": "Work & Address",
-      "icon": "building",
-      "fields": [
-        {
-          "id": "occupation",
-          "label": "Current Occupation / Position",
-          "hint": "Your current job title. Use 'Student', 'Homemaker', or 'Self-Employed' if applicable.",
-          "example": "Software Engineer",
-          "warning": null,
-          "formRef": "Current profession or occupation and position"
+          "formRef": "T49_0_",
+          "fieldType": "text"
         },
         {
-          "id": "employer_name",
-          "label": "Employer / School Name",
-          "hint": "Full registered name of your current employer or educational institution.",
-          "example": "Infosys Ltd.",
+          "id": "date_of_issue",
+          "label": "Date of issue",
+          "hint": "Enter the date your passport was issued in DD/MM/YYYY format.",
+          "example": "25/05/2024",
           "warning": null,
-          "formRef": "Name and address of employer"
+          "formRef": "T53_0_",
+          "fieldType": "text"
         },
         {
-          "id": "employer_address",
-          "label": "Employer / School Address",
-          "hint": "Full postal address of your employer or school.",
-          "example": "Electronics City Phase 1, Bengaluru, Karnataka 560100",
+          "id": "place_of_issue",
+          "label": "Place of issue",
+          "hint": "Enter the city or state where your passport was issued, as stated in your passport.",
+          "example": "New Delhi",
           "warning": null,
-          "formRef": "Address (employer)"
+          "formRef": "T57_1_",
+          "fieldType": "text"
         },
         {
-          "id": "employer_tel",
-          "label": "Employer Phone Number",
-          "hint": "Office landline or HR number with country code.",
-          "example": "+91 80 2852 0261",
+          "id": "category_of_passport",
+          "label": "Category of passport",
+          "hint": "Select the type of passport you hold. Most tourists travel on an 'Ordinary' passport.",
+          "example": "Ordinary",
           "warning": null,
-          "formRef": "Tel. (employer)"
-        },
-        {
-          "id": "home_address",
-          "label": "Home / Residential Address",
-          "hint": "Your full current home address. If you have more than one address, list them all.",
-          "example": "12 MG Road, Connaught Place, New Delhi 110001",
-          "warning": null,
-          "formRef": "Your current residential address"
-        },
-        {
-          "id": "phone",
-          "label": "Personal Phone Number",
-          "hint": "Your mobile number with country code. The embassy may call to confirm details.",
-          "example": "+91 98765 43210",
-          "warning": null,
-          "formRef": "Mobile No."
-        },
-        {
-          "id": "email",
-          "label": "Email Address",
-          "hint": "An email you check regularly — all correspondence from the embassy may go here.",
-          "example": "rahul.sharma@email.com",
-          "warning": null,
-          "formRef": "E-Mail"
+          "formRef": "RB3_0_",
+          "fieldType": "radio"
         }
       ]
     },
     {
       "id": "travel_details",
       "label": "Travel Details",
-      "icon": "plane",
+      "icon": "document",
       "fields": [
         {
-          "id": "entry_date",
-          "label": "Intended Date of Arrival in Japan",
-          "hint": "DD/MM/YYYY — the date your flight lands in Japan.",
-          "example": "01/10/2025",
-          "warning": "Book flexible/refundable tickets before applying, as the visa may be issued for different dates.",
-          "formRef": "Date of arrival in Japan (Day/Month/Year)"
+          "id": "dates_and_duration_of_previous_stays_in_japan",
+          "label": "Dates and duration of previous stays in Japan",
+          "hint": "List all your previous trips to Japan, specifying the exact start/end dates and the duration (e.g., '10/05/2024 to 18/05/2024 (9 days)'). If you have never visited Japan before, write 'N/A'.",
+          "example": "N/A",
+          "warning": "Be precise and match the entry/exit stamps in your passport. Discrepancies may delay processing.",
+          "formRef": "T64_0_",
+          "fieldType": "text"
         },
         {
-          "id": "stay_days",
-          "label": "Intended Length of Stay",
-          "hint": "Total number of days (not nights) you plan to stay in Japan.",
-          "example": "15 days",
+          "id": "date_of_arrival_in_japan",
+          "label": "Date of arrival in Japan",
+          "hint": "Enter your planned date of arrival in Japan in DD/MM/YYYY format.",
+          "example": "15/10/2026",
           "warning": null,
-          "formRef": "Intended length of stay in Japan"
+          "formRef": "T66_0_",
+          "fieldType": "text"
         },
         {
-          "id": "port_of_entry",
-          "label": "Port of Entry into Japan",
-          "hint": "The airport or port where you will first enter Japan.",
-          "example": "Narita International Airport, Tokyo",
+          "id": "port_of_entry_into_japan",
+          "label": "Port of entry into Japan",
+          "hint": "Enter the airport or seaport where you will first land and clear customs in Japan (e.g., Narita, Haneda, Kansai).",
+          "example": "Narita Airport (NRT)",
           "warning": null,
-          "formRef": "Port of entry into Japan"
+          "formRef": "T68_0_",
+          "fieldType": "text"
         },
         {
-          "id": "airline",
-          "label": "Name of Ship or Airline",
-          "hint": "Airline name and flight number if known. Leave blank if not yet booked.",
-          "example": "Air India AI307",
+          "id": "name_of_ship_or_airline",
+          "label": "Name of ship or airline",
+          "hint": "Enter the airline code and flight number of your arrival flight into Japan. If arriving by cruise, enter the ship's name. If flight details are not finalized, enter the planned flight.",
+          "example": "Japan Airlines JL740",
           "warning": null,
-          "formRef": "Name of ship or airline"
+          "formRef": "T68_1_",
+          "fieldType": "text"
         },
         {
-          "id": "purpose",
-          "label": "Purpose of Visit / Status of Residence",
-          "hint": "Select the closest option. For tourism write 'Temporary Visitor' or 'Tourism'.",
+          "id": "purpose_of_visit_to_japan_status_of_residence",
+          "label": "Purpose of visit to Japan/Status of residence",
+          "hint": "Enter the reason for your travel. For a tourist visa, write 'Temporary Visitor' or 'Tourism'. Do not write 'Business' or 'Work' unless you hold supporting documentation.",
           "example": "Temporary Visitor (Tourism)",
           "warning": null,
-          "formRef": "Purpose of visit to Japan / Status of residence"
+          "formRef": "T68_2_",
+          "fieldType": "text"
         },
         {
-          "id": "japan_address",
-          "label": "Address / Hotel in Japan",
-          "hint": "Full name and address of where you will stay on your first night. Give hotel name and postal address.",
-          "example": "Shinjuku Granbell Hotel, 2-14-5 Kabukicho, Shinjuku, Tokyo 160-0021",
+          "id": "intended_length_of_stay_in_japan",
+          "label": "Intended length of stay in Japan",
+          "hint": "Enter the total number of days you plan to spend in Japan from arrival to departure.",
+          "example": "15 Days",
           "warning": null,
-          "formRef": "Names and addresses of hotels or persons with whom applicant intends to stay"
-        },
-        {
-          "id": "prev_japan",
-          "label": "Previous Stays in Japan",
-          "hint": "List dates and duration of all previous visits to Japan. Write 'None' if first visit.",
-          "example": "None",
-          "warning": null,
-          "formRef": "Dates and duration of previous stays in Japan"
-        },
-        {
-          "id": "certificate_eligibility",
-          "label": "Certificate of Eligibility Number",
-          "hint": "Only fill if you have a Certificate of Eligibility issued by Japanese Immigration. Most tourists leave this blank.",
-          "example": "N/A",
-          "warning": null,
-          "formRef": "Certificate of Eligibility No."
+          "formRef": "T68_3_",
+          "fieldType": "text"
         }
       ]
     },
     {
-      "id": "guarantor_inviter",
-      "label": "Guarantor & Inviter",
-      "icon": "people",
+      "id": "work_employment_details",
+      "label": "Work / Employment Details",
+      "icon": "document",
       "fields": [
         {
-          "id": "guarantor_name",
-          "label": "Guarantor Name (in Japan)",
-          "hint": "Name of the person or organisation acting as your guarantor in Japan. Write 'N/A' if self-funded tourist with no guarantor.",
-          "example": "N/A",
+          "id": "address",
+          "label": "Hotel / Accommodation Address",
+          "hint": "Enter the complete physical address of your hotel, hostel, or host in Japan where you will stay first.",
+          "example": "2-3-1 Yoyogi, Shibuya-ku, Tokyo, 151-0053",
           "warning": null,
-          "formRef": "Guarantor or reference in Japan — Name"
+          "formRef": "emp_adr_0_",
+          "fieldType": "text"
         },
         {
-          "id": "guarantor_dob",
-          "label": "Guarantor Date of Birth",
-          "hint": "DD/MM/YYYY. Leave blank or 'N/A' if no guarantor.",
-          "example": "N/A",
+          "id": "tel",
+          "label": "Hotel / Accommodation Telephone",
+          "hint": "Enter the contact phone number of the hotel or host in Japan, including the country code (+81).",
+          "example": "+81-3-3375-3211",
           "warning": null,
-          "formRef": "Guarantor — Date of birth (Day/Month/Year)"
+          "formRef": "emp_tel_0_",
+          "fieldType": "text"
         },
         {
-          "id": "guarantor_nationality",
-          "label": "Guarantor Nationality & Immigration Status",
-          "hint": "Nationality and current visa/immigration status of the guarantor in Japan.",
-          "example": "N/A",
-          "warning": null,
-          "formRef": "Guarantor — Nationality and immigration status"
+          "id": "name",
+          "label": "Hotel / Accommodation Name",
+          "hint": "Enter the name of the hotel, hostel, or person you will stay with first in Japan. This must match the accommodation listed in your schedule of stay.",
+          "example": "Hotel Sunroute Plaza Shinjuku",
+          "warning": "Ensure this matches the accommodation voucher or itinerary submitted with your application.",
+          "formRef": "emp_name_0_",
+          "fieldType": "text"
         },
         {
-          "id": "guarantor_occupation",
-          "label": "Guarantor Occupation",
-          "hint": "Job title and employer of the guarantor.",
-          "example": "N/A",
+          "id": "address",
+          "label": "Employer / School Address",
+          "hint": "Enter the complete address of your current employer, business, or school. Write 'N/A' if you are unemployed, retired, or a homemaker.",
+          "example": "123 Business Bay, Phase 2, Electronic City, Bengaluru, 560100, India",
           "warning": null,
-          "formRef": "Guarantor — Profession or occupation and position"
+          "formRef": "emp_adr_1_",
+          "fieldType": "text"
         },
         {
-          "id": "guarantor_address",
-          "label": "Guarantor Address",
-          "hint": "Full address of the guarantor in Japan.",
-          "example": "N/A",
+          "id": "tel",
+          "label": "Employer / School Telephone",
+          "hint": "Enter the phone number of your current employer, business, or school. Write 'N/A' if not applicable.",
+          "example": "+91-80-6789-0123",
           "warning": null,
-          "formRef": "Guarantor — Address"
+          "formRef": "emp_tel_1_",
+          "fieldType": "text"
         },
         {
-          "id": "guarantor_tel",
-          "label": "Guarantor Phone Number",
-          "hint": "Contact number of the guarantor, including country code.",
-          "example": "N/A",
+          "id": "name",
+          "label": "Employer / School Name",
+          "hint": "Enter the name of your current employer, company, or school. If you are unemployed, retired, or a homemaker, write 'N/A'.",
+          "example": "Tata Consultancy Services",
           "warning": null,
-          "formRef": "Guarantor — Tel."
+          "formRef": "emp_name_1_",
+          "fieldType": "text"
         },
         {
-          "id": "guarantor_relationship",
-          "label": "Guarantor Relationship to Applicant",
-          "hint": "How the guarantor is related to you (e.g., Friend, Relative, Employer, Travel Agency).",
-          "example": "N/A",
+          "id": "note_partner_s_profession_occupation_or_that_of_pa",
+          "label": "Partner's or Parent's Profession/Occupation",
+          "hint": "Enter the profession/occupation of your spouse or partner. If you are a minor (under 18), enter your parent's occupation. If not applicable, write 'N/A'.",
+          "example": "Software Engineer",
           "warning": null,
-          "formRef": "Guarantor — Relationship to applicant"
-        },
-        {
-          "id": "inviter_name",
-          "label": "Inviter Name (in Japan)",
-          "hint": "If the inviting person and guarantor are the same, write 'Same as above'. Otherwise enter their full name.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter in Japan — Name"
-        },
-        {
-          "id": "inviter_dob",
-          "label": "Inviter Date of Birth",
-          "hint": "DD/MM/YYYY. Write 'Same as above' or 'N/A' as applicable.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter — Date of birth"
-        },
-        {
-          "id": "inviter_nationality",
-          "label": "Inviter Nationality & Immigration Status",
-          "hint": "Nationality and immigration status of the inviter.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter — Nationality and immigration status"
-        },
-        {
-          "id": "inviter_occupation",
-          "label": "Inviter Occupation",
-          "hint": "Job title and employer of the inviter in Japan.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter — Profession or occupation and position"
-        },
-        {
-          "id": "inviter_address",
-          "label": "Inviter Address",
-          "hint": "Full address of the inviter in Japan.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter — Address"
-        },
-        {
-          "id": "inviter_tel",
-          "label": "Inviter Phone Number",
-          "hint": "Contact number of the inviter.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter — Tel."
-        },
-        {
-          "id": "inviter_relationship",
-          "label": "Inviter Relationship to Applicant",
-          "hint": "How the inviter is related to you.",
-          "example": "Same as above",
-          "warning": null,
-          "formRef": "Inviter — Relationship to applicant"
+          "formRef": "T16_2_",
+          "fieldType": "text"
         }
       ]
     },
     {
-      "id": "additional_info",
-      "label": "Additional Info",
-      "icon": "shield",
+      "id": "guarantor_or_reference_in_japan",
+      "label": "Guarantor or Reference in Japan",
+      "icon": "document",
       "fields": [
         {
-          "id": "convicted_crime",
-          "label": "Ever Convicted of a Crime?",
-          "hint": "Answer Yes or No. If Yes, provide details in the remarks box.",
-          "example": "No",
-          "warning": "Answering 'Yes' does not automatically disqualify you — provide full details. Providing false information can result in visa denial and future bans.",
-          "formRef": "Have you ever been convicted of a crime or offence in any country?"
-        },
-        {
-          "id": "sentenced_imprisonment",
-          "label": "Ever Sentenced to 1+ Year Imprisonment?",
-          "hint": "Answer Yes or No. This includes suspended sentences.",
-          "example": "No",
-          "warning": "This includes suspended sentences. Tick 'Yes' if you received any sentence of 1 year or more, even if not served.",
-          "formRef": "Have you ever been sentenced to imprisonment for 1 year or more in any country?"
-        },
-        {
-          "id": "drug_offence",
-          "label": "Ever Convicted of a Drug Offence?",
-          "hint": "Answer Yes or No. Covers narcotics, marijuana, stimulants, or psychotropic substances.",
-          "example": "No",
-          "warning": "Includes suspended sentences. A drug conviction can result in permanent visa denial for Japan.",
-          "formRef": "Have you ever been convicted for a drug offence in any country?"
-        },
-        {
-          "id": "deported",
-          "label": "Ever Deported or Removed from Any Country?",
-          "hint": "Answer Yes or No. Covers overstaying visas or violating immigration laws anywhere in the world.",
-          "example": "No",
-          "warning": "Past deportation from Japan or any country must be disclosed. Concealment can result in being permanently barred from Japan.",
-          "formRef": "Have you ever been deported or removed from Japan or any country?"
-        },
-        {
-          "id": "prostitution",
-          "label": "Ever Engaged in Prostitution-Related Activity?",
-          "hint": "Answer Yes or No.",
-          "example": "No",
+          "id": "date_of_birth",
+          "label": "Date of Birth",
+          "hint": "Enter the guarantor's date of birth in DD/MM/YYYY format. Write 'N/A' if you do not have a guarantor.",
+          "example": "N/A",
           "warning": null,
-          "formRef": "Have you ever engaged in prostitution or related activities?"
+          "formRef": "T14_0_",
+          "fieldType": "text"
         },
         {
-          "id": "trafficking",
-          "label": "Ever Committed Trafficking in Persons?",
-          "hint": "Answer Yes or No.",
-          "example": "No",
+          "id": "sex",
+          "label": "Sex",
+          "hint": "Select the sex of your guarantor. Write 'N/A' or select option if applicable. Independent tourists with no guarantor can skip or write 'N/A'.",
+          "example": "Male",
           "warning": null,
-          "formRef": "Have you ever committed trafficking in persons?"
+          "formRef": "RB1_0_",
+          "fieldType": "radio"
         },
         {
-          "id": "remarks",
+          "id": "address",
+          "label": "Address",
+          "hint": "Enter the complete residential or business address of the guarantor in Japan. Write 'N/A' if you are traveling independently as a self-funded tourist.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "guarantor_adr_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "name",
+          "label": "Name",
+          "hint": "Enter the full name of the guarantor in Japan. For independent tourists traveling with hotel bookings, write 'N/A'.",
+          "example": "N/A",
+          "warning": "If you are traveling as a standard self-funded tourist, you do not need a guarantor. Simply write 'N/A'.",
+          "formRef": "guarantor_name_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "tel",
+          "label": "Tel.",
+          "hint": "Enter the telephone number of the guarantor. Write 'N/A' if you do not have a guarantor.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "guarantor_tel_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "relationship_to_applicant",
+          "label": "Relationship to Applicant",
+          "hint": "Enter the guarantor's relationship to you (e.g., Friend, Relative, Employer). Write 'N/A' if you do not have a guarantor.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T25_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "nationality_and_immigration_status",
+          "label": "Nationality & Immigration Status",
+          "hint": "Enter the guarantor's nationality and their current residency/visa status in Japan (e.g., 'Japanese' or 'Permanent Resident'). Write 'N/A' if you do not have a guarantor.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T5_1_",
+          "fieldType": "text"
+        },
+        {
+          "id": "profession_or_occupation_and_position",
+          "label": "Profession / Occupation & Position",
+          "hint": "Enter the guarantor's job title or occupation. Write 'N/A' if you do not have a guarantor.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T5_3_",
+          "fieldType": "text"
+        }
+      ]
+    },
+    {
+      "id": "inviter_in_japan",
+      "label": "Inviter in Japan",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "current_profession_or_occupation_and_position",
+          "label": "Current Profession / Occupation & Position",
+          "hint": "Enter the inviter's job title or occupation. If the inviter is the same as the guarantor, write 'Same as above'. If you do not have an inviter, write 'N/A'.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T5_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "address",
+          "label": "Address",
+          "hint": "Enter the complete address of the inviter in Japan. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T23_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "name",
+          "label": "Name",
+          "hint": "Enter the full name of the inviting person in Japan. Write 'Same as above' if the inviter is the same as the guarantor, or 'N/A' if you do not have an inviter.",
+          "example": "N/A",
+          "warning": "If you are traveling as a standard self-funded tourist, you do not need an inviter. Simply write 'N/A'.",
+          "formRef": "T19_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "tel",
+          "label": "Tel.",
+          "hint": "Enter the telephone number of the inviter. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T10_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "date_of_birth",
+          "label": "Date of Birth",
+          "hint": "Enter the inviter's date of birth. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T14_1_",
+          "fieldType": "text"
+        },
+        {
+          "id": "relationship_to_applicant",
+          "label": "Relationship to Applicant",
+          "hint": "Enter the inviter's relationship to you. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T25_1_",
+          "fieldType": "text"
+        },
+        {
+          "id": "profession_or_occupation_and_position",
+          "label": "Profession / Occupation & Position",
+          "hint": "Enter the inviter's job title or occupation. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T5_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "nationality_and_immigration_status",
+          "label": "Nationality & Immigration Status",
+          "hint": "Enter the inviter's nationality and residency/visa status in Japan. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "N/A",
+          "warning": null,
+          "formRef": "T5_2_",
+          "fieldType": "text"
+        },
+        {
+          "id": "sex",
+          "label": "Sex",
+          "hint": "Select the sex of your inviter. Write 'Same as above' or 'N/A' as applicable.",
+          "example": "Male",
+          "warning": null,
+          "formRef": "RB1_1_",
+          "fieldType": "radio"
+        }
+      ]
+    },
+    {
+      "id": "remarks_declarations",
+      "label": "Remarks & Declarations",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "note_remarks_special_circumstances_if_any",
           "label": "Remarks / Special Circumstances",
-          "hint": "Use this space for any 'Yes' answers above or any special circumstances (medical conditions, multiple entries, etc.). Note: these fields are optional per the form.",
+          "hint": "Use this field to provide details for any 'Yes' answers to the questionnaire below, to request multiple entries (explain why you need them), or to state any other special circumstances (e.g. medical treatments). Write 'N/A' if none.",
           "example": "N/A",
           "warning": null,
-          "formRef": "Remarks / Special circumstances, if any (Note: not mandatory)"
+          "formRef": "T28_0_",
+          "fieldType": "text"
         },
         {
-          "id": "partners_occupation",
-          "label": "Partner's Occupation (or Parent's if Minor)",
-          "hint": "Occupation of your spouse/partner, or your parents' occupation if you are under 18. Note: optional per the form.",
-          "example": "Doctor",
+          "id": "date_of_application",
+          "label": "Date of Application",
+          "hint": "Enter the date you submit or sign the application form (DD/MM/YYYY).",
+          "example": "24/05/2026",
           "warning": null,
-          "formRef": "(Note) Partner's profession/occupation (or that of parents, if applicant is a minor)"
+          "formRef": "T150_0_",
+          "fieldType": "text"
+        },
+        {
+          "id": "have_you_ever_been_convicted_of_a_crime_or_offence",
+          "label": "Have you ever been convicted of a crime or offence in any country?",
+          "hint": "Select 'Yes' or 'No'. If Yes, details must be entered in the Remarks section.",
+          "example": "No",
+          "warning": "You must answer this question truthfully. Providing false declarations can lead to visa refusal, visa cancellation, and a travel ban to Japan.",
+          "formRef": "RB5_0_",
+          "fieldType": "radio"
+        },
+        {
+          "id": "have_you_ever_been_sentenced_to_imprisonment_for_1",
+          "label": "Have you ever been sentenced to imprisonment for 1 year or more in any country?",
+          "hint": "Select 'Yes' or 'No'. This includes suspended sentences.",
+          "example": "No",
+          "warning": "You must disclose all sentences of 1 year or more, even if they were suspended or not served. False declarations will result in denial of entry.",
+          "formRef": "RB5_1_",
+          "fieldType": "radio"
+        },
+        {
+          "id": "have_you_ever_been_deported_or_removed_from_japan_",
+          "label": "Have you ever been deported or removed from Japan or any country for overstaying your visa or violating any law or regulation?",
+          "hint": "Select 'Yes' or 'No'. Includes deportation from any country, not just Japan.",
+          "example": "No",
+          "warning": "Past visa overstays or deportations must be declared. Concealment of prior deportation is a serious offense that can bar you from Japan permanently.",
+          "formRef": "RB5_2_",
+          "fieldType": "radio"
+        },
+        {
+          "id": "have_you_ever_been_convicted_and_sentenced_for_a_d",
+          "label": "Have you ever been convicted and sentenced for a drug offence in any country in violation of law concerning narcotics, marijuana, opium, stimulants or psychotropic substances?",
+          "hint": "Select 'Yes' or 'No'. Any drug conviction, regardless of severity, must be declared.",
+          "example": "No",
+          "warning": "Japan has extremely strict drug laws. Declaring a drug offense will result in close scrutiny and is a common ground for permanent visa denial.",
+          "formRef": "RB5_3_",
+          "fieldType": "radio"
+        },
+        {
+          "id": "have_you_ever_engaged_in_prostitution_or_in_the_in",
+          "label": "Have you ever engaged in prostitution, or in the intermediation or solicitation of a prostitute for other persons, or in the provision of a place for prostitution, or any other activity directly connected to prostitution?",
+          "hint": "Select 'Yes' or 'No'.",
+          "example": "No",
+          "warning": "Truthful disclosure is required. False statements are grounds for visa denial and potential immigration penalties.",
+          "formRef": "RB5_4_",
+          "fieldType": "radio"
+        },
+        {
+          "id": "have_you_ever_committed_trafficking_in_persons_or_",
+          "label": "Have you ever committed trafficking in persons or incited or aided another to commit such an offence?",
+          "hint": "Select 'Yes' or 'No'.",
+          "example": "No",
+          "warning": "Truthful disclosure is required. Human trafficking is a serious offense under Japanese law.",
+          "formRef": "RB5_5_",
+          "fieldType": "radio"
         }
       ]
     }
