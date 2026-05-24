@@ -32,6 +32,7 @@ const DESTINATION_CENTERS: Record<string, { x: number; y: number }> = {
   AU: { x: 795.0, y: 705.0 },       // Sydney / Canberra
   GB: { x: 413.0, y: 404.0 },       // London
   SG: { x: 650.0, y: 520.0 },       // Singapore
+  VN: { x: 654.0, y: 474.0 },       // Hanoi
 };
 
 const DURATION_MS = 1500; // faster animation to reach destination quickly

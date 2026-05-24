@@ -70,14 +70,69 @@ export function DocChecklistEmptyState({
   requiredTotal,
   visaTypeName,
   countryName,
+  isOnline = false,
 }: {
   totalDocs: number;
   requiredTotal: number;
   visaTypeName: string;
   countryName: string;
+  isOnline?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
+
+  const steps = isOnline
+    ? [
+        {
+          icon: (
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5" />
+            </svg>
+          ),
+          label: "Select a document",
+          sub: "Tap any item on the left to see specifications",
+          color: T.indigoLight,
+          glow: T.indigoGlow,
+          bgHover: "rgba(99,102,241,0.07)",
+        },
+        {
+          icon: (
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          ),
+          label: "Verify specifications",
+          sub: "Check sizing, background, and format rules",
+          color: T.green,
+          glow: T.greenBorder,
+          bgHover: T.greenBg,
+        },
+        {
+          icon: (
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5h10.5a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0017.25 4.5H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          ),
+          label: "Verify digital uploads",
+          sub: "Upload files to check format & size limits",
+          color: T.amber,
+          glow: T.amberBorder,
+          bgHover: T.amberBg,
+        },
+        {
+          icon: (
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253" />
+            </svg>
+          ),
+          label: "Fill on official portal",
+          sub: "Open portal and use our copy-paste helper",
+          color: T.blue,
+          glow: T.blueBorder,
+          bgHover: T.blueBg,
+        },
+      ]
+    : STEPS;
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 60);
@@ -219,13 +274,78 @@ export function DocChecklistEmptyState({
         </div>
       </div>
 
+      {/* ── E-Visa flow diagram ───────────────────────────────── */}
+      {isOnline && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          background: "rgba(255, 255, 255, 0.02)",
+          border: `1px solid ${T.border}`,
+          borderRadius: 16,
+          padding: "12px 18px",
+          margin: "18px 0 10px",
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? "translateY(0)" : "translateY(10px)",
+          transition: "all 0.5s ease 0.1s",
+          position: "relative",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+        }}>
+          {/* Document 1: Photo */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 8,
+              background: "rgba(99, 102, 241, 0.1)",
+              border: "1px solid rgba(99, 102, 241, 0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: T.indigoLight, fontSize: 18
+            }}>📸</div>
+            <span style={{ fontSize: 9, color: T.muted2, fontWeight: 600, fontFamily: font.sans }}>Portrait Photo</span>
+          </div>
+
+          {/* Plus */}
+          <div style={{ color: "rgba(255, 255, 255, 0.25)", fontSize: 14, fontWeight: 500, fontFamily: font.sans }}>+</div>
+
+          {/* Document 2: Passport Scan */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 8,
+              background: "rgba(74, 222, 128, 0.1)",
+              border: "1px solid rgba(74, 222, 128, 0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: T.green, fontSize: 18
+            }}>📖</div>
+            <span style={{ fontSize: 9, color: T.muted2, fontWeight: 600, fontFamily: font.sans }}>Passport Scan</span>
+          </div>
+
+          {/* Arrow */}
+          <div style={{ display: "flex", alignItems: "center", padding: "0 4px" }}>
+            <svg width="18" height="12" fill="none" stroke="rgba(255, 255, 255, 0.25)" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </div>
+
+          {/* Target: Online Portal */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+            <div style={{
+              width: 38, height: 38, borderRadius: 8,
+              background: "rgba(59, 130, 246, 0.1)",
+              border: "1px solid rgba(59, 130, 246, 0.25)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: T.blue, fontSize: 18
+            }}>🌐</div>
+            <span style={{ fontSize: 9, color: T.muted2, fontWeight: 600, fontFamily: font.sans }}>E-Visa Portal</span>
+          </div>
+        </div>
+      )}
+
       {/* ── Step cards ────────────────────────────────────────── */}
       <div style={{
         display: "flex", flexDirection: "column", gap: 8,
         width: "100%", maxWidth: 320,
         textAlign: "left",
       }}>
-        {STEPS.map((step, i) => {
+        {steps.map((step, i) => {
           const isHovered = hoveredStep === i;
           return (
             <div

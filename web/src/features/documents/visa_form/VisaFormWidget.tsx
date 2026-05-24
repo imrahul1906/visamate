@@ -120,222 +120,152 @@ export default function VisaFormWidget({
 
           <p
             style={{
-              margin: "0 0 20px",
-              fontSize: 12,
+              margin: "0 0 24px",
+              fontSize: 12.5,
               color: T.muted2,
-              lineHeight: 1.55,
+              lineHeight: 1.6,
               fontFamily: font.sans,
             }}
           >
             {isDownloadable
-              ? "Download the official form and use the helper to fill it field by field."
-              : "Open the online portal or use the helper for step-by-step guidance."}
+              ? "Follow these two steps to download and correctly prepare your physical application form."
+              : "Follow these two steps to fill out your electronic application on the government portal."}
           </p>
 
-          {/* Option cards */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Sequential steps container */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-            {/* ── Card 1: Form action ── */}
-            <a
-              href={(isDownloadable ? formInfo?.downloadUrl : formInfo?.onlineUrl) ?? undefined}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 16,
-                padding: "15px 18px",
-                borderRadius: 10,
-                border: `1px solid ${T.border2}`,
-                background: "rgba(255,255,255,0.025)",
-                cursor: "pointer",
-                textDecoration: "none",
-                transition: "border-color 150ms, background 150ms",
-                color: T.muted2,
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.28)";
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = T.border2;
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.025)";
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
-                {/* Icon */}
-                <div
+            {/* Step 1: Open / Download Action */}
+            <div style={{ display: "flex", gap: 14 }}>
+              {/* Step indicator */}
+              <div style={{
+                width: 24, height: 24, borderRadius: "50%",
+                background: "rgba(255,255,255,0.06)",
+                border: `1px solid ${T.border}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 11, fontWeight: 700, color: T.muted2, flexShrink: 0,
+                marginTop: 2, fontFamily: font.sans,
+              }}>1</div>
+
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10 }}>
+                <div>
+                  <h4 style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 600, color: T.text, fontFamily: font.sans }}>
+                    {isDownloadable ? "Download the official form" : "Open the official portal"}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: 11.5, color: T.muted, lineHeight: 1.45, fontFamily: font.sans }}>
+                    {isDownloadable
+                      ? "Get the blank PDF form from the official embassy source, print it out, and fill it by hand."
+                      : "Access the official government e-visa application portal in a new window."}
+                  </p>
+                </div>
+                <a
+                  href={(isDownloadable ? formInfo?.downloadUrl : formInfo?.onlineUrl) ?? undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 10,
-                    flexShrink: 0,
-                    background: "rgba(255,255,255,0.05)",
-                    border: `1px solid ${T.border}`,
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    color: T.muted2,
+                    gap: 8,
+                    padding: "8px 14px",
+                    borderRadius: 7,
+                    border: `1px solid rgba(${hexToRgb(accentColor)},0.4)`,
+                    background: `rgba(${hexToRgb(accentColor)},0.08)`,
+                    color: T.text,
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    textDecoration: "none",
+                    transition: "background 150ms, border-color 150ms",
+                    fontFamily: font.sans,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = `rgba(${hexToRgb(accentColor)},0.18)`;
+                    e.currentTarget.style.borderColor = accentColor;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = `rgba(${hexToRgb(accentColor)},0.08)`;
+                    e.currentTarget.style.borderColor = `rgba(${hexToRgb(accentColor)},0.4)`;
                   }}
                 >
                   {isDownloadable ? (
-                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                     </svg>
                   ) : (
-                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                     </svg>
                   )}
-                </div>
-
-                {/* Text */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 600,
-                      color: T.text,
-                      fontFamily: font.sans,
-                      lineHeight: 1,
-                    }}
-                  >
-                    {isDownloadable ? "Download official form (PDF)" : "Open application portal"}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color: T.muted,
-                      fontFamily: font.sans,
-                      lineHeight: 1.45,
-                    }}
-                  >
-                    {isDownloadable
-                      ? "Get the blank PDF from the official source, print and fill by hand."
-                      : "Fill the form directly on the official government website."}
-                  </span>
-                </div>
+                  {isDownloadable ? "Download Official PDF" : "Open Application Portal"}
+                </a>
               </div>
+            </div>
 
-              {/* Arrow */}
-              <svg
-                width="16"
-                height="16"
-                fill="none"
-                stroke={T.muted}
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-                style={{ flexShrink: 0 }}
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
-            </a>
+            {/* Connecting line */}
+            <div style={{ height: 1, background: T.border, marginLeft: 38 }} />
 
-            {/* ── Card 2: Form Fill Helper ── (only if data key exists) */}
+            {/* Step 2: Open Helper */}
             {hasHelper && (
-              <button
-                onClick={handleOpenHelper}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 16,
-                  padding: "15px 18px",
-                  borderRadius: 10,
-                  border: `1px solid rgba(${hexToRgb(accentColor)},0.35)`,
-                  background: `rgba(${hexToRgb(accentColor)},0.10)`,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  width: "100%",
-                  color: T.text,
-                  transition: "background 150ms, border-color 150ms, box-shadow 150ms",
-                  fontFamily: font.sans,
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = `rgba(${hexToRgb(accentColor)},0.18)`;
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(${hexToRgb(accentColor)},0.55)`;
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 4px 24px rgba(${hexToRgb(accentColor)},0.15)`;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = `rgba(${hexToRgb(accentColor)},0.10)`;
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(${hexToRgb(accentColor)},0.35)`;
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 14, flex: 1 }}>
-                  {/* Icon */}
-                  <div
+              <div style={{ display: "flex", gap: 14 }}>
+                {/* Step indicator */}
+                <div style={{
+                  width: 24, height: 24, borderRadius: "50%",
+                  background: "rgba(255,255,255,0.06)",
+                  border: `1px solid ${T.border}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 700, color: T.muted2, flexShrink: 0,
+                  marginTop: 2, fontFamily: font.sans,
+                }}>2</div>
+
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10 }}>
+                  <div>
+                    <h4 style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 600, color: T.text, fontFamily: font.sans, display: "flex", alignItems: "center", gap: 8 }}>
+                      Use the Form Fill Helper
+                      <span style={{
+                        fontSize: 8.5, fontWeight: 700, textTransform: "uppercase",
+                        padding: "1px 6px", borderRadius: 4,
+                        background: `rgba(${hexToRgb(accentColor)},0.15)`, color: accentColor,
+                        border: `1px solid rgba(${hexToRgb(accentColor)},0.3)`,
+                        fontFamily: font.sans,
+                      }}>Recommended</span>
+                    </h4>
+                    <p style={{ margin: 0, fontSize: 11.5, color: T.muted, lineHeight: 1.45, fontFamily: font.sans }}>
+                      Avoid entry denial at checkpoints. Use our side-by-side guidelines, warnings, and copy-paste suggestions for each field.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleOpenHelper}
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 10,
-                      flexShrink: 0,
-                      background: `rgba(${hexToRgb(accentColor)},0.18)`,
-                      border: `1px solid rgba(${hexToRgb(accentColor)},0.30)`,
-                      display: "flex",
+                      display: "inline-flex",
                       alignItems: "center",
-                      justifyContent: "center",
-                      color: accentColor,
+                      gap: 8,
+                      padding: "8px 14px",
+                      borderRadius: 7,
+                      border: `1px solid rgba(${hexToRgb(accentColor)},0.35)`,
+                      background: `rgba(${hexToRgb(accentColor)},0.10)`,
+                      color: T.text,
+                      fontSize: 11.5,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontFamily: font.sans,
+                      transition: "background 150ms, border-color 150ms",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = `rgba(${hexToRgb(accentColor)},0.18)`;
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = accentColor;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = `rgba(${hexToRgb(accentColor)},0.10)`;
+                      (e.currentTarget as HTMLButtonElement).style.borderColor = `rgba(${hexToRgb(accentColor)},0.35)`;
                     }}
                   >
-                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
                     </svg>
-                  </div>
-
-                  {/* Text */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: T.text,
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        lineHeight: 1,
-                        fontFamily: font.sans,
-                      }}
-                    >
-                      Form Fill Helper
-                      <span
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          letterSpacing: "0.05em",
-                          textTransform: "uppercase",
-                          padding: "2px 7px",
-                          borderRadius: 99,
-                          background: `rgba(${hexToRgb(accentColor)},0.18)`,
-                          color: accentColor,
-                          border: `1px solid rgba(${hexToRgb(accentColor)},0.35)`,
-                        }}
-                      >
-                        Recommended
-                      </span>
-                    </span>
-                    <span style={{ fontSize: 11, color: T.muted2, fontFamily: font.sans, lineHeight: 1.45 }}>
-                      Field-by-field guidance — hints, examples, and warnings for every box.
-                    </span>
-                  </div>
+                    Open Form Fill Helper
+                  </button>
                 </div>
-
-                {/* Arrow */}
-                <svg
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke={accentColor}
-                  strokeWidth={2}
-                  viewBox="0 0 24 24"
-                  style={{ flexShrink: 0 }}
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
-              </button>
+              </div>
             )}
           </div>
         </div>

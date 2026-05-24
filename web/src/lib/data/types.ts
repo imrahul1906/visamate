@@ -203,6 +203,7 @@ export interface DocumentItem {
   notes?: string;
   requirements?: string[];
   acceptedFormats?: string[];
+  maxSizeBytes?: number;
   alternativeDocuments?: string[];
   applicableWhen?: {
     sponsorship?: string;

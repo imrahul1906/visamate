@@ -1,0 +1,178 @@
+{
+  "key": "VN_TOURIST_EVISA_FORM_FIELDS_V1",
+  "meta": {
+    "country": "VIETNAM",
+    "visaType": "TOURIST E-Visa",
+    "formTitle": "E-Visa Application - VIETNAM",
+    "issuingAuthority": "Vietnam Immigration Department",
+    "requiresPrint": false,
+    "lastReviewed": "2026-05-24"
+  },
+  "sections": [
+    {
+      "id": "personal_details",
+      "label": "Personal Details",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "full_name",
+          "label": "Full name (as in passport)",
+          "hint": "Enter your full name exactly as printed in your passport's bio-data page. Avoid symbols or punctuation.",
+          "example": "ROHIT SHARMA",
+          "warning": "Spelling must match your passport exactly. Discrepancies will lead to rejection at boarding/entry.",
+          "fieldType": "text"
+        },
+        {
+          "id": "gender",
+          "label": "Sex / Gender",
+          "hint": "Select your gender matching the passport value.",
+          "example": "Male",
+          "warning": null,
+          "fieldType": "radio"
+        },
+        {
+          "id": "dob",
+          "label": "Date of birth",
+          "hint": "Enter your date of birth in DD/MM/YYYY format.",
+          "example": "15/06/1990",
+          "warning": "Make sure year, month, and day are entered in correct fields.",
+          "fieldType": "text"
+        },
+        {
+          "id": "current_nationality",
+          "label": "Current nationality",
+          "hint": "Select your current nationality as in your passport.",
+          "example": "India",
+          "warning": null,
+          "fieldType": "select"
+        },
+        {
+          "id": "religion",
+          "label": "Religion",
+          "hint": "Enter your religion. You must enter a value; if none, write 'None' or 'No'.",
+          "example": "None",
+          "warning": "Do not leave this field blank. Write 'None' if you do not want to specify.",
+          "fieldType": "text"
+        },
+        {
+          "id": "email",
+          "label": "Email Address",
+          "hint": "Enter an email address you have access to. The registration code and approval letter will be sent here.",
+          "example": "rohit.sharma@example.com",
+          "warning": "Verify spelling carefully. If you enter an incorrect email, you will not receive your visa code.",
+          "fieldType": "text"
+        }
+      ]
+    },
+    {
+      "id": "passport_details",
+      "label": "Passport Details",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "passport_number",
+          "label": "Passport Number",
+          "hint": "Enter your passport number exactly as shown on the details page, including letters and numbers.",
+          "example": "Z1234567",
+          "warning": "Do not confuse the number '0' with letter 'O'.",
+          "fieldType": "text"
+        },
+        {
+          "id": "passport_type",
+          "label": "Passport Type",
+          "hint": "Select the type of passport you hold. Most tourists travel on an 'Ordinary' passport.",
+          "example": "Ordinary",
+          "warning": null,
+          "fieldType": "radio"
+        },
+        {
+          "id": "date_of_issue",
+          "label": "Date of issue",
+          "hint": "Enter the date your passport was issued (DD/MM/YYYY).",
+          "example": "20/05/2024",
+          "warning": null,
+          "fieldType": "text"
+        },
+        {
+          "id": "date_of_expiry",
+          "label": "Date of expiry",
+          "hint": "Enter the expiration date of your passport (DD/MM/YYYY).",
+          "example": "19/05/2034",
+          "warning": "Your passport must have at least 6 months of validity remaining from the date of arrival in Vietnam.",
+          "fieldType": "text"
+        },
+        {
+          "id": "issuing_authority",
+          "label": "Issuing authority",
+          "hint": "Enter the authority that issued your passport (e.g., 'IPS', 'GOVERNMENT OF INDIA', 'MINISTRY OF EXTERNAL AFFAIRS').",
+          "example": "GOVERNMENT OF INDIA",
+          "warning": null,
+          "fieldType": "text"
+        }
+      ]
+    },
+    {
+      "id": "travel_details",
+      "label": "Travel & Accommodation Details",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "purpose_of_entry",
+          "label": "Purpose of entry",
+          "hint": "Select the reason for your visit. For tourism, select 'Tourism'.",
+          "example": "Tourism",
+          "warning": null,
+          "fieldType": "select"
+        },
+        {
+          "id": "intended_duration_of_stay",
+          "label": "Intended duration of stay (days)",
+          "hint": "Enter the number of days you intend to stay, up to 90 days.",
+          "example": "15",
+          "warning": "Your visa will be issued matching this duration. Overstaying will lead to fines or deportations.",
+          "fieldType": "text"
+        },
+        {
+          "id": "intended_date_of_entry",
+          "label": "Intended date of entry",
+          "hint": "Enter the date you plan to enter Vietnam (DD/MM/YYYY).",
+          "example": "10/10/2026",
+          "warning": "You cannot enter Vietnam before the date approved on your e-visa. You can enter on or after that date.",
+          "fieldType": "text"
+        },
+        {
+          "id": "port_of_entry",
+          "label": "Allowed to entry through checkpoint",
+          "hint": "Select the specific airport, land border, or seaport through which you will enter Vietnam.",
+          "example": "Noi Bai Int Airport (Hanoi) or Tan Son Nhat Int Airport (Ho Chi Minh City)",
+          "warning": "You MUST enter through the exact checkpoint selected on your e-visa. You will be denied boarding/entry if you attempt to enter through a different checkpoint.",
+          "fieldType": "select"
+        },
+        {
+          "id": "port_of_exit",
+          "label": "Allowed to exit through checkpoint",
+          "hint": "Select the checkpoint through which you will leave Vietnam.",
+          "example": "Noi Bai Int Airport (Hanoi)",
+          "warning": null,
+          "fieldType": "select"
+        },
+        {
+          "id": "temporary_address",
+          "label": "Intended temporary residential address in Vietnam",
+          "hint": "Enter the name and complete physical address of your first hotel or accommodation.",
+          "example": "Hanoi Golden Lake Hotel, B7 Giang Vo, Ba Dinh, Hanoi",
+          "warning": "Do not write just the hotel name. You must write the full street address, ward, and district.",
+          "fieldType": "text"
+        },
+        {
+          "id": "temporary_address_city",
+          "label": "City / Province of temporary address",
+          "hint": "Select the province or city corresponding to your hotel from the dropdown list.",
+          "example": "Thanh pho Ha Noi (Hanoi)",
+          "warning": "This city/province selection must match the address entered in the field above.",
+          "fieldType": "select"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "countryId": "COUNTRY_VN_001",
+  "countryCode": "VN",
+  "countryName": "Vietnam",
+  "process": {
+    "default": {
+      "applicationMode": "ONLINE",
+      "biometricRequired": false,
+      "interviewRequired": false
+    }
+  },
+  "visaTypes": [
+    {
+      "id": "VISA_VN_TOURIST_001",
+      "code": "TOURIST",
+      "name": "Tourism - Single Entry (E-Visa)",
+      "category": "SHORT_STAY",
+      "maxStayDays": 90,
+      "fees": 25,
+      "currency": "USD",
+      "note": "E-Visa fee is non-refundable and paid online.",
+      "process": {
+        "paymentInstructions": []
+      },
+      "metadata": {
+        "status": "active",
+        "lastUpdated": "2026-05-24"
+      }
+    },
+    {
+      "id": "VISA_VN_TOURIST_MULTI_001",
+      "code": "TOURIST_MULTI",
+      "name": "Tourism - Multiple Entry (E-Visa)",
+      "category": "SHORT_STAY",
+      "maxStayDays": 90,
+      "fees": 50,
+      "currency": "USD",
+      "note": "E-Visa fee is non-refundable and paid online.",
+      "process": {
+        "paymentInstructions": []
+      },
+      "metadata": {
+        "status": "active",
+        "lastUpdated": "2026-05-24"
+      }
+    }
+  ]
+}

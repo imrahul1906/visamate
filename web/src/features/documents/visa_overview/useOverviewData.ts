@@ -122,6 +122,9 @@ export function useOverviewData(
     ...(proc?.interviewRequired != null
       ? [{ label: "Interview",  required: proc.interviewRequired }]
       : []),
+    ...(proc?.applicationMode != null
+      ? [{ label: "VFS appointment", required: proc.applicationMode !== "ONLINE" }]
+      : []),
   ];
 
   // ── Payment instructions — centre-gated ───────────────────────────────────

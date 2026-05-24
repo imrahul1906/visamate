@@ -16,6 +16,8 @@ export default function UploadSlot({
   onUpload,
   onRemove,
   noBorder = false,
+  acceptedFormats,
+  maxSizeBytes,
 }: {
   docId: string;
   docName?: string;
@@ -24,11 +26,14 @@ export default function UploadSlot({
   onUpload: (docId: string, file: File) => void;
   onRemove: (docId: string) => void;
   noBorder?: boolean;
+  acceptedFormats?: string[];
+  maxSizeBytes?: number;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const uploaded = uploads[docId];
 
   // Entry animation trigger
@@ -39,6 +44,25 @@ export default function UploadSlot({
 
   const handleFile = (file: File | undefined) => {
     if (!file) return;
+    setValidationError(null);
+
+    // 1. File format validation
+    if (acceptedFormats && acceptedFormats.length > 0) {
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+      const normalizedFormats = acceptedFormats.map((f) => f.toLowerCase().replace(".", ""));
+      if (!normalizedFormats.includes(ext)) {
+        setValidationError(`Invalid file format. Accepted: ${acceptedFormats.join(", ").toUpperCase()}`);
+        return;
+      }
+    }
+
+    // 2. File size validation
+    if (maxSizeBytes && file.size > maxSizeBytes) {
+      const sizeMb = (maxSizeBytes / (1024 * 1024)).toFixed(0);
+      setValidationError(`File size exceeds limit of ${sizeMb}MB.`);
+      return;
+    }
+
     onUpload(docId, file);
   };
 
@@ -245,6 +269,25 @@ export default function UploadSlot({
         style={{ display: "none" }}
         onChange={e => handleFile(e.target.files?.[0])}
       />
+
+      {validationError && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          marginTop: 8,
+          paddingLeft: 4,
+        }}>
+          <svg width="12" height="12" fill="none" stroke="#ef4444" strokeWidth={2.2} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" strokeLinecap="round" />
+            <circle cx="12" cy="16" r="0.5" fill="currentColor" stroke="currentColor" />
+          </svg>
+          <span style={{ fontSize: 10.5, color: "#fca5a5", fontWeight: 600, fontFamily: "'DM Sans', sans-serif" }}>
+            {validationError}
+          </span>
+        </div>
+      )}
 
       <div style={{
         display: "flex",

@@ -27,12 +27,13 @@ export const NO_UPLOAD_CODES = new Set([
 // IMPORTANT: keys must exactly match the `code` field in the JSON data.
 export const SPECIAL_WIDGETS: Record<string, SpecialWidget> = {
   PHOTOGRAPH:             "photo_spec",
+  PORTRAIT_PHOTO:         "photo_spec",
   VISA_APPLICATION_FORM:  "visa_form",
   JAPAN_ITINERARY:        "itinerary",
   FRANCE_ITINERARY:       "itinerary",
   COVER_LETTER:           "cover_letter",
   DOC_CHECKLIST:          "document_checklist",
-  DEPENDENT_CONSENT:        "sponsor_consent",
+  DEPENDENT_CONSENT:      "sponsor_consent",
 };
 
 // ─────────────────────────────────────────────────────────────

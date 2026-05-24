@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "REQ_VN_TOURIST_ONLINE_001",
+  "countryId": "COUNTRY_VN_001",
+  "countryCode": "VN",
+  "visaTypeId": "VISA_VN_TOURIST_001",
+  "visaTypeCode": "TOURIST",
+  "locationId": "ONLINE",
+  "visaVariantId": "VISA_VN_TOURIST_ONLINE_001",
+  "locationCode": "ONLINE",
+  "processingDays": "3 working days",
+  "processingDaysExpress": null,
+  "photoSpecifications": {
+    "portrait": {
+      "widthMm": 40,
+      "heightMm": 60,
+      "background": "Plain white background",
+      "colorFormat": "Colored",
+      "faceVisibilityPercent": "70-80",
+      "quality": "Newly taken, straight face, no hat, no glasses, formal clothes, white background",
+      "maxAgeMonths": 6,
+      "requirements": [
+        "Format must be JPG or JPEG (size <2MB)",
+        "Straight face, no hat, no glasses, formal clothes",
+        "White background"
+      ]
+    }
+  },
+  "documentSections": [
+    {
+      "sectionId": "COMMON",
+      "title": "E-Visa Application Documents",
+      "documents": [
+        {
+          "order": 1,
+          "id": "VN_TOURIST_EVISA_FORM_001",
+          "code": "VISA_APPLICATION_FORM",
+          "name": "E-Visa Application Form",
+          "isRequired": true,
+          "optionality": "required",
+          "form": {
+            "type": "ONLINE",
+            "downloadUrl": null,
+            "onlineUrl": "https://evisa.gov.vn/e-visa/foreigners",
+            "requiresPrint": false,
+            "formFillDataKey": "VN_TOURIST_EVISA_FORM_FIELDS_V1"
+          },
+          "notes": "Fill out the official online application form. Use our Form Fill Helper below for step-by-step guidance."
+        },
+        {
+          "order": 2,
+          "id": "VN_TOURIST_PASSPORT_SCAN_001",
+          "code": "PASSPORT_SCAN",
+          "name": "Passport Data Page Scan",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Upload a clear, full scan of your passport's bio-data page in JPG/JPEG format.",
+          "acceptedFormats": ["jpg", "jpeg"],
+          "maxSizeBytes": 2097152,
+          "requirements": [
+            "Only upload 1 passport data page, upload clear photos, no lost corners",
+            "Must show the full page, including all details and the MRZ (machine readable zone) code lines at the bottom.",
+            "Format must be JPG/JPEG (less than 2MB).",
+            "Minimum 6 months validity from date of travel."
+          ]
+        },
+        {
+          "order": 3,
+          "id": "VN_TOURIST_PORTRAIT_001",
+          "code": "PORTRAIT_PHOTO",
+          "name": "Portrait Photograph (4x6 cm)",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Upload a recent color portrait photograph.",
+          "photoSpecRef": "portrait",
+          "acceptedFormats": ["jpg", "jpeg"],
+          "maxSizeBytes": 2097152
+        }
+      ]
+    }
+  ],
+  "importantNotes": [
+    "E-Visa fee is non-refundable regardless of the application result.",
+    "Verify all details (especially name spelling and passport number) before submission. Any error will lead to entry denial at Vietnamese checkpoints.",
+    "Port of Entry cannot be changed after the visa is issued. Make sure your arrival checkpoint is 100% accurate."
+  ],
+  "metadata": {
+    "sourceUrl": "https://evisa.xuatnhapcanh.gov.vn",
+    "lastVerified": "2026-05-24",
+    "verifiedBy": "admin",
+    "status": "verified",
+    "dataCollectionDate": "2026-05-24"
+  }
+}

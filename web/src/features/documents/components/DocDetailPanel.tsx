@@ -28,6 +28,7 @@ interface FocusDrawerProps {
   onNext: () => void;
   /** Pre-filled sponsor consent inputs sourced from the wizard/cover letter context */
   sponsorConsentPrefill?: Record<string, string>;
+  isOnline?: boolean;
 }
 
 export function DocDetailPanel({
@@ -50,6 +51,7 @@ export function DocDetailPanel({
   onPrev,
   onNext,
   sponsorConsentPrefill,
+  isOnline = false,
 }: FocusDrawerProps) {
   const shimmerRef = useRef<HTMLDivElement>(null);
 
@@ -525,6 +527,21 @@ export function DocDetailPanel({
               {/* Upload slot — flush bottom of card, hairline divider only */}
               {!visibleDoc.noUpload && (
                 <div style={{ padding: "0 14px 14px", marginTop: -12 }}>
+                  {isOnline && (
+                    <div style={{
+                      display: "flex", gap: 7, alignItems: "flex-start",
+                      background: "rgba(99, 102, 241, 0.05)",
+                      border: "1px solid rgba(99, 102, 241, 0.15)",
+                      padding: "8px 10px", borderRadius: 8, marginBottom: 10,
+                    }}>
+                      <svg width="12" height="12" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <span style={{ fontSize: 9.5, color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                        <strong>Sandbox Validator:</strong> Uploading here checks formatting and file size rules. You must upload this file again on the official government website.
+                      </span>
+                    </div>
+                  )}
                   <UploadSlot
                     docId={visibleDoc.id}
                     docName={visibleDoc.name}
@@ -532,6 +549,8 @@ export function DocDetailPanel({
                     uploads={uploads}
                     onUpload={(...args) => onUpload(args[1])}
                     onRemove={() => onRemove()}
+                    acceptedFormats={visibleDoc.acceptedFormats}
+                    maxSizeBytes={visibleDoc.maxSizeBytes}
                   />
                 </div>
               )}
@@ -549,6 +568,21 @@ export function DocDetailPanel({
             padding: "14px",
             boxShadow: "0 4px 6px rgba(0,0,0,0.25), 0 12px 28px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.06) inset",
           }}>
+            {isOnline && (
+              <div style={{
+                display: "flex", gap: 7, alignItems: "flex-start",
+                background: "rgba(99, 102, 241, 0.05)",
+                border: "1px solid rgba(99, 102, 241, 0.15)",
+                padding: "8px 10px", borderRadius: 8, marginBottom: 10,
+              }}>
+                <svg width="12" height="12" fill="none" stroke="#818cf8" strokeWidth={2} viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 1 }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <span style={{ fontSize: 9.5, color: "rgba(255, 255, 255, 0.5)", lineHeight: 1.4, fontFamily: "'DM Sans', sans-serif" }}>
+                  <strong>Sandbox Validator:</strong> Uploading here checks formatting and file size rules. You must upload this file again on the official government website.
+                </span>
+              </div>
+            )}
             <UploadSlot
               docId={visibleDoc.id}
               docName={visibleDoc.name}
@@ -557,6 +591,8 @@ export function DocDetailPanel({
               onUpload={(...args) => onUpload(args[1])}
               onRemove={() => onRemove()}
               noBorder
+              acceptedFormats={visibleDoc.acceptedFormats}
+              maxSizeBytes={visibleDoc.maxSizeBytes}
             />
           </div>
         )}

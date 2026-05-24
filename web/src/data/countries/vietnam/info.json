@@ -1,0 +1,15 @@
+{
+  "id": "COUNTRY_VN_001",
+  "code": "VN",
+  "name": "Vietnam",
+  "description": "Vietnam e-visa information for Indian applicants",
+  "officialWebsite": "https://evisa.gov.vn/",
+  "supportedVfsLocationCodes": [
+    "ONLINE"
+  ],
+  "metadata": {
+    "createdAt": "2026-05-24",
+    "lastUpdated": "2026-05-24",
+    "status": "active"
+  }
+}
