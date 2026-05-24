@@ -70,7 +70,10 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(Array.isArray(record?.visaTypes)).toBe(true);
 
       const types = await getVisaTypes('JP');
-      expect(types).toEqual(record?.visaTypes);
+      expect(types.map(t => ({ ...t, process: undefined }))).toEqual(
+        record?.visaTypes.map(t => ({ ...t, process: undefined }))
+      );
+      expect(types[0].process?.default).toEqual(record?.process?.default);
 
       const tourist = await getVisaType('JP', 'TOURIST');
       expect(tourist).toBeDefined();

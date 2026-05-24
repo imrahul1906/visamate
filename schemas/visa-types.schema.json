@@ -6,6 +6,19 @@
     "countryId": {"type": "string"},
     "countryCode": {"type": "string"},
     "countryName": {"type": "string"},
+    "process": {
+      "type": "object",
+      "properties": {
+        "default": {
+          "type": "object",
+          "properties": {
+            "applicationMode": {"type": "string"},
+            "biometricRequired": {"type": "boolean"},
+            "interviewRequired": {"type": "boolean"}
+          }
+        }
+      }
+    },
     "visaTypes": {
       "type": "array",
       "items": {
@@ -47,14 +60,6 @@
           "process": {
             "type": "object",
             "properties": {
-              "default": {
-                "type": "object",
-                "properties": {
-                  "applicationMode": {"type": "string"},
-                  "biometricRequired": {"type": "boolean"},
-                  "interviewRequired": {"type": "boolean"}
-                }
-              },
               "paymentInstructions": {
                 "type": "array",
                 "items": {

@@ -213,7 +213,14 @@ export async function getCountryInfo(
  */
 export async function getVisaTypes(countryCode: string): Promise<VisaType[]> {
   const record = await getCountryVisaTypes(countryCode);
-  return record?.visaTypes ?? [];
+  if (!record) return [];
+  return record.visaTypes.map((v) => ({
+    ...v,
+    process: {
+      default: v.process?.default ?? record.process?.default,
+      paymentInstructions: v.process?.paymentInstructions ?? record.process?.paymentInstructions ?? [],
+    },
+  }));
 }
 
 /**
@@ -494,9 +501,16 @@ export async function getVisaType(
     console.warn(
       `[repository] getVisaType: no visa type "${visaTypeCode}" found for countryCode="${countryCode}"`
     );
+    return null;
   }
 
-  return found;
+  return {
+    ...found,
+    process: {
+      default: found.process?.default ?? record.process?.default,
+      paymentInstructions: found.process?.paymentInstructions ?? record.process?.paymentInstructions ?? [],
+    },
+  };
 }
 
 /**

@@ -2,6 +2,13 @@
   "countryId": "COUNTRY_JP_001",
   "countryCode": "JP",
   "countryName": "Japan",
+  "process": {
+    "default": {
+      "applicationMode": "OFFLINE",
+      "biometricRequired": false,
+      "interviewRequired": false
+    }
+  },
   "visaTypes": [
     {
       "id": "VISA_JP_TOURIST_001",
@@ -29,12 +36,6 @@
       },
 
       "process": {
-        "default": {
-          "applicationMode": "OFFLINE",
-          "biometricRequired": false,
-          "interviewRequired": false
-        },
-
         "paymentInstructions": [
           {
             "vfsCenterCode": "DELHI",

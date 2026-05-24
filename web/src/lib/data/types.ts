@@ -122,6 +122,7 @@ export interface CountryVisaTypes {
   countryId: string;
   countryCode?: string;
   countryName?: string;
+  process?: VisaProcess;
   visaTypes: VisaType[];
 }
 
