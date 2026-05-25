@@ -523,14 +523,14 @@ export default function WizardCard({
                             justifyContent: "space-between",
                             gap: 12,
                             flexShrink: 0,
-                            boxShadow: showResumePrompt ? "0 4px 15px rgba(0, 0, 0, 0.2)" : "none",
-                            backdropFilter: showResumePrompt ? "blur(8px)" : "none",
+                            boxShadow: showResumePrompt ? "0 4px 12px var(--vm-purple-shadow)" : "none",
                             opacity: showResumePrompt ? 1 : 0,
                             maxHeight: showResumePrompt ? 100 : 0,
                             overflow: "hidden",
                             marginBottom: showResumePrompt ? 10 : 0,
                             pointerEvents: showResumePrompt ? "auto" : "none",
                             transition: "all 0.35s ease-in-out",
+                            transform: "translateZ(0)",
                           }}
                         >
                           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>

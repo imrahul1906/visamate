@@ -164,7 +164,7 @@ export default function VisaMateLanding() {
     <div style={{ fontFamily: "'DM Sans', 'Inter', sans-serif", margin: 0, padding: 0 }}>
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        input::placeholder { color: rgba(255,255,255,0.25); }
+        input::placeholder { color: var(--vm-input-placeholder); }
         @media (max-width: 768px) { .hero-grid { grid-template-columns: 1fr !important; } }
       `}</style>
       <Hero onShowDocuments={handleShowDocuments} onEditSelections={handleEditSelections} />

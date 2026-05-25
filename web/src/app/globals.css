@@ -363,6 +363,11 @@
   --fa-badge-text: var(--vm-text);
 }
 
+/* ─── Global Input Placeholder Customisations ─── */
+input::placeholder {
+  color: var(--vm-input-placeholder);
+}
+
 /* ─── Global Scrollbar Customisations ─── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
