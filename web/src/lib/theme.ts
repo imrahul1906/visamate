@@ -14,59 +14,59 @@
 
 export const T = {
   // Backgrounds
-  bg: "#0d0d1f",
-  surface: "#13132a",
-  surface2: "#1a1a35",
-  surface3: "#20203e",
+  bg: "var(--vm-bg)",
+  surface: "var(--vm-surface)",
+  surface2: "var(--vm-surface2)",
+  surface3: "var(--vm-surface3)",
 
   // Borders
-  border: "rgba(255,255,255,0.08)",
-  border2: "rgba(255,255,255,0.14)",
+  border: "var(--vm-border)",
+  border2: "var(--vm-border2)",
 
   // Brand — indigo
-  indigo: "#6366f1",
-  indigoLight: "#818cf8",
-  indigoMid: "#a5b4fc",
-  indigoGlow: "rgba(99,102,241,0.18)",
+  indigo: "var(--vm-indigo)",
+  indigoLight: "var(--vm-indigo-light)",
+  indigoMid: "var(--vm-indigo-mid)",
+  indigoGlow: "var(--vm-indigo-glow)",
 
   // Accent — purple (wizard / button gradient)
-  purple: "#6c5ce7",
-  purpleLight: "#8b7cf6",
-  purpleSoft: "#a89cef",
-  purpleBg: "rgba(108,92,231,0.18)",
-  purpleBgMuted: "rgba(108,92,231,0.12)",
-  purpleBorder: "rgba(108,92,231,0.6)",
-  purpleBorderSoft: "rgba(108,92,231,0.35)",
-  purpleIconBg: "rgba(108,92,231,0.25)",
-  purpleShadow: "rgba(108,92,231,0.4)",
-  purpleGradient: "linear-gradient(135deg, #6c5ce7 0%, #8b7cf6 100%)",
-  purpleGradientLight: "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)",
+  purple: "var(--vm-purple)",
+  purpleLight: "var(--vm-purple-light)",
+  purpleSoft: "var(--vm-purple-soft)",
+  purpleBg: "var(--vm-purple-bg)",
+  purpleBgMuted: "var(--vm-purple-bg-muted)",
+  purpleBorder: "var(--vm-purple-border)",
+  purpleBorderSoft: "var(--vm-purple-border-soft)",
+  purpleIconBg: "var(--vm-purple-icon-bg)",
+  purpleShadow: "var(--vm-purple-shadow)",
+  purpleGradient: "var(--vm-purple-gradient)",
+  purpleGradientLight: "var(--vm-purple-gradient-light)",
 
   // Text
-  text: "#f1f5f9",
-  muted: "rgba(255,255,255,0.38)",
-  muted2: "rgba(255,255,255,0.55)",
+  text: "var(--vm-text)",
+  muted: "var(--vm-muted)",
+  muted2: "var(--vm-muted-2)",
 
   // Semantic — green (success / uploaded)
-  green: "#4ade80",
-  greenDark: "#22c55e",
-  greenBg: "rgba(74,222,128,0.1)",
-  greenBorder: "rgba(74,222,128,0.25)",
+  green: "var(--vm-green)",
+  greenDark: "var(--vm-green-dark)",
+  greenBg: "var(--vm-green-bg)",
+  greenBorder: "var(--vm-green-border)",
 
   // Semantic — amber (warning / tips)
-  amber: "#fbbf24",
-  amberBg: "rgba(251,191,36,0.1)",
-  amberBorder: "rgba(251,191,36,0.3)",
+  amber: "var(--vm-amber)",
+  amberBg: "var(--vm-amber-bg)",
+  amberBorder: "var(--vm-amber-border)",
 
   // Semantic — blue (info / zip)
-  blue: "#38bdf8",
-  blueBg: "rgba(56,189,248,0.1)",
-  blueBorder: "rgba(56,189,248,0.25)",
+  blue: "var(--vm-blue)",
+  blueBg: "var(--vm-blue-bg)",
+  blueBorder: "var(--vm-blue-border)",
 
   // Semantic — red (error / remove)
-  red: "#ef4444",
-  redBg: "rgba(239,68,68,0.1)",
-  redBorder: "rgba(239,68,68,0.3)",
+  red: "var(--vm-red)",
+  redBg: "var(--vm-red-bg)",
+  redBorder: "var(--vm-red-border)",
 } as const;
 
 // ─────────────────────────────────────────────────────────────
@@ -108,7 +108,7 @@ export const shadow = {
 export const scrollbarCSS = `
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb { background: var(--vm-scrollbar-thumb); border-radius: 2px; }
 
   .vm-scroll-indigo::-webkit-scrollbar-track { background: rgba(99,102,241,0.05); border-radius: 2px; }
   .vm-scroll-indigo::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 2px; }

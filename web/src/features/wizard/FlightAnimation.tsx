@@ -401,14 +401,14 @@ export default function FlightAnimation({
       <defs>
         {/* Ocean */}
         <radialGradient id="fa-oceanGrad" cx="50%" cy="40%" r="70%">
-          <stop offset="0%" stopColor="#0d1f3c" />
-          <stop offset="100%" stopColor="#060d1a" />
+          <stop offset="0%" stopColor="var(--fa-map-ocean-start)" />
+          <stop offset="100%" stopColor="var(--fa-map-ocean-end)" />
         </radialGradient>
 
         {/* Land */}
         <linearGradient id="fa-landGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#16304f" stopOpacity={0.95} />
-          <stop offset="100%" stopColor="#0f2238" stopOpacity={0.95} />
+          <stop offset="0%" stopColor="var(--fa-map-land-start)" stopOpacity={0.95} />
+          <stop offset="100%" stopColor="var(--fa-map-land-end)" stopOpacity={0.95} />
         </linearGradient>
 
         {/* Engine exhaust trail gradient */}
@@ -469,7 +469,7 @@ export default function FlightAnimation({
 
         {/* Latitude grid pattern */}
         <pattern id="fa-grid" x="0" y="0" width="50" height="36" patternUnits="userSpaceOnUse">
-          <path d="M50 0 L0 0 0 36" fill="none" stroke="rgba(255,255,255,0.028)" strokeWidth={0.5} />
+          <path d="M50 0 L0 0 0 36" fill="none" stroke="var(--fa-map-grid)" strokeWidth={0.5} />
         </pattern>
 
         {/* Plane halo (radial, follows plane) */}
@@ -513,7 +513,7 @@ export default function FlightAnimation({
               key={`${code}-${idx}`}
               d={d}
               fill="url(#fa-landGrad)"
-              stroke="rgba(100, 160, 255, 0.14)"
+              stroke="var(--fa-map-border)"
               strokeWidth={0.5}
             />
           ));
@@ -678,13 +678,13 @@ export default function FlightAnimation({
         width: "100%",
         height: "100%",
         position: "relative",
-        background: "#060c1a",
-        borderRadius: inline ? 18 : 0,
+        background: "var(--fa-panel-bg)",
+        borderRadius: 18,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        border: inline ? "1px solid rgba(255,255,255,0.08)" : "none",
-        boxShadow: inline ? "0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04)" : "none",
+        border: "1px solid var(--fa-panel-border)",
+        boxShadow: "var(--vm-card-shadow)",
       }}
     >
       <style>{`
@@ -722,11 +722,11 @@ export default function FlightAnimation({
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: "rgba(5, 12, 25, 0.85)",
+              background: "var(--fa-badge-bg)",
               backdropFilter: "blur(8px)",
               WebkitBackdropFilter: "blur(8px)",
-              border: "1px solid rgba(59, 130, 246, 0.4)",
-              boxShadow: "0 4px 16px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+              border: "1px solid var(--vm-blue-border)",
+              boxShadow: "0 4px 12px var(--vm-trans-white-05)",
               borderRadius: "14px",
               padding: "4px 10px",
               whiteSpace: "nowrap",
@@ -737,7 +737,7 @@ export default function FlightAnimation({
               style={{
                 fontSize: "10.5px",
                 fontWeight: 700,
-                color: "#ffffff",
+                color: "var(--fa-badge-text)",
                 fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 letterSpacing: "0.04em",
               }}
@@ -755,11 +755,11 @@ export default function FlightAnimation({
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              background: "rgba(5, 12, 25, 0.85)",
+              background: "var(--fa-badge-bg)",
               backdropFilter: "blur(8px)",
               WebkitBackdropFilter: "blur(8px)",
-              border: "1px solid rgba(251, 191, 36, 0.4)",
-              boxShadow: "0 4px 16px rgba(251, 191, 36, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+              border: "1px solid var(--vm-amber-border)",
+              boxShadow: "0 4px 12px var(--vm-trans-white-05)",
               borderRadius: "14px",
               padding: "4px 10px",
               whiteSpace: "nowrap",
@@ -770,7 +770,7 @@ export default function FlightAnimation({
               style={{
                 fontSize: "10.5px",
                 fontWeight: 700,
-                color: "#ffffff",
+                color: "var(--fa-badge-text)",
                 fontFamily: "'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
                 letterSpacing: "0.04em",
               }}
@@ -799,8 +799,8 @@ export default function FlightAnimation({
       <div
         style={{
           padding: "12px 18px 16px",
-          background: "linear-gradient(to top, rgba(4,8,18,1) 0%, rgba(6,12,26,0.7) 100%)",
-          borderTop: "1px solid rgba(255,255,255,0.04)",
+          background: "var(--fa-status-bg)",
+          borderTop: "1px solid var(--fa-panel-border)",
           display: "flex",
           flexDirection: "column",
           gap: 8,
@@ -811,7 +811,7 @@ export default function FlightAnimation({
           style={{
             width: "100%",
             height: 3,
-            background: "rgba(255,255,255,0.06)",
+            background: "var(--vm-trans-white-06)",
             borderRadius: 2,
             overflow: "hidden",
             position: "relative",
@@ -822,7 +822,7 @@ export default function FlightAnimation({
               width: `${Math.round(progress * 100)}%`,
               height: "100%",
               background: phase === "arrived"
-                ? "linear-gradient(to right, #34d399, #10b981)"
+                ? "linear-gradient(to right, var(--vm-green), var(--vm-green-dark))"
                 : "linear-gradient(to right, #3b82f6, #a78bfa, #fbbf24)",
               borderRadius: 2,
               transition: "width 80ms linear, background 0.8s ease",
@@ -836,7 +836,7 @@ export default function FlightAnimation({
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)",
+                  background: "linear-gradient(90deg, transparent 0%, var(--vm-trans-white-35) 50%, transparent 100%)",
                   backgroundSize: "200% 100%",
                   animation: "fa-shimmer 1.4s linear infinite",
                 }}
@@ -857,7 +857,7 @@ export default function FlightAnimation({
             key={statusIdx}
             style={{
               fontSize: 11.5,
-              color: "rgba(255,255,255,0.48)",
+              color: "var(--vm-trans-white-45)",
               fontFamily: "'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
               letterSpacing: "0.01em",
               animation: "fa-statusIn 0.4s ease both",
@@ -871,7 +871,7 @@ export default function FlightAnimation({
             style={{
               fontSize: 11,
               fontWeight: 700,
-              color: phase === "arrived" ? "#34d399" : "rgba(255,255,255,0.55)",
+              color: phase === "arrived" ? "var(--vm-green)" : "var(--vm-trans-white-55)",
               fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
               letterSpacing: "0.06em",
               transition: "color 0.6s ease",
@@ -886,7 +886,7 @@ export default function FlightAnimation({
 
   if (inline) {
     return (
-      <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+      <div style={{ width: "100%", height: "100%", borderRadius: 18, overflow: "hidden", isolation: "isolate" }}>
         {content}
       </div>
     );
@@ -898,14 +898,14 @@ export default function FlightAnimation({
         position: "fixed",
         inset: 0,
         zIndex: 9999,
-        background: "rgba(3, 7, 18, 0.98)",
+        background: "var(--vm-fade-bg)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backdropFilter: "blur(2px)",
+        backdropFilter: "blur(8px)",
       }}
     >
-      <div style={{ width: "90vw", maxWidth: 900, height: "80vh", maxHeight: 580 }}>
+      <div style={{ width: "90vw", maxWidth: 900, height: "80vh", maxHeight: 580, borderRadius: 18, overflow: "hidden", isolation: "isolate" }}>
         {content}
       </div>
     </div>

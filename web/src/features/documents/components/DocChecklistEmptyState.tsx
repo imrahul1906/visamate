@@ -10,7 +10,17 @@
 import { useEffect, useState } from "react";
 import { T, font } from "@/lib/theme";
 
-const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string; glow: string; bgHover: string }[] = [
+interface StepItem {
+  icon: React.ReactNode;
+  label: string;
+  sub: string;
+  color: string;
+  glow: string;
+  borderHover: string;
+  bgHover: string;
+}
+
+const STEPS: StepItem[] = [
   {
     icon: (
       <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
@@ -20,9 +30,10 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Select a document",
     sub: "Tap any item on the left to see what's needed",
-    color: T.indigoLight,
-    glow: T.indigoGlow,
-    bgHover: "rgba(99,102,241,0.07)",
+    color: "var(--vm-indigo-light)",
+    glow: "var(--vm-indigo-glow)",
+    borderHover: "var(--vm-indigo-light)",
+    bgHover: "var(--vm-indigo-glow)",
   },
   {
     icon: (
@@ -33,9 +44,10 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Mark items done",
     sub: "Check off docs as you collect them",
-    color: T.green,
-    glow: T.greenBorder,
-    bgHover: T.greenBg,
+    color: "var(--vm-green)",
+    glow: "var(--vm-green-bg)",
+    borderHover: "var(--vm-green-border)",
+    bgHover: "var(--vm-green-bg)",
   },
   {
     icon: (
@@ -46,9 +58,10 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Upload your files",
     sub: "Attach digital copies to build your folder",
-    color: T.amber,
-    glow: T.amberBorder,
-    bgHover: T.amberBg,
+    color: "var(--vm-amber)",
+    glow: "var(--vm-amber-bg)",
+    borderHover: "var(--vm-amber-border)",
+    bgHover: "var(--vm-amber-bg)",
   },
   {
     icon: (
@@ -59,9 +72,10 @@ const STEPS: { icon: React.ReactNode; label: string; sub: string; color: string;
     ),
     label: "Download as ZIP",
     sub: "Export everything in one click when ready",
-    color: T.blue,
-    glow: T.blueBorder,
-    bgHover: T.blueBg,
+    color: "var(--vm-blue)",
+    glow: "var(--vm-blue-bg)",
+    borderHover: "var(--vm-blue-border)",
+    bgHover: "var(--vm-blue-bg)",
   },
 ];
 
@@ -91,9 +105,10 @@ export function DocChecklistEmptyState({
           ),
           label: "Select a document",
           sub: "Tap any item on the left to see specifications",
-          color: T.indigoLight,
-          glow: T.indigoGlow,
-          bgHover: "rgba(99,102,241,0.07)",
+          color: "var(--vm-indigo-light)",
+          glow: "var(--vm-indigo-glow)",
+          borderHover: "var(--vm-indigo-light)",
+          bgHover: "var(--vm-indigo-glow)",
         },
         {
           icon: (
@@ -103,9 +118,10 @@ export function DocChecklistEmptyState({
           ),
           label: "Verify specifications",
           sub: "Check sizing, background, and format rules",
-          color: T.green,
-          glow: T.greenBorder,
-          bgHover: T.greenBg,
+          color: "var(--vm-green)",
+          glow: "var(--vm-green-bg)",
+          borderHover: "var(--vm-green-border)",
+          bgHover: "var(--vm-green-bg)",
         },
         {
           icon: (
@@ -115,9 +131,10 @@ export function DocChecklistEmptyState({
           ),
           label: "Verify digital uploads",
           sub: "Upload files to check format & size limits",
-          color: T.amber,
-          glow: T.amberBorder,
-          bgHover: T.amberBg,
+          color: "var(--vm-amber)",
+          glow: "var(--vm-amber-bg)",
+          borderHover: "var(--vm-amber-border)",
+          bgHover: "var(--vm-amber-bg)",
         },
         {
           icon: (
@@ -127,9 +144,10 @@ export function DocChecklistEmptyState({
           ),
           label: "Fill on official portal",
           sub: "Open portal and use our copy-paste helper",
-          color: T.blue,
-          glow: T.blueBorder,
-          bgHover: T.blueBg,
+          color: "var(--vm-blue)",
+          glow: "var(--vm-blue-bg)",
+          borderHover: "var(--vm-blue-border)",
+          bgHover: "var(--vm-blue-bg)",
         },
       ]
     : STEPS;
@@ -169,8 +187,8 @@ export function DocChecklistEmptyState({
         <div style={{
           position: "absolute", inset: 0,
           backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
+            linear-gradient(var(--vm-trans-white-08) 1px, transparent 1px),
+            linear-gradient(90deg, var(--vm-trans-white-08) 1px, transparent 1px)
           `,
           backgroundSize: "32px 32px",
           maskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, black 0%, transparent 100%)",
@@ -236,7 +254,7 @@ export function DocChecklistEmptyState({
         transition: "opacity 520ms 60ms ease, transform 520ms 60ms cubic-bezier(0.34,1.2,0.64,1)",
         marginBottom: 8,
       }}>
-        <h2 style={{
+        <h2 className="vm-checklist-heading" style={{
           fontFamily: font.serif,
           fontSize: 20, fontWeight: 400,
           color: T.text,
@@ -265,16 +283,14 @@ export function DocChecklistEmptyState({
 
         {/* Inline stat pills */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
-          <Pill color={T.indigoLight} bg={T.indigoGlow} border="rgba(99,102,241,0.22)">
+          <Pill color="var(--vm-indigo)" bg="var(--vm-indigo-glow)" border="var(--vm-border2)">
             {requiredTotal} required
           </Pill>
-          <Pill color={T.muted} bg="rgba(255,255,255,0.04)" border={T.border}>
+          <Pill color="var(--vm-muted)" bg="var(--vm-trans-white-04)" border="var(--vm-border)">
             {totalDocs - requiredTotal} optional
           </Pill>
         </div>
       </div>
-
-
 
       {/* ── Step cards ────────────────────────────────────────── */}
       <div style={{
@@ -303,10 +319,10 @@ export function DocChecklistEmptyState({
                 transition: "border-color 200ms ease, background 200ms ease, box-shadow 200ms ease",
                 background: isHovered
                   ? step.bgHover
-                  : "rgba(255,255,255,0.03)",
+                  : "var(--vm-card-bg)",
                 border: isHovered
-                  ? `1px solid ${step.color}44`
-                  : `1px solid ${T.border}`,
+                  ? `1px solid ${step.borderHover}`
+                  : `1px solid var(--vm-border)`,
                 boxShadow: isHovered
                   ? `0 4px 16px ${step.glow}`
                   : "none",
@@ -316,7 +332,7 @@ export function DocChecklistEmptyState({
               {isHovered && (
                 <div style={{
                   position: "absolute", inset: 0, pointerEvents: "none",
-                  background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%)",
+                  background: "linear-gradient(105deg, transparent 30%, var(--vm-trans-white-03) 50%, transparent 70%)",
                   backgroundSize: "200% 100%",
                   animation: "shimmer 1.4s linear infinite",
                 }} />
@@ -327,11 +343,11 @@ export function DocChecklistEmptyState({
                 width: 34, height: 34, borderRadius: 9, flexShrink: 0,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 transition: "all 200ms ease",
-                background: isHovered ? `${step.glow}` : "rgba(255,255,255,0.05)",
+                background: isHovered ? step.glow : "var(--vm-trans-white-05)",
                 border: isHovered
-                  ? `1px solid ${step.color}55`
-                  : `1px solid ${T.border2}`,
-                color: isHovered ? step.color : "rgba(255,255,255,0.3)",
+                  ? `1px solid ${step.borderHover}`
+                  : `1px solid var(--vm-border2)`,
+                color: isHovered ? step.color : "var(--vm-trans-white-35)",
               }}>
                 {step.icon}
               </div>
@@ -342,7 +358,7 @@ export function DocChecklistEmptyState({
                   fontSize: 12.5, fontWeight: 700,
                   margin: "0 0 2px",
                   fontFamily: font.sans,
-                  color: isHovered ? T.text : T.muted2,
+                  color: isHovered ? "var(--vm-indigo-mid)" : "var(--vm-text)",
                   transition: "color 200ms ease",
                   letterSpacing: "-0.005em",
                 }}>
@@ -351,7 +367,7 @@ export function DocChecklistEmptyState({
                 <p style={{
                   fontSize: 11, margin: 0,
                   fontFamily: font.sans,
-                  color: isHovered ? T.muted : "rgba(255,255,255,0.28)",
+                  color: isHovered ? "var(--vm-text)" : "var(--vm-trans-white-65)",
                   transition: "color 200ms ease",
                   lineHeight: 1.4,
                 }}>
@@ -367,9 +383,9 @@ export function DocChecklistEmptyState({
                 fontSize: 10, fontWeight: 700,
                 fontFamily: font.sans,
                 transition: "all 200ms ease",
-                background: isHovered ? `${step.color}22` : "rgba(255,255,255,0.04)",
-                border: isHovered ? `1px solid ${step.color}44` : `1px solid ${T.border}`,
-                color: isHovered ? step.color : "rgba(255,255,255,0.2)",
+                background: isHovered ? step.glow : "var(--vm-trans-white-04)",
+                border: isHovered ? `1px solid ${step.borderHover}` : `1px solid var(--vm-border)`,
+                color: isHovered ? step.color : "var(--vm-trans-white-45)",
               }}>
                 {i + 1}
               </div>
@@ -385,12 +401,12 @@ export function DocChecklistEmptyState({
         transition: "opacity 600ms 500ms ease",
         display: "flex", alignItems: "center", gap: 6,
       }}>
-        <svg width="11" height="11" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth={1.75} viewBox="0 0 24 24">
+        <svg width="11" height="11" fill="none" stroke="var(--vm-trans-white-55)" strokeWidth={1.75} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM5.25 10.5a7.5 7.5 0 0114.97-.699" />
         </svg>
         <span style={{
           fontSize: 10.5, fontFamily: font.sans,
-          color: "rgba(255,255,255,0.5)",
+          color: "var(--vm-trans-white-55)",
         }}>
           Select any document on the left to get started
         </span>

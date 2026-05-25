@@ -12,6 +12,7 @@ import type { UploadsMap } from "@/types/document";
 
 export default function UploadSlot({
   docId,
+  color,
   uploads,
   onUpload,
   onRemove,
@@ -82,7 +83,7 @@ export default function UploadSlot({
         style={{
           marginTop: noBorder ? 0 : 12,
           paddingTop: noBorder ? 0 : 12,
-          borderTop: noBorder ? "none" : "1px solid rgba(255,255,255,0.06)",
+          borderTop: noBorder ? "none" : "1px solid var(--vm-border)",
           display: "flex",
           alignItems: "center",
           gap: 10,
@@ -94,10 +95,9 @@ export default function UploadSlot({
         {/* Green file icon */}
         <div style={{
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-          background: "rgba(74,222,128,0.1)",
-          border: "1px solid rgba(74,222,128,0.25)",
+          background: "var(--vm-green-bg)",
+          border: "1px solid var(--vm-green-border)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 12px rgba(74,222,128,0.15)",
         }}>
           <svg width="15" height="15" fill="none" stroke="#4ade80" strokeWidth={1.75} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round"
@@ -109,14 +109,14 @@ export default function UploadSlot({
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{
             fontSize: 12, fontWeight: 700, margin: "0 0 2px",
-            color: "#4ade80", fontFamily: "'DM Sans', sans-serif",
+            color: "var(--vm-green-dark)", fontFamily: "'DM Sans', sans-serif",
             letterSpacing: "0.01em",
           }}>
             ✓ File ready to submit
           </p>
           <p style={{
             fontSize: 10.5, margin: 0, fontFamily: "'DM Sans', sans-serif",
-            color: "rgba(255,255,255,0.35)",
+            color: "var(--vm-trans-white-45)",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
             {uploaded.name}
@@ -140,7 +140,7 @@ export default function UploadSlot({
       style={{
         marginTop: noBorder ? 0 : 12,
         paddingTop: noBorder ? 0 : 12,
-        borderTop: noBorder ? "none" : "1px solid rgba(255,255,255,0.06)",
+        borderTop: noBorder ? "none" : "1px solid var(--vm-border)",
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(6px)",
         transition: "opacity 380ms ease, transform 380ms cubic-bezier(0.34,1.2,0.64,1)",
@@ -174,25 +174,23 @@ export default function UploadSlot({
           overflow: "hidden",
           transition: "all 220ms cubic-bezier(0.4,0,0.2,1)",
           border: dragging
-            ? "1px solid rgba(99,102,241,0.7)"
+            ? `1px solid ${color ?? "var(--vm-purple)"}`
             : isActive
-              ? "1px solid rgba(99,102,241,0.45)"
-              : "1px solid rgba(99,102,241,0.22)",
+              ? `1px solid ${color ?? "var(--vm-purple)"}`
+              : "1px solid var(--vm-border)",
           background: dragging
-            ? "rgba(99,102,241,0.13)"
+            ? "var(--vm-purple-bg)"
             : isActive
-              ? "rgba(99,102,241,0.09)"
-              : "rgba(99,102,241,0.05)",
-          boxShadow: isActive
-            ? "0 0 0 3px rgba(99,102,241,0.1), 0 4px 20px rgba(99,102,241,0.12)"
-            : "0 2px 8px rgba(0,0,0,0.2)",
+              ? "var(--vm-purple-bg-muted)"
+              : "var(--vm-trans-white-02)",
+          boxShadow: isActive ? "var(--vm-card-shadow)" : "none",
         }}
       >
         {/* Shimmer sweep on hover */}
         {isActive && (
           <div style={{
             position: "absolute", inset: 0, pointerEvents: "none",
-            background: "linear-gradient(105deg, transparent 30%, rgba(165,180,252,0.06) 50%, transparent 70%)",
+            background: "linear-gradient(105deg, transparent 30%, var(--vm-trans-white-05) 50%, transparent 70%)",
             backgroundSize: "200% 100%",
             animation: "shimmer 1.4s linear infinite",
           }} />
@@ -204,17 +202,17 @@ export default function UploadSlot({
           display: "flex", alignItems: "center", justifyContent: "center",
           transition: "all 220ms ease",
           background: isActive
-            ? "rgba(99,102,241,0.2)"
-            : "rgba(99,102,241,0.1)",
+            ? "var(--vm-purple-bg)"
+            : "var(--vm-purple-bg-muted)",
           border: isActive
-            ? "1px solid rgba(99,102,241,0.5)"
-            : "1px solid rgba(99,102,241,0.25)",
+            ? "1px solid var(--vm-purple-border)"
+            : "1px solid var(--vm-purple-border-soft)",
           animation: !isActive ? "pulseRing 2.4s ease-out infinite" : "none",
-          boxShadow: isActive ? "0 0 16px rgba(99,102,241,0.25)" : "none",
+          boxShadow: isActive ? "0 0 16px var(--vm-purple-shadow)" : "none",
         }}>
           <svg
             width="15" height="15" fill="none"
-            stroke={isActive ? "#c7d2fe" : "#818cf8"}
+            stroke={color ?? "var(--vm-indigo)"}
             strokeWidth={1.75} viewBox="0 0 24 24"
             style={{
               transition: "stroke 220ms ease",
@@ -231,7 +229,7 @@ export default function UploadSlot({
           <p style={{
             fontSize: 13, fontWeight: 700, margin: "0 0 3px",
             fontFamily: "'DM Sans', sans-serif",
-            color: isActive ? "#e0e7ff" : "rgba(255,255,255,0.88)",
+            color: isActive ? "var(--vm-indigo-mid)" : "var(--vm-text)",
             transition: "color 220ms ease",
             letterSpacing: "-0.01em",
           }}>
@@ -240,7 +238,7 @@ export default function UploadSlot({
           <p style={{
             fontSize: 11, margin: 0,
             fontFamily: "'DM Sans', sans-serif",
-            color: isActive ? "rgba(165,180,252,0.7)" : "rgba(255,255,255,0.38)",
+            color: isActive ? "var(--vm-indigo-mid)" : "var(--vm-trans-white-45)",
             transition: "color 220ms ease",
           }}>
             {dragging
@@ -262,12 +260,12 @@ export default function UploadSlot({
           letterSpacing: "0.02em",
           transition: "all 220ms ease",
           background: isActive
-            ? "rgba(99,102,241,0.25)"
-            : "rgba(99,102,241,0.12)",
+            ? "var(--vm-purple-bg)"
+            : "var(--vm-purple-bg-muted)",
           border: isActive
-            ? "1px solid rgba(99,102,241,0.5)"
-            : "1px solid rgba(99,102,241,0.2)",
-          color: isActive ? "#c7d2fe" : "#818cf8",
+            ? "1px solid var(--vm-purple-border)"
+            : "1px solid var(--vm-purple-border-soft)",
+          color: color ?? "var(--vm-indigo)",
           whiteSpace: "nowrap",
         }}>
           {dragging ? "Drop" : "Browse"}
@@ -290,12 +288,12 @@ export default function UploadSlot({
           marginTop: 8,
           paddingLeft: 4,
         }}>
-          <svg width="12" height="12" fill="none" stroke="#ef4444" strokeWidth={2.2} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+          <svg width="12" height="12" fill="none" stroke="var(--vm-red)" strokeWidth={2.2} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" strokeLinecap="round" />
             <circle cx="12" cy="16" r="0.5" fill="currentColor" stroke="currentColor" />
           </svg>
-          <span style={{ fontSize: 10.5, color: "#fca5a5", fontWeight: 600, fontFamily: "'DM Sans', sans-serif" }}>
+          <span style={{ fontSize: 10.5, color: "var(--vm-red)", fontWeight: 600, fontFamily: "'DM Sans', sans-serif" }}>
             {validationError}
           </span>
         </div>
@@ -310,10 +308,10 @@ export default function UploadSlot({
         opacity: isActive ? 0.85 : 0.5,
         transition: "opacity 220ms ease"
       }}>
-        <svg width="10.5" height="10.5" fill="none" stroke="rgba(255,255,255,0.75)" strokeWidth={2.2} viewBox="0 0 24 24">
+        <svg width="10.5" height="10.5" fill="none" stroke="var(--vm-trans-white-65)" strokeWidth={2.2} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
         </svg>
-        <span style={{ fontSize: 9.5, color: "rgba(255,255,255,0.55)", fontFamily: "'DM Sans', sans-serif" }}>
+        <span style={{ fontSize: 9.5, color: "var(--vm-trans-white-55)", fontFamily: "'DM Sans', sans-serif" }}>
           In-browser processing · Zero server storage · Your data stays local
         </span>
       </div>
@@ -332,18 +330,18 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
       style={{
         flexShrink: 0,
         border: hovered
-          ? "1px solid rgba(239,68,68,0.4)"
-          : "1px solid rgba(239,68,68,0.18)",
+          ? "1px solid var(--vm-red)"
+          : "1px solid var(--vm-red-border)",
         background: hovered
-          ? "rgba(239,68,68,0.14)"
-          : "rgba(239,68,68,0.06)",
+          ? "var(--vm-red-bg)"
+          : "var(--vm-trans-white-02)",
         borderRadius: 7,
         padding: "5px 12px",
         cursor: "pointer",
         fontSize: 11,
         fontWeight: 600,
         fontFamily: "'DM Sans', sans-serif",
-        color: hovered ? "#fca5a5" : "rgba(239,68,68,0.55)",
+        color: hovered ? "var(--vm-red)" : "var(--vm-trans-white-55)",
         transition: "all 160ms ease",
         letterSpacing: "0.01em",
       }}

@@ -229,6 +229,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             overflow: "hidden",
             border: `1px solid ${T.border}`,
             background: T.surface,
+            isolation: "isolate",
           }}
         >
           {/* LEFT PANEL — Checklist */}

@@ -130,7 +130,7 @@ type BadgeProps =
 
 export default function Badge({
   variant,
-  theme = "dark",
+  theme: _theme = "dark",
   children,
   color,
   bg,
@@ -150,10 +150,9 @@ export default function Badge({
     resolvedLabel = children;
   } else {
     const preset = PRESETS[variant];
-    const t = theme === "light" ? preset.light : preset.dark;
-    resolvedColor = t.color;
-    resolvedBg = t.bg;
-    resolvedBorder = t.border;
+    resolvedColor = `var(--vm-badge-${variant}-color)`;
+    resolvedBg = `var(--vm-badge-${variant}-bg)`;
+    resolvedBorder = `var(--vm-badge-${variant}-border)`;
     resolvedLabel = preset.label;
   }
 

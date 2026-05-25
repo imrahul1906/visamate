@@ -248,12 +248,9 @@ export function LetterPreviewEditor({
         {/* THE LETTER */}
         <div className="cl-letter-sheet">
           {/* Heading */}
-          <input
-            className="cl-letter-heading-input"
-            value={lHeading}
-            onChange={(e) => setLHeading(e.target.value)}
-            title="Click to edit"
-          />
+          <div className="cl-letter-heading-static">
+            {lHeading}
+          </div>
 
           {/* To / Date block */}
           <div className="cl-addr-block">

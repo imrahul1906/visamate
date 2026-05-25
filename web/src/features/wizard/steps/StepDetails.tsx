@@ -108,7 +108,7 @@ export default function StepDetails({ sponsorship, profile, compact, onSelect }:
       />
 
       {(!activeSponsor || !activeProfile) && (
-        <p style={{ color: "rgba(255,255,255,0.22)", fontSize: 11, margin: 0, fontFamily: font.sans }}>
+        <p style={{ color: "var(--vm-trans-white-35)", fontSize: 11, margin: 0, fontFamily: font.sans }}>
           Select both options above to continue
         </p>
       )}

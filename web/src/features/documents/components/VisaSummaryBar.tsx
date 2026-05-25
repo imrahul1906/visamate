@@ -65,7 +65,7 @@ function DrawerPortal({
         onClick={onClose}
         style={{
           position: "fixed", inset: 0, zIndex: 9998,
-          background: "rgba(0,0,0,0.55)",
+          background: "var(--vm-fade-bg)",
           backdropFilter: "blur(3px)",
         }}
       />
@@ -74,10 +74,10 @@ function DrawerPortal({
       <div style={{
         position: "fixed", top: 0, right: 0, bottom: 0,
         width: "min(480px, 92vw)", zIndex: 9999,
-        background: "rgb(13,11,36)",
-        borderLeft: "1px solid rgba(129,140,248,0.18)",
+        background: "var(--vm-bg)",
+        borderLeft: "1px solid var(--vm-border)",
         display: "flex", flexDirection: "column",   // header fixed, body scrolls
-        boxShadow: "-12px 0 48px rgba(0,0,0,0.5)",
+        boxShadow: "var(--vm-card-shadow)",
         animation: "vos-slidein 220ms cubic-bezier(0.4,0,0.2,1)",
       }}>
         <style>{`
@@ -91,17 +91,17 @@ function DrawerPortal({
         <div style={{
           flexShrink: 0,
           padding: "14px 18px",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          borderBottom: "1px solid var(--vm-border)",
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: "rgba(22,20,60,0.95)",
+          background: "var(--vm-surface)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 15 }}>🗺️</span>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#a5b4fc", fontFamily: "'DM Sans', sans-serif" }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--vm-indigo)", fontFamily: "'DM Sans', sans-serif" }}>
                 Visa Overview
               </div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.35)", fontFamily: "'DM Sans', sans-serif" }}>
+              <div style={{ fontSize: 10, color: "var(--vm-trans-white-45)", fontFamily: "'DM Sans', sans-serif" }}>
                 {visaTypeName} · {countryName}
               </div>
             </div>
@@ -110,10 +110,10 @@ function DrawerPortal({
             onClick={onClose}
             aria-label="Close"
             style={{
-              background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+              background: "var(--vm-trans-white-05)", border: "1px solid var(--vm-trans-white-12)",
               borderRadius: 8, width: 30, height: 30, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--vm-trans-white-55)",
             }}
           >
             <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -128,7 +128,7 @@ function DrawerPortal({
           overflowY: "auto",
           padding: "24px 20px 32px",
           scrollbarWidth: "thin",
-          scrollbarColor: "rgba(129,140,248,0.35) transparent",
+          scrollbarColor: "var(--vm-scrollbar-thumb) transparent",
           display: "flex", flexDirection: "column", gap: 22,
         }}>
           <div>
@@ -154,16 +154,16 @@ function DrawerPortal({
                 {stats.map(s => <StatCard key={s.label} {...s} />)}
                 {processingDays != null && (
                   <div style={{
-                    background: "rgba(17,15,50,0.85)",
-                    border: "1px solid rgba(251,146,60,0.2)",
+                    background: "var(--vm-tile-time-bg)",
+                    border: "1px solid var(--vm-tile-time-border)",
                     borderRadius: 10, padding: "10px 12px",
                     display: "flex", flexDirection: "column", gap: 6,
                   }}>
                     <span style={{ fontSize: 18, lineHeight: 1 }}>⏱️</span>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: "#fdba74", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.2 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--vm-tile-time-val)", fontFamily: "'DM Sans', sans-serif", lineHeight: 1.2 }}>
                       {String(processingDays)}
                     </div>
-                    <div style={{ fontSize: 9, color: "rgba(251,146,60,0.55)", fontFamily: "'DM Sans', sans-serif", textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 600 }}>
+                    <div style={{ fontSize: 9, color: "var(--vm-tile-time-label)", fontFamily: "'DM Sans', sans-serif", textTransform: "uppercase", letterSpacing: "0.07em", fontWeight: 600 }}>
                       Processing time
                     </div>
                   </div>
@@ -260,19 +260,19 @@ function TravelWatermark() {
       preserveAspectRatio="xMidYMid slice"
     >
       <defs>
-        {/* dot grid — fine, uniform, covers full width */}
+        {/* dot grid — fine, uniform, covers full width, theme-aware */}
         <pattern id="wm-dots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
-          <circle cx="11" cy="11" r="0.75" fill="white" opacity="0.2" />
+          <circle cx="11" cy="11" r="0.8" fill="var(--vm-text)" opacity="0.05" />
         </pattern>
         {/* warm-gold bloom on the right third — draws eye toward the CTA */}
-        <radialGradient id="wm-gold" cx="88%" cy="50%" r="38%">
-          <stop offset="0%" stopColor="rgb(200,160,80)" stopOpacity="0.07" />
+        <radialGradient id="wm-gold" cx="88%" cy="50%" r="42%">
+          <stop offset="0%" stopColor="rgb(200,160,80)" stopOpacity="0.10" />
           <stop offset="100%" stopColor="rgb(200,160,80)" stopOpacity="0" />
         </radialGradient>
         {/* very faint left bloom so it's not totally flat on the left */}
         <radialGradient id="wm-left" cx="12%" cy="50%" r="30%">
-          <stop offset="0%" stopColor="white" stopOpacity="0.025" />
-          <stop offset="100%" stopColor="white" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--vm-text)" stopOpacity="0.015" />
+          <stop offset="100%" stopColor="var(--vm-text)" stopOpacity="0" />
         </radialGradient>
       </defs>
 
@@ -297,38 +297,77 @@ interface InfoTileProps {
 }
 
 const TILE_COLORS = {
-  // gold — fee tile, matches the gold CTA accent
-  money: { bg: "rgba(232,201,122,0.08)", border: "rgba(232,201,122,0.18)", label: "rgba(232,201,122,0.55)", value: "#e8c97a" },
-  // amber-orange — processing time (warm, urgency-adjacent)
-  time: { bg: "rgba(251,146,60,0.08)", border: "rgba(251,146,60,0.18)", label: "rgba(251,146,60,0.55)", value: "#fdba74" },
-  // green — good-news status (not required)
-  ok: { bg: "rgba(74,222,128,0.07)", border: "rgba(74,222,128,0.16)", label: "rgba(74,222,128,0.55)", value: "#86efac" },
-  // red — bad-news status (required)
-  warn: { bg: "rgba(251,113,133,0.08)", border: "rgba(251,113,133,0.18)", label: "rgba(251,113,133,0.55)", value: "#fda4af" },
-  neutral: { bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.16)", label: "rgba(148,163,184,0.5)", value: "#cbd5e1" },
+  money: {
+    bg: "var(--vm-tile-money-bg)",
+    border: "var(--vm-tile-money-border)",
+    label: "var(--vm-tile-money-label)",
+    value: "var(--vm-tile-money-val)",
+  },
+  time: {
+    bg: "var(--vm-tile-time-bg)",
+    border: "var(--vm-tile-time-border)",
+    label: "var(--vm-tile-time-label)",
+    value: "var(--vm-tile-time-val)",
+  },
+  ok: {
+    bg: "var(--vm-tile-ok-bg)",
+    border: "var(--vm-tile-ok-border)",
+    label: "var(--vm-tile-ok-label)",
+    value: "var(--vm-tile-ok-val)",
+  },
+  warn: {
+    bg: "var(--vm-tile-warn-bg)",
+    border: "var(--vm-tile-warn-border)",
+    label: "var(--vm-tile-warn-label)",
+    value: "var(--vm-tile-warn-val)",
+  },
+  neutral: {
+    bg: "var(--vm-tile-neutral-bg)",
+    border: "var(--vm-tile-neutral-border)",
+    label: "var(--vm-tile-neutral-label)",
+    value: "var(--vm-tile-neutral-val)",
+  },
 };
 
 function InfoTile({ label, value, variant, icon }: InfoTileProps) {
   const c = TILE_COLORS[variant];
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 9,
-      background: c.bg, border: `1px solid ${c.border}`,
-      borderRadius: 10, padding: "8px 13px", flexShrink: 0,
-    }}>
-      <span style={{ color: c.value, display: "flex", flexShrink: 0, opacity: 0.85 }}>
+    <div className={`vm-info-tile vm-tile-${variant}`}>
+      {/* Soft glass shine glow overlay */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 100%)",
+        pointerEvents: "none", zIndex: 0,
+      }} />
+
+      <span style={{
+        color: c.value,
+        display: "flex",
+        flexShrink: 0,
+        opacity: 0.95,
+        zIndex: 1,
+        position: "relative",
+      }}>
         {icon}
       </span>
-      <div>
+      <div style={{ zIndex: 1, position: "relative" }}>
         <div style={{
-          fontSize: 9, color: c.label, fontFamily: "'DM Sans', sans-serif",
-          marginBottom: 2, textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 600,
+          fontSize: 9,
+          color: c.label,
+          fontFamily: "'DM Sans', sans-serif",
+          marginBottom: 2,
+          textTransform: "uppercase",
+          letterSpacing: "0.07em",
+          fontWeight: 600,
         }}>
           {label}
         </div>
         <div style={{
-          fontSize: 13, fontWeight: 700, color: c.value,
-          fontFamily: "'DM Sans', sans-serif", lineHeight: 1.1,
+          fontSize: 13,
+          fontWeight: 700,
+          color: c.value,
+          fontFamily: "'DM Sans', sans-serif",
+          lineHeight: 1.1,
           whiteSpace: "nowrap",
         }}>
           {value}
@@ -382,16 +421,90 @@ export function VisaSummaryBar({
 
   return (
     <>
+      <style>{`
+        .vm-info-tile {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          border-radius: 12px;
+          padding: 9px 15px;
+          flex-shrink: 0;
+          transition: all 260ms cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: default;
+          position: relative;
+          overflow: hidden;
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+
+        .vm-info-tile.vm-tile-money {
+          background: var(--vm-tile-money-bg-glass);
+          border: 1px solid var(--vm-tile-money-border);
+          box-shadow: 0 4px 14px -2px var(--vm-tile-money-glow);
+        }
+        .vm-info-tile.vm-tile-money:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px -2px var(--vm-tile-money-glow), 0 0 0 0.5px var(--vm-tile-money-val) inset;
+          background: var(--vm-tile-money-bg-glass-hover);
+        }
+
+        .vm-info-tile.vm-tile-time {
+          background: var(--vm-tile-time-bg-glass);
+          border: 1px solid var(--vm-tile-time-border);
+          box-shadow: 0 4px 14px -2px var(--vm-tile-time-glow);
+        }
+        .vm-info-tile.vm-tile-time:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px -2px var(--vm-tile-time-glow), 0 0 0 0.5px var(--vm-tile-time-val) inset;
+          background: var(--vm-tile-time-bg-glass-hover);
+        }
+
+        .vm-info-tile.vm-tile-ok {
+          background: var(--vm-tile-ok-bg-glass);
+          border: 1px solid var(--vm-tile-ok-border);
+          box-shadow: 0 4px 14px -2px var(--vm-tile-ok-glow);
+        }
+        .vm-info-tile.vm-tile-ok:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px -2px var(--vm-tile-ok-glow), 0 0 0 0.5px var(--vm-tile-ok-val) inset;
+          background: var(--vm-tile-ok-bg-glass-hover);
+        }
+
+        .vm-info-tile.vm-tile-warn {
+          background: var(--vm-tile-warn-bg-glass);
+          border: 1px solid var(--vm-tile-warn-border);
+          box-shadow: 0 4px 14px -2px var(--vm-tile-warn-glow);
+        }
+        .vm-info-tile.vm-tile-warn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px -2px var(--vm-tile-warn-glow), 0 0 0 0.5px var(--vm-tile-warn-val) inset;
+          background: var(--vm-tile-warn-bg-glass-hover);
+        }
+
+        .vm-info-tile.vm-tile-neutral {
+          background: var(--vm-tile-neutral-bg-glass);
+          border: 1px solid var(--vm-tile-neutral-border);
+          box-shadow: 0 4px 14px -2px var(--vm-tile-neutral-glow);
+        }
+        .vm-info-tile.vm-tile-neutral:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px -2px var(--vm-tile-neutral-glow), 0 0 0 0.5px var(--vm-tile-neutral-val) inset;
+          background: var(--vm-tile-neutral-bg-glass-hover);
+        }
+      `}</style>
+
       {/* ── Strip ──────────────────────────────────────────────── */}
       <div style={{
-        background: "#0b0a13",
+        background: "var(--vm-card-bg)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
         borderRadius: embedded ? 14 : 16,
         padding: embedded ? "15px 18px" : "16px 22px",
         marginBottom: 16,
         position: "relative", overflow: "hidden",
-        border: "1px solid rgba(255,255,255,0.07)",
-        borderTop: "1px solid rgba(200,160,80,0.35)",
-        boxShadow: "0 0 0 1px rgba(0,0,0,0.5), 0 8px 40px rgba(0,0,0,0.45)",
+        border: "1px solid var(--vm-border)",
+        borderTop: "1px solid var(--vm-tile-money-border)",
+        boxShadow: "var(--vm-card-shadow)",
       }}>
         {/* Japan watermark */}
         <TravelWatermark />
@@ -399,7 +512,7 @@ export function VisaSummaryBar({
         {/* gold shimmer line along the top edge */}
         <div style={{
           position: "absolute", top: 0, left: "8%", right: "8%", height: 1,
-          background: "linear-gradient(90deg, transparent, rgba(200,160,80,0.65), transparent)",
+          background: "linear-gradient(90deg, transparent, var(--vm-tile-money-border), transparent)",
           pointerEvents: "none",
         }} />
 
@@ -418,9 +531,9 @@ export function VisaSummaryBar({
               ].map(({ icon, label }) => (
                 <span key={label} style={{
                   fontSize: 11, fontWeight: 600,
-                  color: "rgba(255,255,255,0.8)",
-                  background: "rgba(255,255,255,0.07)",
-                  border: "1px solid rgba(255,255,255,0.11)",
+                  color: "var(--vm-trans-white-85)",
+                  background: "var(--vm-trans-white-05)",
+                  border: "1px solid var(--vm-trans-white-12)",
                   padding: "3px 10px", borderRadius: 20,
                   display: "inline-flex", alignItems: "center", gap: 5,
                   fontFamily: "'DM Sans', sans-serif",
@@ -435,29 +548,26 @@ export function VisaSummaryBar({
                 onClick={() => setDrawerOpen(true)}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 7,
-                  background: "rgba(200,160,80,0.1)",
-                  color: "#e8c97a",
-                  border: "1px solid rgba(200,160,80,0.35)",
+                  background: "var(--vm-tile-money-bg)",
+                  color: "var(--vm-tile-money-val)",
+                  border: "1px solid var(--vm-tile-money-border)",
                   borderRadius: 20, padding: "5px 13px 5px 9px", cursor: "pointer",
                   fontSize: 11.5, fontWeight: 700,
                   fontFamily: "'DM Sans', sans-serif",
                   flexShrink: 0,
-                  boxShadow: "0 0 14px rgba(200,160,80,0.15)",
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = "rgba(200,160,80,0.18)";
-                  e.currentTarget.style.boxShadow = "0 0 20px rgba(200,160,80,0.25)";
+                  e.currentTarget.style.background = "var(--vm-tile-money-border)";
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = "rgba(200,160,80,0.1)";
-                  e.currentTarget.style.boxShadow = "0 0 14px rgba(200,160,80,0.15)";
+                  e.currentTarget.style.background = "var(--vm-tile-money-bg)";
                 }}
               >
                 {/* live dot */}
                 <span style={{
                   width: 6, height: 6, borderRadius: "50%",
-                  background: "#e8c97a",
-                  boxShadow: "0 0 6px rgba(232,201,122,0.9)",
+                  background: "var(--vm-tile-money-val)",
+                  boxShadow: "0 0 6px var(--vm-tile-money-border)",
                   flexShrink: 0,
                 }} />
                 Full visa overview

@@ -39,7 +39,7 @@ export const styles = `
   .iw-opt { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; border-radius: var(--iw-radius); border: 1px solid var(--iw-border); cursor: pointer; text-align: left; width: 100%; transition: border-color 150ms, background 150ms, transform 120ms; background: rgba(255,255,255,0.03); }
   .iw-opt:active { transform: scale(0.99); }
   .iw-opt--light { color: var(--iw-muted2); }
-  .iw-opt--light:hover { border-color: var(--iw-border2); background: rgba(255,255,255,0.05); }
+  .iw-opt--light:hover { border-color: var(--iw-border2); background: rgba(255,255,255,0.06); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
   .iw-opt--dark { background: var(--iw-indigo-glow); border-color: rgba(var(--iw-indigo-rgb), 0.35); color: var(--iw-text); }
   .iw-opt--dark:hover { background: rgba(var(--iw-indigo-rgb), 0.22); border-color: rgba(var(--iw-indigo-rgb), 0.55); box-shadow: 0 4px 24px rgba(var(--iw-indigo-rgb), 0.15); }
   .iw-opt-left { display: flex; align-items: center; gap: 14px; flex: 1; }
@@ -52,6 +52,57 @@ export const styles = `
   .iw-opt-desc { font-size: 12px; color: var(--iw-muted2); line-height: 1.5; }
   .iw-opt-arrow { flex-shrink: 0; color: var(--iw-muted); }
   .iw-opt--dark .iw-opt-arrow { color: var(--iw-indigo-lt); }
+
+  /* Light mode premium overrides — itinerary select */
+  .light .iw-select-title {
+    background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .light .iw-opt--dark {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(108, 92, 231, 0.12);
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.04);
+  }
+  .light .iw-opt--dark:hover {
+    background: #ffffff;
+    border-color: var(--iw-indigo);
+    box-shadow: 0 10px 28px rgba(108, 92, 231, 0.1);
+    transform: translateY(-2px);
+  }
+  .light .iw-opt-icon--dark {
+    background: rgba(108, 92, 231, 0.07);
+    color: var(--iw-indigo);
+    border-color: rgba(108, 92, 231, 0.18);
+  }
+  .light .iw-opt-badge {
+    background: rgba(108, 92, 231, 0.07);
+    color: var(--iw-indigo);
+    border-color: rgba(108, 92, 231, 0.18);
+  }
+  .light .iw-opt-title {
+    background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .light .iw-opt--light {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(30, 27, 75, 0.08);
+    box-shadow: 0 6px 20px rgba(30, 27, 75, 0.02);
+  }
+  .light .iw-opt--light:hover {
+    background: #ffffff;
+    border-color: var(--iw-indigo);
+    box-shadow: 0 10px 28px rgba(108, 92, 231, 0.08);
+    transform: translateY(-2px);
+  }
+  .light .iw-opt-icon--light {
+    background: rgba(30, 27, 75, 0.05);
+    color: var(--iw-muted2);
+    border-color: rgba(30, 27, 75, 0.1);
+  }
 
   /* OR divider between options */
   .iw-opt-or { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
@@ -348,6 +399,15 @@ export const styles = `
   }
   .iw-preview-heading-input:hover { background: rgba(var(--iw-indigo-rgb), 0.06); }
   .iw-preview-heading-input:focus { background: rgba(var(--iw-indigo-rgb), 0.1); box-shadow: 0 0 0 2px rgba(var(--iw-indigo-rgb), 0.35); }
+
+  .iw-preview-heading-static {
+    font-size: 22px; font-weight: 700; text-align: center;
+    letter-spacing: .06em; color: #1a1a1a;
+    font-family: 'Times New Roman', Times, serif;
+    width: 100%; margin: 0 0 18px;
+    padding: 4px 6px;
+    box-sizing: border-box;
+  }
 
   /* Meta row (applicant / passport / dates) */
   .iw-preview-meta-row {

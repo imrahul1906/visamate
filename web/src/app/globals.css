@@ -1,9 +1,372 @@
 @import "tailwindcss";
 
+:root {
+  /* Default Theme: Dark Mode (Original Design) */
+  --vm-bg: #0d0d1f;
+  --vm-surface: #13132a;
+  --vm-surface-rgb: 19, 19, 42;
+  --vm-surface2: #1a1a35;
+  --vm-surface3: #20203e;
+  --vm-border: rgba(255, 255, 255, 0.08);
+  --vm-border2: rgba(255, 255, 255, 0.14);
+  --vm-border-rgb: 255, 255, 255;
+  --vm-text: #f1f5f9;
+  --vm-text-rgb: 241, 245, 249;
+  --vm-muted: rgba(255, 255, 255, 0.38);
+  --vm-muted-2: rgba(255, 255, 255, 0.55);
+
+  /* Brand */
+  --vm-indigo: #6366f1;
+  --vm-indigo-light: #818cf8;
+  --vm-indigo-mid: #a5b4fc;
+  --vm-indigo-glow: rgba(99, 102, 241, 0.18);
+
+  /* Purple Accent */
+  --vm-purple: #6c5ce7;
+  --vm-purple-light: #8b7cf6;
+  --vm-purple-soft: #a89cef;
+  --vm-purple-bg: rgba(108, 92, 231, 0.18);
+  --vm-purple-bg-muted: rgba(108, 92, 231, 0.12);
+  --vm-purple-border: rgba(108, 92, 231, 0.6);
+  --vm-purple-border-soft: rgba(108, 92, 231, 0.35);
+  --vm-purple-icon-bg: rgba(108, 92, 231, 0.25);
+  --vm-purple-shadow: rgba(108, 92, 231, 0.4);
+  --vm-purple-gradient: linear-gradient(135deg, #6c5ce7 0%, #8b7cf6 100%);
+  --vm-purple-gradient-light: linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%);
+
+  /* Semantics */
+  --vm-green: #4ade80;
+  --vm-green-dark: #22c55e;
+  --vm-green-bg: rgba(74, 222, 128, 0.1);
+  --vm-green-border: rgba(74, 222, 128, 0.25);
+  --vm-amber: #fbbf24;
+  --vm-amber-bg: rgba(251, 191, 36, 0.1);
+  --vm-amber-border: rgba(251, 191, 36, 0.3);
+  --vm-blue: #38bdf8;
+  --vm-blue-bg: rgba(56, 189, 248, 0.1);
+  --vm-blue-border: rgba(56, 189, 248, 0.25);
+  --vm-red: #ef4444;
+  --vm-red-bg: rgba(239, 68, 68, 0.1);
+  --vm-red-border: rgba(239, 68, 68, 0.3);
+
+  /* Alpha Transparencies */
+  --vm-alpha-02: rgba(255, 255, 255, 0.02);
+  --vm-alpha-03: rgba(255, 255, 255, 0.035);
+  --vm-alpha-04: rgba(255, 255, 255, 0.04);
+  --vm-alpha-05: rgba(255, 255, 255, 0.05);
+  --vm-alpha-06: rgba(255, 255, 255, 0.06);
+  --vm-alpha-07: rgba(255, 255, 255, 0.07);
+  --vm-alpha-08: rgba(255, 255, 255, 0.08);
+  --vm-alpha-10: rgba(255, 255, 255, 0.1);
+  --vm-alpha-12: rgba(255, 255, 255, 0.12);
+  --vm-alpha-15: rgba(255, 255, 255, 0.15);
+  --vm-alpha-18: rgba(255, 255, 255, 0.18);
+  --vm-alpha-20: rgba(255, 255, 255, 0.2);
+  --vm-alpha-25: rgba(255, 255, 255, 0.25);
+  --vm-alpha-35: rgba(255, 255, 255, 0.35);
+  --vm-alpha-45: rgba(255, 255, 255, 0.45);
+  --vm-alpha-55: rgba(255, 255, 255, 0.55);
+  --vm-alpha-65: rgba(255, 255, 255, 0.65);
+  --vm-alpha-85: rgba(255, 255, 255, 0.85);
+
+  --vm-glass-bg: rgba(13, 13, 31, 0.82);
+  --vm-glass-border: rgba(255, 255, 255, 0.08);
+  --vm-glass-shadow: rgba(0, 0, 0, 0.25);
+
+  --vm-hero-bg: #0a0718;
+  --vm-hero-gradient: radial-gradient(circle at 70% 40%, rgba(108,92,231,0.12) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(108,92,231,0.06) 0%, transparent 50%);
+  --vm-docs-bg: #0d0b1e;
+
+  --vm-scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --vm-input-placeholder: rgba(255, 255, 255, 0.25);
+
+  --vm-card-bg: rgba(255, 255, 255, 0.035);
+  --vm-card-border: rgba(255, 255, 255, 0.1);
+  --vm-card-border-top: rgba(255, 255, 255, 0.18);
+  --vm-card-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(108,92,231,0.12) inset, 0 32px 64px rgba(108,92,231,0.08);
+  --vm-fade-bg: rgba(15, 12, 30, 0.6);
+
+  /* Info tile badge variables (Dark mode defaults) */
+  --vm-tile-money-bg: rgba(232, 201, 122, 0.08);
+  --vm-tile-money-border: rgba(232, 201, 122, 0.18);
+  --vm-tile-money-label: rgba(232, 201, 122, 0.55);
+  --vm-tile-money-val: #e8c97a;
+  --vm-tile-money-bg-glass: rgba(232, 201, 122, 0.04);
+  --vm-tile-money-bg-glass-hover: rgba(232, 201, 122, 0.09);
+  --vm-tile-money-glow: rgba(232, 201, 122, 0.08);
+
+  --vm-tile-time-bg: rgba(251, 146, 60, 0.08);
+  --vm-tile-time-border: rgba(251, 146, 60, 0.18);
+  --vm-tile-time-label: rgba(251, 146, 60, 0.55);
+  --vm-tile-time-val: #fdba74;
+  --vm-tile-time-bg-glass: rgba(251, 146, 60, 0.04);
+  --vm-tile-time-bg-glass-hover: rgba(251, 146, 60, 0.09);
+  --vm-tile-time-glow: rgba(251, 146, 60, 0.08);
+
+  --vm-tile-ok-bg: rgba(74, 222, 128, 0.07);
+  --vm-tile-ok-border: rgba(74, 222, 128, 0.16);
+  --vm-tile-ok-label: rgba(74, 222, 128, 0.55);
+  --vm-tile-ok-val: #86efac;
+  --vm-tile-ok-bg-glass: rgba(74, 222, 128, 0.03);
+  --vm-tile-ok-bg-glass-hover: rgba(74, 222, 128, 0.07);
+  --vm-tile-ok-glow: rgba(74, 222, 128, 0.06);
+
+  --vm-tile-warn-bg: rgba(251, 113, 133, 0.08);
+  --vm-tile-warn-border: rgba(251, 113, 133, 0.18);
+  --vm-tile-warn-label: rgba(251, 113, 133, 0.55);
+  --vm-tile-warn-val: #fda4af;
+  --vm-tile-warn-bg-glass: rgba(251, 113, 133, 0.04);
+  --vm-tile-warn-bg-glass-hover: rgba(251, 113, 133, 0.09);
+  --vm-tile-warn-glow: rgba(251, 113, 133, 0.08);
+
+  --vm-tile-neutral-bg: rgba(148, 163, 184, 0.08);
+  --vm-tile-neutral-border: rgba(148, 163, 184, 0.16);
+  --vm-tile-neutral-label: rgba(148, 163, 184, 0.5);
+  --vm-tile-neutral-val: #cbd5e1;
+  --vm-tile-neutral-bg-glass: rgba(148, 163, 184, 0.04);
+  --vm-tile-neutral-bg-glass-hover: rgba(148, 163, 184, 0.08);
+  --vm-tile-neutral-glow: rgba(148, 163, 184, 0.06);
+
+  /* Badges - Dark mode */
+  --vm-badge-uploaded-color: #a3e635;
+  --vm-badge-uploaded-bg: rgba(163,230,53,0.12);
+  --vm-badge-uploaded-border: rgba(163,230,53,0.28);
+  --vm-badge-uploadable-color: #34d399;
+  --vm-badge-uploadable-bg: rgba(52,211,153,0.10);
+  --vm-badge-uploadable-border: rgba(52,211,153,0.25);
+  --vm-badge-hardcopy-color: #fbbf24;
+  --vm-badge-hardcopy-bg: rgba(251,191,36,0.10);
+  --vm-badge-hardcopy-border: rgba(251,191,36,0.30);
+  --vm-badge-optional-color: rgba(255,255,255,0.35);
+  --vm-badge-optional-bg: rgba(255,255,255,0.05);
+  --vm-badge-optional-border: rgba(255,255,255,0.08);
+  --vm-badge-required-color: #f87171;
+  --vm-badge-required-bg: rgba(248,113,113,0.12);
+  --vm-badge-required-border: rgba(248,113,113,0.28);
+  --vm-badge-builder-color: #fb923c;
+  --vm-badge-builder-bg: rgba(251,146,60,0.12);
+  --vm-badge-builder-border: rgba(251,146,60,0.28);
+  --vm-badge-form-color: #f472b6;
+  --vm-badge-form-bg: rgba(244,114,182,0.12);
+  --vm-badge-form-border: rgba(244,114,182,0.28);
+  --vm-badge-spec-color: #facc15;
+  --vm-badge-spec-bg: rgba(250,204,21,0.10);
+  --vm-badge-spec-border: rgba(250,204,21,0.25);
+
+  /* Map & Flight Animation (Dark mode defaults) */
+  --fa-map-ocean-start: #0d1f3c;
+  --fa-map-ocean-end: #060d1a;
+  --fa-map-land-start: #16304f;
+  --fa-map-land-end: #0f2238;
+  --fa-map-border: rgba(100, 160, 255, 0.14);
+  --fa-map-grid: rgba(255, 255, 255, 0.028);
+  --fa-panel-bg: #060c1a;
+  --fa-panel-border: rgba(255, 255, 255, 0.08);
+  --fa-status-bg: linear-gradient(to top, rgba(4,8,18,1) 0%, rgba(6,12,26,0.7) 100%);
+  --fa-badge-bg: rgba(5, 12, 25, 0.85);
+  --fa-badge-text: #ffffff;
+
+  /* Trans white compatibility aliases (automatically map to dark-transparent white / light-transparent slate) */
+  --vm-trans-white-02: var(--vm-alpha-02);
+  --vm-trans-white-03: var(--vm-alpha-03);
+  --vm-trans-white-04: var(--vm-alpha-04);
+  --vm-trans-white-05: var(--vm-alpha-05);
+  --vm-trans-white-06: var(--vm-alpha-06);
+  --vm-trans-white-07: var(--vm-alpha-07);
+  --vm-trans-white-08: var(--vm-alpha-08);
+  --vm-trans-white-10: var(--vm-alpha-10);
+  --vm-trans-white-12: var(--vm-alpha-12);
+  --vm-trans-white-15: var(--vm-alpha-15);
+  --vm-trans-white-18: var(--vm-alpha-18);
+  --vm-trans-white-20: var(--vm-alpha-20);
+  --vm-trans-white-25: var(--vm-alpha-25);
+  --vm-trans-white-35: var(--vm-alpha-35);
+  --vm-trans-white-45: var(--vm-alpha-45);
+  --vm-trans-white-55: var(--vm-alpha-55);
+  --vm-trans-white-65: var(--vm-alpha-65);
+  --vm-trans-white-85: var(--vm-alpha-85);
+}
+
+.light, [data-theme="light"] {
+  /* Premium Light Mode (Tuned Colors for high-end feel) */
+  --vm-bg: #faf9f6; /* Beautiful luxurious warm alabaster/off-white background */
+  --vm-surface: #ffffff; /* Crisp white cards */
+  --vm-surface-rgb: 255, 255, 255;
+  --vm-surface2: #f3f4f6; /* Clean soft slate container/input background */
+  --vm-surface3: #e5e7eb; /* Soft highlight borders */
+  --vm-border: rgba(108, 92, 231, 0.08); /* Subtle violet/indigo border tint */
+  --vm-border2: rgba(108, 92, 231, 0.15);
+  --vm-border-rgb: 108, 92, 231;
+  --vm-text: #1e1b4b; /* Deep expensive indigo-black text for premium editorial look */
+  --vm-text-rgb: 30, 27, 75;
+  --vm-muted: rgba(30, 27, 75, 0.48);
+  --vm-muted-2: rgba(30, 27, 75, 0.68);
+
+  /* Brand (Adjusted contrast for light background) */
+  --vm-indigo: #4f46e5;
+  --vm-indigo-light: #6366f1;
+  --vm-indigo-mid: #4338ca; /* Editorial indigo for text elements */
+  --vm-indigo-glow: rgba(79, 70, 229, 0.06);
+
+  /* Purple Accent */
+  --vm-purple: #6c5ce7;
+  --vm-purple-light: #5b4ad4;
+  --vm-purple-soft: #5b4ad4;
+  --vm-purple-bg: rgba(108, 92, 231, 0.06);
+  --vm-purple-bg-muted: rgba(108, 92, 231, 0.03);
+  --vm-purple-border: rgba(108, 92, 231, 0.3);
+  --vm-purple-border-soft: rgba(108, 92, 231, 0.15);
+  --vm-purple-icon-bg: rgba(108, 92, 231, 0.07);
+  --vm-purple-shadow: rgba(108, 92, 231, 0.08);
+  --vm-purple-gradient: linear-gradient(135deg, #6c5ce7 0%, #8b7cf6 100%);
+  --vm-purple-gradient-light: linear-gradient(135deg, #5b4ad4 0%, #8b7cf6 100%);
+
+  /* Semantics */
+  --vm-green: #16a34a; /* green-600 */
+  --vm-green-dark: #15803d;
+  --vm-green-bg: rgba(22, 163, 74, 0.06);
+  --vm-green-border: rgba(22, 163, 74, 0.15);
+  --vm-amber: #d97706; /* amber-600 */
+  --vm-amber-bg: rgba(217, 119, 6, 0.06);
+  --vm-amber-border: rgba(217, 119, 6, 0.15);
+  --vm-blue: #0284c7; /* sky-600 */
+  --vm-blue-bg: rgba(2, 132, 199, 0.06);
+  --vm-blue-border: rgba(2, 132, 199, 0.15);
+  --vm-red: #dc2626; /* red-600 */
+  --vm-red-bg: rgba(220, 38, 38, 0.06);
+  --vm-red-border: rgba(220, 38, 38, 0.15);
+
+  /* Alpha Transparencies (mapped to deep indigo-black) */
+  --vm-alpha-02: rgba(30, 27, 75, 0.02);
+  --vm-alpha-03: rgba(30, 27, 75, 0.03);
+  --vm-alpha-04: rgba(30, 27, 75, 0.04);
+  --vm-alpha-05: rgba(30, 27, 75, 0.05);
+  --vm-alpha-06: rgba(30, 27, 75, 0.06);
+  --vm-alpha-07: rgba(30, 27, 75, 0.07);
+  --vm-alpha-08: rgba(30, 27, 75, 0.08);
+  --vm-alpha-10: rgba(30, 27, 75, 0.1);
+  --vm-alpha-12: rgba(30, 27, 75, 0.12);
+  --vm-alpha-15: rgba(30, 27, 75, 0.15);
+  --vm-alpha-18: rgba(30, 27, 75, 0.18);
+  --vm-alpha-20: rgba(30, 27, 75, 0.2);
+  --vm-alpha-25: rgba(30, 27, 75, 0.25);
+  --vm-alpha-35: rgba(30, 27, 75, 0.35);
+  --vm-alpha-45: rgba(30, 27, 75, 0.45);
+  --vm-alpha-55: rgba(30, 27, 75, 0.55);
+  --vm-alpha-65: rgba(30, 27, 75, 0.65);
+  --vm-alpha-85: rgba(30, 27, 75, 0.85);
+
+  --vm-glass-bg: rgba(255, 255, 255, 0.75);
+  --vm-glass-border: rgba(108, 92, 231, 0.1);
+  --vm-glass-shadow: 0 8px 32px rgba(108, 92, 231, 0.04);
+
+  --vm-hero-bg: #faf9f6;
+  --vm-hero-gradient: radial-gradient(circle at 80% 20%, rgba(108, 92, 231, 0.16) 0%, transparent 60%), radial-gradient(circle at 15% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 55%), radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.12) 0%, transparent 65%);
+  --vm-docs-bg: #f5f6f8;
+
+  --vm-scrollbar-thumb: rgba(30, 27, 75, 0.15);
+  --vm-input-placeholder: rgba(30, 27, 75, 0.35);
+
+  --vm-card-bg: rgba(255, 255, 255, 0.72);
+  --vm-card-border: rgba(108, 92, 231, 0.08);
+  --vm-card-border-top: rgba(108, 92, 231, 0.25);
+  --vm-card-shadow: 0 16px 48px rgba(108, 92, 231, 0.08), 0 4px 12px rgba(30, 27, 75, 0.03), 0 0 0 1px rgba(108, 92, 231, 0.08) inset, 0 32px 72px rgba(108, 92, 231, 0.04);
+  --vm-fade-bg: rgba(250, 249, 246, 0.6);
+
+  /* Info tile badge variables (Light mode overrides) */
+  --vm-tile-money-bg: rgba(180, 130, 30, 0.06);
+  --vm-tile-money-border: rgba(180, 130, 30, 0.15);
+  --vm-tile-money-label: rgba(120, 80, 10, 0.65);
+  --vm-tile-money-val: #9a6e1a;
+  --vm-tile-money-bg-glass: rgba(255, 255, 255, 0.72);
+  --vm-tile-money-bg-glass-hover: rgba(255, 255, 255, 0.95);
+  --vm-tile-money-glow: rgba(180, 130, 30, 0.09);
+
+  --vm-tile-time-bg: rgba(234, 88, 12, 0.06);
+  --vm-tile-time-border: rgba(234, 88, 12, 0.15);
+  --vm-tile-time-label: rgba(194, 65, 12, 0.65);
+  --vm-tile-time-val: #c2410c;
+  --vm-tile-time-bg-glass: rgba(255, 255, 255, 0.72);
+  --vm-tile-time-bg-glass-hover: rgba(255, 255, 255, 0.95);
+  --vm-tile-time-glow: rgba(234, 88, 12, 0.09);
+
+  --vm-tile-ok-bg: rgba(22, 163, 74, 0.06);
+  --vm-tile-ok-border: rgba(22, 163, 74, 0.15);
+  --vm-tile-ok-label: rgba(21, 128, 61, 0.65);
+  --vm-tile-ok-val: #15803d;
+  --vm-tile-ok-bg-glass: rgba(255, 255, 255, 0.72);
+  --vm-tile-ok-bg-glass-hover: rgba(255, 255, 255, 0.95);
+  --vm-tile-ok-glow: rgba(22, 163, 74, 0.09);
+
+  --vm-tile-warn-bg: rgba(225, 29, 72, 0.06);
+  --vm-tile-warn-border: rgba(225, 29, 72, 0.15);
+  --vm-tile-warn-label: rgba(190, 24, 74, 0.65);
+  --vm-tile-warn-val: #be184d;
+  --vm-tile-warn-bg-glass: rgba(255, 255, 255, 0.72);
+  --vm-tile-warn-bg-glass-hover: rgba(255, 255, 255, 0.95);
+  --vm-tile-warn-glow: rgba(225, 29, 72, 0.09);
+
+  --vm-tile-neutral-bg: rgba(71, 85, 105, 0.06);
+  --vm-tile-neutral-border: rgba(71, 85, 105, 0.15);
+  --vm-tile-neutral-label: rgba(71, 85, 105, 0.65);
+  --vm-tile-neutral-val: #475569;
+  --vm-tile-neutral-bg-glass: rgba(255, 255, 255, 0.72);
+  --vm-tile-neutral-bg-glass-hover: rgba(255, 255, 255, 0.95);
+  --vm-tile-neutral-glow: rgba(71, 85, 105, 0.07);
+
+  /* Badges - Light mode (Adjusted for high-end look with soft borders) */
+  --vm-badge-uploaded-color: #166534;
+  --vm-badge-uploaded-bg: rgba(74, 222, 128, 0.15);
+  --vm-badge-uploaded-border: rgba(74, 222, 128, 0.3);
+  --vm-badge-uploadable-color: #075985;
+  --vm-badge-uploadable-bg: rgba(56, 189, 248, 0.15);
+  --vm-badge-uploadable-border: rgba(56, 189, 248, 0.3);
+  --vm-badge-hardcopy-color: #9a3412;
+  --vm-badge-hardcopy-bg: rgba(251, 191, 36, 0.15);
+  --vm-badge-hardcopy-border: rgba(251, 191, 36, 0.3);
+  --vm-badge-optional-color: #4b5563;
+  --vm-badge-optional-bg: rgba(156, 163, 175, 0.12);
+  --vm-badge-optional-border: rgba(156, 163, 175, 0.25);
+  --vm-badge-required-color: #991b1b;
+  --vm-badge-required-bg: rgba(248, 113, 113, 0.15);
+  --vm-badge-required-border: rgba(248, 113, 113, 0.3);
+  --vm-badge-builder-color: #9a3412;
+  --vm-badge-builder-bg: rgba(251, 146, 60, 0.15);
+  --vm-badge-builder-border: rgba(251, 146, 60, 0.3);
+  --vm-badge-form-color: #86198f;
+  --vm-badge-form-bg: rgba(244, 114, 182, 0.15);
+  --vm-badge-form-border: rgba(244, 114, 182, 0.3);
+  --vm-badge-spec-color: #854d0e;
+  --vm-badge-spec-bg: rgba(250, 204, 21, 0.12);
+  --vm-badge-spec-border: rgba(250, 204, 21, 0.25);
+
+  /* Detail Panel Header (Light mode — premium frosted identity block) */
+  --vm-detail-header-bg: linear-gradient(180deg, #f0eef8 0%, #f3f4f6 100%);
+  --vm-detail-header-card-bg: rgba(255, 255, 255, 0.82);
+  --vm-detail-header-card-border: rgba(108, 92, 231, 0.10);
+  --vm-detail-header-card-shadow: 0 4px 16px rgba(108, 92, 231, 0.04), 0 1px 3px rgba(30, 27, 75, 0.02);
+  --vm-detail-grid-color: rgba(108, 92, 231, 0.045);
+  --vm-detail-desc-color: rgba(30, 27, 75, 0.72);
+  --vm-detail-hint-bg: rgba(79, 70, 229, 0.06);
+
+  /* Map & Flight Animation (Light mode overrides - luxury slate aesthetic) */
+  --fa-map-ocean-start: #f1f5f9;
+  --fa-map-ocean-end: #e2e8f0;
+  --fa-map-land-start: #ffffff;
+  --fa-map-land-end: #fafbfc;
+  --fa-map-border: rgba(108, 92, 231, 0.08);
+  --fa-map-grid: rgba(108, 92, 231, 0.03);
+  --fa-panel-bg: var(--vm-surface);
+  --fa-panel-border: rgba(108, 92, 231, 0.08);
+  --fa-status-bg: #ffffff;
+  --fa-badge-bg: #ffffff;
+  --fa-badge-text: var(--vm-text);
+}
+
 /* ─── Global Scrollbar Customisations ─── */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--vm-scrollbar-thumb); border-radius: 2px; }
 
 .vm-scroll-indigo::-webkit-scrollbar-track { background: rgba(99,102,241,0.05); border-radius: 2px; }
 .vm-scroll-indigo::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.4); border-radius: 2px; }
@@ -82,12 +445,12 @@
 
 /* Ghost — muted outline (used on active/current-page state) */
 .vm-btn--ghost {
-  background: rgba(108,92,231,0.14);
-  color: #a89cef;
-  box-shadow: 0 0 0 0.5px rgba(108,92,231,0.4);
+  background: var(--vm-purple-bg);
+  color: var(--vm-purple-soft);
+  box-shadow: 0 0 0 0.5px var(--vm-purple-border-soft);
 }
 .vm-btn--ghost:hover {
-  box-shadow: 0 0 0 0.5px rgba(108,92,231,0.6);
+  box-shadow: 0 0 0 0.5px var(--vm-purple-border);
 }
 
 /* Logo Component */
@@ -105,11 +468,11 @@
 }
 .vm-logo-wordmark {
   font-family: var(--font-dm-sans), sans-serif;
-  font-weight: 800; color: #fff;
+  font-weight: 800; color: var(--vm-text);
   letter-spacing: -0.035em; line-height: 1;
 }
 .vm-logo-wordmark span {
-  font-weight: 400; color: #a5b4fc;
+  font-weight: 400; color: var(--vm-indigo-mid);
   transition: color 0.25s ease;
 }
 .vm-logo-wordmark {
@@ -151,22 +514,22 @@
   transform: rotate(15deg);
 }
 .vm-logo-container:hover .vm-logo-wordmark span {
-  color: #fff;
+  color: var(--vm-indigo-light);
 }
 
 .vm-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(108,92,231,0.14);
-  border: 0.5px solid rgba(108,92,231,0.38);
+  background: var(--vm-purple-bg);
+  border: 0.5px solid var(--vm-purple-border-soft);
   border-radius: 20px; padding: 3px 9px 3px 6px;
   font-size: 10.5px; font-weight: 500;
-  color: #a89cef; letter-spacing: 0.01em;
+  color: var(--vm-purple-soft); letter-spacing: 0.01em;
   margin-left: 4px;
 }
 .vm-badge-dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: #6c5ce7;
-  box-shadow: 0 0 6px rgba(108,92,231,0.8);
+  background: var(--vm-purple);
+  box-shadow: 0 0 6px var(--vm-purple-shadow);
   animation: vm-pulse 2.2s ease-in-out infinite;
 }
 

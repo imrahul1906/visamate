@@ -88,6 +88,7 @@ export function mapRequirementsToDocumentData(
           photoSpecRef: doc.photoSpecRef ?? undefined,
           // FIX: carry through the checklist download URL from the raw JSON doc
           checkListDownloadUrl: doc?.check_list_download_Url ?? undefined,
+          maxSizeBytes: doc.maxSizeBytes ?? undefined,
         };
       });
 

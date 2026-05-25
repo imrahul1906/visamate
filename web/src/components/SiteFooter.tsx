@@ -43,8 +43,8 @@ export default function SiteFooter() {
   return (
     <footer style={{
       fontFamily: "'DM Sans', var(--font-dm-sans), sans-serif",
-      background: "#060410",
-      borderTop: "1px solid rgba(255,255,255,0.07)"
+      background: "var(--vm-surface2)",
+      borderTop: "1px solid var(--vm-border)"
     }}>
       <style>{`
         .vm-footer-inner {
@@ -65,13 +65,13 @@ export default function SiteFooter() {
         }
         .vm-footer-tagline {
           font-size: 13px; line-height: 1.65;
-          color: rgba(255,255,255,0.4); max-width: 280px; margin: 0;
+          color: var(--vm-trans-white-45); max-width: 280px; margin: 0;
         }
         
         /* Column 2: Accordion FAQs */
         .vm-footer-col-title {
           font-size: 11px; font-weight: 700;
-          color: rgba(255,255,255,0.3);
+          color: var(--vm-trans-white-35);
           letter-spacing: 0.08em; text-transform: uppercase;
           margin-bottom: 18px;
         }
@@ -79,24 +79,24 @@ export default function SiteFooter() {
           display: flex; flex-direction: column; gap: 10px;
         }
         .vm-faq-card {
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--vm-trans-white-05);
           padding-bottom: 8px;
         }
         .vm-faq-trigger {
           width: 100%; display: flex; align-items: center; justify-content: space-between;
           background: transparent; border: none; padding: 4px 0;
           text-align: left; font-size: 13px; font-weight: 600;
-          color: rgba(255,255,255,0.6); cursor: pointer;
+          color: var(--vm-trans-white-65); cursor: pointer;
           transition: color 0.2s;
         }
-        .vm-faq-trigger:hover { color: #fff; }
+        .vm-faq-trigger:hover { color: var(--vm-text); }
         .vm-faq-trigger svg {
-          color: rgba(255,255,255,0.25);
+          color: var(--vm-trans-white-25);
           transition: transform 0.25s ease;
         }
         .vm-faq-trigger.active svg {
           transform: rotate(180deg);
-          color: #8b7cf6;
+          color: var(--vm-purple-light);
         }
         
         /* CSS Grid Height animation wrapper */
@@ -112,7 +112,7 @@ export default function SiteFooter() {
           overflow: hidden;
           min-height: 0;
           font-size: 12px; line-height: 1.6;
-          color: rgba(255,255,255,0.38);
+          color: var(--vm-trans-white-45);
           opacity: 0;
           padding-top: 8px;
           transition: opacity 0.2s ease;
@@ -123,21 +123,21 @@ export default function SiteFooter() {
 
         /* Column 3: Contact & Support */
         .vm-support-card {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.05);
+          background: var(--vm-trans-white-02);
+          border: 1px solid var(--vm-trans-white-05);
           border-radius: 12px; padding: 16px;
         }
         .vm-support-title {
-          font-size: 12.5px; font-weight: 700; color: #fff; margin-bottom: 6px;
+          font-size: 12.5px; font-weight: 700; color: var(--vm-text); margin-bottom: 6px;
         }
         .vm-support-desc {
-          font-size: 11.5px; color: rgba(255,255,255,0.4); line-height: 1.6; margin-bottom: 10px;
+          font-size: 11.5px; color: var(--vm-trans-white-45); line-height: 1.6; margin-bottom: 10px;
         }
         .vm-support-email {
           display: inline-block; font-size: 12.5px; font-weight: 600;
-          color: #8b7cf6; text-decoration: none; transition: color 0.2s;
+          color: var(--vm-purple-light); text-decoration: none; transition: color 0.2s;
         }
-        .vm-support-email:hover { color: #a5b4fc; }
+        .vm-support-email:hover { color: var(--vm-indigo-light); }
 
         /* Inline Legal Drawer Styles */
         .vm-legal-drawer {
@@ -152,35 +152,35 @@ export default function SiteFooter() {
           overflow: hidden;
           min-height: 0;
           padding-bottom: 24px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
+          border-bottom: 1px solid var(--vm-trans-white-06);
         }
         .vm-legal-card {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: var(--vm-trans-white-02);
+          border: 1px solid var(--vm-trans-white-06);
           border-radius: 12px; padding: 24px;
         }
         .vm-legal-header {
           display: flex; align-items: center; justify-content: space-between;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--vm-trans-white-05);
           padding-bottom: 12px; margin-bottom: 14px;
         }
         .vm-legal-title {
-          font-size: 15px; font-weight: 600; color: #fff; margin: 0;
+          font-size: 15px; font-weight: 600; color: var(--vm-text); margin: 0;
         }
         .vm-legal-close {
-          background: transparent; border: none; color: rgba(255,255,255,0.4);
+          background: transparent; border: none; color: var(--vm-trans-white-45);
           font-size: 12px; font-weight: 600; cursor: pointer; transition: color 0.2s;
         }
-        .vm-legal-close:hover { color: #fff; }
+        .vm-legal-close:hover { color: var(--vm-text); }
         
         .vm-legal-scrollable {
           max-height: 200px; overflow-y: auto; padding-right: 8px;
-          font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6;
+          font-size: 12.5px; color: var(--vm-trans-white-45); line-height: 1.6;
         }
         .vm-legal-scrollable::-webkit-scrollbar { width: 4px; }
-        .vm-legal-scrollable::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .vm-legal-scrollable::-webkit-scrollbar-thumb { background: var(--vm-scrollbar-thumb); border-radius: 2px; }
         .vm-legal-scrollable h4 {
-          color: #fff; font-weight: 600; font-size: 13.5px; margin: 12px 0 4px;
+          color: var(--vm-text); font-weight: 600; font-size: 13.5px; margin: 12px 0 4px;
         }
         .vm-legal-scrollable p { margin-bottom: 8px; }
 
@@ -188,21 +188,21 @@ export default function SiteFooter() {
         .vm-footer-bottom {
           display: flex; align-items: center; justify-content: space-between;
           padding-top: 20px; gap: 16px; flex-wrap: wrap;
-          border-top: 1px solid rgba(255,255,255,0.05);
+          border-top: 1px solid var(--vm-trans-white-05);
         }
         .vm-footer-copy {
-          font-size: 12px; color: rgba(255,255,255,0.22);
+          font-size: 12px; color: var(--vm-trans-white-35);
           letter-spacing: -0.01em;
         }
         .vm-footer-bottom-links {
           display: flex; align-items: center; gap: 20px;
         }
         .vm-bottom-link {
-          font-size: 12px; color: rgba(255,255,255,0.22);
+          font-size: 12px; color: var(--vm-trans-white-35);
           background: transparent; border: none; cursor: pointer; padding: 0;
           transition: color 0.18s;
         }
-        .vm-bottom-link:hover { color: rgba(255,255,255,0.5); }
+        .vm-bottom-link:hover { color: var(--vm-trans-white-65); }
 
         @media (max-width: 860px) {
           .vm-footer-grid {
