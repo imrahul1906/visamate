@@ -206,6 +206,7 @@ export function DocChecklistSidebar({
                     isActive={activeDocId === doc.id}
                     isDone={!!checked[doc.id]}
                     isUploaded={!!uploads[doc.id]}
+                    uploadedFile={uploads[doc.id]}
                     badge={getDocBadge(doc)}
                     onSelect={() => onSelectDoc(doc.id)}
                     onToggle={(e) => { e.stopPropagation(); onToggleDoc(doc.id); }}
