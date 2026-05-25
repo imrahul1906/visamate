@@ -229,10 +229,10 @@ function CountryRow({
       style={{
         display: "flex",
         alignItems: "center",
-        gap: 10,
+        gap: 12,
         width: "100%",
-        padding: "7px 10px",
-        borderRadius: 10,
+        padding: "11px 13px",
+        borderRadius: 12,
         border: isSelected
           ? "1px solid var(--vm-purple-border)"
           : hovered && c.supported
@@ -245,17 +245,22 @@ function CountryRow({
             : "var(--vm-trans-white-03)",
         cursor: c.supported ? "pointer" : "not-allowed",
         opacity: !c.supported ? 0.5 : 1,
-        transition: "all 0.15s ease",
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        transform: hovered && c.supported ? "translateY(-0.5px)" : "none",
         textAlign: "left",
         boxSizing: "border-box",
         flexShrink: 0,
-        boxShadow: isSelected ? "0 0 0 3px var(--vm-purple-bg-muted)" : "none",
+        boxShadow: isSelected
+          ? "0 4px 14px var(--vm-purple-shadow)"
+          : hovered && c.supported
+            ? "0 4px 10px rgba(0, 0, 0, 0.15)"
+            : "none",
       }}
     >
       {/* Thumbnail */}
       <div style={{
-        width: 38, height: 38,
-        borderRadius: 7, overflow: "hidden",
+        width: 42, height: 42,
+        borderRadius: 8, overflow: "hidden",
         flexShrink: 0,
         background: "var(--vm-trans-white-08)",
         position: "relative",
@@ -280,7 +285,7 @@ function CountryRow({
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           color: isSelected ? "var(--vm-text)" : "var(--vm-trans-white-85)",
-          fontSize: 13,
+          fontSize: 13.5,
           fontWeight: isSelected ? 600 : 500,
           whiteSpace: "nowrap",
           overflow: "hidden",
@@ -290,7 +295,7 @@ function CountryRow({
           {c.name}
         </div>
         {!c.supported && (
-          <div style={{ color: "var(--vm-trans-white-45)", fontSize: 10, marginTop: 1 }}>Coming soon</div>
+          <div style={{ color: "var(--vm-trans-white-35)", fontSize: 10.5, marginTop: 1 }}>Coming soon</div>
         )}
       </div>
 
@@ -309,7 +314,10 @@ function CountryRow({
             </svg>
           </div>
         ) : c.supported ? (
-          <svg width="12" height="12" fill="none" stroke="var(--vm-trans-white-20)" strokeWidth="2" viewBox="0 0 24 24">
+          <svg width="12" height="12" fill="none" stroke="var(--vm-trans-white-20)" strokeWidth="2" viewBox="0 0 24 24" style={{
+            transform: hovered ? "translateX(2px)" : "none",
+            transition: "transform 0.15s ease",
+          }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
         ) : null}
