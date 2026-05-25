@@ -289,6 +289,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                   requiredTotal={requiredDocs.length}
                   visaTypeName={visaTypeName}
                   countryName={countryName}
+                  isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
                 />
               )
             ) : (
@@ -310,6 +311,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file)}
                 onSponsorConsentReady={(file) => handleSponsorConsentReady(visibleDoc.id, file)}
                 sponsorConsentPrefill={sponsorConsentPrefill}
+                isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
                 onPrev={() => {
                   const prev = allDocs[activeDocIndex - 1];
                   if (prev) setActiveDocId(prev.id);

@@ -61,6 +61,12 @@ const COUNTRY_CATALOG: CountryCatalogEntry[] = [
     supported: true,
   },
   {
+    code: "VN",
+    name: "Vietnam",
+    photo: "https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800",
+    supported: true,
+  },
+  {
     code: "KR",
     name: "South Korea",
     photo: "https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800",
@@ -123,10 +129,15 @@ const LOCATION_CATALOG: LocationCatalogEntry[] = [
     city: "Hyderabad",
     photo: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
   },
+  {
+    code: "ONLINE",
+    city: "Online Submission",
+    photo: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
+  },
 ];
 
 // Statically define the active VFS codes to avoid bundler bloating.
-const ACTIVE_VFS_CODES = new Set(["DELHI", "MUMBAI", "BENGALURU", "CHENNAI", "KOLKATA"]);
+const ACTIVE_VFS_CODES = new Set(["DELHI", "MUMBAI", "BENGALURU", "CHENNAI", "KOLKATA", "ONLINE"]);
 
 interface FormFieldsJsonRaw {
   key: string;
@@ -203,6 +214,9 @@ export async function getCountryInfo(
   if (cc === "JP") {
     return (await import("../../data/countries/japan/info.json")).default as CountryInfo;
   }
+  if (cc === "VN") {
+    return (await import("../../data/countries/vietnam/info.json")).default as CountryInfo;
+  }
 
   console.warn(`[repository] getCountryInfo: no data found for countryCode="${countryCode}"`);
   return null;
@@ -233,6 +247,9 @@ export async function getCountryVisaTypes(
   const cc = normalizeCode(countryCode);
   if (cc === "JP") {
     return (await import("../../data/countries/japan/visa-types.json")).default as CountryVisaTypes;
+  }
+  if (cc === "VN") {
+    return (await import("../../data/countries/vietnam/visa-types.json")).default as CountryVisaTypes;
   }
 
   console.warn(`[repository] getCountryVisaTypes: no record found for countryCode="${countryCode}"`);
@@ -371,6 +388,14 @@ export async function getRequirementsData(
         return (await import("../../data/requirements/japan-tourist-kolkata.json")).default as RequirementsData;
     }
   }
+  if (cc === "VN" && (vc === "TOURIST" || vc === "TOURIST_MULTI") && lc === "ONLINE") {
+    const data = (await import("../../data/requirements/vietnam-tourist-online.json")).default;
+    return {
+      ...data,
+      visaTypeCode: vc,
+      visaTypeId: vc === "TOURIST_MULTI" ? "VISA_VN_TOURIST_MULTI_001" : "VISA_VN_TOURIST_001",
+    } as RequirementsData;
+  }
 
   console.warn(
     `[repository] getRequirementsData: no requirements found for countryCode="${countryCode}", visaTypeCode="${visaTypeCode}", locationCode="${locationCode}"`
@@ -399,7 +424,6 @@ export async function getItineraryPlaces(
 
   const key = countryKeys[cc];
   if (!key) {
-    console.warn(`[repository] getItineraryPlaces: unsupported countryCode="${countryCode}"`);
     return null;
   }
 
@@ -453,6 +477,8 @@ export async function getFormFillFields(
 
   if (key === "JP_TOURIST_VISA_FORM_FIELDS_V1") {
     record = (await import("../../data/countries/japan/jp-tourist-visa-form-fields.json")).default as FormFieldsJsonRaw;
+  } else if (key === "VN_TOURIST_EVISA_FORM_FIELDS_V1") {
+    record = (await import("../../data/countries/vietnam/vn-tourist-evisa-form-fields.json")).default as FormFieldsJsonRaw;
   }
 
   if (!record) {

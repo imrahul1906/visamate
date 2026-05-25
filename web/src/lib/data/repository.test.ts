@@ -29,6 +29,11 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(jp).toBeDefined();
       expect(jp?.supported).toBe(true);
 
+      // Vietnam should be supported
+      const vn = countries.find(c => c.code === 'VN');
+      expect(vn).toBeDefined();
+      expect(vn?.supported).toBe(true);
+
       // Korea should be in catalog but not active yet
       const kr = countries.find(c => c.code === 'KR');
       expect(kr).toBeDefined();
@@ -63,6 +68,14 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(info?.supportedVfsLocationCodes).toContain('DELHI');
     });
 
+    it('should fetch structured country info for Vietnam (VN)', async () => {
+      const info = await getCountryInfo('VN');
+      expect(info).toBeDefined();
+      expect(info?.code).toBe('VN');
+      expect(Array.isArray(info?.supportedVfsLocationCodes)).toBe(true);
+      expect(info?.supportedVfsLocationCodes).toContain('ONLINE');
+    });
+
     it('should fetch visa types for Japan', async () => {
       const record = await getCountryVisaTypes('JP');
       expect(record).toBeDefined();
@@ -78,6 +91,29 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       const tourist = await getVisaType('JP', 'TOURIST');
       expect(tourist).toBeDefined();
       expect(tourist?.code).toBe('TOURIST');
+    });
+
+    it('should fetch visa types for Vietnam', async () => {
+      const record = await getCountryVisaTypes('VN');
+      expect(record).toBeDefined();
+      expect(record?.countryCode).toBe('VN');
+      expect(Array.isArray(record?.visaTypes)).toBe(true);
+
+      const types = await getVisaTypes('VN');
+      expect(types.length).toBeGreaterThan(0);
+      expect(types[0].process?.default?.applicationMode).toBe('ONLINE');
+
+      const tourist = await getVisaType('VN', 'TOURIST');
+      expect(tourist).toBeDefined();
+      expect(tourist?.code).toBe('TOURIST');
+      expect(tourist?.fees).toBe(25);
+      expect(tourist?.currency).toBe('USD');
+
+      const touristMulti = await getVisaType('VN', 'TOURIST_MULTI');
+      expect(touristMulti).toBeDefined();
+      expect(touristMulti?.code).toBe('TOURIST_MULTI');
+      expect(touristMulti?.fees).toBe(50);
+      expect(touristMulti?.currency).toBe('USD');
     });
 
     it('should return null for non-existent countries', async () => {
@@ -104,6 +140,12 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       const vfsCodes = locations.map(l => l.code);
       expect(vfsCodes).toContain('DELHI');
       expect(vfsCodes).toContain('MUMBAI');
+    });
+
+    it('should fetch locations for Vietnam (VN)', async () => {
+      const locations = await getLocationsForCountry('VN');
+      expect(locations.length).toBe(1);
+      expect(locations[0].code).toBe('ONLINE');
     });
 
     it('should fetch center details dynamically', async () => {
@@ -136,6 +178,18 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(req?.visaTypeCode).toBe('TOURIST');
       expect(req?.locationCode).toBe('DELHI');
 
+      const reqVn = await getRequirementsData('VN', 'TOURIST', 'ONLINE');
+      expect(reqVn).toBeDefined();
+      expect(reqVn?.countryCode).toBe('VN');
+      expect(reqVn?.visaTypeCode).toBe('TOURIST');
+      expect(reqVn?.locationCode).toBe('ONLINE');
+
+      const reqVnMulti = await getRequirementsData('VN', 'TOURIST_MULTI', 'ONLINE');
+      expect(reqVnMulti).toBeDefined();
+      expect(reqVnMulti?.countryCode).toBe('VN');
+      expect(reqVnMulti?.visaTypeCode).toBe('TOURIST_MULTI');
+      expect(reqVnMulti?.locationCode).toBe('ONLINE');
+
       // Invalid combination
       expect(await getRequirementsData('JP', 'TOURIST', 'HYDERABAD')).toBeNull();
     });
@@ -155,6 +209,9 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
     it('should return form fill field definitions', async () => {
       const fields = await getFormFillFields('JP_TOURIST_VISA_FORM_FIELDS_V1');
       expect(fields.length).toBeGreaterThan(0);
+
+      const fieldsVn = await getFormFillFields('VN_TOURIST_EVISA_FORM_FIELDS_V1');
+      expect(fieldsVn.length).toBeGreaterThan(0);
 
       // Verify structure of fields
       const field = fields[0];

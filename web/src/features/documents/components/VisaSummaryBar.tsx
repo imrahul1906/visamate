@@ -361,6 +361,7 @@ export function VisaSummaryBar({
     useOverviewData(visaType ?? ({} as VisaType));
 
   const fees = visaType?.fees;
+  const isOnline = visaType?.process?.default?.applicationMode === "ONLINE";
 
   // Total fee string — prefer totalMin/Max (includes VFS), fall back to base fee
   const totalFeeStr = (() => {
@@ -473,7 +474,7 @@ export function VisaSummaryBar({
             {/* 1. Total fee (purple) */}
             {totalFeeStr && (
               <InfoTile
-                label="Total fee (incl. VFS)"
+                label={isOnline ? "Total visa fee" : "Total fee (incl. VFS)"}
                 value={totalFeeStr}
                 variant="money"
                 icon={

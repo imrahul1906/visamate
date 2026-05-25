@@ -26,9 +26,11 @@ import FormFieldDetail from "./FormFieldDetail";
 export default function VisaFormWidget({
   doc,
   color,
+  onHelperToggle,
 }: {
   doc: DocumentItem;
   color: string;
+  onHelperToggle?: (isOpen: boolean) => void;
 }) {
   const accentColor = color || T.indigo;
   const formInfo = doc.form;
@@ -62,10 +64,12 @@ export default function VisaFormWidget({
   const handleOpenHelper = () => {
     setHelperOpen(true); // triggers lazy field load in the hook
     setMode("helper");
+    onHelperToggle?.(true);
   };
 
   const handleBack = () => {
     setMode("select");
+    onHelperToggle?.(false);
   };
 
   const hasHelper = !!formInfo?.formFillDataKey;
@@ -120,22 +124,22 @@ export default function VisaFormWidget({
 
           <p
             style={{
-              margin: "0 0 20px",
-              fontSize: 12,
+              margin: "0 0 24px",
+              fontSize: 12.5,
               color: T.muted2,
-              lineHeight: 1.55,
+              lineHeight: 1.6,
               fontFamily: font.sans,
             }}
           >
             {isDownloadable
-              ? "Download the official form and use the helper to fill it field by field."
-              : "Open the online portal or use the helper for step-by-step guidance."}
+              ? "Follow these two steps to download and correctly prepare your physical application form."
+              : "Follow these two steps to fill out your electronic application on the government portal."}
           </p>
 
           {/* Option cards */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
 
-            {/* ── Card 1: Form action ── */}
+            {/* —— Card 1: Form action —— */}
             <a
               href={(isDownloadable ? formInfo?.downloadUrl : formInfo?.onlineUrl) ?? undefined}
               target="_blank"
@@ -213,7 +217,7 @@ export default function VisaFormWidget({
                   >
                     {isDownloadable
                       ? "Get the blank PDF from the official source, print and fill by hand."
-                      : "Fill the form directly on the official government website."}
+                      : "Access the official government e-visa application portal in a new window."}
                   </span>
                 </div>
               </div>
@@ -233,7 +237,7 @@ export default function VisaFormWidget({
               </svg>
             </a>
 
-            {/* ── Card 2: Form Fill Helper ── (only if data key exists) */}
+            {/* —— Card 2: Form Fill Helper —— (only if data key exists) */}
             {hasHelper && (
               <button
                 onClick={handleOpenHelper}
@@ -299,25 +303,25 @@ export default function VisaFormWidget({
                         fontFamily: font.sans,
                       }}
                     >
-                      Form Fill Helper
+                      Use the Form Fill Helper
                       <span
                         style={{
-                          fontSize: 9,
+                          fontSize: 8.5,
                           fontWeight: 700,
-                          letterSpacing: "0.05em",
                           textTransform: "uppercase",
-                          padding: "2px 7px",
-                          borderRadius: 99,
-                          background: `rgba(${hexToRgb(accentColor)},0.18)`,
+                          padding: "1px 6px",
+                          borderRadius: 4,
+                          background: `rgba(${hexToRgb(accentColor)},0.15)`,
                           color: accentColor,
-                          border: `1px solid rgba(${hexToRgb(accentColor)},0.35)`,
+                          border: `1px solid rgba(${hexToRgb(accentColor)},0.3)`,
+                          fontFamily: font.sans,
                         }}
                       >
                         Recommended
                       </span>
                     </span>
                     <span style={{ fontSize: 11, color: T.muted2, fontFamily: font.sans, lineHeight: 1.45 }}>
-                      Field-by-field guidance — hints, examples, and warnings for every box.
+                      Avoid entry denial at checkpoints. Use our side-by-side guidelines, warnings, and copy-paste suggestions for each field.
                     </span>
                   </div>
                 </div>
@@ -349,7 +353,14 @@ export default function VisaFormWidget({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      style={{ fontFamily: font.sans, background: T.surface, borderTop: `1px solid ${T.border}` }}
+      style={{
+        fontFamily: font.sans,
+        background: T.surface,
+        borderTop: `1px solid ${T.border}`,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+      }}
     >
 
 
@@ -540,8 +551,8 @@ export default function VisaFormWidget({
           style={{
             display: "grid",
             gridTemplateColumns: "220px 1fr",
-            minHeight: 360,
-            maxHeight: 480,
+            flex: 1,
+            minHeight: 0,
           }}
         >
           {/* Left: field list */}

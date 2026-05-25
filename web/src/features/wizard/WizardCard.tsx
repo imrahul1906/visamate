@@ -30,6 +30,7 @@ export default function WizardCard({
 }) {
   const { ctx, update, reset } = useApplicant();
   const [countries, setCountries] = useState<CountryCatalogEntry[]>([]);
+  const [isOnlineVisa, setIsOnlineVisa] = useState(false);
 
   useEffect(() => {
     getAllCountries().then(setCountries).catch(err => {
@@ -142,6 +143,16 @@ export default function WizardCard({
         if (storedCtx.visaType) {
           setSelectedVisa(storedCtx.visaType);
           setSelectedVisaName(storedCtx.visaTypeName || "");
+          if (restoredCountry) {
+            try {
+              const { getVisaType } = await import("@/lib/data/repository");
+              const vt = await getVisaType(restoredCountry, storedCtx.visaType);
+              const isOnline = vt?.process?.default?.applicationMode === "ONLINE";
+              setIsOnlineVisa(isOnline);
+            } catch (err) {
+              console.error("[handleResume] Failed to check online status:", err);
+            }
+          }
         }
         if (storedCtx.vfsCenter) setSelectedLocation(storedCtx.vfsCenter);
       }
@@ -176,6 +187,7 @@ export default function WizardCard({
     setSelectedVisa(null);
     setSelectedVisaName(null);
     setSelectedLocation(null);
+    setIsOnlineVisa(false);
 
     setShowResumePrompt(false);
     isLoadedRef.current = true;
@@ -217,6 +229,8 @@ export default function WizardCard({
     }, 220);
   };
 
+  const steps = isOnlineVisa ? ["Country", "Visa type"] : ["Country", "Visa type", "Location", "Details"];
+
   const canContinue =
     activeStep === 0 ? !!selectedCountry :
     activeStep === 1 ? !!selectedVisa :
@@ -224,12 +238,14 @@ export default function WizardCard({
     activeStep === 3 ? !!(ctx.sponsorshipType && ctx.applicantProfile) :
     true;
 
-  const continueLabels = [
-    "Continue → Choose visa type",
-    "Continue → Select location",
-    "Continue → Trip details",
-    "Show my documents",
-  ];
+  const continueLabels = isOnlineVisa
+    ? ["Continue → Choose visa type", "Show my documents"]
+    : [
+        "Continue → Choose visa type",
+        "Continue → Select location",
+        "Continue → Trip details",
+        "Show my documents",
+      ];
 
   const handleCountrySelect = (code: string | null, name: string | null) => {
     setSelectedCountry(code);
@@ -237,6 +253,7 @@ export default function WizardCard({
     setSelectedVisa(null);
     setSelectedVisaName(null);
     setSelectedLocation(null);
+    setIsOnlineVisa(false);
     update({
       country: code || "",
       countryName: name || "",
@@ -255,7 +272,7 @@ export default function WizardCard({
     });
   };
 
-  const handleVisaSelect = (code: string | null, name: string | null) => {
+  const handleVisaSelect = async (code: string | null, name: string | null) => {
     setSelectedVisa(code);
     setSelectedVisaName(name);
     setSelectedLocation(null);
@@ -266,6 +283,24 @@ export default function WizardCard({
       sponsorshipType: null,
       applicantProfile: null,
     });
+
+    if (code && selectedCountry) {
+      try {
+        const { getVisaType } = await import("@/lib/data/repository");
+        const vt = await getVisaType(selectedCountry, code);
+        const isOnline = vt?.process?.default?.applicationMode === "ONLINE";
+        setIsOnlineVisa(isOnline);
+        if (isOnline) {
+          setSelectedLocation("ONLINE");
+          update({ vfsCenter: "ONLINE" });
+        }
+      } catch (err) {
+        console.error("[handleVisaSelect] Failed to determine if visa is online:", err);
+        setIsOnlineVisa(false);
+      }
+    } else {
+      setIsOnlineVisa(false);
+    }
   };
 
   const breadcrumbs = [selectedCountryName, selectedVisaName, selectedLocation]
@@ -273,21 +308,22 @@ export default function WizardCard({
 
   const handleContinue = () => {
     if (!canContinue) return;
-    if (activeStep === 3) {
+    const maxStep = steps.length - 1;
+    if (activeStep === maxStep) {
       const selections: WizardSelections = {
         country:      selectedCountry     ?? "",
         countryName:  selectedCountryName ?? "",
         visaType:     selectedVisa        ?? "",
         visaTypeName: selectedVisaName    ?? "",
-        location:     selectedLocation    ?? "",
-        locationName: selectedLocation    ?? "",
-        sponsorship:  ctx.sponsorshipType ?? "SELF",
-        profile:      ctx.applicantProfile ?? "",
+        location:     isOnlineVisa ? "ONLINE" : (selectedLocation ?? ""),
+        locationName: isOnlineVisa ? "Online Submission" : (selectedLocation ?? ""),
+        sponsorship:  isOnlineVisa ? "SELF" : (ctx.sponsorshipType ?? "SELF"),
+        profile:      isOnlineVisa ? "EMPLOYED" : (ctx.applicantProfile ?? ""),
       };
       setPendingSelections(selections);
       setFlightState("animating");
     } else {
-      goToStep(Math.min(activeStep + 1, STEP_LABELS.length - 1));
+      goToStep(Math.min(activeStep + 1, maxStep));
     }
   };
 
@@ -373,21 +409,21 @@ export default function WizardCard({
             <div>
               {/* Sub-label: step counter → completion message on flight */}
               <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
-                {showFlight ? "✓ All steps complete" : `Step ${activeStep + 1} of ${STEP_LABELS.length}`}
+                {showFlight ? "✓ All steps complete" : `Step ${activeStep + 1} of ${steps.length}`}
               </span>
               {/* Title: current step → route label on flight */}
               <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
                 {showFlight
                   ? `India → ${pendingSelections?.countryName}`
-                  : STEP_LABELS[activeStep] === "Country"
+                  : steps[activeStep] === "Country"
                     ? "Select destination"
-                    : `Select ${STEP_LABELS[activeStep].toLowerCase()}`}
+                    : `Select ${steps[activeStep].toLowerCase()}`}
               </div>
             </div>
 
             {/* Progress dots: all green on flight, normal colours during wizard */}
             <div style={{ display: "flex", gap: 5 }}>
-              {STEP_LABELS.map((_, i) => (
+              {steps.map((_, i) => (
                 <div key={i} style={{
                   width: showFlight ? 18 : i === activeStep ? 22 : 18,
                   height: 4, borderRadius: 2,
@@ -576,11 +612,11 @@ export default function WizardCard({
             <button
               onClick={
                 showFlight
-                  // Dismiss flight, restore wizard at step 3
+                  // Dismiss flight, restore wizard at the last step
                   ? () => {
                       setFlightState("idle");
                       setPendingSelections(null);
-                      goToStep(3);
+                      goToStep(isOnlineVisa ? 1 : 3);
                       onEditSelections?.();
                     }
                   : handleContinue
@@ -591,7 +627,7 @@ export default function WizardCard({
                 background: showFlight
                   ? "rgba(108,92,231,0.15)"
                   : canContinue
-                    ? activeStep === 3
+                    ? activeStep === (steps.length - 1)
                       ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
                       : "#6c5ce7"
                     : "rgba(255,255,255,0.06)",
@@ -605,7 +641,7 @@ export default function WizardCard({
                 fontSize: 13, fontWeight: 500,
                 cursor: showFlight || canContinue ? "pointer" : "not-allowed",
                 transition: "all 0.3s",
-                boxShadow: !showFlight && canContinue && activeStep === 3
+                boxShadow: !showFlight && canContinue && activeStep === (steps.length - 1)
                   ? "0 4px 20px rgba(108,92,231,0.4)"
                   : "none",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
@@ -624,7 +660,7 @@ export default function WizardCard({
               ) : (
                 // Normal wizard mode
                 <>
-                  {activeStep === 3 && canContinue && (
+                  {activeStep === (steps.length - 1) && canContinue && (
                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75m-7.5 6h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v12A2.25 2.25 0 004.5 21z" />
                     </svg>
