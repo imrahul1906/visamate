@@ -1,4 +1,4 @@
-// src/features/documents/components/DocChecklistEmptyStateStyles.tsx
+// src/features/documents/components/DocChecklistEmptyState/DocChecklistEmptyStateStyles.tsx
 import { scrollbarCSS } from "@/lib/theme";
 
 export function DocChecklistEmptyStateStyles() {

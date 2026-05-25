@@ -1,4 +1,4 @@
-// src/features/documents/components/DocChecklistEmptyStateData.tsx
+// src/features/documents/components/DocChecklistEmptyState/DocChecklistEmptyStateData.tsx
 import React from "react";
 
 export interface StepItem {
