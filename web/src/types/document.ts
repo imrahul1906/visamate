@@ -52,6 +52,7 @@ export interface DocumentItem {
   // FIX: added to carry the PDF download URL for the document_checklist widget.
   // Populated by mapRequirements from doc.check_list_download_Url in the JSON.
   checkListDownloadUrl?: string;
+  maxSizeBytes?: number;
 }
 
 export interface DocumentCategory {

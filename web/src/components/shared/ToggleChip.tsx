@@ -76,9 +76,9 @@ export function ToggleChip({ id, label, icon, selected, onSelect, disabled }: To
         background: selected
           ? T.purpleBg
           : hovered
-            ? "rgba(255,255,255,0.07)"
-            : "rgba(255,255,255,0.04)",
-        color: selected ? T.purpleSoft : hovered ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.5)",
+            ? "var(--vm-trans-white-07)"
+            : "var(--vm-trans-white-04)",
+        color: selected ? T.purpleSoft : hovered ? "var(--vm-trans-white-85)" : "var(--vm-trans-white-45)",
         fontSize: 12,
         fontWeight: 500,
         cursor: disabled ? "not-allowed" : "pointer",
@@ -132,7 +132,7 @@ export function ToggleGroup({
     <div>
       <div
         style={{
-          color: "rgba(255,255,255,0.4)",
+          color: "var(--vm-trans-white-45)",
           fontSize: 11,
           fontWeight: 500,
           marginBottom: 10,
@@ -219,8 +219,8 @@ export function SelectCard({
         background: selected
           ? T.purpleBgMuted
           : hovered && !disabled
-            ? "rgba(255,255,255,0.05)"
-            : "rgba(255,255,255,0.03)",
+            ? "var(--vm-trans-white-05)"
+            : "var(--vm-trans-white-03)",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.5 : 1,
         transition: "all 0.15s",
@@ -236,8 +236,8 @@ export function SelectCard({
               width: 34,
               height: 34,
               borderRadius: 9,
-              background: selected ? T.purpleIconBg : "rgba(255,255,255,0.07)",
-              color: selected ? T.purpleSoft : "rgba(255,255,255,0.4)",
+              background: selected ? T.purpleIconBg : "var(--vm-trans-white-07)",
+              color: selected ? T.purpleSoft : "var(--vm-trans-white-45)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -254,7 +254,7 @@ export function SelectCard({
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span
               style={{
-                color: selected ? T.text : "rgba(255,255,255,0.75)",
+                color: selected ? T.text : "var(--vm-trans-white-85)",
                 fontSize: 13,
                 fontWeight: 500,
                 fontFamily: font.sans,
@@ -268,7 +268,7 @@ export function SelectCard({
                   fontSize: 10,
                   fontWeight: 700,
                   color: T.muted,
-                  background: "rgba(255,255,255,0.06)",
+                  background: "var(--vm-trans-white-06)",
                   padding: "1px 6px",
                   borderRadius: 6,
                   fontFamily: font.sans,

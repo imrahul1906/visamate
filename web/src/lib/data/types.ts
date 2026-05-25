@@ -84,7 +84,7 @@ export interface VisaProcess {
     interviewRequired?: boolean;
   };
   /** Centre-specific payment rules — only shown when the selected centre matches */
-  paymentInstructions: PaymentInstruction[];
+  paymentInstructions?: PaymentInstruction[];
 }
 
 // ── VisaType ──────────────────────────────────────────────────────────────────

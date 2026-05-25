@@ -94,9 +94,9 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
         </div>
         <button
           onClick={handleClose}
-          style={{ marginLeft: 16, flexShrink: 0, width: 28, height: 28, borderRadius: "50%", background: "rgba(255,255,255,0.07)", border: `1px solid ${T.border}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.4)", transition: "all 150ms" }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.12)"; e.currentTarget.style.color = "#fff"; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.color = "rgba(255,255,255,0.4)"; }}
+          style={{ marginLeft: 16, flexShrink: 0, width: 28, height: 28, borderRadius: "50%", background: "var(--vm-trans-white-07)", border: `1px solid ${T.border}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--vm-trans-white-45)", transition: "all 150ms" }}
+          onMouseEnter={e => { e.currentTarget.style.background = "var(--vm-trans-white-12)"; e.currentTarget.style.color = "var(--vm-text)"; }}
+          onMouseLeave={e => { e.currentTarget.style.background = "var(--vm-trans-white-07)"; e.currentTarget.style.color = "var(--vm-trans-white-45)"; }}
         >
           <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -121,9 +121,9 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
             </a>
           )}
           {center.website && (
-            <a href={center.website} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 8, background: "rgba(255,255,255,0.05)", border: `1px solid ${T.border}`, fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.55)", textDecoration: "none", transition: "all 150ms" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.09)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.8)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.55)"; }}
+            <a href={center.website} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 14px", borderRadius: 8, background: "var(--vm-trans-white-05)", border: `1px solid ${T.border}`, fontSize: 12, fontWeight: 600, color: "var(--vm-trans-white-65)", textDecoration: "none", transition: "all 150ms" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "var(--vm-trans-white-10)"; (e.currentTarget as HTMLAnchorElement).style.color = "var(--vm-text)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "var(--vm-trans-white-05)"; (e.currentTarget as HTMLAnchorElement).style.color = "var(--vm-trans-white-65)"; }}
             >
               <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -145,7 +145,7 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
             </div>
             <span style={{ fontSize: 10, fontWeight: 700, color: T.muted2, textTransform: "uppercase", letterSpacing: "0.09em" }}>Operating Hours</span>
           </div>
-          <div style={{ borderRadius: 10, border: `1px solid ${T.border}`, padding: "2px 14px", background: "rgba(255,255,255,0.02)" }}>
+          <div style={{ borderRadius: 10, border: `1px solid ${T.border}`, padding: "2px 14px", background: "var(--vm-trans-white-02)" }}>
             {center.operatingHours.submissionIndividual && <HoursRow label="Individual Submission" slot={center.operatingHours.submissionIndividual} />}
             {center.operatingHours.submissionAgent && <HoursRow label="Agent Submission" slot={center.operatingHours.submissionAgent} />}
             {center.operatingHours.passportCollection && (
@@ -233,7 +233,7 @@ function CenterDrawer({ info, onClose }: { info: VfsCenterInfo; onClose: () => v
       <div className="vfs-drawer-scroll vm-scroll-indigo" style={modalStyle}>
         {isMobile && (
           <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-            <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
+            <div style={{ width: 36, height: 4, borderRadius: 2, background: "var(--vm-trans-white-15)" }} />
           </div>
         )}
         {panelContent}
@@ -283,8 +283,8 @@ function LocationRow({
         background: isSelected
           ? T.purpleBgMuted
           : hovered
-            ? "rgba(255,255,255,0.05)"
-            : "rgba(255,255,255,0.03)",
+            ? "var(--vm-trans-white-05)"
+            : "var(--vm-trans-white-03)",
         cursor: "pointer",
         transition: "all 0.15s ease",
         textAlign: "left",
@@ -298,7 +298,7 @@ function LocationRow({
         width: 38, height: 38,
         borderRadius: 7, overflow: "hidden",
         flexShrink: 0,
-        background: "rgba(255,255,255,0.08)",
+        background: "var(--vm-trans-white-08)",
         position: "relative",
       }}>
         {loc.photo ? (
@@ -312,7 +312,7 @@ function LocationRow({
           <div style={{
             width: "100%", height: "100%",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)",
+            fontSize: 11, fontWeight: 700, color: "var(--vm-trans-white-45)",
             letterSpacing: "0.05em",
           }}>
             {loc.city.slice(0, 2).toUpperCase()}
@@ -323,7 +323,7 @@ function LocationRow({
       {/* Label */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          color: isSelected ? T.text : "rgba(255,255,255,0.85)",
+          color: isSelected ? T.text : "var(--vm-trans-white-85)",
           fontSize: 13,
           fontWeight: isSelected ? 600 : 500,
           whiteSpace: "nowrap",
@@ -354,7 +354,7 @@ function LocationRow({
             onClick={(e) => { e.stopPropagation(); onInfoClick(); }}
             style={{
               width: 20, height: 20, borderRadius: "50%",
-              background: isSelected ? T.purpleBgMuted : "rgba(255,255,255,0.07)",
+              background: isSelected ? T.purpleBgMuted : "var(--vm-trans-white-07)",
               display: "flex", alignItems: "center", justifyContent: "center",
               color: isSelected ? T.purpleSoft : T.muted,
               transition: "all 0.15s",
@@ -365,7 +365,7 @@ function LocationRow({
               e.currentTarget.style.color = T.purpleSoft;
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = isSelected ? T.purpleBgMuted : "rgba(255,255,255,0.07)";
+              e.currentTarget.style.background = isSelected ? T.purpleBgMuted : "var(--vm-trans-white-07)";
               e.currentTarget.style.color = isSelected ? T.purpleSoft : T.muted;
             }}
           >
@@ -389,7 +389,7 @@ function LocationRow({
               </svg>
             </div>
           ) : (
-            <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" viewBox="0 0 24 24">
+            <svg width="12" height="12" fill="none" stroke="var(--vm-trans-white-20)" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           )}
@@ -497,7 +497,7 @@ export default function StepLocation({ countryCode, selectedLocation, onSelect, 
         {!compact && locations.length > 5 && (
           <div style={{
             height: 20,
-            background: "linear-gradient(to top, rgba(15,12,30,0.6) 0%, transparent 100%)",
+            background: "linear-gradient(to top, var(--vm-fade-bg) 0%, transparent 100%)",
             marginTop: -20,
             pointerEvents: "none",
             position: "relative",

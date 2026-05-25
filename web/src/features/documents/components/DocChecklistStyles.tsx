@@ -11,17 +11,17 @@ export function DocChecklistStyles() {
         display: flex; align-items: center; gap: 6px;
         background: transparent; border: none; cursor: pointer;
         font-size: 13px; font-weight: 500;
-        color: rgba(255,255,255,0.4);
+        color: var(--vm-trans-white-45);
         padding: 0 0 24px;
         transition: color 150ms ease;
         font-family: 'DM Sans', sans-serif;
       }
-      .vm-back-btn:hover { color: rgba(255,255,255,0.9); }
+      .vm-back-btn:hover { color: var(--vm-trans-white-85); }
 
       .vm-dl-btn {
         display: inline-flex; align-items: center; gap: 6px;
-        background: rgba(255,255,255,0.1);
-        color: #fff; border: 1px solid rgba(255,255,255,0.2);
+        background: var(--vm-trans-white-10);
+        color: var(--vm-text); border: 1px solid var(--vm-trans-white-20);
         border-radius: 9px; padding: 6px 14px; cursor: pointer;
         font-size: 11px; font-weight: 700;
         backdrop-filter: blur(4px);
@@ -29,37 +29,48 @@ export function DocChecklistStyles() {
         font-family: 'DM Sans', sans-serif;
       }
       .vm-dl-btn:hover {
-        background: rgba(255,255,255,0.18);
-        border-color: rgba(255,255,255,0.35);
+        background: var(--vm-trans-white-18);
+        border-color: var(--vm-trans-white-35);
       }
 
       .vm-doc-row {
         border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.07);
-        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--vm-trans-white-07);
+        background: var(--vm-trans-white-02);
         padding: 10px 12px;
         cursor: pointer;
-        transition: background 150ms ease, border-color 150ms ease;
+        transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
         display: flex;
         align-items: flex-start;
         gap: 10px;
         min-width: 0;
       }
+      .light .vm-doc-row {
+        background: rgba(255, 255, 255, 0.65);
+        border-color: rgba(108, 92, 231, 0.06);
+        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.02);
+      }
       .vm-doc-row:hover {
-        background: rgba(255,255,255,0.05);
-        border-color: rgba(255,255,255,0.13);
+        background: var(--vm-trans-white-05);
+        border-color: var(--vm-trans-white-12);
+      }
+      .light .vm-doc-row:hover {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(108, 92, 231, 0.16);
+        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.06);
+        transform: translateY(-0.5px);
       }
       .vm-doc-row.vm-active {
-        background: rgba(99,102,241,0.08);
-        border-color: rgba(99,102,241,0.45);
+        background: var(--vm-indigo-glow);
+        border-color: var(--vm-indigo-light);
       }
       .vm-doc-row.vm-done {
-        background: rgba(74,222,128,0.04);
-        border-color: rgba(74,222,128,0.2);
+        background: var(--vm-green-bg);
+        border-color: var(--vm-green-border);
       }
       .vm-doc-row.vm-active.vm-done {
-        background: rgba(99,102,241,0.08);
-        border-color: rgba(99,102,241,0.45);
+        background: var(--vm-indigo-glow);
+        border-color: var(--vm-indigo-light);
       }
       .vm-doc-row.vm-optional {
         border-style: dashed;
@@ -71,30 +82,30 @@ export function DocChecklistStyles() {
 
       .vm-checkbox-btn {
         width: 18px; height: 18px; border-radius: 5px; flex-shrink: 0;
-        border: 2px solid rgba(255,255,255,0.2);
+        border: 2px solid var(--vm-trans-white-20);
         background: transparent;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; transition: all 160ms ease;
       }
       .vm-checkbox-btn.vm-checked {
-        border-color: #6366f1;
-        background: #6366f1;
+        border-color: var(--vm-indigo);
+        background: var(--vm-indigo);
       }
 
       /* .vm-badge removed — replaced by <Badge> component */
 
       .vm-drawer-close-btn {
         width: 28px; height: 28px; border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--vm-trans-white-10);
+        background: var(--vm-trans-white-05);
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; flex-shrink: 0;
         transition: background 150ms ease;
-        color: rgba(255,255,255,0.5);
+        color: var(--vm-trans-white-45);
       }
       .vm-drawer-close-btn:hover {
-        background: rgba(255,255,255,0.1);
-        color: rgba(255,255,255,0.9);
+        background: var(--vm-trans-white-10);
+        color: var(--vm-trans-white-85);
       }
 
       .vm-mark-done-btn {
@@ -105,37 +116,37 @@ export function DocChecklistStyles() {
         font-family: 'DM Sans', sans-serif;
       }
       .vm-mark-done-btn.vm-undone {
-        background: rgba(99,102,241,0.1);
-        border: 1px solid rgba(99,102,241,0.3);
-        color: #818cf8;
+        background: var(--vm-indigo-glow);
+        border: 1px solid var(--vm-indigo-light);
+        color: var(--vm-indigo-light);
       }
       .vm-mark-done-btn.vm-undone:hover {
-        background: rgba(99,102,241,0.2);
-        border-color: rgba(99,102,241,0.5);
+        background: var(--vm-indigo-glow);
+        border-color: var(--vm-indigo);
       }
       .vm-mark-done-btn.vm-is-done {
-        background: rgba(74,222,128,0.1);
-        border: 1px solid rgba(74,222,128,0.3);
-        color: #4ade80;
+        background: var(--vm-green-bg);
+        border: 1px solid var(--vm-green-border);
+        color: var(--vm-green);
       }
       .vm-mark-done-btn.vm-is-done:hover {
-        background: rgba(74,222,128,0.18);
+        background: var(--vm-green-border);
       }
 
       .vm-nav-btn {
         display: inline-flex; align-items: center; gap: 5px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.09);
+        background: var(--vm-trans-white-05);
+        border: 1px solid var(--vm-trans-white-08);
         border-radius: 8px; padding: 7px 13px;
         font-size: 12px; font-weight: 500; cursor: pointer;
-        color: rgba(255,255,255,0.55);
+        color: var(--vm-trans-white-45);
         transition: all 150ms ease;
         font-family: 'DM Sans', sans-serif;
       }
       .vm-nav-btn:hover:not(:disabled) {
-        background: rgba(255,255,255,0.1);
-        border-color: rgba(255,255,255,0.2);
-        color: rgba(255,255,255,0.9);
+        background: var(--vm-trans-white-10);
+        border-color: var(--vm-trans-white-20);
+        color: var(--vm-trans-white-85);
       }
       .vm-nav-btn:disabled {
         opacity: 0.3; cursor: default;
@@ -146,7 +157,29 @@ export function DocChecklistStyles() {
         transition: border-color 200ms ease;
       }
       .vm-doc-identity-header:hover {
-        border-color: rgba(99,102,241,0.28) !important;
+        border-color: var(--vm-indigo) !important;
+      }
+      .light .vm-doc-identity-header {
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-left: 3px solid rgba(108, 92, 231, 0.25);
+      }
+      .light .vm-doc-identity-header:hover {
+        border-left-color: var(--vm-indigo);
+      }
+      /* Title gradient — subtle brand tint in light mode */
+      .light .vm-detail-doc-title {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      /* Checklist empty-state heading — editorial serif gradient */
+      .light .vm-checklist-heading {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
 
       /*
@@ -199,8 +232,58 @@ export function DocChecklistStyles() {
         transition: border-color 200ms ease, transform 200ms ease;
       }
       .vm-stat-card:hover {
-        border-color: rgba(129,140,248,0.35) !important;
+        border-color: var(--vm-indigo-light) !important;
         transform: translateY(-1px);
+      }
+
+      /* Numbered steps in details panel */
+      .vm-what-you-need-step {
+        display: flex;
+        align-items: flex-start;
+        padding: 0 16px 0 14px;
+        cursor: default;
+        transition: background-color 160ms ease;
+        background: transparent;
+      }
+      .vm-what-you-need-step:hover {
+        background: var(--vm-trans-white-03) !important;
+      }
+      .vm-what-you-need-step .step-num {
+        width: 22px; height: 22px; border-radius: 50%;
+        background: var(--vm-trans-white-05);
+        border: 1px solid var(--vm-trans-white-12);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 10px; font-weight: 700; color: var(--vm-trans-white-45);
+        flex-shrink: 0;
+        transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .vm-what-you-need-step:hover .step-num {
+        background: var(--vm-purple-bg) !important;
+        border-color: var(--vm-purple-border-soft) !important;
+        color: var(--vm-purple-soft) !important;
+      }
+      .vm-what-you-need-step .step-connector {
+        width: 2px;
+        flex: 1;
+        min-height: 14px;
+        background: var(--vm-trans-white-08);
+        margin-top: 4px;
+        transition: background-color 160ms ease;
+      }
+      .vm-what-you-need-step:hover .step-connector {
+        background: var(--vm-purple-border-soft) !important;
+      }
+      .vm-what-you-need-step .step-tip-text {
+        font-size: 12.5px;
+        color: var(--vm-trans-white-65);
+        line-height: 1.6;
+        flex: 1;
+        transition: color 160ms ease;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .vm-what-you-need-step:hover .step-tip-text {
+        color: var(--vm-text) !important;
       }
 
       @media (max-width: 767px) {

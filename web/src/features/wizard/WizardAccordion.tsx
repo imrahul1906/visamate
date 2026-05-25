@@ -25,14 +25,13 @@ function Hero({
 }) {
   return (
     <section style={{
-      background: "#0a0718", minHeight: "100vh", padding: "0 32px",
+      background: "var(--vm-hero-bg)", minHeight: "100vh", padding: "0 32px",
       display: "flex", alignItems: "center", position: "relative", overflow: "hidden",
+      transition: "background 0.3s ease",
     }}>
       <div style={{
         position: "absolute", inset: 0, pointerEvents: "none",
-        backgroundImage:
-          "radial-gradient(circle at 70% 40%, rgba(108,92,231,0.12) 0%, transparent 60%), " +
-          "radial-gradient(circle at 20% 80%, rgba(108,92,231,0.06) 0%, transparent 50%)",
+        backgroundImage: "var(--vm-hero-gradient)",
       }} />
       <div className="hero-grid" style={{
         maxWidth: 1100, margin: "0 auto", width: "100%",
@@ -43,20 +42,20 @@ function Hero({
         <div>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 7,
-            background: "rgba(108,92,231,0.15)", border: "0.5px solid rgba(108,92,231,0.38)",
-            color: "#a89cef", fontSize: 11, padding: "4px 12px", borderRadius: 20, marginBottom: 24,
+            background: "var(--vm-purple-bg)", border: "0.5px solid var(--vm-purple-border-soft)",
+            color: "var(--vm-purple-soft)", fontSize: 11, padding: "4px 12px", borderRadius: 20, marginBottom: 24,
           }}>
-            <div style={{ width: 5, height: 5, background: "#6c5ce7", borderRadius: "50%" }} />
+            <div style={{ width: 5, height: 5, background: "var(--vm-purple)", borderRadius: "50%" }} />
             Visa Document Intelligence
           </div>
           <h1 style={{
-            color: "#fff", fontSize: "clamp(32px, 4vw, 50px)",
+            color: "var(--vm-text)", fontSize: "clamp(32px, 4vw, 50px)",
             fontWeight: 500, lineHeight: 1.15, margin: "0 0 18px", letterSpacing: "-0.03em",
           }}>
             Your personalised<br />visa checklist,<br />
-            <span style={{ color: "#a89cef" }}>in 4 steps.</span>
+            <span style={{ color: "var(--vm-purple-soft)" }}>in 4 steps.</span>
           </h1>
-          <p style={{ color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.7, margin: "0 0 30px", maxWidth: 420 }}>
+          <p style={{ color: "var(--vm-trans-white-45)", fontSize: 14, lineHeight: 1.7, margin: "0 0 30px", maxWidth: 420 }}>
             Accurate requirements sourced from official embassy data — no guesswork, no missed documents.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -65,13 +64,13 @@ function Hero({
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 7,
-                background: "rgba(255, 255, 255, 0.03)",
-                border: "0.5px solid rgba(255, 255, 255, 0.08)",
+                background: "var(--vm-trans-white-03)",
+                border: "0.5px solid var(--vm-trans-white-08)",
                 borderRadius: 20,
                 padding: "6px 14px",
               }}>
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
-                <span style={{ color: "rgba(255, 255, 255, 0.65)", fontSize: 12, fontWeight: 500 }}>{t.label}</span>
+                <span style={{ color: "var(--vm-trans-white-65)", fontSize: 12, fontWeight: 500 }}>{t.label}</span>
               </div>
             ))}
           </div>
@@ -95,12 +94,12 @@ function DocumentsSection({ sectionRef, visible, selections }: {
     <section
       ref={sectionRef}
       style={{
-        background: "#0d0b1e",
-        borderTop: "0.5px solid rgba(255,255,255,0.07)",
+        background: "var(--vm-docs-bg)",
+        borderTop: "0.5px solid var(--vm-border)",
         padding: "72px 0 80px",
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(56px)",
-        transition: "opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1)",
+        transition: "opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease",
       }}
     >
       <DocumentsContent

@@ -377,24 +377,24 @@ export default function WizardCard({
 
           // Card surface morphs when flight is active — dark with purple glow
           background: showFlight
-            ? "rgba(6,3,18,0.95)"
-            : "rgba(255,255,255,0.035)",
+            ? "var(--vm-surface)"
+            : "var(--vm-card-bg)",
           backdropFilter: "blur(24px) saturate(160%)",
           WebkitBackdropFilter: "blur(24px) saturate(160%)",
 
           // Top border glows purple on flight
-          border: "0.5px solid rgba(255,255,255,0.1)",
+          border: "0.5px solid var(--vm-card-border)",
           borderTop: showFlight
-            ? "0.5px solid rgba(108,92,231,0.4)"
-            : "0.5px solid rgba(255,255,255,0.18)",
+            ? "0.5px solid var(--vm-purple-border)"
+            : "0.5px solid var(--vm-card-border-top)",
 
           borderRadius: 22,
           padding: "20px 20px 16px",
 
-          // Deeper purple glow shadow during flight
+          // Theme-aware shadows with custom purple glow backplate during active flight state
           boxShadow: showFlight
-            ? "0 8px 40px rgba(0,0,0,0.6), 0 0 0 0.5px rgba(108,92,231,0.3) inset, 0 32px 80px rgba(108,92,231,0.2)"
-            : "0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(108,92,231,0.12) inset, 0 32px 64px rgba(108,92,231,0.08)",
+            ? "var(--vm-card-shadow), 0 20px 50px var(--vm-purple-shadow)"
+            : "var(--vm-card-shadow)",
 
           transition: "background 0.45s ease, border-color 0.45s ease, box-shadow 0.45s ease",
         }}
@@ -408,11 +408,11 @@ export default function WizardCard({
           }}>
             <div>
               {/* Sub-label: step counter → completion message on flight */}
-              <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
+              <span style={{ color: "var(--vm-trans-white-45)", fontSize: 10 }}>
                 {showFlight ? "✓ All steps complete" : `Step ${activeStep + 1} of ${steps.length}`}
               </span>
               {/* Title: current step → route label on flight */}
-              <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
+              <div style={{ color: "var(--vm-trans-white-85)", fontSize: 13, fontWeight: 500, marginTop: 1 }}>
                 {showFlight
                   ? `India → ${pendingSelections?.countryName}`
                   : steps[activeStep] === "Country"
@@ -425,14 +425,14 @@ export default function WizardCard({
             <div style={{ display: "flex", gap: 5 }}>
               {steps.map((_, i) => (
                 <div key={i} style={{
-                  width: showFlight ? 18 : i === activeStep ? 22 : 18,
-                  height: 4, borderRadius: 2,
+                  width: showFlight ? 18 : i === activeStep ? 24 : 18,
+                  height: 4, borderRadius: 99,
                   background: showFlight
-                    ? "#4ade80"
-                    : i < activeStep   ? "#4ade80"
-                    : i === activeStep ? "#6c5ce7"
-                    : "rgba(255,255,255,0.12)",
-                  transition: "all 0.3s",
+                    ? "var(--vm-green)"
+                    : i < activeStep   ? "var(--vm-green)"
+                    : i === activeStep ? "var(--vm-purple)"
+                    : "var(--vm-trans-white-12)",
+                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 }} />
               ))}
             </div>
@@ -445,14 +445,14 @@ export default function WizardCard({
                 {breadcrumbs.map((label, i) => (
                   <div key={i} onClick={() => goToStep(i)} style={{
                     display: "inline-flex", alignItems: "center", gap: 5,
-                    background: "rgba(108,92,231,0.1)",
-                    border: "0.5px solid rgba(108,92,231,0.3)",
+                    background: "var(--vm-purple-bg-muted)",
+                    border: "0.5px solid var(--vm-purple-border-soft)",
                     borderRadius: 20, padding: "4px 10px 4px 8px", cursor: "pointer",
                   }}>
                     <svg width="10" height="10" fill="none" stroke="#4ade80" strokeWidth="3" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
-                    <span style={{ color: "#a89cef", fontSize: 11 }}>{label}</span>
+                    <span style={{ color: "var(--vm-purple-soft)", fontSize: 11 }}>{label}</span>
                   </div>
                 ))}
               </div>
@@ -514,8 +514,8 @@ export default function WizardCard({
                      <div style={{ display: "flex", flexDirection: "column", height: "100%", gap: 10 }}>
                         <div
                           style={{
-                            background: "rgba(108, 92, 231, 0.1)",
-                            border: showResumePrompt ? "1px solid rgba(108, 92, 231, 0.25)" : "1px solid transparent",
+                            background: "var(--vm-purple-bg-muted)",
+                            border: showResumePrompt ? "1px solid var(--vm-purple-border-soft)" : "1px solid transparent",
                             borderRadius: 12,
                             padding: showResumePrompt ? "10px 14px" : "0px 14px",
                             display: "flex",
@@ -535,11 +535,11 @@ export default function WizardCard({
                         >
                           <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                             <div style={{ flexShrink: 0 }}>
-                              <svg width="16" height="16" fill="none" stroke="#a89cef" strokeWidth="2" viewBox="0 0 24 24">
+                              <svg width="16" height="16" fill="none" stroke="var(--vm-purple-soft)" strokeWidth="2" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                               </svg>
                             </div>
-                            <span style={{ color: "rgba(255, 255, 255, 0.85)", fontSize: 11, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            <span style={{ color: "var(--vm-trans-white-85)", fontSize: 11, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               Resume application to <strong>{resumeCountryName || "destination"}</strong>?
                             </span>
                           </div>
@@ -565,9 +565,9 @@ export default function WizardCard({
                             <button
                               onClick={handleStartFresh}
                               style={{
-                                background: "rgba(255, 255, 255, 0.08)",
-                                color: "rgba(255, 255, 255, 0.6)",
-                                border: "0.5px solid rgba(255, 255, 255, 0.15)",
+                                background: "var(--vm-trans-white-08)",
+                                color: "var(--vm-trans-white-65)",
+                                border: "0.5px solid var(--vm-trans-white-15)",
                                 borderRadius: 6,
                                 padding: "4px 8px",
                                 fontSize: 10,
@@ -576,12 +576,12 @@ export default function WizardCard({
                                 transition: "all 0.2s",
                               }}
                               onMouseEnter={e => {
-                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.12)";
-                                e.currentTarget.style.color = "#fff";
+                                e.currentTarget.style.background = "var(--vm-trans-white-12)";
+                                e.currentTarget.style.color = "var(--vm-text)";
                               }}
                               onMouseLeave={e => {
-                                e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-                                e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
+                                e.currentTarget.style.background = "var(--vm-trans-white-08)";
+                                e.currentTarget.style.color = "var(--vm-trans-white-65)";
                               }}
                             >
                               Dismiss
@@ -625,29 +625,47 @@ export default function WizardCard({
                 width: "100%",
                 // Muted purple ghost button on flight; gradient/solid on normal steps
                 background: showFlight
-                  ? "rgba(108,92,231,0.15)"
+                  ? "var(--vm-purple-bg)"
                   : canContinue
                     ? activeStep === (steps.length - 1)
                       ? "linear-gradient(135deg, #6c5ce7 0%, #a78bfa 100%)"
                       : "#6c5ce7"
-                    : "rgba(255,255,255,0.06)",
+                    : "var(--vm-trans-white-06)",
                 color: showFlight
-                  ? "#a89cef"
-                  : canContinue ? "#fff" : "rgba(255,255,255,0.2)",
+                  ? "var(--vm-purple-soft)"
+                  : canContinue ? "#fff" : "var(--vm-trans-white-20)",
                 border: showFlight
-                  ? "0.5px solid rgba(108,92,231,0.35)"
+                  ? "0.5px solid var(--vm-purple-border-soft)"
                   : "none",
                 borderRadius: 10, padding: "11px",
                 fontSize: 13, fontWeight: 500,
                 cursor: showFlight || canContinue ? "pointer" : "not-allowed",
-                transition: "all 0.3s",
+                transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)",
                 boxShadow: !showFlight && canContinue && activeStep === (steps.length - 1)
-                  ? "0 4px 20px rgba(108,92,231,0.4)"
+                  ? "0 4px 20px var(--vm-purple-shadow)"
                   : "none",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
               }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; }}
+              onMouseEnter={e => {
+                if (showFlight || canContinue) {
+                  e.currentTarget.style.transform = "translateY(-1.5px)";
+                  e.currentTarget.style.boxShadow = showFlight 
+                    ? "0 6px 16px var(--vm-purple-shadow)"
+                    : "0 6px 20px var(--vm-purple-shadow)";
+                  if (showFlight) {
+                    e.currentTarget.style.background = "var(--vm-purple-bg-muted)";
+                  }
+                }
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = !showFlight && canContinue && activeStep === (steps.length - 1)
+                  ? "0 4px 20px var(--vm-purple-shadow)"
+                  : "none";
+                if (showFlight) {
+                  e.currentTarget.style.background = "var(--vm-purple-bg)";
+                }
+              }}
             >
               {showFlight ? (
                 // Flight mode: back-arrow + "Edit selections"

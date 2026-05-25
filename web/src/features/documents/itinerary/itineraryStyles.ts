@@ -53,6 +53,41 @@ export const styles = `
   .iw-opt-arrow { flex-shrink: 0; color: var(--iw-muted); }
   .iw-opt--dark .iw-opt-arrow { color: var(--iw-indigo-lt); }
 
+  /* Light mode premium overrides — itinerary select */
+  .light .iw-select-title {
+    background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .light .iw-opt--dark {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(108, 92, 231, 0.12);
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.04);
+  }
+  .light .iw-opt--dark:hover {
+    background: #ffffff;
+    border-color: var(--iw-indigo);
+    box-shadow: 0 10px 28px rgba(108, 92, 231, 0.1);
+    transform: translateY(-2px);
+  }
+  .light .iw-opt-icon--dark {
+    background: rgba(108, 92, 231, 0.07);
+    color: var(--iw-indigo);
+    border-color: rgba(108, 92, 231, 0.18);
+  }
+  .light .iw-opt-badge {
+    background: rgba(108, 92, 231, 0.07);
+    color: var(--iw-indigo);
+    border-color: rgba(108, 92, 231, 0.18);
+  }
+  .light .iw-opt-title {
+    background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   /* OR divider between options */
   .iw-opt-or { display: flex; align-items: center; gap: 10px; padding: 2px 0; }
   .iw-opt-or-line { flex: 1; height: 1px; background: var(--iw-border); }

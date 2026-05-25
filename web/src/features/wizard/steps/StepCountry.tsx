@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import type { CountryCatalogEntry } from "@/lib/data/repository";
-
+import { T, font } from "@/lib/theme";
 
 interface Props {
   allCountries: CountryCatalogEntry[] | undefined | null;
@@ -38,7 +38,6 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       overflowY: "auto",
       WebkitOverflowScrolling: "touch",
       scrollBehavior: "smooth",
-      // flex: 1 is set on the wrapper div below
     }
     : {
       display: "flex",
@@ -62,21 +61,21 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
         style={{
           width: "100%",
           paddingLeft: 34, paddingRight: search ? 32 : 12, paddingTop: 9, paddingBottom: 9,
-          background: "rgba(255,255,255,0.06)",
-          border: "0.5px solid rgba(255,255,255,0.12)",
+          background: "var(--vm-trans-white-06)",
+          border: "0.5px solid var(--vm-trans-white-12)",
           borderRadius: 10,
-          color: "#fff",
+          color: "var(--vm-text)",
           fontSize: 13,
           outline: "none",
           boxSizing: "border-box",
           fontFamily: "inherit",
           transition: "border-color 0.15s",
         }}
-        onFocus={e => (e.currentTarget.style.borderColor = "rgba(108,92,231,0.6)")}
-        onBlur={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
+        onFocus={e => (e.currentTarget.style.borderColor = "var(--vm-purple-border)")}
+        onBlur={e => (e.currentTarget.style.borderColor = "var(--vm-trans-white-12)")}
       />
       <svg
-        style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "rgba(255,255,255,0.3)", pointerEvents: "none" }}
+        style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--vm-trans-white-45)", pointerEvents: "none" }}
         fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"
       >
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z" />
@@ -86,12 +85,12 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
           onClick={() => setSearch("")}
           style={{
             position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-            background: "rgba(255,255,255,0.12)", border: "none", borderRadius: "50%",
+            background: "var(--vm-trans-white-12)", border: "none", borderRadius: "50%",
             width: 16, height: 16, cursor: "pointer", padding: 0,
             display: "flex", alignItems: "center", justifyContent: "center",
           }}
         >
-          <svg width="8" height="8" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
+          <svg width="8" height="8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" style={{ color: "var(--vm-text)" }}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -101,7 +100,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
 
   // Shared hint row JSX
   const hintRow = !isSearching && Array.isArray(allCountries) && allCountries.length > 0 && (
-    <div style={{ color: "rgba(255,255,255,0.22)", fontSize: 10, marginBottom: 8, letterSpacing: "0.04em", flexShrink: 0 }}>
+    <div style={{ color: "var(--vm-trans-white-35)", fontSize: 10, marginBottom: 8, letterSpacing: "0.04em", flexShrink: 0 }}>
       {(() => {
         const supported = allCountries.filter(c => c.supported).length;
         return supported === 1
@@ -116,7 +115,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
     <>
       <div className="vm-scroll-hidden" style={listScrollStyle}>
         {filtered.length === 0 ? (
-          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "20px 0", margin: 0 }}>
+          <p style={{ textAlign: "center", color: "var(--vm-trans-white-45)", fontSize: 12, padding: "20px 0", margin: 0 }}>
             {Array.isArray(allCountries) ? "No countries found" : "Loading..."}
           </p>
         ) : (
@@ -152,7 +151,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
         <div className="vm-scroll-hidden" style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", scrollBehavior: "smooth" }}>
           <div className="vm-scroll-hidden" style={{ display: "flex", flexDirection: "column", gap: 6, paddingRight: 1 }}>
             {filtered.length === 0 ? (
-              <p style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, padding: "20px 0", margin: 0 }}>
+              <p style={{ textAlign: "center", color: "var(--vm-trans-white-45)", fontSize: 12, padding: "20px 0", margin: 0 }}>
                 {Array.isArray(allCountries) ? "No countries found" : "Loading..."}
               </p>
             ) : (
@@ -183,9 +182,9 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
   return (
     <div>
       <div style={{ marginBottom: 18 }}>
-        <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>Step 1</div>
-        <h2 style={{ color: "#fff", fontSize: 16, fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>Select destination</h2>
-        <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Where are you planning to go?</p>
+        <div style={{ color: "var(--vm-trans-white-45)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 4 }}>Step 1</div>
+        <h2 style={{ color: "var(--vm-text)", fontSize: 16, fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>Select destination</h2>
+        <p style={{ color: "var(--vm-trans-white-45)", fontSize: 12, marginTop: 3, marginBottom: 0 }}>Where are you planning to go?</p>
       </div>
 
       {searchBar}
@@ -195,7 +194,7 @@ export default function StepCountry({ allCountries, selectedCountry, onSelect, c
       {filtered.length > 5 && (
         <div style={{
           height: 20,
-          background: "linear-gradient(to top, rgba(15,12,30,0.6) 0%, transparent 100%)",
+          background: "linear-gradient(to top, var(--vm-fade-bg) 0%, transparent 100%)",
           marginTop: -20,
           pointerEvents: "none",
           position: "relative",
@@ -235,22 +234,22 @@ function CountryRow({
         padding: "7px 10px",
         borderRadius: 10,
         border: isSelected
-          ? "1px solid rgba(108,92,231,0.7)"
+          ? "1px solid var(--vm-purple-border)"
           : hovered && c.supported
-            ? "1px solid rgba(108,92,231,0.35)"
-            : "1px solid rgba(255,255,255,0.07)",
+            ? "1px solid var(--vm-purple-border-soft)"
+            : "1px solid var(--vm-trans-white-07)",
         background: isSelected
-          ? "rgba(108,92,231,0.12)"
+          ? "var(--vm-purple-bg-muted)"
           : hovered && c.supported
-            ? "rgba(255,255,255,0.05)"
-            : "rgba(255,255,255,0.03)",
+            ? "var(--vm-trans-white-05)"
+            : "var(--vm-trans-white-03)",
         cursor: c.supported ? "pointer" : "not-allowed",
         opacity: !c.supported ? 0.5 : 1,
         transition: "all 0.15s ease",
         textAlign: "left",
         boxSizing: "border-box",
         flexShrink: 0,
-        boxShadow: isSelected ? "0 0 0 3px rgba(108,92,231,0.12)" : "none",
+        boxShadow: isSelected ? "0 0 0 3px var(--vm-purple-bg-muted)" : "none",
       }}
     >
       {/* Thumbnail */}
@@ -258,7 +257,7 @@ function CountryRow({
         width: 38, height: 38,
         borderRadius: 7, overflow: "hidden",
         flexShrink: 0,
-        background: "rgba(255,255,255,0.08)",
+        background: "var(--vm-trans-white-08)",
         position: "relative",
       }}>
         {c.photo && (
@@ -269,7 +268,7 @@ function CountryRow({
           <div style={{
             width: "100%", height: "100%",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.3)",
+            fontSize: 11, fontWeight: 700, color: "var(--vm-trans-white-45)",
             letterSpacing: "0.05em",
           }}>
             {c.code}
@@ -280,7 +279,7 @@ function CountryRow({
       {/* Label */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          color: isSelected ? "#fff" : "rgba(255,255,255,0.85)",
+          color: isSelected ? "var(--vm-text)" : "var(--vm-trans-white-85)",
           fontSize: 13,
           fontWeight: isSelected ? 600 : 500,
           whiteSpace: "nowrap",
@@ -291,7 +290,7 @@ function CountryRow({
           {c.name}
         </div>
         {!c.supported && (
-          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, marginTop: 1 }}>Coming soon</div>
+          <div style={{ color: "var(--vm-trans-white-45)", fontSize: 10, marginTop: 1 }}>Coming soon</div>
         )}
       </div>
 
@@ -300,17 +299,17 @@ function CountryRow({
         {isSelected ? (
           <div style={{
             width: 18, height: 18,
-            background: "#6c5ce7",
+            background: "var(--vm-purple)",
             borderRadius: "50%",
             display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 2px 8px rgba(108,92,231,0.5)",
+            boxShadow: "0 2px 8px var(--vm-purple-shadow)",
           }}>
             <svg width="9" height="9" fill="none" stroke="white" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
             </svg>
           </div>
         ) : c.supported ? (
-          <svg width="12" height="12" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" viewBox="0 0 24 24">
+          <svg width="12" height="12" fill="none" stroke="var(--vm-trans-white-20)" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
           </svg>
         ) : null}

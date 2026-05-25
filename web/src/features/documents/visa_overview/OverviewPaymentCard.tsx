@@ -32,8 +32,8 @@ export function OverviewPaymentCard({
   return (
     <div
       style={{
-        background: "rgba(99,102,241,0.05)",
-        border: "1px solid rgba(99,102,241,0.15)",
+        background: "var(--vm-trans-white-03)",
+        border: "1px solid var(--vm-border)",
         borderRadius: 10,
         overflow: "hidden",
       }}
@@ -42,7 +42,7 @@ export function OverviewPaymentCard({
       <div
         style={{
           padding: "10px 14px",
-          borderBottom: "1px solid rgba(99,102,241,0.1)",
+          borderBottom: "1px solid var(--vm-border)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -77,7 +77,7 @@ export function OverviewPaymentCard({
         <div
           style={{
             padding: "8px 14px",
-            borderBottom: "1px solid rgba(99,102,241,0.08)",
+            borderBottom: "1px solid var(--vm-border)",
           }}
         >
           <p
@@ -121,7 +121,7 @@ export function OverviewPaymentCard({
         <div
           style={{
             padding: "8px 14px",
-            borderBottom: notes.length > 0 ? "1px solid rgba(99,102,241,0.08)" : undefined,
+            borderBottom: notes.length > 0 ? "1px solid var(--vm-border)" : undefined,
           }}
         >
           <p
@@ -155,8 +155,8 @@ export function OverviewPaymentCard({
                       height: 5,
                       borderRadius: "50%",
                       background: rule.optional
-                        ? PALETTE.blue.text + "99"
-                        : PALETTE.indigo.text + "99",
+                        ? "var(--vm-blue)"
+                        : "var(--vm-indigo)",
                       flexShrink: 0,
                     }}
                   />
