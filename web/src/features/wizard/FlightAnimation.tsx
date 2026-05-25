@@ -679,12 +679,12 @@ export default function FlightAnimation({
         height: "100%",
         position: "relative",
         background: "var(--fa-panel-bg)",
-        borderRadius: inline ? 18 : 0,
+        borderRadius: 18,
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        border: inline ? "1px solid var(--fa-panel-border)" : "none",
-        boxShadow: inline ? "var(--vm-card-shadow)" : "none",
+        border: "1px solid var(--fa-panel-border)",
+        boxShadow: "var(--vm-card-shadow)",
       }}
     >
       <style>{`
@@ -886,7 +886,7 @@ export default function FlightAnimation({
 
   if (inline) {
     return (
-      <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+      <div style={{ width: "100%", height: "100%", borderRadius: 18, overflow: "hidden", isolation: "isolate" }}>
         {content}
       </div>
     );
@@ -905,7 +905,7 @@ export default function FlightAnimation({
         backdropFilter: "blur(8px)",
       }}
     >
-      <div style={{ width: "90vw", maxWidth: 900, height: "80vh", maxHeight: 580 }}>
+      <div style={{ width: "90vw", maxWidth: 900, height: "80vh", maxHeight: 580, borderRadius: 18, overflow: "hidden", isolation: "isolate" }}>
         {content}
       </div>
     </div>

@@ -97,15 +97,10 @@ export default function ItineraryPreview({
 
         {/* White-paper preview sheet */}
         <div className="iw-letter-sheet">
-          {/* Editable document heading */}
-          <input
-            className="iw-preview-heading-input"
-            value={editableTitle}
-            onChange={(e) => setEditableTitle(e.target.value)}
-            onFocus={() => setEditingCell("title")}
-            onBlur={() => setEditingCell(null)}
-            title="Click to edit document title"
-          />
+          {/* Document heading */}
+          <div className="iw-preview-heading-static">
+            {editableTitle}
+          </div>
 
           {/* Editable meta block */}
           <div className="iw-letter-meta">

@@ -544,6 +544,14 @@ export const STYLES = `
   .cl-letter-heading-input:hover { background: rgba(var(--iw-indigo-rgb), 0.06); }
   .cl-letter-heading-input:focus { background: rgba(var(--iw-indigo-rgb), 0.1); box-shadow: 0 0 0 2px rgba(var(--iw-indigo-rgb), 0.3); }
 
+  .cl-letter-heading-static {
+    font-size: 16px; font-weight: 700; text-align: center;
+    letter-spacing: .12em; text-decoration: underline;
+    margin: 0 0 18px; color: #1a1a1a; width: 100%;
+    font-family: 'Times New Roman', Times, serif;
+    box-sizing: border-box; display: block;
+  }
+
   /* Address textarea & Date input */
   .cl-addr-textarea {
     font-size: 13px; line-height: 1.8; color: #1a1a1a;

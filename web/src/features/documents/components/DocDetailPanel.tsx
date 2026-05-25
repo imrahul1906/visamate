@@ -119,13 +119,14 @@ export function DocDetailPanel({
             background: "var(--vm-detail-header-card-bg, var(--vm-trans-white-02))",
             isolation: "isolate",
             boxShadow: "var(--vm-detail-header-card-shadow, none)",
+            overflow: "hidden",
           }}
         >
           {/* dot grid */}
           <div style={{
             position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
-            backgroundImage: "linear-gradient(var(--vm-detail-grid-color, var(--vm-trans-white-05)) 1px, transparent 1px), linear-gradient(90deg, var(--vm-detail-grid-color, var(--vm-trans-white-05)) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
+            backgroundImage: "radial-gradient(var(--vm-detail-grid-color, var(--vm-trans-white-05)) 1px, transparent 1px)",
+            backgroundSize: "18px 18px",
             borderRadius: 13,
           }} />
 
@@ -379,6 +380,7 @@ export function DocDetailPanel({
               borderRadius: 14,
               overflow: "hidden",
               boxShadow: "var(--vm-card-shadow)",
+              isolation: "isolate",
             }}>
               {/* Callout for notes */}
               {visibleDoc.notes && (
@@ -559,6 +561,7 @@ export function DocDetailPanel({
             borderRadius: 14,
             overflow: "hidden",
             boxShadow: "var(--vm-card-shadow)",
+            isolation: "isolate",
           }}>
             <div style={{ padding: "14px" }}>
               {isOnline && (

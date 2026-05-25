@@ -120,13 +120,12 @@ export function SponsorConsentPreview({ state, onChange }: SponsorConsentPreview
       </div>
 
       {/* Subject / Heading */}
-      <input
-        className="cl-letter-heading-input"
-        value={state.lHeading}
-        onChange={(e) => set("lHeading")(e.target.value)}
-        title="Click to edit subject"
-        style={{ textAlign: "left", fontSize: 13, marginBottom: 12 }}
-      />
+      <div
+        className="cl-letter-heading-static"
+        style={{ textAlign: "left", fontSize: 13, marginBottom: 12, textDecoration: "none", fontWeight: 700 }}
+      >
+        {state.lHeading}
+      </div>
 
       {/* Salutation */}
       <input

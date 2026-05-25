@@ -60,17 +60,44 @@ export function DocChecklistStyles() {
         box-shadow: 0 4px 12px rgba(108, 92, 231, 0.06);
         transform: translateY(-0.5px);
       }
+
+      /* Active (selected) state */
       .vm-doc-row.vm-active {
-        background: var(--vm-indigo-glow);
-        border-color: var(--vm-indigo-light);
+        background: var(--vm-indigo-glow) !important;
+        border-color: var(--vm-indigo-light) !important;
       }
+      .vm-doc-row.vm-active:hover {
+        background: rgba(99, 102, 241, 0.25) !important;
+        border-color: var(--vm-indigo-light) !important;
+        transform: translateY(-0.5px);
+      }
+
+      /* Active (selected) state in light mode */
+      .light .vm-doc-row.vm-active {
+        background: var(--vm-indigo-glow) !important;
+        border-color: var(--vm-indigo) !important;
+        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.06) !important;
+      }
+      .light .vm-doc-row.vm-active:hover {
+        background: rgba(79, 70, 229, 0.1) !important;
+        border-color: var(--vm-indigo) !important;
+        transform: translateY(-0.5px);
+      }
+
+      /* Completed state (when checked) */
       .vm-doc-row.vm-done {
         background: var(--vm-green-bg);
         border-color: var(--vm-green-border);
       }
-      .vm-doc-row.vm-active.vm-done {
-        background: var(--vm-indigo-glow);
-        border-color: var(--vm-indigo-light);
+      .light .vm-doc-row.vm-done {
+        background: var(--vm-green-bg);
+        border-color: var(--vm-green-border);
+      }
+
+      /* Click click feedback (active trigger) */
+      .vm-doc-row:active, .light .vm-doc-row:active {
+        transform: scale(0.97) !important;
+        box-shadow: none !important;
       }
       .vm-doc-row.vm-optional {
         border-style: dashed;
@@ -156,16 +183,10 @@ export function DocChecklistStyles() {
       .vm-doc-identity-header {
         transition: border-color 200ms ease;
       }
-      .vm-doc-identity-header:hover {
-        border-color: var(--vm-indigo) !important;
-      }
       .light .vm-doc-identity-header {
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-left: 3px solid rgba(108, 92, 231, 0.25);
-      }
-      .light .vm-doc-identity-header:hover {
-        border-left-color: var(--vm-indigo);
       }
       /* Title gradient — subtle brand tint in light mode */
       .light .vm-detail-doc-title {
