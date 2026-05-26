@@ -20,7 +20,7 @@ import { LoadingState, ErrorState } from "./components/DocLoadingStates";
 import { SubmissionGuideState } from "./SubmissionGuideState";
 import { DocChecklistEmptyState } from "./components/DocChecklistEmptyState";
 import EmbassyInfoTab from "./components/EmbassyInfoTab";
-import PrivacySandboxTab from "./components/PrivacySandboxTab";
+import PassportCollectionTab from "./components/PassportCollectionTab";
 
 import { downloadAllFiles } from "./utils/downloadAllFiles";
 
@@ -93,49 +93,8 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
 
-  // Tab Navigation Refs and State
+  // Tab Navigation State
   const [activeTab, setActiveTab] = useState<"checklist" | "guide" | "security">("checklist");
-  const [isNavExpanded, setIsNavExpanded] = useState(false);
-  const [sliderStyle, setSliderStyle] = useState<React.CSSProperties>({ transform: "translateX(0px)", width: "0px" });
-
-  const checklistRef = useRef<HTMLButtonElement>(null);
-  const guideRef = useRef<HTMLButtonElement>(null);
-  const securityRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const updateSlider = () => {
-      let btn: HTMLButtonElement | null = null;
-      if (activeTab === "checklist") btn = checklistRef.current;
-      else if (activeTab === "guide") btn = guideRef.current;
-      else if (activeTab === "security") btn = securityRef.current;
-
-      if (btn) {
-        setSliderStyle({
-          transform: `translateX(${btn.offsetLeft}px)`,
-          width: `${btn.offsetWidth}px`,
-        });
-      }
-    };
-
-    updateSlider();
-    
-    // Multiple timeouts to update offsets as the container expands
-    const t1 = setTimeout(updateSlider, 80);
-    const t2 = setTimeout(updateSlider, 180);
-    const t3 = setTimeout(updateSlider, 300);
-    const t4 = setTimeout(updateSlider, 450);
-    const t5 = setTimeout(updateSlider, 650);
-
-    window.addEventListener("resize", updateSlider);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
-      clearTimeout(t5);
-      window.removeEventListener("resize", updateSlider);
-    };
-  }, [activeTab, isNavExpanded]);
 
   const handleClearSession = useCallback(() => {
     setChecked({});
@@ -256,7 +215,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           </button>
         )}
 
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative", zIndex: 20 }}>
           {/* ── Visa Overview Strip (replaces old header + stat cards) ── */}
           <VisaSummaryBar
             embedded={embedded}
@@ -279,198 +238,189 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           />
         </div>
 
-        {/* Tab Panes Container - stacks items in CSS Grid to resolve dancing layout reflows */}
-        <div className="vm-tab-panes-container" style={{ position: "relative" }}>
-          {/* Navigation Tabs - macOS style expanding capsule */}
-          <div className={`vm-tabs-nav-container ${isNavExpanded ? "vm-expanded" : "vm-collapsed"}`}>
-            {/* Circular trigger (only visible when collapsed) */}
-            <button
-              className="vm-nav-trigger-btn"
-              onClick={() => setIsNavExpanded(true)}
-              aria-label="Expand navigation menu"
-            >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25A2.25 2.25 0 0113.5 8.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-              </svg>
-            </button>
-
-            {/* Full tab bar */}
-            <div className="vm-tabs-nav">
-              <div className="vm-tab-slider" style={sliderStyle} />
-              <button
-                ref={checklistRef}
-                className={`vm-tab-btn ${activeTab === "checklist" ? "vm-active" : ""}`}
-                onClick={() => {
-                  setActiveTab("checklist");
-                }}
-              >
-                Checklist & Builders
-              </button>
-              <button
-                ref={guideRef}
-                className={`vm-tab-btn ${activeTab === "guide" ? "vm-active" : ""}`}
-                onClick={() => {
-                  setActiveTab("guide");
-                }}
-              >
-                Embassy Guide
-              </button>
-              <button
-                ref={securityRef}
-                className={`vm-tab-btn ${activeTab === "security" ? "vm-active" : ""}`}
-                onClick={() => {
-                  setActiveTab("security");
-                }}
-              >
-                Security Sandbox
-              </button>
-              <button
-                className="vm-nav-close-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsNavExpanded(false);
-                }}
-                aria-label="Collapse navigation menu"
-              >
-                <svg width="10" height="10" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          {/* GPU-Accelerated focus overlay for popovers */}
-          <div
-            className={`vm-focus-overlay ${activePopover ? "vm-active" : ""}`}
-            onClick={() => setActivePopover(null)}
-          />
-
-          {/* Tab 1: Checklist Pane */}
-          <div className={`vm-tab-pane ${activeTab === "checklist" ? "vm-active" : ""}`}>
-          {/* Two-panel shell */}
-          <div
-            className="vm-two-panel"
-            style={{
-              display: "flex",
-              gap: 0,
-              width: "100%",
-              minHeight: embedded ? 560 : "calc(100vh - 340px)",
-              position: "relative",
-              borderRadius: 16,
-              overflow: "hidden",
-              border: `1px solid ${T.border}`,
-              background: T.surface,
-              isolation: "isolate",
-            }}
+        {/* Dossier Folder Tabs HUD Nav */}
+        <div className="vm-tabs-folder-row">
+          <button
+            className={`vm-folder-tab ${activeTab === "checklist" ? "vm-active" : ""}`}
+            onClick={() => setActiveTab("checklist")}
           >
-            {/* LEFT PANEL — Checklist */}
-            <div
-              className="vm-left-panel"
-              style={{
-                width: leftWidth,
-                flexShrink: 0,
-                borderRight: `1px solid ${T.border}`,
-                display: isMobile && drawerOpen ? "none" : "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-              }}
-            >
-              {data && (
-                <DocChecklistSidebar
-                  data={data}
-                  activeDocId={activeDocId}
-                  checked={checked}
-                  uploads={uploads}
-                  totalDone={totalDone}
-                  totalDocs={allDocs.length}
-                  overallPct={overallPct}
-                  uploadCount={uploadCount}
-                  uploadableCount={uploadableCount}
-                  onSelectDoc={setActiveDocId}
-                  onToggleDoc={toggleDoc}
-                  onDownloadAll={handleDownloadAll}
-                />
-              )}
-            </div>
+            <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span className="vm-tab-text">Documents</span>
+          </button>
+          <button
+            className={`vm-folder-tab ${activeTab === "guide" ? "vm-active" : ""}`}
+            onClick={() => setActiveTab("guide")}
+          >
+            <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 10v6M2 10v6M12 2L2 7h20L12 2zM4 21h16M4 11v10M8 11v10M12 11v10M16 11v10M20 11v10" />
+            </svg>
+            <span className="vm-tab-text">Embassy Prep</span>
+          </button>
+          <button
+            className={`vm-folder-tab ${activeTab === "security" ? "vm-active" : ""}`}
+            onClick={() => setActiveTab("security")}
+          >
+            <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM12 8v4m0 4h.01" />
+            </svg>
+            <span className="vm-tab-text">Passport Collection</span>
+            {uploadCount > 0 && (
+              <span className={`vm-tab-badge vm-badge-secure ${activeTab === "security" ? "vm-badge-active" : ""}`}>
+                {uploadCount}
+              </span>
+            )}
+          </button>
+        </div>
 
-            {/* RIGHT PANEL — Focus Drawer or Welcome State */}
-            <div
-              className={isMobile && drawerOpen ? "vm-right-panel-overlay" : ""}
-              style={{
-                flex: 1,
-                minWidth: 0,
-                minHeight: embedded ? 560 : "calc(100vh - 340px)",
-                display: "flex",
-                flexDirection: "column",
-                overflow: "hidden",
-                background: isMobile && drawerOpen ? T.surface : "transparent",
-              }}
-            >
-              {!visibleDoc ? (
-                requiredDone === requiredDocs.length && requiredDocs.length > 0 ? (
-                  <SubmissionGuideState
-                    countryName={countryName}
-                    visaTypeName={visaTypeName}
-                    importantNotes={
-                      (requirementsData?.importantNotes as string[] | undefined) ?? []
-                    }
-                  />
-                ) : (
-                  <DocChecklistEmptyState
-                    totalDocs={allDocs.length}
-                    requiredTotal={requiredDocs.length}
-                    visaTypeName={visaTypeName}
-                    countryName={countryName}
-                    isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
-                  />
-                )
-              ) : (
-                <DocDetailPanel
-                  visibleDoc={visibleDoc}
-                  activeCategory={activeCategory}
+        {/* Unified Visa Console Window */}
+        <div className="vm-master-window">
+
+          {/* Console Body */}
+          <div className="vm-window-body">
+            {/* Tab Panes Container - stacks items in CSS Grid to resolve dancing layout reflows */}
+            <div className="vm-tab-panes-container" style={{ position: "relative" }}>
+              {/* GPU-Accelerated focus overlay for popovers */}
+              <div
+                className={`vm-focus-overlay ${activePopover ? "vm-active" : ""}`}
+                onClick={() => setActivePopover(null)}
+              />
+
+              {/* Tab 1: Checklist Pane */}
+              <div className={`vm-tab-pane ${activeTab === "checklist" ? "vm-active" : ""}`}>
+                {/* Two-panel shell */}
+                <div
+                  className="vm-two-panel"
+                  style={{
+                    display: "flex",
+                    gap: 0,
+                    width: "100%",
+                    minHeight: embedded ? 560 : "calc(100vh - 340px)",
+                    position: "relative",
+                    borderRadius: 16,
+                    overflow: "hidden",
+                    border: `1px solid ${T.border}`,
+                    background: T.surface,
+                    isolation: "isolate",
+                  }}
+                >
+                  {/* LEFT PANEL — Checklist */}
+                  <div
+                    className="vm-left-panel"
+                    style={{
+                      width: leftWidth,
+                      flexShrink: 0,
+                      borderRight: `1px solid ${T.border}`,
+                      display: isMobile && drawerOpen ? "none" : "flex",
+                      flexDirection: "column",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {data && (
+                      <DocChecklistSidebar
+                        data={data}
+                        activeDocId={activeDocId}
+                        checked={checked}
+                        uploads={uploads}
+                        totalDone={totalDone}
+                        totalDocs={allDocs.length}
+                        overallPct={overallPct}
+                        uploadCount={uploadCount}
+                        uploadableCount={uploadableCount}
+                        onSelectDoc={setActiveDocId}
+                        onToggleDoc={toggleDoc}
+                        onDownloadAll={handleDownloadAll}
+                      />
+                    )}
+                  </div>
+
+                  {/* RIGHT PANEL — Focus Drawer or Welcome State */}
+                  <div
+                    className={isMobile && drawerOpen ? "vm-right-panel-overlay" : ""}
+                    style={{
+                      flex: 1,
+                      minWidth: 0,
+                      minHeight: embedded ? 560 : "calc(100vh - 340px)",
+                      display: "flex",
+                      flexDirection: "column",
+                      overflow: "hidden",
+                      background: isMobile && drawerOpen ? T.surface : "transparent",
+                    }}
+                  >
+                    {!visibleDoc ? (
+                      requiredDone === requiredDocs.length && requiredDocs.length > 0 ? (
+                        <SubmissionGuideState
+                          countryName={countryName}
+                          visaTypeName={visaTypeName}
+                          importantNotes={
+                            (requirementsData?.importantNotes as string[] | undefined) ?? []
+                          }
+                        />
+                      ) : (
+                        <DocChecklistEmptyState
+                          totalDocs={allDocs.length}
+                          requiredTotal={requiredDocs.length}
+                          visaTypeName={visaTypeName}
+                          countryName={countryName}
+                          isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
+                        />
+                      )
+                    ) : (
+                      <DocDetailPanel
+                        visibleDoc={visibleDoc}
+                        activeCategory={activeCategory}
+                        uploads={uploads}
+                        activeDocIndex={activeDocIndex}
+                        totalDocs={allDocs.length}
+                        isMobile={isMobile}
+                        drawerOpacity={drawerOpacity}
+                        drawerTranslateY={drawerTranslateY}
+                        itineraryData={itineraryData}
+                        photoSpec={photoSpec}
+                        onClose={() => setActiveDocId(null)}
+                        onUpload={(file) => handleUpload(visibleDoc.id, file)}
+                        onRemove={() => handleRemove(visibleDoc.id)}
+                        onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
+                        onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file)}
+                        onSponsorConsentReady={(file) => handleSponsorConsentReady(visibleDoc.id, file)}
+                        sponsorConsentPrefill={sponsorConsentPrefill}
+                        isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
+                        onPrev={() => {
+                          const prev = allDocs[activeDocIndex - 1];
+                          if (prev) setActiveDocId(prev.id);
+                        }}
+                        onNext={() => {
+                          const next = allDocs[activeDocIndex + 1];
+                          if (next) setActiveDocId(next.id);
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab 2: Embassy Guide Pane */}
+              <div className={`vm-tab-pane ${activeTab === "guide" ? "vm-active" : ""}`}>
+                <EmbassyInfoTab />
+              </div>
+
+              {/* Tab 3: Passport Collection Pane */}
+              <div className={`vm-tab-pane ${activeTab === "security" ? "vm-active" : ""}`}>
+                <PassportCollectionTab
                   uploads={uploads}
-                  activeDocIndex={activeDocIndex}
-                  totalDocs={allDocs.length}
-                  isMobile={isMobile}
-                  drawerOpacity={drawerOpacity}
-                  drawerTranslateY={drawerTranslateY}
-                  itineraryData={itineraryData}
-                  photoSpec={photoSpec}
-                  onClose={() => setActiveDocId(null)}
-                  onUpload={(file) => handleUpload(visibleDoc.id, file)}
-                  onRemove={() => handleRemove(visibleDoc.id)}
-                  onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
-                  onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file)}
-                  onSponsorConsentReady={(file) => handleSponsorConsentReady(visibleDoc.id, file)}
-                  sponsorConsentPrefill={sponsorConsentPrefill}
-                  isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
-                  onPrev={() => {
-                    const prev = allDocs[activeDocIndex - 1];
-                    if (prev) setActiveDocId(prev.id);
-                  }}
-                  onNext={() => {
-                    const next = allDocs[activeDocIndex + 1];
-                    if (next) setActiveDocId(next.id);
-                  }}
+                  onClearSession={handleClearSession}
+                  requiredTotal={requiredDocs.length}
+                  requiredDone={requiredDone}
                 />
-              )}
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Tab 2: Embassy Guide Pane */}
-        <div className={`vm-tab-pane ${activeTab === "guide" ? "vm-active" : ""}`}>
-          <EmbassyInfoTab />
-        </div>
-
-        {/* Tab 3: Security Sandbox Pane */}
-        <div className={`vm-tab-pane ${activeTab === "security" ? "vm-active" : ""}`}>
-          <PrivacySandboxTab
-            uploads={uploads}
-            onClearSession={handleClearSession}
-          />
-        </div>
-      </div>
 
       </div>
     </div>

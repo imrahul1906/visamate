@@ -383,7 +383,9 @@ export default function WizardCard({
           WebkitBackdropFilter: "blur(24px) saturate(160%)",
 
           // Top border glows purple on flight
-          border: "0.5px solid var(--vm-card-border)",
+          borderLeft: "0.5px solid var(--vm-card-border)",
+          borderRight: "0.5px solid var(--vm-card-border)",
+          borderBottom: "0.5px solid var(--vm-card-border)",
           borderTop: showFlight
             ? "0.5px solid var(--vm-purple-border)"
             : "0.5px solid var(--vm-card-border-top)",

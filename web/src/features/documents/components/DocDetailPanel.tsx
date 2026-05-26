@@ -200,7 +200,7 @@ export function DocDetailPanel({
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 <h2 className="vm-detail-doc-title" style={{
                   fontSize: 18, fontWeight: 700, letterSpacing: "-0.3px",
-                  color: "var(--vm-text)", margin: 0, lineHeight: 1,
+                  color: "var(--vm-text)", margin: 0, lineHeight: 1.3,
                   fontFamily: "'DM Sans', sans-serif",
                 }}>
                   {visibleDoc.name}

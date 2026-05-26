@@ -85,7 +85,7 @@ export default function EmbassyInfoTab() {
       display: "flex",
       flexDirection: "column",
       gap: 24,
-      padding: "8px 0 24px",
+      padding: "36px 0 24px",
       animation: "floatUp 450ms cubic-bezier(0.16, 1, 0.3, 1) both",
     }}>
       

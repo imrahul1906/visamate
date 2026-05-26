@@ -83,18 +83,13 @@ export function DocChecklistStyles() {
         border-color: var(--vm-trans-white-35);
       }
 
-      /* Frosted Glass Panels */
+      /* Frosted Glass Panels (Now borderless inside master window) */
       .vm-two-panel {
-        background: rgba(15, 23, 42, 0.45) !important;
-        backdrop-filter: blur(24px) saturate(180%);
-        -webkit-backdrop-filter: blur(24px) saturate(180%);
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
-      }
-      .light .vm-two-panel {
-        background: rgba(255, 255, 255, 0.65) !important;
-        border: 1px solid rgba(108, 92, 231, 0.12) !important;
-        box-shadow: 0 10px 40px rgba(108, 92, 231, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: none !important;
+        box-shadow: none !important;
       }
       
       .vm-left-panel {
@@ -378,199 +373,159 @@ export function DocChecklistStyles() {
         color: var(--vm-text) !important;
       }
 
-      /* ── Segmented Navigation Tabs (macOS style expanding capsule) ── */
-      .vm-tabs-nav-container {
-        position: absolute;
-        top: -22px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        transition: width 450ms cubic-bezier(0.19, 1, 0.22, 1), height 450ms cubic-bezier(0.19, 1, 0.22, 1), border-color 300ms ease, box-shadow 450ms ease;
+      /* ── Master Console Window ── */
+      .vm-master-window {
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
         overflow: hidden;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 22px; /* Fixed radius to prevent snap/choppiness */
-        will-change: width;
-      }
-
-      /* Collapsed Circle State */
-      .vm-tabs-nav-container.vm-collapsed {
-        width: 44px;
-        height: 44px;
-        background: rgba(15, 23, 42, 0.75);
-        border: 1px solid rgba(168, 85, 247, 0.35); /* purple borders to match mockup */
-        box-shadow: 0 4px 16px rgba(168, 85, 247, 0.2), 0 0 8px rgba(99, 102, 241, 0.15);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        cursor: pointer;
-      }
-      .light .vm-tabs-nav-container.vm-collapsed {
-        background: rgba(255, 255, 255, 0.85);
-        border-color: rgba(108, 92, 231, 0.3);
-        box-shadow: 0 4px 16px rgba(108, 92, 231, 0.15);
-      }
-      .vm-tabs-nav-container.vm-collapsed:hover {
-        transform: translateX(-50%) scale(1.08);
-        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
-        border-color: rgba(99, 102, 241, 0.6);
-      }
-      .light .vm-tabs-nav-container.vm-collapsed:hover {
-        box-shadow: 0 6px 20px rgba(108, 92, 231, 0.25);
-        border-color: rgba(108, 92, 231, 0.45);
-      }
-
-      /* Expanded Capsule State */
-      .vm-tabs-nav-container.vm-expanded {
-        width: 510px; /* Slightly wider to prevent text squeezing */
-        height: 44px;
-        background: rgba(15, 23, 42, 0.65);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-        backdrop-filter: blur(20px) saturate(150%);
-        -webkit-backdrop-filter: blur(20px) saturate(150%);
-        padding: 4px;
-      }
-      .light .vm-tabs-nav-container.vm-expanded {
-        background: rgba(255, 255, 255, 0.75);
-        border-color: rgba(108, 92, 231, 0.15);
-        box-shadow: 0 8px 32px rgba(108, 92, 231, 0.08);
-      }
-
-      /* Trigger button elements */
-      .vm-nav-trigger-btn {
-        background: transparent;
-        border: none;
-        color: rgba(255, 255, 255, 0.85); /* high contrast white */
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
         width: 100%;
-        height: 100%;
-        cursor: pointer;
-        padding: 0;
-        transition: opacity 200ms ease, color 200ms ease;
+        margin-top: 0; /* folder tabs row handles top space */
+        position: relative;
+        z-index: 10;
       }
-      .light .vm-nav-trigger-btn {
-        color: rgba(30, 27, 75, 0.8); /* high contrast dark text */
-      }
-      .vm-nav-trigger-btn:hover {
-        color: #ffffff;
-      }
-      .light .vm-nav-trigger-btn:hover {
-        color: #1e1b4b;
+      .light .vm-master-window {
+        background: rgba(255, 255, 255, 0.65);
+        border: 1px solid rgba(108, 92, 231, 0.12);
+        box-shadow: 0 10px 40px rgba(108, 92, 231, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.8);
       }
 
-      /* Inner tab navigator - absolute and fixed width to avoid squishing contents during morph */
-      .vm-tabs-nav {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 502px; /* fixed size = container width - padding */
-        height: 100%;
+      .vm-window-body {
+        flex: 1;
+        position: relative;
+        width: 100%;
+      }
+
+      /* ── Dossier Folder Tabs Navigation ── */
+      .vm-tabs-folder-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 6px;
+        margin-top: 52px; /* perfect space from summary pills pushed down from overview */
+        margin-bottom: -1px; /* physically overlaps the top border of the master window */
+        position: relative;
+        z-index: 20; /* must render on top of master window border */
+        padding: 0 16px;
+      }
+
+      .vm-folder-tab {
+        background: rgba(15, 23, 42, 0.25);
+        backdrop-filter: blur(12px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* matches master window top border */
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 8px 20px;
+        color: var(--vm-trans-white-45);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
         display: flex;
         align-items: center;
-        padding: 4px;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 250ms cubic-bezier(0.19, 1, 0.22, 1);
-        will-change: opacity;
+        gap: 8px;
+        transition: all 180ms ease;
+        position: relative;
+        outline: none;
+        white-space: nowrap;
+      }
+      .light .vm-folder-tab {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(108, 92, 231, 0.06);
+        border-bottom-color: rgba(108, 92, 231, 0.12); /* matches master window top border */
+        color: rgba(30, 27, 75, 0.5);
+      }
+
+      .vm-folder-tab:hover {
+        color: var(--vm-text);
+        background: rgba(15, 23, 42, 0.35);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .light .vm-folder-tab:hover {
+        color: #1e1b4b;
+        background: rgba(0, 0, 0, 0.04);
+        border-color: rgba(108, 92, 231, 0.1);
+      }
+
+      /* Active Folder Tab - merges borderless into master window */
+      .vm-folder-tab.vm-active {
+        background: rgba(15, 23, 42, 0.45) !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        border-bottom-color: transparent !important; /* hide bottom border to merge with content pane */
+        color: var(--vm-text) !important;
+        z-index: 22;
+        padding-top: 11px; /* slightly taller to physically stand out */
+        padding-bottom: 9px;
+        transform: none !important; /* completely flush and static to prevent bouncing */
+        box-shadow: 0 -8px 24px rgba(99, 102, 241, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+      .light .vm-folder-tab.vm-active {
+        background: rgba(255, 255, 255, 0.65) !important;
+        border-color: rgba(108, 92, 231, 0.12) !important;
+        border-bottom-color: transparent !important;
+        color: #1e1b4b !important;
+        box-shadow: 0 -8px 24px rgba(108, 92, 231, 0.03), inset 0 1px 0 #ffffff !important;
+      }
+
+      /* Icons */
+      .vm-tab-icon {
+        width: 13px;
+        height: 13px;
+        stroke: currentColor;
+        stroke-width: 2.2px;
+      }
+
+      /* Badges inside tabs */
+      .vm-tab-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        padding: 1.5px 5px;
+        font-size: 9px;
+        font-weight: 700;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--vm-indigo-light);
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        transition: all 250ms ease;
+      }
+      .light .vm-tab-badge {
+        color: #4f46e5;
+        background: rgba(79, 70, 229, 0.07);
+        border-color: rgba(79, 70, 229, 0.15);
       }
       
-      /* Hide contents based on expansion state */
-      .vm-collapsed .vm-tabs-nav {
-        opacity: 0;
-        pointer-events: none;
+      .vm-tab-badge.vm-badge-secure {
+        color: var(--vm-green);
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.15);
       }
-      .vm-expanded .vm-nav-trigger-btn {
-        opacity: 0;
-        pointer-events: none;
-      }
-      .vm-expanded .vm-tabs-nav {
-        opacity: 1;
-        pointer-events: auto;
+      .light .vm-tab-badge.vm-badge-secure {
+        color: #059669;
+        background: rgba(5, 150, 105, 0.07);
+        border-color: rgba(5, 150, 105, 0.15);
       }
 
-      /* Close Button Inside Tab Bar */
-      .vm-nav-close-btn {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: var(--vm-trans-white-45);
-        transition: all 200ms ease;
-        margin-left: 6px;
-        margin-right: 6px;
-        flex-shrink: 0;
+      .vm-tab-badge.vm-badge-active {
+        color: #ffffff !important;
+        background: var(--vm-indigo) !important;
+        border-color: var(--vm-indigo-light) !important;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
       }
-      .light .vm-nav-close-btn {
-        background: rgba(0, 0, 0, 0.03);
-        border-color: rgba(0, 0, 0, 0.06);
-        color: rgba(30, 27, 75, 0.45);
-      }
-      .vm-nav-close-btn:hover {
-        background: rgba(239, 68, 68, 0.2);
-        border-color: rgba(239, 68, 68, 0.3);
-        color: #ef4444;
-        transform: scale(1.05);
-      }
-
-      .vm-tab-btn {
-        flex: 1;
-        text-align: center;
-        background: transparent;
-        border: none;
-        border-radius: 99px;
-        padding: 6px 12px;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--vm-trans-white-45);
-        cursor: pointer;
-        transition: color 200ms ease;
-        position: relative;
-        z-index: 1;
-        outline: none;
-        white-space: nowrap; /* Prevent word wrapping / half bubbles */
-      }
-      .light .vm-tab-btn {
-        color: rgba(30, 27, 75, 0.55);
-      }
-      .vm-tab-btn:hover {
-        color: var(--vm-text);
-      }
-      .light .vm-tab-btn:hover {
-        color: var(--vm-text);
-      }
-      .vm-tab-btn.vm-active {
-        color: var(--vm-text) !important;
-      }
-      .light .vm-tab-btn.vm-active {
-        color: #1e1b4b !important;
-      }
-
-      /* Sliding active pill indicator */
-      .vm-tab-slider {
-        position: absolute;
-        top: 4px;
-        bottom: 4px;
-        left: 0;
-        border-radius: 99px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), width 250ms cubic-bezier(0.16, 1, 0.3, 1);
-        z-index: 0;
-        pointer-events: none;
-      }
-      .light .vm-tab-slider {
-        background: #ffffff;
-        border-color: rgba(108, 92, 231, 0.12);
-        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.08), 0 1px 2px rgba(30, 27, 75, 0.02);
+      .vm-tab-badge.vm-badge-secure.vm-badge-active {
+        background: var(--vm-green) !important;
+        border-color: var(--vm-green-border) !important;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
       }
 
       /* Stable Grid Stacking Container to prevent page jumping and dancing */
@@ -610,7 +565,7 @@ export function DocChecklistStyles() {
         transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
       }
 
-      /* Animated Content Switcher - macOS Genie Slide-Out Flow */
+      /* Animated Content Switcher - smooth hardware-accelerated fade */
       .vm-tab-pane {
         grid-column: 1;
         grid-row: 1;
@@ -618,17 +573,16 @@ export function DocChecklistStyles() {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transform: scale(0.96) translateY(-30px); /* scale down slightly towards the trigger circle */
-        transform-origin: top center;
-        transition: opacity 450ms cubic-bezier(0.19, 1, 0.22, 1), transform 450ms cubic-bezier(0.19, 1, 0.22, 1), visibility 0ms 450ms;
-        will-change: transform, opacity;
+        transform: translateY(-4px);
+        transition: opacity 220ms ease, transform 220ms ease, visibility 0s 220ms;
+        will-change: opacity, transform;
       }
       .vm-tab-pane.vm-active {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
-        transform: scale(1) translateY(0);
-        transition: opacity 450ms cubic-bezier(0.19, 1, 0.22, 1), transform 450ms cubic-bezier(0.19, 1, 0.22, 1), visibility 0ms;
+        transform: translateY(0);
+        transition: opacity 220ms ease, transform 220ms ease, visibility 0s 0s;
         z-index: 1;
       }
 
