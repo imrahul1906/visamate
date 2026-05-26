@@ -723,6 +723,226 @@ export function DocChecklistStyles() {
           background: var(--vm-surface) !important;
         }
       }
+
+      /* Redesigned Embassy Prep Styles & Animations */
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(220px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      @keyframes pulseGlow {
+        0%, 100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+      @keyframes bounceSmooth {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes scaleIn {
+        0% {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .vm-confetti-particle {
+        pointer-events: none;
+      }
+
+      /* Premium Glassmorphic Card Stack Styles */
+      .vm-glass-card {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+        transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .vm-glass-card:not(.vm-checked) {
+        opacity: 0.8 !important;
+        filter: saturate(85%) !important;
+      }
+      .vm-glass-card.vm-checked {
+        opacity: 1 !important;
+        filter: none !important;
+      }
+
+      /* Specific Card Border Colors & Soft Shadow Glows even when unselected */
+      .vm-card-passport:not(.vm-checked) {
+        border-color: rgba(245, 158, 11, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-passport.vm-checked {
+        border-color: rgba(245, 158, 11, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25), 0 0 15px rgba(245, 158, 11, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .vm-card-dossier:not(.vm-checked) {
+        border-color: rgba(16, 185, 129, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-dossier.vm-checked {
+        border-color: rgba(16, 185, 129, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25), 0 0 15px rgba(16, 185, 129, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .vm-card-letter:not(.vm-checked) {
+        border-color: rgba(6, 182, 212, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-letter.vm-checked {
+        border-color: rgba(6, 182, 212, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25), 0 0 15px rgba(6, 182, 212, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .vm-card-payment:not(.vm-checked) {
+        border-color: rgba(217, 70, 239, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(217, 70, 239, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-payment.vm-checked {
+        border-color: rgba(217, 70, 239, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(217, 70, 239, 0.25), 0 0 15px rgba(217, 70, 239, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .light .vm-glass-card {
+        background: rgba(255, 255, 255, 0.48) !important;
+        border-color: rgba(99, 102, 241, 0.15) !important;
+        color: var(--vm-text) !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+      }
+      .light .vm-glass-card:not(.vm-checked) {
+        background: rgba(255, 255, 255, 0.38) !important;
+        opacity: 0.85 !important;
+      }
+      .light .vm-glass-card.vm-checked {
+        background: rgba(255, 255, 255, 0.82) !important;
+        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+      }
+      .light .vm-glass-card.vm-card-passport {
+        border-color: rgba(245, 158, 11, 0.28) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-passport {
+        border-color: rgba(245, 158, 11, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+      }
+      .light .vm-glass-card.vm-card-dossier {
+        border-color: rgba(16, 185, 129, 0.28) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-dossier {
+        border-color: rgba(16, 185, 129, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+      }
+      .light .vm-glass-card.vm-card-letter {
+        border-color: rgba(6, 182, 212, 0.28) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-letter {
+        border-color: rgba(6, 182, 212, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(6, 182, 212, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+      }
+      .light .vm-glass-card.vm-card-payment {
+        border-color: rgba(217, 70, 239, 0.28) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-payment {
+        border-color: rgba(217, 70, 239, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(217, 70, 239, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+      }
+
+      .vm-glass-card:hover {
+        cursor: pointer;
+      }
+
+      /* Floating checked badge inside card */
+      .vm-checked-badge {
+        position: absolute;
+        bottom: -6px;
+        right: -6px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #10b981;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        z-index: 12;
+      }
+
+      /* Checklist Floating Selection Items */
+      .vm-floating-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--vm-border);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .light .vm-floating-item {
+        background: rgba(255, 255, 255, 0.55) !important;
+        border-color: rgba(99, 102, 241, 0.08) !important;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+      }
+      .vm-floating-item:hover {
+        transform: translateY(-3px) scale(1.008);
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+      }
+      .light .vm-floating-item:hover {
+        border-color: rgba(99, 102, 241, 0.28) !important;
+        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+      }
+      .vm-floating-item.vm-item-checked {
+        background: var(--vm-green-bg) !important;
+        border-color: var(--vm-green-border) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.04) !important;
+      }
+      .light .vm-floating-item.vm-item-checked {
+        background: rgba(16, 185, 129, 0.05) !important;
+        border-color: rgba(16, 185, 129, 0.22) !important;
+      }
+
+      /* Premium FAQ Accordion Cards */
+      .vm-faq-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--vm-border);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .light .vm-faq-item {
+        background: rgba(255, 255, 255, 0.55) !important;
+        border-color: rgba(99, 102, 241, 0.08) !important;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+      }
+      .vm-faq-item:hover {
+        transform: translateY(-3px) scale(1.008);
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+      }
+      .light .vm-faq-item:hover {
+        border-color: rgba(99, 102, 241, 0.28) !important;
+        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+      }
+      .vm-faq-item.vm-faq-open {
+        background: rgba(99, 102, 241, 0.03) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 8px 24px -6px rgba(99, 102, 241, 0.08) !important;
+      }
+      .light .vm-faq-item.vm-faq-open {
+        background: rgba(99, 102, 241, 0.04) !important;
+        border-color: rgba(99, 102, 241, 0.22) !important;
+        box-shadow: 0 8px 24px -6px rgba(99, 102, 241, 0.04) !important;
+      }
     `}</style>
   );
 }

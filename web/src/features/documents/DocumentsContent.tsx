@@ -409,7 +409,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
 
               {/* Tab 2: Embassy Guide Pane */}
               <div className={`vm-tab-pane ${activeTab === "guide" ? "vm-active" : ""}`}>
-                <EmbassyInfoTab />
+                <EmbassyInfoTab countryName={countryName} visaTypeName={visaTypeName} />
               </div>
 
               {/* Tab 3: Passport Collection Pane */}

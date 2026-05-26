@@ -4,38 +4,52 @@ import React, { useState } from "react";
 import { T, font } from "@/lib/theme";
 
 // ─────────────────────────────────────────────────────────────
-// Data
+// Types & Data Structures
 // ─────────────────────────────────────────────────────────────
 
 interface FAQItem {
+  id: string;
+  category: "doc_prep" | "biometrics" | "submission" | "processing" | "consular";
   question: string;
   answer: string;
 }
 
 const FAQ_DATABASE: FAQItem[] = [
   {
-    question: "What if I need to make corrections on my printed form?",
-    answer: "If you spot a minor typo (e.g. spelling of a street), VFS staff can usually mark the correction on the spot or assist you in printing an updated sheet. However, major details (like passport number or travel dates) should be correct on your barcode, or you may need to re-generate the form.",
+    id: "fq1",
+    category: "doc_prep",
+    question: "What documents are mandatory for the embassy submission?",
+    answer: "You must submit your printed VisaMate dossier containing your signed visa application form, travel itinerary, cover letter, and proof of funds (bank statements/ITRs). Keep them stacked neatly as per the checklist.",
   },
   {
-    question: "How do I track the status of my passport after submission?",
-    answer: "You can track your application online using the official VFS tracking portal. You'll need your receipt reference number and your date of birth. You can also opt-in for paid SMS notifications at the counter during your appointment.",
+    id: "fq2",
+    category: "doc_prep",
+    question: "Do I need to carry physical photocopies of my passport?",
+    answer: "Yes, you must bring A4-size photocopies of the first (bio-data) and last page of your current passport. If you are submitting old passports, carry copies of their bio-data pages as well.",
   },
   {
-    question: "Will I be interviewed at the VFS Global Center?",
-    answer: "No, VFS Global is an outsourced processing agency. Staff will only verify your paperwork checklist, collect your fees, and register your biometrics (fingerprints/photos). Any decision-making interview, if requested, will be scheduled directly with the Embassy or Consulate at a later date.",
+    id: "fq3",
+    category: "biometrics",
+    question: "How does the biometrics collection work at the visa center?",
+    answer: "At the center, officers will scan your fingerprints (all 10 fingers) and capture a digital photo of your face. Ensure your hands are clean and free of henna or cuts.",
   },
   {
-    question: "Can someone else submit my visa application on my behalf?",
-    answer: "Generally, personal appearance is mandatory for biometrics collection. If you have registered biometrics for a Schengen or similar visa within the last 59 months, you may be exempt, allowing a representative with an authorization letter to submit your files. Check local embassy exemptions first.",
+    id: "fq4",
+    category: "submission",
+    question: "What should I expect at the visa center on submission day?",
+    answer: "Arrive 15 minutes before your slot. Security will check your appointment letter. Inside, VFS staff will verify your physical dossier, collect any remaining fees, register biometrics, and issue a tracking invoice.",
   },
   {
-    question: "What is the refund policy for visa and VFS service fees?",
-    answer: "All visa fees and VFS service charges are strictly non-refundable, even if your visa is rejected or if you withdraw your application after submission.",
+    id: "fq5",
+    category: "processing",
+    question: "How long does the embassy take to make a decision?",
+    answer: "Standard visa processing takes 10 to 15 working days, but can increase during peak travel seasons. Always track your passport using the official portal.",
   },
   {
-    question: "What are VFS opening hours and drop-off guidelines?",
-    answer: "Operating hours vary by city, but most centers accept passport submissions Monday through Friday from 08:00 to 15:00. You can review your specific center's address and timing rules in the selection drawer by clicking the location badge in the header.",
+    id: "fq6",
+    category: "consular",
+    question: "What tips should I follow if a consular officer asks questions?",
+    answer: "Keep your answers brief, clear, and confident. Never guess; match your answers exactly to your printed itinerary and cover letter.",
   },
 ];
 
@@ -44,60 +58,84 @@ interface AppointmentItem {
   title: string;
   desc: string;
   required: boolean;
+  icon: string;
 }
 
 const APPOINTMENT_CHECKLIST: AppointmentItem[] = [
-  { id: "passport", title: "Original Passport", desc: "Current passport valid for at least 3-6 months past return date, with at least 2 blank pages.", required: true },
-  { id: "old_passport", title: "Old Passports (if any)", desc: "Carry all previous expired passports to show your travel history to visa officers.", required: false },
-  { id: "appointment_letter", title: "VFS Appointment Letter", desc: "Printed copy of your VFS appointment confirmation receipt showing booking slot details.", required: true },
-  { id: "visa_form", title: "Printed & Signed Visa Form", desc: "Completed visa form with barcodes. Do not sign until VFS staff ask you to at the counter.", required: true },
-  { id: "photos", title: "2 Passport-spec Photos", desc: "Physical photos conforming to embassy specifications. Carry them loose; do not staple to the form.", required: true },
-  { id: "printed_docs", title: "Printed Visamate Package", desc: "All files generated/compiled via the Visamate ZIP package printed on standard A4 white paper.", required: true },
-  { id: "payment", title: "Fee Payment Method", desc: "Cash, Demand Draft, or credit card as specified by your VFS center's payment rules.", required: true },
+  { 
+    id: "passport", 
+    title: "Original Passports", 
+    desc: "Physical booklets of your current passport (valid for 6 months) and any expired old passports.", 
+    required: true,
+    icon: "🛂"
+  },
+  { 
+    id: "printed_docs", 
+    title: "VisaMate Printed Dossier", 
+    desc: "All files prepared in Tab 1 (Visa form, itinerary, cover letter, financial records) printed on clean A4 sheets.", 
+    required: true,
+    icon: "📂"
+  },
+  { 
+    id: "appointment_letter", 
+    title: "VFS Appointment Letter", 
+    desc: "Printed confirmation receipt of your scheduled slot at the submission center.", 
+    required: true,
+    icon: "✉️"
+  },
+  { 
+    id: "payment", 
+    title: "Fee Payment Method", 
+    desc: "Cash, Demand Draft, or credit card as specified by your visa center's local rules.", 
+    required: true,
+    icon: "💳"
+  },
 ];
 
-// ─────────────────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────────────────
+interface EmbassyInfoTabProps {
+  countryName?: string;
+  visaTypeName?: string;
+}
 
-export default function EmbassyInfoTab() {
+export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: EmbassyInfoTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [openFaqId, setOpenFaqId] = useState<string | null>(null);
   
-  // Custom checked state for appointment day checklist items
+  // Suitcase Checklist checked state
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   const toggleCheck = (id: string) => {
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const filteredFAQs = FAQ_DATABASE.filter(
-    faq =>
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredFAQs = FAQ_DATABASE.filter(faq => {
+    return faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
-  // Custom shadow that pops on light mode and blends on dark mode
   const premiumCardShadow = "0 10px 30px -10px rgba(108, 92, 231, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02), 0 0 0 1px var(--vm-border)";
+
+  const packedCount = APPOINTMENT_CHECKLIST.filter(item => checkedItems[item.id]).length;
+  const isCompleted = packedCount === APPOINTMENT_CHECKLIST.length;
 
   return (
     <div style={{
       display: "flex",
       flexDirection: "column",
       gap: 24,
-      padding: "36px 0 24px",
+      padding: "24px 20px",
       animation: "floatUp 450ms cubic-bezier(0.16, 1, 0.3, 1) both",
     }}>
       
-      {/* ── Grid: Two Columns (Checklist & FAQs) ── */}
+      {/* ── Grid: Two Columns (Dossier Stack & FAQ Explorer) ── */}
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
         gap: 24,
-        alignItems: "start",
+        alignItems: "stretch",
       }}>
 
-        {/* Column 1: Appointment Day Checklist */}
+        {/* Column 1: Dossier Compilation Console */}
         <div style={{
           background: "var(--vm-surface)",
           border: "1px solid var(--vm-border)",
@@ -107,6 +145,8 @@ export default function EmbassyInfoTab() {
           display: "flex",
           flexDirection: "column",
           gap: 18,
+          position: "relative",
+          overflow: "hidden"
         }}>
           <div>
             <div style={{
@@ -119,7 +159,7 @@ export default function EmbassyInfoTab() {
               padding: "3px 9px",
               marginBottom: 10,
             }}>
-              <span style={{ fontSize: 9.5 }}>💼</span>
+              <span style={{ fontSize: 9.5 }}>📂</span>
               <span style={{
                 fontSize: 9.5,
                 fontWeight: 700,
@@ -128,7 +168,7 @@ export default function EmbassyInfoTab() {
                 letterSpacing: "0.08em",
                 fontFamily: font.sans,
               }}>
-                Appointment Pack
+                Document Pouch
               </span>
             </div>
             <h3 style={{
@@ -139,7 +179,7 @@ export default function EmbassyInfoTab() {
               margin: "0 0 6px",
               letterSpacing: "-0.01em",
             }}>
-              What to Bring
+              Dossier Compilation Console
             </h3>
             <p style={{
               fontSize: 12.5,
@@ -149,116 +189,369 @@ export default function EmbassyInfoTab() {
               fontFamily: font.sans,
               lineHeight: 1.5,
             }}>
-              Carry these physical items in a clear folder to the VFS Global center on your appointment day.
+              Assemble your physical dossier items. Check off items to compile them into the 3D glassmorphic card deck.
             </p>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {/* 3D Glassmorphic Card Fan Deck Container - centered, bounded, and styled dynamically */}
+          <div style={{
+            background: "linear-gradient(135deg, var(--vm-purple-bg-muted) 0%, var(--vm-indigo-glow) 100%)",
+            borderRadius: 10,
+            border: "1px solid var(--vm-border)",
+            padding: "24px 12px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            minHeight: 220,
+            transition: "all 0.4s ease",
+            overflow: "hidden",
+            boxShadow: isCompleted 
+              ? "0 0 30px rgba(16, 185, 129, 0.08), inset 0 1px 1px rgba(255,255,255,0.4)" 
+              : "inset 0 1px 1px rgba(255,255,255,0.2)"
+          }}>
+            
+            {/* Centered bounding box with absolute width to avoid container edge overflow */}
+            <div style={{
+              position: "relative",
+              width: 275,
+              height: 165,
+              margin: "0 auto",
+              overflow: "visible"
+            }}>
+              
+              {/* Card 1: Passport (Orange/Gold Glow) */}
+              <div 
+                className={`vm-glass-card vm-card-passport ${checkedItems.passport ? "vm-checked" : ""}`}
+                style={{
+                  position: "absolute",
+                  width: 100,
+                  height: 145,
+                  borderRadius: 10,
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "10px 8px",
+                  left: 0,
+                  top: 15,
+                  color: "var(--vm-text)",
+                  transform: checkedItems.passport
+                    ? "rotate(-13deg) translateY(-14px) scale(1.08)"
+                    : "rotate(-13deg)",
+                  zIndex: checkedItems.passport ? 10 : 1,
+                  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, fontFamily: font.sans }}>Passport</span>
+                  <span style={{ fontSize: 11.5 }}>🛂</span>
+                </div>
+                {/* Photo Simulation */}
+                <div style={{
+                  flex: 1,
+                  background: "rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 5,
+                  padding: 4,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}>
+                  <div style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.25)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 10
+                  }}>
+                    👤
+                  </div>
+                  <span style={{ fontSize: 6.5, color: "var(--vm-text)", opacity: 0.6, fontFamily: font.sans, textAlign: "center" }}>
+                    Original Book
+                  </span>
+                </div>
+                {checkedItems.passport && (
+                  <div className="vm-checked-badge">
+                    <svg width="8" height="8" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 2: Dossier (Green/Emerald Glow) */}
+              <div 
+                className={`vm-glass-card vm-card-dossier ${checkedItems.printed_docs ? "vm-checked" : ""}`}
+                style={{
+                  position: "absolute",
+                  width: 100,
+                  height: 145,
+                  borderRadius: 10,
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "10px 8px",
+                  left: 55,
+                  top: 5,
+                  color: "var(--vm-text)",
+                  transform: checkedItems.printed_docs
+                    ? "rotate(-4deg) translateY(-14px) scale(1.08)"
+                    : "rotate(-4deg)",
+                  zIndex: checkedItems.printed_docs ? 10 : 2,
+                  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, fontFamily: font.sans }}>Dossier</span>
+                  <span style={{ fontSize: 11.5 }}>📂</span>
+                </div>
+                {/* Details */}
+                <div style={{
+                  flex: 1,
+                  background: "rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 5,
+                  padding: 5,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  justifyContent: "center"
+                }}>
+                  <div style={{ height: 2, background: "rgba(255,255,255,0.4)", width: "70%" }} />
+                  <div style={{ height: 2, background: "rgba(255,255,255,0.4)", width: "85%" }} />
+                  <div style={{ height: 2, background: "rgba(255,255,255,0.4)", width: "50%" }} />
+                  <span style={{ fontSize: 6.5, color: "var(--vm-text)", opacity: 0.6, fontFamily: font.sans, marginTop: 2, textAlign: "center" }}>
+                    Printed Pack
+                  </span>
+                </div>
+                {checkedItems.printed_docs && (
+                  <div className="vm-checked-badge">
+                    <svg width="8" height="8" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 3: Letter (Cyan/Blue Glow) */}
+              <div 
+                className={`vm-glass-card vm-card-letter ${checkedItems.appointment_letter ? "vm-checked" : ""}`}
+                style={{
+                  position: "absolute",
+                  width: 100,
+                  height: 145,
+                  borderRadius: 10,
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "10px 8px",
+                  left: 110,
+                  top: 5,
+                  color: "var(--vm-text)",
+                  transform: checkedItems.appointment_letter
+                    ? "rotate(4deg) translateY(-14px) scale(1.08)"
+                    : "rotate(4deg)",
+                  zIndex: checkedItems.appointment_letter ? 10 : 3,
+                  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, fontFamily: font.sans }}>Letter</span>
+                  <span style={{ fontSize: 11.5 }}>✉️</span>
+                </div>
+                {/* Details */}
+                <div style={{
+                  flex: 1,
+                  background: "rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 5,
+                  padding: 5,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 3
+                }}>
+                  <span style={{ fontSize: 11 }}>📅</span>
+                  <span style={{ fontSize: 6.5, color: "var(--vm-text)", opacity: 0.6, fontFamily: font.sans, textAlign: "center", lineHeight: 1 }}>
+                    VFS Booking
+                  </span>
+                </div>
+                {checkedItems.appointment_letter && (
+                  <div className="vm-checked-badge">
+                    <svg width="8" height="8" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {/* Card 4: Payment (Magenta/Purple Glow) */}
+              <div 
+                className={`vm-glass-card vm-card-payment ${checkedItems.payment ? "vm-checked" : ""}`}
+                style={{
+                  position: "absolute",
+                  width: 100,
+                  height: 145,
+                  borderRadius: 10,
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "10px 8px",
+                  left: 165,
+                  top: 15,
+                  color: "var(--vm-text)",
+                  transform: checkedItems.payment
+                    ? "rotate(13deg) translateY(-14px) scale(1.08)"
+                    : "rotate(13deg)",
+                  zIndex: checkedItems.payment ? 10 : 4,
+                  transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)"
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <span style={{ fontSize: 9.5, fontWeight: 700, fontFamily: font.sans }}>Payment</span>
+                  <span style={{ fontSize: 11.5 }}>💳</span>
+                </div>
+                {/* Credit card Simulation */}
+                <div style={{
+                  flex: 1,
+                  background: "rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  borderRadius: 5,
+                  padding: 5,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 3,
+                  justifyContent: "space-between"
+                }}>
+                  <div style={{ width: 8, height: 5, background: "rgba(255,255,255,0.3)", borderRadius: 1 }} />
+                  <div style={{ height: 2, background: "rgba(255,255,255,0.4)", width: "65%" }} />
+                  <span style={{ fontSize: 6, color: "var(--vm-text)", opacity: 0.6, fontFamily: font.sans, lineHeight: 1 }}>
+                    Visa Fee
+                  </span>
+                </div>
+                {checkedItems.payment && (
+                  <div className="vm-checked-badge">
+                    <svg width="8" height="8" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Completion Banner */}
+            <div style={{
+              marginTop: 14,
+              textAlign: "center",
+              minHeight: 22,
+              zIndex: 3
+            }}>
+              {isCompleted ? (
+                <div style={{
+                  animation: "scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both",
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  color: "#10b981",
+                  textShadow: "0 0 10px rgba(16, 185, 129, 0.15)"
+                }}>
+                  DOSSIER FULLY COMPILED! 🌟
+                </div>
+              ) : (
+                <div style={{ fontSize: 11.5, color: "var(--vm-text)", opacity: 0.65, fontFamily: font.sans }}>
+                  Assembly Progress: <b>{packedCount}</b> of <b>{APPOINTMENT_CHECKLIST.length}</b> verified
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Interactive Pack checklist - Floating selection cards */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {APPOINTMENT_CHECKLIST.map((item) => {
               const isChecked = !!checkedItems[item.id];
               return (
                 <div
                   key={item.id}
                   onClick={() => toggleCheck(item.id)}
+                  className={`vm-floating-item ${isChecked ? "vm-item-checked" : ""}`}
                   style={{
                     display: "flex",
-                    alignItems: "flex-start",
+                    alignItems: "center",
                     gap: 12,
-                    padding: "10px 12px",
+                    padding: "12px 14px",
                     borderRadius: 10,
-                    border: isChecked ? "1px solid var(--vm-green-border)" : "1px solid var(--vm-border)",
-                    background: isChecked ? "var(--vm-green-bg)" : "var(--vm-trans-white-02)",
                     cursor: "pointer",
-                    transition: "all 200ms ease",
                   }}
                 >
+                  <span style={{ fontSize: 18, filter: isChecked ? "none" : "grayscale(0.7)", opacity: isChecked ? 1.0 : 0.6, transition: "all 0.2s" }}>
+                    {item.icon}
+                  </span>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                      color: isChecked ? "#10b981" : "var(--vm-text)",
+                      textDecoration: isChecked ? "line-through" : "none",
+                      fontFamily: font.sans,
+                      display: "block",
+                      marginBottom: 1
+                    }}>
+                      {item.title}
+                    </span>
+                    <p style={{
+                      fontSize: 10.5,
+                      color: "var(--vm-text)",
+                      opacity: isChecked ? 0.45 : 0.65,
+                      margin: 0,
+                      fontFamily: font.sans,
+                      lineHeight: 1.4,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}>
+                      {item.desc}
+                    </p>
+                  </div>
+
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleCheck(item.id);
                     }}
                     style={{
-                      width: 16,
-                      height: 16,
-                      borderRadius: 4,
-                      border: isChecked ? "1px solid var(--vm-green)" : "1px solid var(--vm-trans-white-20)",
-                      background: isChecked ? "var(--vm-green)" : "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
+                      background: isChecked ? "#10b981" : "rgba(255,255,255,0.06)",
+                      border: isChecked ? "1px solid #10b981" : "1px solid var(--vm-border)",
+                      borderRadius: 6,
+                      padding: "4px 8px",
+                      fontSize: 9.5,
+                      fontWeight: 700,
+                      color: isChecked ? "#ffffff" : "var(--vm-text)",
                       cursor: "pointer",
-                      flexShrink: 0,
-                      marginTop: 2,
-                      transition: "all 150ms ease",
+                      fontFamily: font.sans,
+                      transition: "all 150ms ease"
                     }}
                   >
-                    {isChecked && (
-                      <svg width="8" height="8" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                    )}
+                    {isChecked ? "Packed" : "Pack"}
                   </button>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 8,
-                      marginBottom: 2,
-                    }}>
-                      <span style={{
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: isChecked ? "var(--vm-green)" : "var(--vm-text)",
-                        textDecoration: isChecked ? "line-through" : "none",
-                        fontFamily: font.sans,
-                      }}>
-                        {item.title}
-                      </span>
-                      {item.required ? (
-                        <span style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          color: "var(--vm-badge-required-color)",
-                          background: "var(--vm-badge-required-bg)",
-                          border: "1px solid var(--vm-badge-required-border)",
-                          borderRadius: 4,
-                          padding: "1px 5px",
-                        }}>
-                          Required
-                        </span>
-                      ) : (
-                        <span style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          color: "var(--vm-badge-optional-color)",
-                          background: "var(--vm-badge-optional-bg)",
-                          border: "1px solid var(--vm-badge-optional-border)",
-                          borderRadius: 4,
-                          padding: "1px 5px",
-                        }}>
-                          Optional
-                        </span>
-                      )}
-                    </div>
-                    <p style={{
-                      fontSize: 11,
-                      color: isChecked ? "var(--vm-text)" : "var(--vm-text)",
-                      opacity: isChecked ? 0.55 : 0.65,
-                      margin: 0,
-                      fontFamily: font.sans,
-                      lineHeight: 1.45,
-                    }}>
-                      {item.desc}
-                    </p>
-                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Column 2: Searchable FAQs */}
+        {/* Column 2: Frequently Asked Questions & Guidelines (Simplified to 6 items in floating glass deck) */}
         <div style={{
           background: "var(--vm-surface)",
           border: "1px solid var(--vm-border)",
@@ -289,7 +582,7 @@ export default function EmbassyInfoTab() {
                 letterSpacing: "0.08em",
                 fontFamily: font.sans,
               }}>
-                Embassy FAQs
+                Guidelines
               </span>
             </div>
             <h3 style={{
@@ -300,7 +593,7 @@ export default function EmbassyInfoTab() {
               margin: "0 0 6px",
               letterSpacing: "-0.01em",
             }}>
-              Procedural Guidelines
+              Frequently Asked Questions
             </h3>
             <p style={{
               fontSize: 12.5,
@@ -310,7 +603,7 @@ export default function EmbassyInfoTab() {
               fontFamily: font.sans,
               lineHeight: 1.5,
             }}>
-              Common questions about submission, tracking, and biometrics.
+              Essential guidelines and rules for your visa center. Sourced directly from official regulations.
             </p>
           </div>
 
@@ -318,7 +611,7 @@ export default function EmbassyInfoTab() {
           <div style={{ position: "relative" }}>
             <input
               type="text"
-              placeholder="Search FAQs..."
+              placeholder="Search preparation questions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -344,23 +637,31 @@ export default function EmbassyInfoTab() {
             </svg>
           </div>
 
-          {/* FAQ list */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {/* Accordion FAQ list in Floating Glass Cards */}
+          <div style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            gap: 10,
+            overflowY: "auto",
+            maxHeight: 335,
+            paddingRight: 2
+          }} className="vm-scroll-indigo">
             {filteredFAQs.length > 0 ? (
-              filteredFAQs.map((faq, index) => {
-                const isOpen = openFaqIndex === index;
+              filteredFAQs.map((faq) => {
+                const isOpen = openFaqId === faq.id;
                 return (
                   <div
-                    key={index}
+                    key={faq.id}
+                    className={`vm-faq-item ${isOpen ? "vm-faq-open" : ""}`}
                     style={{
                       border: "1px solid var(--vm-border)",
                       borderRadius: 8,
-                      background: "var(--vm-trans-white-01)",
                       overflow: "hidden",
+                      transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
                     }}
                   >
                     <button
-                      onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                      onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
                       style={{
                         width: "100%",
                         background: "transparent",
@@ -377,7 +678,7 @@ export default function EmbassyInfoTab() {
                       <span style={{
                         fontSize: 12,
                         fontWeight: 600,
-                        color: "var(--vm-text)",
+                        color: isOpen ? "var(--vm-indigo-light)" : "var(--vm-text)",
                         fontFamily: font.sans,
                         lineHeight: 1.4,
                       }}>
@@ -386,27 +687,27 @@ export default function EmbassyInfoTab() {
                       <svg
                         width="12" height="12" fill="none" stroke="var(--vm-trans-white-45)" strokeWidth={2} viewBox="0 0 24 24"
                         style={{
-                          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
                           transition: "transform 200ms ease",
                           flexShrink: 0,
                         }}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                       </svg>
                     </button>
                     <div style={{
-                      maxHeight: isOpen ? 160 : 0,
+                      maxHeight: isOpen ? 180 : 0,
                       opacity: isOpen ? 1 : 0,
                       overflow: "hidden",
-                      transition: "all 250ms ease-in-out",
-                      background: "var(--vm-trans-white-02)",
+                      transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
+                      background: "rgba(255, 255, 255, 0.015)",
                     }}>
                       <p style={{
-                        fontSize: 11,
+                        fontSize: 11.5,
                         color: "var(--vm-text)",
-                        opacity: 0.7,
+                        opacity: 0.78,
                         margin: 0,
-                        padding: "10px 14px 14px",
+                        padding: "4px 14px 14px",
                         lineHeight: 1.55,
                         fontFamily: font.sans,
                       }}>
@@ -425,7 +726,7 @@ export default function EmbassyInfoTab() {
                 fontStyle: "italic",
                 fontFamily: font.sans,
               }}>
-                No matching FAQs found.
+                No matching guidelines found.
               </div>
             )}
           </div>
