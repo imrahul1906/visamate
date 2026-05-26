@@ -583,6 +583,33 @@ export function DocChecklistStyles() {
         margin-top: 16px; /* Space below header */
       }
 
+      /* GPU-Accelerated Focus Overlay for Popovers */
+      .vm-focus-overlay {
+        position: absolute;
+        inset: 0;
+        backdrop-filter: blur(1.5px);
+        -webkit-backdrop-filter: blur(1.5px);
+        background: rgba(15, 23, 42, 0.18);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        z-index: 10;
+        border-radius: 16px;
+        transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 300ms;
+        will-change: opacity;
+      }
+      .light .vm-focus-overlay {
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(1.2px);
+        -webkit-backdrop-filter: blur(1.2px);
+      }
+      .vm-focus-overlay.vm-active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
+      }
+
       /* Animated Content Switcher - macOS Genie Slide-Out Flow */
       .vm-tab-pane {
         grid-column: 1;

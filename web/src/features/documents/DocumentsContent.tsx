@@ -88,6 +88,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const [uploads, setUploads] = useState<UploadsMap>({});
   const [downloadingZip, setDownloadingZip] = useState(false);
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
+  const [activePopover, setActivePopover] = useState<"money" | "time" | "biometrics" | "interview" | "vfs" | null>(null);
   const [isMobile] = useState(() =>
     typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
@@ -273,8 +274,13 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             onDownloadAll={handleDownloadAll}
             visaType={visaTypeData}
             processingDays={requirementsData?.processingDays ?? null}
+            activePopover={activePopover}
+            onActivePopoverChange={setActivePopover}
           />
+        </div>
 
+        {/* Tab Panes Container - stacks items in CSS Grid to resolve dancing layout reflows */}
+        <div className="vm-tab-panes-container" style={{ position: "relative" }}>
           {/* Navigation Tabs - macOS style expanding capsule */}
           <div className={`vm-tabs-nav-container ${isNavExpanded ? "vm-expanded" : "vm-collapsed"}`}>
             {/* Circular trigger (only visible when collapsed) */}
@@ -332,10 +338,13 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Tab Panes Container - stacks items in CSS Grid to resolve dancing layout reflows */}
-        <div className="vm-tab-panes-container">
+          {/* GPU-Accelerated focus overlay for popovers */}
+          <div
+            className={`vm-focus-overlay ${activePopover ? "vm-active" : ""}`}
+            onClick={() => setActivePopover(null)}
+          />
+
           {/* Tab 1: Checklist Pane */}
           <div className={`vm-tab-pane ${activeTab === "checklist" ? "vm-active" : ""}`}>
           {/* Two-panel shell */}
