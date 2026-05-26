@@ -114,7 +114,7 @@ export default function PrivacySandboxTab({
             fontFamily: font.sans,
             lineHeight: 1.6,
           }}>
-            Visamate runs entirely in your local browser sandbox. Uploaded documents and generated travel details exist strictly in your device's random access memory (RAM). Absolutely no data is uploaded, stored, or processed on remote cloud servers.
+            Visamate runs entirely in your local browser sandbox. Uploaded documents and generated travel details exist strictly in your device&apos;s random access memory (RAM). Absolutely no data is uploaded, stored, or processed on remote cloud servers.
           </p>
         </div>
       </div>

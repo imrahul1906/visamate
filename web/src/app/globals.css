@@ -343,8 +343,8 @@
   /* Detail Panel Header (Light mode — premium frosted identity block) */
   --vm-detail-header-bg: linear-gradient(180deg, #f0eef8 0%, #f3f4f6 100%);
   --vm-detail-header-card-bg: rgba(255, 255, 255, 0.82);
-  --vm-detail-header-card-border: rgba(108, 92, 231, 0.10);
-  --vm-detail-header-card-shadow: 0 4px 16px rgba(108, 92, 231, 0.04), 0 1px 3px rgba(30, 27, 75, 0.02);
+  --vm-detail-header-card-border: rgba(108, 92, 231, 0.14);
+  --vm-detail-header-card-shadow: 0 8px 24px rgba(30, 27, 75, 0.07), 0 2px 6px rgba(30, 27, 75, 0.03);
   --vm-detail-grid-color: rgba(108, 92, 231, 0.045);
   --vm-detail-desc-color: rgba(30, 27, 75, 0.72);
   --vm-detail-hint-bg: rgba(79, 70, 229, 0.06);

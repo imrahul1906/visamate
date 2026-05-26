@@ -5,6 +5,7 @@ import type { ItineraryPlacesData } from "@/lib/data/types";
 import { DocHelper } from "./DocHelper";
 import type { PhotoSpec } from "./DocHelper";
 import UploadSlot from "./UploadSlot";
+import Badge from "@/components/shared/Badge";
 
 function getCategoryStyles(id?: string) {
   switch (id) {
@@ -206,46 +207,11 @@ export function DocDetailPanel({
                   {visibleDoc.name}
                 </h2>
 
-                {visibleDoc.noUpload && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
-                    color: "var(--vm-amber)", background: "var(--vm-amber-bg)",
-                    border: "1px solid var(--vm-amber-border)", lineHeight: 1,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}>Hardcopy</span>
-                )}
-                {!visibleDoc.noUpload && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
-                    color: "var(--vm-indigo)", background: "var(--vm-indigo-glow)",
-                    border: "1px solid var(--vm-purple-border-soft)", lineHeight: 1,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}>Uploadable</span>
-                )}
-                {visibleDoc.specialWidget && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
-                    color: "var(--vm-tile-time-val)", background: "var(--vm-tile-time-bg)",
-                    border: "1px solid var(--vm-tile-time-border)", lineHeight: 1,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}>Builder</span>
-                )}
-                {visibleDoc.status !== "required" && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
-                    color: "var(--vm-trans-white-45)", background: "var(--vm-trans-white-05)",
-                    border: "1px solid var(--vm-trans-white-12)", lineHeight: 1,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}>Optional</span>
-                )}
-                {uploads[visibleDoc.id] && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 6,
-                    color: "var(--vm-green-dark)", background: "var(--vm-green-bg)",
-                    border: "1px solid var(--vm-green-border)", lineHeight: 1,
-                    fontFamily: "'DM Sans', sans-serif",
-                  }}>✓ Uploaded</span>
-                )}
+                {visibleDoc.noUpload && <Badge variant="hardcopy" />}
+                {!visibleDoc.noUpload && <Badge variant="uploadable" />}
+                {visibleDoc.specialWidget && <Badge variant="builder" />}
+                {visibleDoc.status !== "required" && <Badge variant="optional" />}
+                {uploads[visibleDoc.id] && <Badge variant="uploaded" />}
               </div>
 
               {/* description */}

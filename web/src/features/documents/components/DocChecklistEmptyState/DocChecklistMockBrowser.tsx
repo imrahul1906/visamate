@@ -484,7 +484,7 @@ export function DocChecklistMockBrowser({
                     {/* Render guidelines or Upload Slot */}
                     {mockState.activeDocIndex === 0 ? (
                       /* Guidelines form mockup */
-                      <div style={{
+                      <div key="mock-guidelines" style={{
                         background: "var(--vm-trans-white-03)",
                         border: "1px solid var(--vm-border)",
                         borderRadius: 8,
@@ -509,9 +509,9 @@ export function DocChecklistMockBrowser({
                       </div>
                     ) : (
                       /* Upload Slot mockup */
-                      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                      <div key="mock-upload-slot-container" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
                         {activeDoc.uploaded ? (
-                          <div className="vm-file-drop-anim" style={{
+                          <div key="mock-uploaded-file" className="vm-file-drop-anim" style={{
                             display: "flex",
                             alignItems: "center",
                             gap: 8,
@@ -569,19 +569,20 @@ export function DocChecklistMockBrowser({
                           </div>
                         ) : (
                           <>
-                            <div style={{
+                            <div key="mock-upload-input" style={{
                               display: "flex",
                               alignItems: "center",
                               gap: 10,
-                              padding: "10px 12px",
+                              padding: "6px 12px 10px 12px",
                               borderRadius: 10,
-                              border: "1px dashed var(--vm-trans-white-15)",
+                              borderLeft: "1px dashed var(--vm-trans-white-15)",
+                              borderRight: "1px dashed var(--vm-trans-white-15)",
+                              borderBottom: "1px dashed var(--vm-trans-white-15)",
+                              borderTop: "1px solid var(--vm-border)",
                               background: "var(--vm-trans-white-02)",
                               position: "relative",
                               overflow: "hidden",
                               marginTop: 6,
-                              paddingTop: 6,
-                              borderTop: "1px solid var(--vm-border)",
                             }}>
                               {/* Upload icon */}
                               <div style={{

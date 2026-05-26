@@ -1,77 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { font } from "@/lib/theme";
-
-// ─────────────────────────────────────────────────────────────
-// Status Steps Data
-// ─────────────────────────────────────────────────────────────
-
-interface StatusStep {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  tip?: string;
-}
-
-const STATUS_STEPS: StatusStep[] = [
-  {
-    id: "submitted",
-    title: "Application Submitted",
-    description: "Your documents have been submitted at the visa center and a tracking receipt has been issued.",
-    icon: "📤",
-    tip: "Keep your tracking receipt safe — you'll need it to collect your passport later.",
-  },
-  {
-    id: "processing",
-    title: "Under Processing",
-    description: "Your application is being reviewed by the embassy/consulate. This usually takes 5–15 working days.",
-    icon: "⏳",
-    tip: "Do not make any travel bookings until your visa has been approved.",
-  },
-  {
-    id: "decision",
-    title: "Decision Made",
-    description: "The embassy has made a decision on your visa application. Check your tracking portal for the result.",
-    icon: "📋",
-    tip: "You'll receive an SMS or email notification when the decision is ready.",
-  },
-  {
-    id: "dispatched",
-    title: "Passport Dispatched",
-    description: "Your passport has been sent back to the visa center or is being couriered to your address.",
-    icon: "🚚",
-    tip: "If you opted for courier delivery, track your shipment using the courier tracking ID.",
-  },
-  {
-    id: "collected",
-    title: "Passport Collected",
-    description: "You've collected your passport with the visa stamped. You're all set to travel!",
-    icon: "✅",
-    tip: "Double-check the visa validity dates and number of entries allowed before booking flights.",
-  },
-];
-
-// ─────────────────────────────────────────────────────────────
-// Tracking Links Data
-// ─────────────────────────────────────────────────────────────
-
-interface TrackingLink {
-  name: string;
-  url: string;
-  icon: string;
-}
-
-const TRACKING_LINKS: TrackingLink[] = [
-  { name: "VFS Global", url: "https://www.vfsglobal.com/track-your-application", icon: "🌐" },
-  { name: "BLS International", url: "https://www.blsinternational.com", icon: "🏢" },
-  { name: "Embassy Direct", url: "#", icon: "🏛️" },
-];
-
-// ─────────────────────────────────────────────────────────────
-// Component
-// ─────────────────────────────────────────────────────────────
 
 interface ApplicationStatusTabProps {
   countryName?: string;
@@ -79,430 +9,351 @@ interface ApplicationStatusTabProps {
 }
 
 export default function ApplicationStatusTab({ countryName = "", visaTypeName = "" }: ApplicationStatusTabProps) {
-  const [currentStep, setCurrentStep] = useState<number>(0);
-
-  const premiumCardShadow = "0 10px 30px -10px rgba(108, 92, 231, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02), 0 0 0 1px var(--vm-border)";
-
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 24,
-      padding: "24px 20px",
-      animation: "floatUp 450ms cubic-bezier(0.16, 1, 0.3, 1) both",
-    }}>
+    <div className="vm-status-container">
+      {/* Nested CSS styles for centering, spacing, and hover scaling */}
+      <style>{`
+        .vm-status-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center; /* Vertically center content to eliminate awkward blank space at the bottom */
+          align-items: center;
+          gap: 22px;
+          padding: 24px;
+          width: 100%;
+          max-width: 860px;
+          min-height: 460px; /* matches the parent tab container min-height */
+          margin: 0 auto;
+          animation: floatUp 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+          font-family: 'DM Sans', sans-serif;
+          box-sizing: border-box;
+        }
 
-      {/* ── Grid: Two Columns ── */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-        gap: 24,
-        alignItems: "start",
-      }}>
+        /* Centered Compact Tracking Hero Card */
+        .vm-track-hero {
+          background: rgba(30, 41, 59, 0.3);
+          backdrop-filter: blur(16px) saturate(140%);
+          -webkit-backdrop-filter: blur(16px) saturate(140%);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 14px;
+          padding: 22px 32px;
+          width: 100%;
+          max-width: 500px; /* Constrained width to look like a premium self-contained console */
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 12px;
+          box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.03);
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .vm-track-hero:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 16px 44px rgba(0, 0, 0, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+          border-color: rgba(255, 255, 255, 0.15);
+        }
+        .light .vm-track-hero {
+          background: rgba(255, 255, 255, 0.85);
+          border: 1px solid rgba(108, 92, 231, 0.16);
+          box-shadow: 0 20px 40px rgba(30, 27, 75, 0.06), 0 1px 3px rgba(30, 27, 75, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+        }
+        .light .vm-track-hero:hover {
+          border-color: rgba(108, 92, 231, 0.28);
+          box-shadow: 0 28px 48px rgba(30, 27, 75, 0.09), 0 2px 6px rgba(30, 27, 75, 0.03);
+        }
+ 
+         /* Mini Badge inside Hero */
+         .vm-mini-badge {
+           display: inline-flex;
+           align-items: center;
+           gap: 4px;
+           background: var(--vm-purple-bg);
+           border: 1px solid var(--vm-purple-border-soft);
+           border-radius: 12px;
+           padding: 2px 8px;
+           font-size: 8.5px;
+           font-weight: 700;
+           color: var(--vm-purple-soft);
+           text-transform: uppercase;
+           letter-spacing: 0.06em;
+         }
+ 
+         /* Tracker Launch Button */
+         .vm-track-btn {
+           display: inline-flex;
+           align-items: center;
+           justify-content: center;
+           gap: 6px;
+           background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+           color: #ffffff !important;
+           border: none;
+           border-radius: 8px;
+           padding: 10px 20px;
+           font-size: 12px;
+           font-weight: 700;
+           text-decoration: none;
+           cursor: pointer;
+           box-shadow: 0 4px 10px rgba(99, 102, 241, 0.18);
+           transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+           margin-top: 4px;
+         }
+         .vm-track-btn:hover {
+           background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+           box-shadow: 0 6px 18px rgba(99, 102, 241, 0.3), 0 0 0 2px rgba(139, 92, 246, 0.1);
+           transform: translateY(-1px);
+         }
+ 
+         /* Gotchas Grid (Three Columns) */
+         .vm-gotcha-grid {
+           display: grid;
+           grid-template-columns: repeat(3, 1fr);
+           gap: 16px;
+           width: 100%;
+         }
+         @media (max-width: 768px) {
+           .vm-gotcha-grid {
+             grid-template-columns: 1fr;
+             gap: 12px;
+           }
+         }
+ 
+         /* Compact Gotcha Cards */
+         .vm-gotcha-card {
+           background: rgba(30, 41, 59, 0.15);
+           backdrop-filter: blur(12px);
+           -webkit-backdrop-filter: blur(12px);
+           border: 1px solid rgba(255, 255, 255, 0.05);
+           border-radius: 12px;
+           padding: 18px 16px;
+           display: flex;
+           flex-direction: column;
+           gap: 10px;
+           box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.01);
+           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+         }
+         .light .vm-gotcha-card {
+           background: rgba(255, 255, 255, 0.75);
+           border: 1px solid rgba(108, 92, 231, 0.1);
+           box-shadow: 0 8px 24px rgba(30, 27, 75, 0.04), 0 1px 2px rgba(30, 27, 75, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+         }
+         .vm-gotcha-card:hover {
+           transform: translateY(-3px);
+           border-color: rgba(255, 255, 255, 0.12);
+           box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+         }
+         .light .vm-gotcha-card:hover {
+           border-color: rgba(108, 92, 231, 0.24);
+           box-shadow: 0 16px 32px rgba(30, 27, 75, 0.08), 0 2px 4px rgba(30, 27, 75, 0.03);
+           background: #ffffff;
+         }
+ 
+         /* Icon Badge Box */
+         .vm-icon-box {
+           width: 28px;
+           height: 28px;
+           border-radius: 7px;
+           background: rgba(255, 255, 255, 0.03);
+           border: 1px solid rgba(255, 255, 255, 0.06);
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 13px;
+           transition: all 0.3s ease;
+         }
+         .light .vm-icon-box {
+           background: rgba(108, 92, 231, 0.06);
+           border-color: rgba(108, 92, 231, 0.14);
+         }
+         .vm-gotcha-card:hover .vm-icon-box {
+           background: rgba(99, 102, 241, 0.18);
+           border-color: rgba(99, 102, 241, 0.28);
+         }
+         .light .vm-gotcha-card:hover .vm-icon-box {
+           background: rgba(99, 102, 241, 0.12);
+           border-color: rgba(99, 102, 241, 0.24);
+         }
+ 
+         /* Stay Updated Footer Row */
+         .vm-status-footer {
+           display: flex;
+           justify-content: center;
+           flex-wrap: wrap;
+           gap: 12px 32px;
+           width: 100%;
+           padding-top: 16px;
+           border-top: 1px solid rgba(255, 255, 255, 0.05);
+           font-size: 11px;
+           color: var(--vm-text);
+           opacity: 0.45;
+         }
+         .light .vm-status-footer {
+           border-top: 1px solid rgba(108, 92, 231, 0.12);
+         }
 
-        {/* Column 1: Status Timeline */}
-        <div style={{
-          background: "var(--vm-surface)",
-          border: "1px solid var(--vm-border)",
-          borderRadius: 12,
-          padding: 24,
-          boxShadow: premiumCardShadow,
-          display: "flex",
-          flexDirection: "column",
-          gap: 18,
-        }}>
-          <div>
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              background: "var(--vm-purple-bg)",
-              border: "1px solid var(--vm-purple-border-soft)",
-              borderRadius: 20,
-              padding: "3px 9px",
-              marginBottom: 10,
-            }}>
-              <span style={{ fontSize: 9.5 }}>📡</span>
-              <span style={{
-                fontSize: 9.5,
-                fontWeight: 700,
-                color: "var(--vm-purple-soft)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                fontFamily: font.sans,
-              }}>
-                Tracker
-              </span>
-            </div>
-            <h3 style={{
-              fontFamily: font.sans,
-              fontSize: 16,
-              fontWeight: 700,
-              color: "var(--vm-text)",
-              margin: "0 0 6px",
-              letterSpacing: "-0.01em",
-            }}>
-              Application Status
-            </h3>
-            <p style={{
-              fontSize: 12.5,
-              color: "var(--vm-text)",
-              opacity: 0.72,
-              margin: 0,
-              fontFamily: font.sans,
-              lineHeight: 1.5,
-            }}>
-              Track where your visa application stands. Tap on a step to mark it as your current stage.
-            </p>
-          </div>
-
-          {/* Timeline */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-            {STATUS_STEPS.map((step, index) => {
-              const isActive = index === currentStep;
-              const isCompleted = index < currentStep;
-              const isFuture = index > currentStep;
-
-              return (
-                <div
-                  key={step.id}
-                  onClick={() => setCurrentStep(index)}
-                  style={{
-                    display: "flex",
-                    gap: 14,
-                    cursor: "pointer",
-                    position: "relative",
-                  }}
-                >
-                  {/* Timeline Line + Dot */}
-                  <div style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    width: 28,
-                    flexShrink: 0,
-                  }}>
-                    {/* Dot */}
-                    <div style={{
-                      width: isActive ? 18 : 14,
-                      height: isActive ? 18 : 14,
-                      borderRadius: "50%",
-                      background: isCompleted
-                        ? "#10b981"
-                        : isActive
-                          ? "var(--vm-indigo)"
-                          : "var(--vm-trans-white-06)",
-                      border: isActive
-                        ? "3px solid rgba(99, 102, 241, 0.3)"
-                        : isCompleted
-                          ? "2px solid rgba(16, 185, 129, 0.3)"
-                          : "2px solid var(--vm-border)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                      boxShadow: isActive
-                        ? "0 0 12px rgba(99, 102, 241, 0.25)"
-                        : isCompleted
-                          ? "0 0 8px rgba(16, 185, 129, 0.15)"
-                          : "none",
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}>
-                      {isCompleted && (
-                        <svg width="8" height="8" fill="none" stroke="white" strokeWidth={3} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                      )}
-                      {isActive && (
-                        <div style={{
-                          width: 6,
-                          height: 6,
-                          borderRadius: "50%",
-                          background: "white",
-                        }} />
-                      )}
-                    </div>
-
-                    {/* Connecting Line */}
-                    {index < STATUS_STEPS.length - 1 && (
-                      <div style={{
-                        width: 2,
-                        flex: 1,
-                        minHeight: 20,
-                        background: isCompleted
-                          ? "rgba(16, 185, 129, 0.3)"
-                          : "var(--vm-border)",
-                        transition: "background 0.3s ease",
-                      }} />
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div style={{
-                    flex: 1,
-                    paddingBottom: index < STATUS_STEPS.length - 1 ? 20 : 0,
-                  }}>
-                    <div style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 4,
-                    }}>
-                      <span style={{
-                        fontSize: 14,
-                        filter: isFuture ? "grayscale(0.8)" : "none",
-                        opacity: isFuture ? 0.5 : 1,
-                        transition: "all 0.2s",
-                      }}>
-                        {step.icon}
-                      </span>
-                      <span style={{
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: isActive
-                          ? "var(--vm-indigo-light)"
-                          : isCompleted
-                            ? "#10b981"
-                            : "var(--vm-text)",
-                        fontFamily: font.sans,
-                        opacity: isFuture ? 0.5 : 1,
-                        transition: "all 0.2s",
-                      }}>
-                        {step.title}
-                      </span>
-                      {isActive && (
-                        <span style={{
-                          fontSize: 8,
-                          fontWeight: 700,
-                          color: "var(--vm-indigo)",
-                          background: "var(--vm-purple-bg)",
-                          border: "1px solid var(--vm-purple-border-soft)",
-                          borderRadius: 10,
-                          padding: "2px 7px",
-                          fontFamily: font.sans,
-                          textTransform: "uppercase",
-                          letterSpacing: "0.06em",
-                        }}>
-                          Current
-                        </span>
-                      )}
-                    </div>
-                    <p style={{
-                      fontSize: 11.5,
-                      color: "var(--vm-text)",
-                      opacity: isFuture ? 0.4 : 0.68,
-                      margin: 0,
-                      fontFamily: font.sans,
-                      lineHeight: 1.5,
-                      transition: "opacity 0.2s",
-                    }}>
-                      {step.description}
-                    </p>
-
-                    {/* Tip (shown only for active step) */}
-                    {isActive && step.tip && (
-                      <div style={{
-                        marginTop: 10,
-                        padding: "10px 12px",
-                        background: "var(--vm-purple-bg)",
-                        border: "1px solid var(--vm-purple-border-soft)",
-                        borderRadius: 8,
-                        fontSize: 11,
-                        color: "var(--vm-text)",
-                        opacity: 0.85,
-                        fontFamily: font.sans,
-                        lineHeight: 1.5,
-                        animation: "floatUp 300ms cubic-bezier(0.16, 1, 0.3, 1) both",
-                      }}>
-                        <span style={{ fontWeight: 700, color: "var(--vm-purple-soft)", marginRight: 4 }}>💡 Tip:</span>
-                        {step.tip}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Column 2: Tracking Links & Info */}
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 20,
-        }}>
-          {/* Track Your Application Card */}
-          <div style={{
-            background: "var(--vm-surface)",
-            border: "1px solid var(--vm-border)",
-            borderRadius: 12,
-            padding: 24,
-            boxShadow: premiumCardShadow,
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
-          }}>
-            <div>
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 5,
-                background: "var(--vm-purple-bg)",
-                border: "1px solid var(--vm-purple-border-soft)",
-                borderRadius: 20,
-                padding: "3px 9px",
-                marginBottom: 10,
-              }}>
-                <span style={{ fontSize: 9.5 }}>🔗</span>
-                <span style={{
-                  fontSize: 9.5,
-                  fontWeight: 700,
-                  color: "var(--vm-purple-soft)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  fontFamily: font.sans,
-                }}>
-                  Quick Links
-                </span>
-              </div>
-              <h3 style={{
-                fontFamily: font.sans,
-                fontSize: 16,
-                fontWeight: 700,
-                color: "var(--vm-text)",
-                margin: "0 0 6px",
-                letterSpacing: "-0.01em",
-              }}>
-                Track Your Application
-              </h3>
-              <p style={{
-                fontSize: 12.5,
-                color: "var(--vm-text)",
-                opacity: 0.72,
-                margin: 0,
-                fontFamily: font.sans,
-                lineHeight: 1.5,
-              }}>
-                Use your reference number to check the latest status on the official tracking portals.
-              </p>
-            </div>
-
-            {/* Tracking Links */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {TRACKING_LINKS.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="vm-floating-item"
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "12px 14px",
-                    borderRadius: 10,
-                    textDecoration: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  <span style={{ fontSize: 18 }}>{link.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <span style={{
-                      fontSize: 12.5,
-                      fontWeight: 600,
-                      color: "var(--vm-text)",
-                      fontFamily: font.sans,
-                      display: "block",
-                    }}>
-                      {link.name}
-                    </span>
-                    <span style={{
-                      fontSize: 10.5,
-                      color: "var(--vm-text)",
-                      opacity: 0.55,
-                      fontFamily: font.sans,
-                    }}>
-                      Track on official website
-                    </span>
-                  </div>
-                  <svg width="12" height="12" fill="none" stroke="var(--vm-trans-white-45)" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                  </svg>
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Important Notes Card */}
-          <div style={{
-            background: "var(--vm-surface)",
-            border: "1px solid var(--vm-border)",
-            borderRadius: 12,
-            padding: 24,
-            boxShadow: premiumCardShadow,
-            display: "flex",
-            flexDirection: "column",
-            gap: 14,
-          }}>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}>
-              <span style={{ fontSize: 16 }}>⚠️</span>
-              <h4 style={{
-                fontFamily: font.sans,
-                fontSize: 14,
-                fontWeight: 700,
-                color: "var(--vm-text)",
-                margin: 0,
-              }}>
-                Important Reminders
-              </h4>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                "Do not book non-refundable flights or hotels until your visa is approved.",
-                "Processing times may vary during peak seasons (summer, holidays).",
-                "Check the embassy website for any public holiday closures.",
-                "Keep your tracking reference number saved securely.",
-              ].map((note, i) => (
-                <div key={i} style={{
-                  display: "flex",
-                  gap: 10,
-                  alignItems: "flex-start",
-                }}>
-                  <span style={{
-                    fontSize: 10,
-                    color: "var(--vm-text)",
-                    opacity: 0.35,
-                    fontFamily: font.sans,
-                    lineHeight: "18px",
-                    fontWeight: 700,
-                    flexShrink: 0,
-                  }}>
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <p style={{
-                    fontSize: 12,
-                    color: "var(--vm-text)",
-                    opacity: 0.72,
-                    margin: 0,
-                    fontFamily: font.sans,
-                    lineHeight: 1.5,
-                  }}>
-                    {note}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
+         /* Divider */
+         .vm-status-divider {
+           height: 1px;
+           background: var(--vm-border);
+           width: 100%;
+           opacity: 0.3;
+           margin: 4px 0;
+         }
+         .light .vm-status-divider {
+           opacity: 0.8;
+           background: rgba(108, 92, 231, 0.14);
+         }
+       `}</style>
+ 
+       {/* ── 1. Centered Track Hero Card ── */}
+       <div className="vm-track-hero">
+         <div className="vm-mini-badge">📡 Tracker</div>
+ 
+         <h2 style={{
+           fontFamily: font.sans,
+           fontSize: 16.5,
+           fontWeight: 700,
+           color: "var(--vm-text)",
+           margin: 0,
+           letterSpacing: "-0.01em",
+           lineHeight: 1.2,
+         }}>
+           Track Your Application
+         </h2>
+ 
+         <p style={{
+           fontSize: 12,
+           color: "var(--vm-text)",
+           opacity: 0.6,
+           margin: 0,
+           fontFamily: font.sans,
+           lineHeight: 1.4,
+           maxWidth: 360,
+         }}>
+           Check your live visa status directly on the official VFS Global tracking portal.
+         </p>
+ 
+         <a
+           href="https://www.vfsvisaonline.com/Global-Passporttracking/Track/"
+           target="_blank"
+           rel="noopener noreferrer"
+           className="vm-track-btn"
+         >
+           <span>Track on VFS Global</span>
+           <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+           </svg>
+         </a>
+       </div>
+ 
+       <div className="vm-status-divider" />
+ 
+       {/* ── 2. VFS Gotchas Grid (Three Compact Cards) ── */}
+       <div style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
+         <h3 style={{
+           fontFamily: font.sans,
+           fontSize: 10.5,
+           fontWeight: 700,
+           color: "var(--vm-text)",
+           opacity: 0.4,
+           textTransform: "uppercase",
+           letterSpacing: "0.06em",
+           margin: 0,
+         }}>
+           Critical VFS Gotchas
+         </h3>
+ 
+         <div className="vm-gotcha-grid">
+           {/* Card 1 */}
+           <div className="vm-gotcha-card">
+             <div className="vm-icon-box">⏳</div>
+             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+               <h4 style={{
+                 fontFamily: font.sans,
+                 fontSize: 12.5,
+                 fontWeight: 700,
+                 color: "var(--vm-text)",
+                 margin: 0,
+               }}>
+                 Scan Delay Panic
+               </h4>
+               <p style={{
+                 fontSize: 11.5,
+                 color: "var(--vm-text)",
+                 opacity: 0.55,
+                 margin: 0,
+                 fontFamily: font.sans,
+                 lineHeight: 1.4,
+               }}>
+                 VFS takes <strong>6–7 working days</strong> to scan your envelope. If you see &quot;Invalid Input&quot;, your package is simply awaiting scan.
+               </p>
+             </div>
+           </div>
+ 
+           {/* Card 2 */}
+           <div className="vm-gotcha-card">
+             <div className="vm-icon-box" style={{ color: "#f59e0b" }}>⚠️</div>
+             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+               <h4 style={{
+                 fontFamily: font.sans,
+                 fontSize: 12.5,
+                 fontWeight: 700,
+                 color: "var(--vm-text)",
+                 margin: 0,
+               }}>
+                 On Hold deficiencies
+               </h4>
+               <p style={{
+                 fontSize: 11.5,
+                 color: "var(--vm-text)",
+                 opacity: 0.55,
+                 margin: 0,
+                 fontFamily: font.sans,
+                 lineHeight: 1.4,
+               }}>
+                 If your status shows &quot;On Hold&quot;, check your <strong>spam/junk email</strong> immediately for lists of missing documents.
+               </p>
+             </div>
+           </div>
+ 
+           {/* Card 3 */}
+           <div className="vm-gotcha-card">
+             <div className="vm-icon-box">📦</div>
+             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+               <h4 style={{
+                 fontFamily: font.sans,
+                 fontSize: 12.5,
+                 fontWeight: 700,
+                 color: "var(--vm-text)",
+                 margin: 0,
+               }}>
+                 Courier UPS Label
+               </h4>
+               <p style={{
+                 fontSize: 11.5,
+                 color: "var(--vm-text)",
+                 opacity: 0.55,
+                 margin: 0,
+                 fontFamily: font.sans,
+                 lineHeight: 1.4,
+               }}>
+                 If returning via self-courier, VFS strictly accepts prepaid <strong>UPS labels only</strong>. Other labels cause delays.
+               </p>
+             </div>
+           </div>
+         </div>
+       </div>
+ 
+       {/* ── 3. Stay Updated Footer Row ── */}
+       <div className="vm-status-footer">
+         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+           <span>💬</span>
+           <span><strong>SMS Alerts:</strong> Purchased during online payment stage.</span>
+         </div>
+         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+           <span>🕒</span>
+           <span><strong>Intervals:</strong> Track online after 72 Business Hours.</span>
+         </div>
+       </div>
+     </div>
+   );
+ }

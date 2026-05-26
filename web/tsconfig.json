@@ -41,6 +41,7 @@
     "src/features/documents/cover_letter/LetterFormFields.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "visa_form_prev.tsx"
   ]
 }

@@ -139,9 +139,9 @@ export function DocChecklistStyles() {
         overflow: hidden !important;
       }
       .light .vm-left-panel {
-        background: rgba(255, 255, 255, 0.85) !important;
-        border: 1px solid rgba(108, 92, 231, 0.18) !important;
-        box-shadow: 0 16px 40px rgba(108, 92, 231, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+        background: rgba(255, 255, 255, 0.90) !important;
+        border: 1px solid rgba(108, 92, 231, 0.14) !important;
+        box-shadow: 0 16px 40px rgba(30, 27, 75, 0.05), inset 0 1px 1px #ffffff !important;
       }
 
       .vm-right-panel {
@@ -154,9 +154,9 @@ export function DocChecklistStyles() {
         overflow: hidden !important;
       }
       .light .vm-right-panel {
-        background: rgba(255, 255, 255, 0.85) !important;
-        border: 1px solid rgba(108, 92, 231, 0.18) !important;
-        box-shadow: 0 16px 40px rgba(108, 92, 231, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+        background: rgba(255, 255, 255, 0.90) !important;
+        border: 1px solid rgba(108, 92, 231, 0.14) !important;
+        box-shadow: 0 16px 40px rgba(30, 27, 75, 0.05), inset 0 1px 1px #ffffff !important;
       }
 
       .vm-doc-row {
@@ -177,9 +177,9 @@ export function DocChecklistStyles() {
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.04); /* premium floating card shadow */
       }
       .light .vm-doc-row {
-        background: rgba(255, 255, 255, 0.88); /* more opaque card background for high separation */
+        background: #ffffff; /* solid white card for clear separation */
         border-color: rgba(108, 92, 231, 0.12);
-        box-shadow: 0 4px 10px rgba(108, 92, 231, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 10px rgba(30, 27, 75, 0.04), inset 0 1px 0 #ffffff;
       }
       .vm-doc-row:hover {
         background: rgba(255, 255, 255, 0.09);
@@ -188,9 +188,9 @@ export function DocChecklistStyles() {
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       }
       .light .vm-doc-row:hover {
-        background: rgba(255, 255, 255, 0.98);
-        border-color: rgba(108, 92, 231, 0.2);
-        box-shadow: 0 6px 16px rgba(108, 92, 231, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+        background: #ffffff;
+        border-color: rgba(108, 92, 231, 0.22);
+        box-shadow: 0 8px 18px rgba(30, 27, 75, 0.08), inset 0 1px 0 #ffffff;
         transform: translateY(-1.5px);
       }
 
@@ -210,14 +210,14 @@ export function DocChecklistStyles() {
       /* Active (selected) state in light mode */
       .light .vm-doc-row.vm-active {
         background: rgba(99, 102, 241, 0.08) !important;
-        border-color: rgba(99, 102, 241, 0.25) !important;
+        border-color: rgba(99, 102, 241, 0.28) !important;
         border-left: 3.5px solid var(--vm-indigo) !important;
-        box-shadow: 0 4px 16px rgba(108, 92, 231, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        box-shadow: 0 6px 14px rgba(99, 102, 241, 0.06), inset 0 1px 0 #ffffff !important;
       }
       .light .vm-doc-row.vm-active:hover {
         background: rgba(99, 102, 241, 0.12) !important;
-        border-color: rgba(99, 102, 241, 0.35) !important;
-        box-shadow: 0 6px 20px rgba(108, 92, 231, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+        border-color: rgba(99, 102, 241, 0.38) !important;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.09), inset 0 1px 0 #ffffff !important;
       }
 
       /* Completed state (when checked) */
@@ -226,7 +226,7 @@ export function DocChecklistStyles() {
         border-color: rgba(16, 185, 129, 0.3) !important;
       }
       .light .vm-doc-row.vm-done {
-        background: rgba(16, 185, 129, 0.06) !important;
+        background: rgba(16, 185, 129, 0.05) !important;
         border-color: rgba(16, 185, 129, 0.25) !important;
       }
 
@@ -420,6 +420,11 @@ export function DocChecklistStyles() {
         border-color: var(--vm-purple-border-soft) !important;
         color: var(--vm-purple-soft) !important;
       }
+      .light .vm-what-you-need-step:hover .step-num {
+        background: rgba(108, 92, 231, 0.12) !important;
+        border-color: rgba(108, 92, 231, 0.4) !important;
+        color: #6c5ce7 !important;
+      }
       .vm-what-you-need-step .step-connector {
         width: 2px;
         flex: 1;
@@ -430,6 +435,9 @@ export function DocChecklistStyles() {
       }
       .vm-what-you-need-step:hover .step-connector {
         background: var(--vm-purple-border-soft) !important;
+      }
+      .light .vm-what-you-need-step:hover .step-connector {
+        background: rgba(108, 92, 231, 0.4) !important;
       }
       .vm-what-you-need-step .step-tip-text {
         font-size: 12.5px;
@@ -460,9 +468,9 @@ export function DocChecklistStyles() {
         z-index: 10;
       }
       .light .vm-master-window {
-        background: rgba(248, 250, 252, 0.75) !important; /* brighter, cleaner slate-white to eliminate dirty-grey look */
-        border: 1px solid rgba(108, 92, 231, 0.1) !important;
-        box-shadow: 0 10px 40px rgba(108, 92, 231, 0.02), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+        background: rgba(255, 255, 255, 0.75) !important; /* pure white with glass opacity */
+        border: 1px solid rgba(108, 92, 231, 0.12) !important;
+        box-shadow: 0 20px 50px rgba(30, 27, 75, 0.06), 0 4px 12px rgba(30, 27, 75, 0.02), inset 0 1px 1px #ffffff !important;
       }
 
       .vm-window-body {
@@ -507,10 +515,10 @@ export function DocChecklistStyles() {
         white-space: nowrap;
       }
       .light .vm-folder-tab {
-        background: rgba(0, 0, 0, 0.02);
-        border-color: rgba(108, 92, 231, 0.06);
+        background: rgba(30, 27, 75, 0.03);
+        border-color: rgba(108, 92, 231, 0.08);
         border-bottom-color: rgba(108, 92, 231, 0.12); /* matches master window top border */
-        color: rgba(30, 27, 75, 0.5);
+        color: rgba(30, 27, 75, 0.55);
       }
 
       .vm-folder-tab:hover {
@@ -520,7 +528,7 @@ export function DocChecklistStyles() {
       }
       .light .vm-folder-tab:hover {
         color: #1e1b4b;
-        background: rgba(0, 0, 0, 0.04);
+        background: rgba(30, 27, 75, 0.06);
         border-color: rgba(108, 92, 231, 0.1);
       }
 
@@ -550,11 +558,11 @@ export function DocChecklistStyles() {
         pointer-events: none;
       }
       .light .vm-folder-tab.vm-active {
-        background: rgba(255, 255, 255, 0.65) !important;
+        background: #ffffff !important;
         border-color: rgba(108, 92, 231, 0.12) !important;
         border-bottom-color: transparent !important;
         color: #1e1b4b !important;
-        box-shadow: 0 -8px 24px rgba(108, 92, 231, 0.03), inset 0 1px 0 #ffffff !important;
+        box-shadow: 0 -8px 20px rgba(30, 27, 75, 0.04), inset 0 1px 0 #ffffff !important;
       }
 
       /* Icons */
@@ -659,6 +667,8 @@ export function DocChecklistStyles() {
                     transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
                     visibility 0s 350ms;
         will-change: opacity, transform;
+        height: 0;
+        overflow: hidden;
       }
       .vm-tab-pane.vm-active {
         opacity: 1;
@@ -669,6 +679,8 @@ export function DocChecklistStyles() {
                     transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
                     visibility 0s 0s;
         z-index: 1;
+        height: auto;
+        overflow: visible;
       }
 
       /* ── File Row Thumbnails ── */
@@ -819,46 +831,45 @@ export function DocChecklistStyles() {
       }
 
       .light .vm-glass-card {
-        background: rgba(255, 255, 255, 0.48) !important;
-        border-color: rgba(99, 102, 241, 0.15) !important;
+        background: rgba(255, 255, 255, 0.7) !important;
+        border-color: rgba(108, 92, 231, 0.12) !important;
         color: var(--vm-text) !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+        box-shadow: 0 4px 12px rgba(30, 27, 75, 0.03), inset 0 1px 1px #ffffff !important;
       }
       .light .vm-glass-card:not(.vm-checked) {
-        background: rgba(255, 255, 255, 0.38) !important;
+        background: rgba(255, 255, 255, 0.5) !important;
         opacity: 0.85 !important;
       }
       .light .vm-glass-card.vm-checked {
-        background: rgba(255, 255, 255, 0.82) !important;
-        box-shadow: 0 10px 24px rgba(99, 102, 241, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+        background: #ffffff !important;
       }
       .light .vm-glass-card.vm-card-passport {
-        border-color: rgba(245, 158, 11, 0.28) !important;
+        border-color: rgba(245, 158, 11, 0.3) !important;
       }
       .light .vm-glass-card.vm-checked.vm-card-passport {
         border-color: rgba(245, 158, 11, 0.6) !important;
-        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+        box-shadow: 0 12px 28px rgba(245, 158, 11, 0.18), inset 0 1px 1px #ffffff !important;
       }
       .light .vm-glass-card.vm-card-dossier {
-        border-color: rgba(16, 185, 129, 0.28) !important;
+        border-color: rgba(16, 185, 129, 0.3) !important;
       }
       .light .vm-glass-card.vm-checked.vm-card-dossier {
         border-color: rgba(16, 185, 129, 0.6) !important;
-        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+        box-shadow: 0 12px 28px rgba(16, 185, 129, 0.18), inset 0 1px 1px #ffffff !important;
       }
       .light .vm-glass-card.vm-card-letter {
-        border-color: rgba(6, 182, 212, 0.28) !important;
+        border-color: rgba(6, 182, 212, 0.3) !important;
       }
       .light .vm-glass-card.vm-checked.vm-card-letter {
         border-color: rgba(6, 182, 212, 0.6) !important;
-        box-shadow: 0 10px 25px rgba(6, 182, 212, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+        box-shadow: 0 12px 28px rgba(6, 182, 212, 0.18), inset 0 1px 1px #ffffff !important;
       }
       .light .vm-glass-card.vm-card-payment {
-        border-color: rgba(217, 70, 239, 0.28) !important;
+        border-color: rgba(217, 70, 239, 0.3) !important;
       }
       .light .vm-glass-card.vm-checked.vm-card-payment {
         border-color: rgba(217, 70, 239, 0.6) !important;
-        box-shadow: 0 10px 25px rgba(217, 70, 239, 0.16), inset 0 1px 1px rgba(255,255,255,0.9) !important;
+        box-shadow: 0 12px 28px rgba(217, 70, 239, 0.18), inset 0 1px 1px #ffffff !important;
       }
 
       .vm-glass-card:hover {
@@ -889,9 +900,9 @@ export function DocChecklistStyles() {
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .light .vm-floating-item {
-        background: rgba(255, 255, 255, 0.55) !important;
-        border-color: rgba(99, 102, 241, 0.08) !important;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+        background: #ffffff !important;
+        border-color: rgba(108, 92, 231, 0.1) !important;
+        box-shadow: 0 4px 10px rgba(30, 27, 75, 0.02), inset 0 1px 0 #ffffff !important;
       }
       .vm-floating-item:hover {
         transform: translateY(-3px) scale(1.008);
@@ -899,8 +910,8 @@ export function DocChecklistStyles() {
         box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
       }
       .light .vm-floating-item:hover {
-        border-color: rgba(99, 102, 241, 0.28) !important;
-        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 10px 24px -4px rgba(99, 102, 241, 0.08), inset 0 1px 0 #ffffff !important;
       }
       .vm-floating-item.vm-item-checked {
         background: var(--vm-green-bg) !important;
@@ -908,8 +919,8 @@ export function DocChecklistStyles() {
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.04) !important;
       }
       .light .vm-floating-item.vm-item-checked {
-        background: rgba(16, 185, 129, 0.05) !important;
-        border-color: rgba(16, 185, 129, 0.22) !important;
+        background: rgba(16, 185, 129, 0.04) !important;
+        border-color: rgba(16, 185, 129, 0.28) !important;
       }
 
       /* ── Embassy Prep FAQ — SiteFooter Grid-animation pattern ── */
@@ -922,17 +933,17 @@ export function DocChecklistStyles() {
         transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
       }
       .light .vm-faq-item {
-        background: rgba(255, 255, 255, 0.55) !important;
-        border-color: rgba(99, 102, 241, 0.08) !important;
-        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+        background: #ffffff !important;
+        border-color: rgba(108, 92, 231, 0.1) !important;
+        box-shadow: 0 2px 8px rgba(30, 27, 75, 0.02), inset 0 1px 0 #ffffff !important;
       }
       .vm-faq-item:hover {
         border-color: rgba(99, 102, 241, 0.3) !important;
         box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
       }
       .light .vm-faq-item:hover {
-        border-color: rgba(99, 102, 241, 0.2) !important;
-        box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        border-color: rgba(99, 102, 241, 0.25) !important;
+        box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.06), inset 0 1px 0 #ffffff !important;
       }
       .vm-faq-item.vm-faq-open {
         background: rgba(99, 102, 241, 0.03) !important;
@@ -940,9 +951,9 @@ export function DocChecklistStyles() {
         box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.08) !important;
       }
       .light .vm-faq-item.vm-faq-open {
-        background: rgba(99, 102, 241, 0.04) !important;
-        border-color: rgba(99, 102, 241, 0.18) !important;
-        box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.04) !important;
+        background: rgba(99, 102, 241, 0.03) !important;
+        border-color: rgba(99, 102, 241, 0.22) !important;
+        box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.05) !important;
       }
 
       /* FAQ Trigger button — matches SiteFooter .vm-faq-trigger */

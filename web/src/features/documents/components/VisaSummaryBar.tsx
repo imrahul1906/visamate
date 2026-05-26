@@ -324,9 +324,29 @@ export function VisaSummaryBar({
         }
 
         .light .vm-info-tile {
-          background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)) padding-box,
-                      linear-gradient(90deg, rgba(108, 92, 231, 0.08), rgba(108, 92, 231, 0.08)) border-box;
-          box-shadow: 0 2px 8px rgba(108, 92, 231, 0.01);
+          box-shadow: 0 4px 10px rgba(30, 27, 75, 0.02), 0 1px 2px rgba(30, 27, 75, 0.01);
+          transition: background 240ms ease, border-color 240ms ease, box-shadow 240ms ease, transform 240ms ease;
+        }
+
+        .light .vm-info-tile.vm-tile-money {
+          background: linear-gradient(var(--vm-tile-money-bg-glass), var(--vm-tile-money-bg-glass)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-money-border), var(--vm-tile-money-border)) border-box;
+        }
+        .light .vm-info-tile.vm-tile-time {
+          background: linear-gradient(var(--vm-tile-time-bg-glass), var(--vm-tile-time-bg-glass)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-time-border), var(--vm-tile-time-border)) border-box;
+        }
+        .light .vm-info-tile.vm-tile-ok {
+          background: linear-gradient(var(--vm-tile-ok-bg-glass), var(--vm-tile-ok-bg-glass)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-ok-border), var(--vm-tile-ok-border)) border-box;
+        }
+        .light .vm-info-tile.vm-tile-warn {
+          background: linear-gradient(var(--vm-tile-warn-bg-glass), var(--vm-tile-warn-bg-glass)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-warn-border), var(--vm-tile-warn-border)) border-box;
+        }
+        .light .vm-info-tile.vm-tile-neutral {
+          background: linear-gradient(var(--vm-tile-neutral-bg-glass), var(--vm-tile-neutral-bg-glass)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-neutral-border), var(--vm-tile-neutral-border)) border-box;
         }
 
         /* 2-Column layout for contents: Left Icon, Right Text Column */
@@ -396,8 +416,10 @@ export function VisaSummaryBar({
                       linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06)) border-box;
         }
         .light .vm-info-tile.vm-tile-money:hover {
-          background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
-                      linear-gradient(90deg, rgba(108, 92, 231, 0.12), rgba(108, 92, 231, 0.12)) border-box;
+          background: linear-gradient(var(--vm-tile-money-bg-glass-hover), var(--vm-tile-money-bg-glass-hover)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-money-val), var(--vm-tile-money-val)) border-box;
+          box-shadow: 0 6px 16px rgba(180, 130, 30, 0.09), 0 2px 4px rgba(30, 27, 75, 0.02);
+          transform: translateY(-1px);
         }
 
         .vm-info-tile.vm-tile-time:hover {
@@ -405,8 +427,10 @@ export function VisaSummaryBar({
                       linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06)) border-box;
         }
         .light .vm-info-tile.vm-tile-time:hover {
-          background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
-                      linear-gradient(90deg, rgba(108, 92, 231, 0.12), rgba(108, 92, 231, 0.12)) border-box;
+          background: linear-gradient(var(--vm-tile-time-bg-glass-hover), var(--vm-tile-time-bg-glass-hover)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-time-val), var(--vm-tile-time-val)) border-box;
+          box-shadow: 0 6px 16px rgba(234, 88, 12, 0.09), 0 2px 4px rgba(30, 27, 75, 0.02);
+          transform: translateY(-1px);
         }
 
         .vm-info-tile.vm-tile-ok:hover {
@@ -414,8 +438,10 @@ export function VisaSummaryBar({
                       linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06)) border-box;
         }
         .light .vm-info-tile.vm-tile-ok:hover {
-          background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
-                      linear-gradient(90deg, rgba(108, 92, 231, 0.12), rgba(108, 92, 231, 0.12)) border-box;
+          background: linear-gradient(var(--vm-tile-ok-bg-glass-hover), var(--vm-tile-ok-bg-glass-hover)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-ok-val), var(--vm-tile-ok-val)) border-box;
+          box-shadow: 0 6px 16px rgba(22, 163, 74, 0.08), 0 2px 4px rgba(30, 27, 75, 0.02);
+          transform: translateY(-1px);
         }
 
         .vm-info-tile.vm-tile-warn:hover {
@@ -423,8 +449,10 @@ export function VisaSummaryBar({
                       linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06)) border-box;
         }
         .light .vm-info-tile.vm-tile-warn:hover {
-          background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
-                      linear-gradient(90deg, rgba(108, 92, 231, 0.12), rgba(108, 92, 231, 0.12)) border-box;
+          background: linear-gradient(var(--vm-tile-warn-bg-glass-hover), var(--vm-tile-warn-bg-glass-hover)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-warn-val), var(--vm-tile-warn-val)) border-box;
+          box-shadow: 0 6px 16px rgba(225, 29, 72, 0.09), 0 2px 4px rgba(30, 27, 75, 0.02);
+          transform: translateY(-1px);
         }
 
         .vm-info-tile.vm-tile-neutral:hover {
@@ -432,8 +460,10 @@ export function VisaSummaryBar({
                       linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.06)) border-box;
         }
         .light .vm-info-tile.vm-tile-neutral:hover {
-          background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)) padding-box,
-                      linear-gradient(90deg, rgba(108, 92, 231, 0.12), rgba(108, 92, 231, 0.12)) border-box;
+          background: linear-gradient(var(--vm-tile-neutral-bg-glass-hover), var(--vm-tile-neutral-bg-glass-hover)) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-neutral-val), var(--vm-tile-neutral-val)) border-box;
+          box-shadow: 0 6px 16px rgba(71, 85, 105, 0.08), 0 2px 4px rgba(30, 27, 75, 0.02);
+          transform: translateY(-1px);
         }
 
         /* Active highlight states: glassy translucent background, drawn border is handled by SVG hover-rect */
@@ -442,25 +472,54 @@ export function VisaSummaryBar({
                       linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) border-box !important;
           box-shadow: 0 4px 16px rgba(232, 201, 122, 0.08) !important;
         }
+        .light .vm-info-tile.vm-tile-money.vm-active {
+          background: linear-gradient(#ffffff, #ffffff) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-money-val), var(--vm-tile-money-val)) border-box !important;
+          box-shadow: 0 8px 24px rgba(180, 130, 30, 0.16), 0 2px 6px rgba(30, 27, 75, 0.04) !important;
+        }
+
         .vm-info-tile.vm-tile-time.vm-active {
           background: linear-gradient(rgba(251, 146, 60, 0.06), rgba(251, 146, 60, 0.06)) padding-box,
                       linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) border-box !important;
           box-shadow: 0 4px 16px rgba(251, 146, 60, 0.08) !important;
         }
+        .light .vm-info-tile.vm-tile-time.vm-active {
+          background: linear-gradient(#ffffff, #ffffff) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-time-val), var(--vm-tile-time-val)) border-box !important;
+          box-shadow: 0 8px 24px rgba(234, 88, 12, 0.16), 0 2px 6px rgba(30, 27, 75, 0.04) !important;
+        }
+
         .vm-info-tile.vm-tile-ok.vm-active {
           background: linear-gradient(rgba(74, 222, 128, 0.05), rgba(74, 222, 128, 0.05)) padding-box,
                       linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) border-box !important;
           box-shadow: 0 4px 16px rgba(74, 222, 128, 0.06) !important;
         }
+        .light .vm-info-tile.vm-tile-ok.vm-active {
+          background: linear-gradient(#ffffff, #ffffff) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-ok-val), var(--vm-tile-ok-val)) border-box !important;
+          box-shadow: 0 8px 24px rgba(22, 163, 74, 0.16), 0 2px 6px rgba(30, 27, 75, 0.04) !important;
+        }
+
         .vm-info-tile.vm-tile-warn.vm-active {
           background: linear-gradient(rgba(251, 113, 133, 0.06), rgba(251, 113, 133, 0.06)) padding-box,
                       linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) border-box !important;
           box-shadow: 0 4px 16px rgba(251, 113, 133, 0.08) !important;
         }
+        .light .vm-info-tile.vm-tile-warn.vm-active {
+          background: linear-gradient(#ffffff, #ffffff) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-warn-val), var(--vm-tile-warn-val)) border-box !important;
+          box-shadow: 0 8px 24px rgba(225, 29, 72, 0.16), 0 2px 6px rgba(30, 27, 75, 0.04) !important;
+        }
+
         .vm-info-tile.vm-tile-neutral.vm-active {
           background: linear-gradient(rgba(148, 163, 184, 0.05), rgba(148, 163, 184, 0.05)) padding-box,
                       linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) border-box !important;
           box-shadow: 0 4px 16px rgba(148, 163, 184, 0.06) !important;
+        }
+        .light .vm-info-tile.vm-tile-neutral.vm-active {
+          background: linear-gradient(#ffffff, #ffffff) padding-box,
+                      linear-gradient(90deg, var(--vm-tile-neutral-val), var(--vm-tile-neutral-val)) border-box !important;
+          box-shadow: 0 8px 24px rgba(71, 85, 105, 0.16), 0 2px 6px rgba(30, 27, 75, 0.04) !important;
         }
 
         /* Active shimmer liquid highlight sweep (slower, high-end reflection) */
