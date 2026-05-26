@@ -79,6 +79,7 @@ export default function UploadSlot({
   if (uploaded) {
     return (
       <div
+        key="uploaded"
         onClick={e => e.stopPropagation()}
         style={{
           marginTop: noBorder ? 0 : 12,
@@ -136,6 +137,7 @@ export default function UploadSlot({
 
   return (
     <div
+      key="empty"
       onClick={e => e.stopPropagation()}
       style={{
         marginTop: noBorder ? 0 : 12,

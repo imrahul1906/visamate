@@ -193,7 +193,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
       <DocChecklistStyles />
 
       {/* Drifting ambient background orbs */}
-      <div className="vm-ambient-blobs">
+      <div className={`vm-ambient-blobs vm-active-tab-${activeTab}`}>
         <div className="vm-ambient-blob vm-blob-a" />
         <div className="vm-ambient-blob vm-blob-b" />
       </div>
@@ -300,7 +300,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                     display: "flex",
                     gap: 0,
                     width: "100%",
-                    minHeight: embedded ? 560 : "calc(100vh - 340px)",
+                    minHeight: 500,
                     position: "relative",
                     borderRadius: 16,
                     overflow: "hidden",
@@ -341,11 +341,11 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
 
                   {/* RIGHT PANEL — Focus Drawer or Welcome State */}
                   <div
-                    className={isMobile && drawerOpen ? "vm-right-panel-overlay" : ""}
+                    className={isMobile && drawerOpen ? "vm-right-panel-overlay" : "vm-right-panel"}
                     style={{
                       flex: 1,
                       minWidth: 0,
-                      minHeight: embedded ? 560 : "calc(100vh - 340px)",
+                      minHeight: 500,
                       display: "flex",
                       flexDirection: "column",
                       overflow: "hidden",
@@ -355,6 +355,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                     {!visibleDoc ? (
                       requiredDone === requiredDocs.length && requiredDocs.length > 0 ? (
                         <SubmissionGuideState
+                          key="submission-guide"
                           countryName={countryName}
                           visaTypeName={visaTypeName}
                           importantNotes={
@@ -363,6 +364,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                         />
                       ) : (
                         <DocChecklistEmptyState
+                          key="empty-state"
                           totalDocs={allDocs.length}
                           requiredTotal={requiredDocs.length}
                           visaTypeName={visaTypeName}
@@ -372,6 +374,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                       )
                     ) : (
                       <DocDetailPanel
+                        key={visibleDoc.id}
                         visibleDoc={visibleDoc}
                         activeCategory={activeCategory}
                         uploads={uploads}

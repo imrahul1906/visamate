@@ -38,22 +38,57 @@ export function DocChecklistStyles() {
         opacity: 0.13;
         mix-blend-mode: screen;
         pointer-events: none;
+        transition: top 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    left 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    right 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    bottom 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .light .vm-ambient-blob {
         opacity: 0.05;
         mix-blend-mode: multiply;
         filter: blur(110px);
       }
-      .vm-blob-a {
-        background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+
+      /* Dynamic positions based on active folder tab */
+      .vm-active-tab-checklist .vm-blob-a {
         top: -10%;
         left: -10%;
+        background: radial-gradient(circle, #3b82f6 0%, transparent 70%) !important;
+      }
+      .vm-active-tab-checklist .vm-blob-b {
+        bottom: -10%;
+        right: -10%;
+        background: radial-gradient(circle, #a855f7 0%, transparent 70%) !important;
+      }
+
+      .vm-active-tab-guide .vm-blob-a {
+        top: -5%;
+        left: 28%;
+        background: radial-gradient(circle, #8b5cf6 0%, transparent 70%) !important; /* shift to violet */
+      }
+      .vm-active-tab-guide .vm-blob-b {
+        bottom: 15%;
+        right: 45%;
+        background: radial-gradient(circle, #ec4899 0%, transparent 70%) !important; /* shift to pink accent */
+      }
+
+      .vm-active-tab-security .vm-blob-a {
+        top: 25%;
+        left: 45%;
+        background: radial-gradient(circle, #10b981 0%, transparent 70%) !important; /* shift to emerald */
+      }
+      .vm-active-tab-security .vm-blob-b {
+        bottom: -10%;
+        right: 15%;
+        background: radial-gradient(circle, #06b6d4 0%, transparent 70%) !important; /* shift to teal */
+      }
+
+      .vm-blob-a {
         animation: orbDriftA 25s infinite alternate ease-in-out;
       }
       .vm-blob-b {
-        background: radial-gradient(circle, #a855f7 0%, transparent 70%);
-        bottom: -10%;
-        right: -10%;
         animation: orbDriftB 30s infinite alternate ease-in-out;
       }
 
@@ -83,71 +118,106 @@ export function DocChecklistStyles() {
         border-color: var(--vm-trans-white-35);
       }
 
-      /* Frosted Glass Panels (Now borderless inside master window) */
+      /* Frosted Glass Panels (Separate floating glass panels inside master window) */
       .vm-two-panel {
         background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         border: none !important;
         box-shadow: none !important;
+        padding: 20px !important; /* balanced gap from outer border to eliminate wasted space */
+        gap: 20px !important; /* clear visual gap between left checklist and right detail card */
       }
       
       .vm-left-panel {
-        border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: rgba(30, 41, 59, 0.4) !important; /* increased contrast against master window background */
+        backdrop-filter: blur(16px) saturate(140%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important; /* brighter border for clear definition */
+        border-radius: 14px !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important; /* specular top highlight & deeper drop shadow */
+        overflow: hidden !important;
       }
       .light .vm-left-panel {
-        border-right: 1px solid rgba(108, 92, 231, 0.1) !important;
+        background: rgba(255, 255, 255, 0.85) !important;
+        border: 1px solid rgba(108, 92, 231, 0.18) !important;
+        box-shadow: 0 16px 40px rgba(108, 92, 231, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+      }
+
+      .vm-right-panel {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(16px) saturate(140%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+        overflow: hidden !important;
+      }
+      .light .vm-right-panel {
+        background: rgba(255, 255, 255, 0.85) !important;
+        border: 1px solid rgba(108, 92, 231, 0.18) !important;
+        box-shadow: 0 16px 40px rgba(108, 92, 231, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
       }
 
       .vm-doc-row {
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        background: rgba(255, 255, 255, 0.02);
-        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.09); /* slightly brighter, cleaner border */
+        background: rgba(255, 255, 255, 0.055); /* slightly higher opacity for distinct glass look */
+        padding: 12px 14px;
         cursor: pointer;
-        transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 150ms ease;
+        transition: background 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    border-left-width 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         align-items: flex-start;
-        gap: 10px;
+        gap: 11px;
         min-width: 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.04); /* premium floating card shadow */
       }
       .light .vm-doc-row {
-        background: rgba(255, 255, 255, 0.4);
-        border-color: rgba(108, 92, 231, 0.06);
-        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.02);
+        background: rgba(255, 255, 255, 0.88); /* more opaque card background for high separation */
+        border-color: rgba(108, 92, 231, 0.12);
+        box-shadow: 0 4px 10px rgba(108, 92, 231, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
       }
       .vm-doc-row:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.12);
-        transform: translateY(-0.5px);
+        background: rgba(255, 255, 255, 0.09);
+        border-color: rgba(255, 255, 255, 0.16);
+        transform: translateY(-1.5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       }
       .light .vm-doc-row:hover {
-        background: rgba(255, 255, 255, 0.85);
-        border-color: rgba(108, 92, 231, 0.16);
-        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.06);
-        transform: translateY(-0.5px);
+        background: rgba(255, 255, 255, 0.98);
+        border-color: rgba(108, 92, 231, 0.2);
+        box-shadow: 0 6px 16px rgba(108, 92, 231, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
+        transform: translateY(-1.5px);
       }
 
-      /* Active (selected) state */
+      /* Active (selected) state with a left highlight strip */
       .vm-doc-row.vm-active {
         background: rgba(99, 102, 241, 0.15) !important;
-        border-color: rgba(99, 102, 241, 0.5) !important;
-        box-shadow: 0 0 16px rgba(99, 102, 241, 0.1) !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        border-left: 3.5px solid var(--vm-indigo-light) !important;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
       }
       .vm-doc-row.vm-active:hover {
         background: rgba(99, 102, 241, 0.22) !important;
-        border-color: rgba(99, 102, 241, 0.6) !important;
+        border-color: rgba(99, 102, 241, 0.45) !important;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
       }
 
       /* Active (selected) state in light mode */
       .light .vm-doc-row.vm-active {
         background: rgba(99, 102, 241, 0.08) !important;
-        border-color: rgba(99, 102, 241, 0.35) !important;
-        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.04) !important;
+        border-color: rgba(99, 102, 241, 0.25) !important;
+        border-left: 3.5px solid var(--vm-indigo) !important;
+        box-shadow: 0 4px 16px rgba(108, 92, 231, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
       }
       .light .vm-doc-row.vm-active:hover {
         background: rgba(99, 102, 241, 0.12) !important;
-        border-color: rgba(99, 102, 241, 0.45) !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        box-shadow: 0 6px 20px rgba(108, 92, 231, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
       }
 
       /* Completed state (when checked) */
@@ -162,7 +232,7 @@ export function DocChecklistStyles() {
 
       /* Click click feedback (active trigger) */
       .vm-doc-row:active, .light .vm-doc-row:active {
-        transform: scale(0.97) !important;
+        transform: scale(0.98) !important;
         box-shadow: none !important;
       }
       .vm-doc-row.vm-optional {
@@ -390,9 +460,9 @@ export function DocChecklistStyles() {
         z-index: 10;
       }
       .light .vm-master-window {
-        background: rgba(255, 255, 255, 0.65);
-        border: 1px solid rgba(108, 92, 231, 0.12);
-        box-shadow: 0 10px 40px rgba(108, 92, 231, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        background: rgba(248, 250, 252, 0.75) !important; /* brighter, cleaner slate-white to eliminate dirty-grey look */
+        border: 1px solid rgba(108, 92, 231, 0.1) !important;
+        box-shadow: 0 10px 40px rgba(108, 92, 231, 0.02), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
       }
 
       .vm-window-body {
@@ -431,7 +501,7 @@ export function DocChecklistStyles() {
         display: flex;
         align-items: center;
         gap: 8px;
-        transition: all 180ms ease;
+        transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         outline: none;
         white-space: nowrap;
@@ -467,6 +537,17 @@ export function DocChecklistStyles() {
         padding-bottom: 9px;
         transform: none !important; /* completely flush and static to prevent bouncing */
         box-shadow: 0 -8px 24px rgba(99, 102, 241, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+      .vm-folder-tab.vm-active::after {
+        content: "";
+        position: absolute;
+        bottom: -2.5px; /* cover the master window border line underneath the active tab */
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--vm-surface) !important;
+        z-index: 23;
+        pointer-events: none;
       }
       .light .vm-folder-tab.vm-active {
         background: rgba(255, 255, 255, 0.65) !important;
@@ -573,16 +654,20 @@ export function DocChecklistStyles() {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transform: translateY(-4px);
-        transition: opacity 220ms ease, transform 220ms ease, visibility 0s 220ms;
+        transform: scale(0.985) translateY(12px);
+        transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0s 350ms;
         will-change: opacity, transform;
       }
       .vm-tab-pane.vm-active {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
-        transform: translateY(0);
-        transition: opacity 220ms ease, transform 220ms ease, visibility 0s 0s;
+        transform: scale(1) translateY(0);
+        transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0s 0s;
         z-index: 1;
       }
 
@@ -618,14 +703,24 @@ export function DocChecklistStyles() {
       }
 
       @media (max-width: 767px) {
-        .vm-two-panel { flex-direction: column !important; }
-        .vm-left-panel { width: 100% !important; }
+        .vm-two-panel { 
+          flex-direction: column !important; 
+          padding: 12px !important;
+          gap: 12px !important;
+        }
+        .vm-left-panel { 
+          width: 100% !important; 
+        }
         .vm-right-panel-overlay {
           position: fixed !important;
           top: 0; right: 0;
           width: 100% !important;
           height: 100% !important;
           z-index: 100;
+          border: none !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          background: var(--vm-surface) !important;
         }
       }
     `}</style>

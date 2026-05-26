@@ -26,6 +26,7 @@ export function DocChecklistRow({
   let rowClass = "vm-doc-row";
   if (isActive) rowClass += " vm-active";
   if (isDone) rowClass += " vm-done";
+  if (doc.status === "optional") rowClass += " vm-optional";
 
   // Check if filename has PDF extension or matches image formats
   const isPdf = uploadedFile?.name.toLowerCase().endsWith(".pdf");
@@ -63,7 +64,7 @@ export function DocChecklistRow({
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2 }}>
         <span style={{
           fontSize: 12,
-          fontWeight: 500,
+          fontWeight: isActive ? 600 : 500,
           color: isDone ? T.muted : T.text,
           textDecoration: isDone ? "line-through" : "none",
           lineHeight: 1.3,

@@ -143,14 +143,11 @@ export function DocChecklistEmptyState({
           background: "radial-gradient(circle, rgba(74,222,128,0.04) 0%, transparent 70%)",
           animation: "orbDriftB 14s ease-in-out infinite",
         }} />
-        {/* Subtle grid texture */}
+        {/* Subtle dot grid texture */}
         <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `
-            linear-gradient(var(--vm-trans-white-08) 1px, transparent 1px),
-            linear-gradient(90deg, var(--vm-trans-white-08) 1px, transparent 1px)
-          `,
-          backgroundSize: "32px 32px",
+          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
+          backgroundImage: "radial-gradient(var(--vm-trans-white-05) 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
           maskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, black 0%, transparent 100%)",
           WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 50%, black 0%, transparent 100%)",
         }} />

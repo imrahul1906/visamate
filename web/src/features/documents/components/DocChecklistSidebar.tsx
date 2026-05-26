@@ -171,34 +171,41 @@ export function DocChecklistSidebar({
       <div
         className="vm-left-scroll"
         style={{
-          flex: 1, overflowY: "auto", padding: "10px 10px",
+          flex: 1,
+          overflowY: "auto",
+          padding: "16px 12px",
           scrollbarWidth: "thin",
           scrollbarColor: "rgba(99,102,241,0.35) transparent",
         }}
       >
-        {data.categories.map(cat => {
+        {data.categories.map((cat, index) => {
           const catDone = cat.documents.filter(d => checked[d.id]).length;
           const catTotal = cat.documents.length;
 
           return (
-            <div key={cat.id} style={{ marginBottom: 18 }}>
+            <div
+              key={cat.id}
+              style={{
+                marginBottom: index === data.categories.length - 1 ? 0 : 26,
+              }}
+            >
               {/* Category label */}
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
                 <span style={{
                   fontSize: 9, fontWeight: 700, color: cat.color,
-                  textTransform: "uppercase", letterSpacing: "0.08em",
+                  textTransform: "uppercase", letterSpacing: "0.1em",
                   fontFamily: "'DM Sans', sans-serif",
                 }}>
                   {cat.label}
                 </span>
-                <div style={{ flex: 1, height: 1, background: cat.color, opacity: 0.15 }} />
+                <div style={{ flex: 1, height: 1, background: cat.color, opacity: 0.22 }} />
                 <span style={{ fontSize: 9, fontWeight: 600, color: T.muted, fontFamily: "'DM Sans', sans-serif" }}>
                   {catDone}/{catTotal}
                 </span>
               </div>
 
               {/* Doc rows */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {cat.documents.map(doc => (
                   <DocChecklistRow
                     key={doc.id}
