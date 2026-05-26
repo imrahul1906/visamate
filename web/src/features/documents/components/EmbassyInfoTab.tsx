@@ -159,7 +159,7 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
               padding: "3px 9px",
               marginBottom: 10,
             }}>
-              <span style={{ fontSize: 9.5 }}>📂</span>
+              <span style={{ fontSize: 9.5 }}>📋</span>
               <span style={{
                 fontSize: 9.5,
                 fontWeight: 700,
@@ -168,7 +168,7 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
                 letterSpacing: "0.08em",
                 fontFamily: font.sans,
               }}>
-                Document Pouch
+                Checklist
               </span>
             </div>
             <h3 style={{
@@ -179,7 +179,7 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
               margin: "0 0 6px",
               letterSpacing: "-0.01em",
             }}>
-              Dossier Compilation Console
+              What to Carry
             </h3>
             <p style={{
               fontSize: 12.5,
@@ -189,7 +189,7 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
               fontFamily: font.sans,
               lineHeight: 1.5,
             }}>
-              Assemble your physical dossier items. Check off items to compile them into the 3D glassmorphic card deck.
+              These are the things you need to take with you on your visa appointment day. Check them off as you pack.
             </p>
           </div>
 
@@ -466,11 +466,11 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
                   color: "#10b981",
                   textShadow: "0 0 10px rgba(16, 185, 129, 0.15)"
                 }}>
-                  DOSSIER FULLY COMPILED! 🌟
+                  ALL PACKED! YOU'RE READY! 🌟
                 </div>
               ) : (
                 <div style={{ fontSize: 11.5, color: "var(--vm-text)", opacity: 0.65, fontFamily: font.sans }}>
-                  Assembly Progress: <b>{packedCount}</b> of <b>{APPOINTMENT_CHECKLIST.length}</b> verified
+                  Packed: <b>{packedCount}</b> of <b>{APPOINTMENT_CHECKLIST.length}</b> items
                 </div>
               )}
             </div>
@@ -637,13 +637,13 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
             </svg>
           </div>
 
-          {/* Accordion FAQ list in Floating Glass Cards */}
+          {/* Accordion FAQ list — uses SiteFooter CSS Grid animation pattern */}
           <div style={{ 
             display: "flex", 
             flexDirection: "column", 
             gap: 10,
             overflowY: "auto",
-            maxHeight: 335,
+            maxHeight: 380,
             paddingRight: 2
           }} className="vm-scroll-indigo">
             {filteredFAQs.length > 0 ? (
@@ -653,66 +653,20 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
                   <div
                     key={faq.id}
                     className={`vm-faq-item ${isOpen ? "vm-faq-open" : ""}`}
-                    style={{
-                      border: "1px solid var(--vm-border)",
-                      borderRadius: 8,
-                      overflow: "hidden",
-                      transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
-                    }}
                   >
                     <button
+                      className={`vm-ep-faq-trigger ${isOpen ? "active" : ""}`}
                       onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
-                      style={{
-                        width: "100%",
-                        background: "transparent",
-                        border: "none",
-                        padding: "12px 14px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: 12,
-                        cursor: "pointer",
-                        textAlign: "left",
-                      }}
                     >
-                      <span style={{
-                        fontSize: 12,
-                        fontWeight: 600,
-                        color: isOpen ? "var(--vm-indigo-light)" : "var(--vm-text)",
-                        fontFamily: font.sans,
-                        lineHeight: 1.4,
-                      }}>
-                        {faq.question}
-                      </span>
-                      <svg
-                        width="12" height="12" fill="none" stroke="var(--vm-trans-white-45)" strokeWidth={2} viewBox="0 0 24 24"
-                        style={{
-                          transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
-                          transition: "transform 200ms ease",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      <span>{faq.question}</span>
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                       </svg>
                     </button>
-                    <div style={{
-                      maxHeight: isOpen ? 180 : 0,
-                      opacity: isOpen ? 1 : 0,
-                      overflow: "hidden",
-                      transition: "all 250ms cubic-bezier(0.16, 1, 0.3, 1)",
-                      background: "rgba(255, 255, 255, 0.015)",
-                    }}>
-                      <p style={{
-                        fontSize: 11.5,
-                        color: "var(--vm-text)",
-                        opacity: 0.78,
-                        margin: 0,
-                        padding: "4px 14px 14px",
-                        lineHeight: 1.55,
-                        fontFamily: font.sans,
-                      }}>
+                    <div className={`vm-ep-faq-wrapper ${isOpen ? "active" : ""}`}>
+                      <div className="vm-ep-faq-answer">
                         {faq.answer}
-                      </p>
+                      </div>
                     </div>
                   </div>
                 );

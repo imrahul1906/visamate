@@ -21,6 +21,7 @@ import { SubmissionGuideState } from "./SubmissionGuideState";
 import { DocChecklistEmptyState } from "./components/DocChecklistEmptyState";
 import EmbassyInfoTab from "./components/EmbassyInfoTab";
 import PassportCollectionTab from "./components/PassportCollectionTab";
+import ApplicationStatusTab from "./components/ApplicationStatusTab";
 
 import { downloadAllFiles } from "./utils/downloadAllFiles";
 
@@ -94,7 +95,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   );
 
   // Tab Navigation State
-  const [activeTab, setActiveTab] = useState<"checklist" | "guide" | "security">("checklist");
+  const [activeTab, setActiveTab] = useState<"checklist" | "guide" | "status" | "security">("checklist");
 
   const handleClearSession = useCallback(() => {
     setChecked({});
@@ -215,7 +216,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
           </button>
         )}
 
-        <div style={{ position: "relative", zIndex: 20 }}>
+        <div style={{ position: "relative", zIndex: 100 }}>
           {/* ── Visa Overview Strip (replaces old header + stat cards) ── */}
           <VisaSummaryBar
             embedded={embedded}
@@ -261,6 +262,16 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
               <path d="M22 10v6M2 10v6M12 2L2 7h20L12 2zM4 21h16M4 11v10M8 11v10M12 11v10M16 11v10M20 11v10" />
             </svg>
             <span className="vm-tab-text">Embassy Prep</span>
+          </button>
+          <button
+            className={`vm-folder-tab ${activeTab === "status" ? "vm-active" : ""}`}
+            onClick={() => setActiveTab("status")}
+          >
+            <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span className="vm-tab-text">Application Status</span>
           </button>
           <button
             className={`vm-folder-tab ${activeTab === "security" ? "vm-active" : ""}`}
@@ -412,7 +423,12 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                 <EmbassyInfoTab countryName={countryName} visaTypeName={visaTypeName} />
               </div>
 
-              {/* Tab 3: Passport Collection Pane */}
+              {/* Tab 3: Application Status Pane */}
+              <div className={`vm-tab-pane ${activeTab === "status" ? "vm-active" : ""}`}>
+                <ApplicationStatusTab countryName={countryName} visaTypeName={visaTypeName} />
+              </div>
+
+              {/* Tab 4: Passport Collection Pane */}
               <div className={`vm-tab-pane ${activeTab === "security" ? "vm-active" : ""}`}>
                 <PassportCollectionTab
                   uploads={uploads}

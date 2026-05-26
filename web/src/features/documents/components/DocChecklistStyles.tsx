@@ -912,36 +912,93 @@ export function DocChecklistStyles() {
         border-color: rgba(16, 185, 129, 0.22) !important;
       }
 
-      /* Premium FAQ Accordion Cards */
+      /* ── Embassy Prep FAQ — SiteFooter Grid-animation pattern ── */
       .vm-faq-item {
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid var(--vm-border);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
       }
       .light .vm-faq-item {
         background: rgba(255, 255, 255, 0.55) !important;
         border-color: rgba(99, 102, 241, 0.08) !important;
-        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
       }
       .vm-faq-item:hover {
-        transform: translateY(-3px) scale(1.008);
-        border-color: rgba(99, 102, 241, 0.35) !important;
-        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
       }
       .light .vm-faq-item:hover {
-        border-color: rgba(99, 102, 241, 0.28) !important;
-        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+        border-color: rgba(99, 102, 241, 0.2) !important;
+        box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
       }
       .vm-faq-item.vm-faq-open {
         background: rgba(99, 102, 241, 0.03) !important;
-        border-color: rgba(99, 102, 241, 0.3) !important;
-        box-shadow: 0 8px 24px -6px rgba(99, 102, 241, 0.08) !important;
+        border-color: rgba(99, 102, 241, 0.25) !important;
+        box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.08) !important;
       }
       .light .vm-faq-item.vm-faq-open {
         background: rgba(99, 102, 241, 0.04) !important;
-        border-color: rgba(99, 102, 241, 0.22) !important;
-        box-shadow: 0 8px 24px -6px rgba(99, 102, 241, 0.04) !important;
+        border-color: rgba(99, 102, 241, 0.18) !important;
+        box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.04) !important;
+      }
+
+      /* FAQ Trigger button — matches SiteFooter .vm-faq-trigger */
+      .vm-ep-faq-trigger {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: transparent;
+        border: none;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--vm-text);
+        cursor: pointer;
+        transition: color 0.2s;
+        font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+        line-height: 1.4;
+        gap: 12px;
+      }
+      .vm-ep-faq-trigger:hover { color: var(--vm-indigo-light); }
+      .vm-ep-faq-trigger svg {
+        color: var(--vm-trans-white-25);
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+      }
+      .vm-ep-faq-trigger.active { color: var(--vm-indigo-light); }
+      .vm-ep-faq-trigger.active svg {
+        transform: rotate(180deg);
+        color: var(--vm-purple-light);
+      }
+
+      /* CSS Grid Height animation — identical to SiteFooter .vm-faq-wrapper */
+      .vm-ep-faq-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease-in-out;
+      }
+      .vm-ep-faq-wrapper.active {
+        grid-template-rows: 1fr;
+      }
+      .vm-ep-faq-answer {
+        overflow: hidden;
+        min-height: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: var(--vm-text);
+        opacity: 0;
+        padding: 0 14px;
+        transition: opacity 0.2s ease, padding 0.3s ease-in-out;
+        font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+      }
+      .vm-ep-faq-wrapper.active .vm-ep-faq-answer {
+        opacity: 0.78;
+        padding: 4px 14px 14px;
       }
     `}</style>
   );
