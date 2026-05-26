@@ -18,6 +18,91 @@ export function DocChecklistStyles() {
       }
       .vm-back-btn:hover { color: var(--vm-trans-white-85); }
 
+      /* Ambient Drifting Blobs */
+      .vm-ambient-blobs {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: -2;
+        overflow: hidden;
+      }
+      .vm-ambient-blob {
+        position: absolute;
+        width: 550px;
+        height: 550px;
+        border-radius: 50%;
+        filter: blur(130px);
+        opacity: 0.13;
+        mix-blend-mode: screen;
+        pointer-events: none;
+        transition: top 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    left 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    right 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    bottom 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 1.6s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .light .vm-ambient-blob {
+        opacity: 0.05;
+        mix-blend-mode: multiply;
+        filter: blur(110px);
+      }
+
+      /* Dynamic positions based on active folder tab */
+      .vm-active-tab-checklist .vm-blob-a {
+        top: -10%;
+        left: -10%;
+        background: radial-gradient(circle, #3b82f6 0%, transparent 70%) !important;
+      }
+      .vm-active-tab-checklist .vm-blob-b {
+        bottom: -10%;
+        right: -10%;
+        background: radial-gradient(circle, #a855f7 0%, transparent 70%) !important;
+      }
+
+      .vm-active-tab-guide .vm-blob-a {
+        top: -5%;
+        left: 28%;
+        background: radial-gradient(circle, #8b5cf6 0%, transparent 70%) !important; /* shift to violet */
+      }
+      .vm-active-tab-guide .vm-blob-b {
+        bottom: 15%;
+        right: 45%;
+        background: radial-gradient(circle, #ec4899 0%, transparent 70%) !important; /* shift to pink accent */
+      }
+
+      .vm-active-tab-security .vm-blob-a {
+        top: 25%;
+        left: 45%;
+        background: radial-gradient(circle, #10b981 0%, transparent 70%) !important; /* shift to emerald */
+      }
+      .vm-active-tab-security .vm-blob-b {
+        bottom: -10%;
+        right: 15%;
+        background: radial-gradient(circle, #06b6d4 0%, transparent 70%) !important; /* shift to teal */
+      }
+
+      .vm-blob-a {
+        animation: orbDriftA 25s infinite alternate ease-in-out;
+      }
+      .vm-blob-b {
+        animation: orbDriftB 30s infinite alternate ease-in-out;
+      }
+
+      @keyframes orbDriftA {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(80px, 60px) scale(1.1); }
+        100% { transform: translate(-40px, 120px) scale(0.95); }
+      }
+      @keyframes orbDriftB {
+        0% { transform: translate(0, 0) scale(1.1); }
+        50% { transform: translate(-100px, -50px) scale(0.9); }
+        100% { transform: translate(60px, -110px) scale(1.05); }
+      }
+
       .vm-dl-btn {
         display: inline-flex; align-items: center; gap: 6px;
         background: var(--vm-trans-white-10);
@@ -33,70 +118,121 @@ export function DocChecklistStyles() {
         border-color: var(--vm-trans-white-35);
       }
 
-      .vm-doc-row {
-        border-radius: 10px;
-        border: 1px solid var(--vm-trans-white-07);
-        background: var(--vm-trans-white-02);
-        padding: 10px 12px;
-        cursor: pointer;
-        transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        min-width: 0;
+      /* Frosted Glass Panels (Separate floating glass panels inside master window) */
+      .vm-two-panel {
+        background: transparent !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 20px !important; /* balanced gap from outer border to eliminate wasted space */
+        gap: 20px !important; /* clear visual gap between left checklist and right detail card */
       }
-      .light .vm-doc-row {
-        background: rgba(255, 255, 255, 0.65);
-        border-color: rgba(108, 92, 231, 0.06);
-        box-shadow: 0 2px 8px rgba(108, 92, 231, 0.02);
+      
+      .vm-left-panel {
+        background: rgba(30, 41, 59, 0.4) !important; /* increased contrast against master window background */
+        backdrop-filter: blur(16px) saturate(140%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important; /* brighter border for clear definition */
+        border-radius: 14px !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important; /* specular top highlight & deeper drop shadow */
+        overflow: hidden !important;
       }
-      .vm-doc-row:hover {
-        background: var(--vm-trans-white-05);
-        border-color: var(--vm-trans-white-12);
-      }
-      .light .vm-doc-row:hover {
-        background: rgba(255, 255, 255, 0.95);
-        border-color: rgba(108, 92, 231, 0.16);
-        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.06);
-        transform: translateY(-0.5px);
+      .light .vm-left-panel {
+        background: rgba(255, 255, 255, 0.90) !important;
+        border: 1px solid rgba(108, 92, 231, 0.14) !important;
+        box-shadow: 0 16px 40px rgba(30, 27, 75, 0.05), inset 0 1px 1px #ffffff !important;
       }
 
-      /* Active (selected) state */
+      .vm-right-panel {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(16px) saturate(140%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-radius: 14px !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+        overflow: hidden !important;
+      }
+      .light .vm-right-panel {
+        background: rgba(255, 255, 255, 0.90) !important;
+        border: 1px solid rgba(108, 92, 231, 0.14) !important;
+        box-shadow: 0 16px 40px rgba(30, 27, 75, 0.05), inset 0 1px 1px #ffffff !important;
+      }
+
+      .vm-doc-row {
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.09); /* slightly brighter, cleaner border */
+        background: rgba(255, 255, 255, 0.055); /* slightly higher opacity for distinct glass look */
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: background 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    border-left-width 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        min-width: 0;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.04); /* premium floating card shadow */
+      }
+      .light .vm-doc-row {
+        background: #ffffff; /* solid white card for clear separation */
+        border-color: rgba(108, 92, 231, 0.12);
+        box-shadow: 0 4px 10px rgba(30, 27, 75, 0.04), inset 0 1px 0 #ffffff;
+      }
+      .vm-doc-row:hover {
+        background: rgba(255, 255, 255, 0.09);
+        border-color: rgba(255, 255, 255, 0.16);
+        transform: translateY(-1.5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .light .vm-doc-row:hover {
+        background: #ffffff;
+        border-color: rgba(108, 92, 231, 0.22);
+        box-shadow: 0 8px 18px rgba(30, 27, 75, 0.08), inset 0 1px 0 #ffffff;
+        transform: translateY(-1.5px);
+      }
+
+      /* Active (selected) state with a left highlight strip */
       .vm-doc-row.vm-active {
-        background: var(--vm-indigo-glow) !important;
-        border-color: var(--vm-indigo-light) !important;
+        background: rgba(99, 102, 241, 0.15) !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        border-left: 3.5px solid var(--vm-indigo-light) !important;
+        box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
       }
       .vm-doc-row.vm-active:hover {
-        background: rgba(99, 102, 241, 0.25) !important;
-        border-color: var(--vm-indigo-light) !important;
-        transform: translateY(-0.5px);
+        background: rgba(99, 102, 241, 0.22) !important;
+        border-color: rgba(99, 102, 241, 0.45) !important;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
       }
 
       /* Active (selected) state in light mode */
       .light .vm-doc-row.vm-active {
-        background: var(--vm-indigo-glow) !important;
-        border-color: var(--vm-indigo) !important;
-        box-shadow: 0 4px 12px rgba(108, 92, 231, 0.06) !important;
+        background: rgba(99, 102, 241, 0.08) !important;
+        border-color: rgba(99, 102, 241, 0.28) !important;
+        border-left: 3.5px solid var(--vm-indigo) !important;
+        box-shadow: 0 6px 14px rgba(99, 102, 241, 0.06), inset 0 1px 0 #ffffff !important;
       }
       .light .vm-doc-row.vm-active:hover {
-        background: rgba(79, 70, 229, 0.1) !important;
-        border-color: var(--vm-indigo) !important;
-        transform: translateY(-0.5px);
+        background: rgba(99, 102, 241, 0.12) !important;
+        border-color: rgba(99, 102, 241, 0.38) !important;
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.09), inset 0 1px 0 #ffffff !important;
       }
 
       /* Completed state (when checked) */
       .vm-doc-row.vm-done {
-        background: var(--vm-green-bg);
-        border-color: var(--vm-green-border);
+        background: rgba(16, 185, 129, 0.08) !important;
+        border-color: rgba(16, 185, 129, 0.3) !important;
       }
       .light .vm-doc-row.vm-done {
-        background: var(--vm-green-bg);
-        border-color: var(--vm-green-border);
+        background: rgba(16, 185, 129, 0.05) !important;
+        border-color: rgba(16, 185, 129, 0.25) !important;
       }
 
       /* Click click feedback (active trigger) */
       .vm-doc-row:active, .light .vm-doc-row:active {
-        transform: scale(0.97) !important;
+        transform: scale(0.98) !important;
         box-shadow: none !important;
       }
       .vm-doc-row.vm-optional {
@@ -284,6 +420,11 @@ export function DocChecklistStyles() {
         border-color: var(--vm-purple-border-soft) !important;
         color: var(--vm-purple-soft) !important;
       }
+      .light .vm-what-you-need-step:hover .step-num {
+        background: rgba(108, 92, 231, 0.12) !important;
+        border-color: rgba(108, 92, 231, 0.4) !important;
+        color: #6c5ce7 !important;
+      }
       .vm-what-you-need-step .step-connector {
         width: 2px;
         flex: 1;
@@ -294,6 +435,9 @@ export function DocChecklistStyles() {
       }
       .vm-what-you-need-step:hover .step-connector {
         background: var(--vm-purple-border-soft) !important;
+      }
+      .light .vm-what-you-need-step:hover .step-connector {
+        background: rgba(108, 92, 231, 0.4) !important;
       }
       .vm-what-you-need-step .step-tip-text {
         font-size: 12.5px;
@@ -307,16 +451,565 @@ export function DocChecklistStyles() {
         color: var(--vm-text) !important;
       }
 
+      /* ── Master Console Window ── */
+      .vm-master-window {
+        background: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 0; /* folder tabs row handles top space */
+        position: relative;
+        z-index: 10;
+      }
+      .light .vm-master-window {
+        background: rgba(255, 255, 255, 0.75) !important; /* pure white with glass opacity */
+        border: 1px solid rgba(108, 92, 231, 0.12) !important;
+        box-shadow: 0 20px 50px rgba(30, 27, 75, 0.06), 0 4px 12px rgba(30, 27, 75, 0.02), inset 0 1px 1px #ffffff !important;
+      }
+
+      .vm-window-body {
+        flex: 1;
+        position: relative;
+        width: 100%;
+      }
+
+      /* ── Dossier Folder Tabs Navigation ── */
+      .vm-tabs-folder-row {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 6px;
+        margin-top: 52px; /* perfect space from summary pills pushed down from overview */
+        margin-bottom: -1px; /* physically overlaps the top border of the master window */
+        position: relative;
+        z-index: 20; /* must render on top of master window border */
+        padding: 0 16px;
+      }
+
+      .vm-folder-tab {
+        background: rgba(15, 23, 42, 0.25);
+        backdrop-filter: blur(12px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08); /* matches master window top border */
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 8px 20px;
+        color: var(--vm-trans-white-45);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        outline: none;
+        white-space: nowrap;
+      }
+      .light .vm-folder-tab {
+        background: rgba(30, 27, 75, 0.03);
+        border-color: rgba(108, 92, 231, 0.08);
+        border-bottom-color: rgba(108, 92, 231, 0.12); /* matches master window top border */
+        color: rgba(30, 27, 75, 0.55);
+      }
+
+      .vm-folder-tab:hover {
+        color: var(--vm-text);
+        background: rgba(15, 23, 42, 0.35);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .light .vm-folder-tab:hover {
+        color: #1e1b4b;
+        background: rgba(30, 27, 75, 0.06);
+        border-color: rgba(108, 92, 231, 0.1);
+      }
+
+      /* Active Folder Tab - merges borderless into master window */
+      .vm-folder-tab.vm-active {
+        background: rgba(15, 23, 42, 0.45) !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        border-bottom-color: transparent !important; /* hide bottom border to merge with content pane */
+        color: var(--vm-text) !important;
+        z-index: 22;
+        padding-top: 11px; /* slightly taller to physically stand out */
+        padding-bottom: 9px;
+        transform: none !important; /* completely flush and static to prevent bouncing */
+        box-shadow: 0 -8px 24px rgba(99, 102, 241, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+      .vm-folder-tab.vm-active::after {
+        content: "";
+        position: absolute;
+        bottom: -2.5px; /* cover the master window border line underneath the active tab */
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--vm-surface) !important;
+        z-index: 23;
+        pointer-events: none;
+      }
+      .light .vm-folder-tab.vm-active {
+        background: #ffffff !important;
+        border-color: rgba(108, 92, 231, 0.12) !important;
+        border-bottom-color: transparent !important;
+        color: #1e1b4b !important;
+        box-shadow: 0 -8px 20px rgba(30, 27, 75, 0.04), inset 0 1px 0 #ffffff !important;
+      }
+
+      /* Icons */
+      .vm-tab-icon {
+        width: 13px;
+        height: 13px;
+        stroke: currentColor;
+        stroke-width: 2.2px;
+      }
+
+      /* Badges inside tabs */
+      .vm-tab-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        padding: 1.5px 5px;
+        font-size: 9px;
+        font-weight: 700;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--vm-indigo-light);
+        background: rgba(99, 102, 241, 0.12);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        transition: all 250ms ease;
+      }
+      .light .vm-tab-badge {
+        color: #4f46e5;
+        background: rgba(79, 70, 229, 0.07);
+        border-color: rgba(79, 70, 229, 0.15);
+      }
+      
+      .vm-tab-badge.vm-badge-secure {
+        color: var(--vm-green);
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.15);
+      }
+      .light .vm-tab-badge.vm-badge-secure {
+        color: #059669;
+        background: rgba(5, 150, 105, 0.07);
+        border-color: rgba(5, 150, 105, 0.15);
+      }
+
+      .vm-tab-badge.vm-badge-active {
+        color: #ffffff !important;
+        background: var(--vm-indigo) !important;
+        border-color: var(--vm-indigo-light) !important;
+        box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
+      }
+      .vm-tab-badge.vm-badge-secure.vm-badge-active {
+        background: var(--vm-green) !important;
+        border-color: var(--vm-green-border) !important;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+      }
+
+      /* Stable Grid Stacking Container to prevent page jumping and dancing */
+      .vm-tab-panes-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        width: 100%;
+        position: relative;
+        margin-top: 16px; /* Space below header */
+      }
+
+      /* GPU-Accelerated Focus Overlay for Popovers */
+      .vm-focus-overlay {
+        position: absolute;
+        inset: 0;
+        backdrop-filter: blur(1.5px);
+        -webkit-backdrop-filter: blur(1.5px);
+        background: rgba(15, 23, 42, 0.18);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        z-index: 10;
+        border-radius: 16px;
+        transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 300ms;
+        will-change: opacity;
+      }
+      .light .vm-focus-overlay {
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(1.2px);
+        -webkit-backdrop-filter: blur(1.2px);
+      }
+      .vm-focus-overlay.vm-active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
+      }
+
+      /* Animated Content Switcher - smooth hardware-accelerated fade */
+      .vm-tab-pane {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: scale(0.985) translateY(12px);
+        transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 350ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0s 350ms;
+        will-change: opacity, transform;
+        height: 0;
+        overflow: hidden;
+      }
+      .vm-tab-pane.vm-active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: scale(1) translateY(0);
+        transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+                    visibility 0s 0s;
+        z-index: 1;
+        height: auto;
+        overflow: visible;
+      }
+
+      /* ── File Row Thumbnails ── */
+      .vm-file-thumb {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 9.5px;
+        font-weight: 800;
+        font-family: 'DM Sans', sans-serif;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(4px);
+      }
+      .vm-file-thumb-pdf {
+        background: var(--vm-badge-required-bg);
+        border: 1px solid var(--vm-badge-required-border);
+        color: var(--vm-badge-required-color);
+      }
+      .vm-file-thumb-img {
+        background: var(--vm-badge-builder-bg);
+        border: 1px solid var(--vm-badge-builder-border);
+        color: var(--vm-badge-builder-color);
+      }
+      .vm-file-thumb-doc {
+        background: var(--vm-badge-uploadable-bg);
+        border: 1px solid var(--vm-badge-uploadable-border);
+        color: var(--vm-badge-uploadable-color);
+      }
+
       @media (max-width: 767px) {
-        .vm-two-panel { flex-direction: column !important; }
-        .vm-left-panel { width: 100% !important; }
+        .vm-two-panel { 
+          flex-direction: column !important; 
+          padding: 12px !important;
+          gap: 12px !important;
+        }
+        .vm-left-panel { 
+          width: 100% !important; 
+        }
         .vm-right-panel-overlay {
           position: fixed !important;
           top: 0; right: 0;
           width: 100% !important;
           height: 100% !important;
           z-index: 100;
+          border: none !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          background: var(--vm-surface) !important;
         }
+      }
+
+      /* Redesigned Embassy Prep Styles & Animations */
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(220px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      @keyframes pulseGlow {
+        0%, 100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 0.8;
+        }
+      }
+      @keyframes bounceSmooth {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes scaleIn {
+        0% {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .vm-confetti-particle {
+        pointer-events: none;
+      }
+
+      /* Premium Glassmorphic Card Stack Styles */
+      .vm-glass-card {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+        transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .vm-glass-card:not(.vm-checked) {
+        opacity: 0.8 !important;
+        filter: saturate(85%) !important;
+      }
+      .vm-glass-card.vm-checked {
+        opacity: 1 !important;
+        filter: none !important;
+      }
+
+      /* Specific Card Border Colors & Soft Shadow Glows even when unselected */
+      .vm-card-passport:not(.vm-checked) {
+        border-color: rgba(245, 158, 11, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-passport.vm-checked {
+        border-color: rgba(245, 158, 11, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25), 0 0 15px rgba(245, 158, 11, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .vm-card-dossier:not(.vm-checked) {
+        border-color: rgba(16, 185, 129, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-dossier.vm-checked {
+        border-color: rgba(16, 185, 129, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25), 0 0 15px rgba(16, 185, 129, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .vm-card-letter:not(.vm-checked) {
+        border-color: rgba(6, 182, 212, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-letter.vm-checked {
+        border-color: rgba(6, 182, 212, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(6, 182, 212, 0.25), 0 0 15px rgba(6, 182, 212, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .vm-card-payment:not(.vm-checked) {
+        border-color: rgba(217, 70, 239, 0.22) !important;
+        box-shadow: 0 4px 12px rgba(217, 70, 239, 0.05), inset 0 1px 1px rgba(255,255,255,0.4) !important;
+      }
+      .vm-card-payment.vm-checked {
+        border-color: rgba(217, 70, 239, 0.6) !important;
+        box-shadow: 0 10px 25px rgba(217, 70, 239, 0.25), 0 0 15px rgba(217, 70, 239, 0.15), inset 0 1px 1px rgba(255,255,255,0.5) !important;
+      }
+
+      .light .vm-glass-card {
+        background: rgba(255, 255, 255, 0.7) !important;
+        border-color: rgba(108, 92, 231, 0.12) !important;
+        color: var(--vm-text) !important;
+        box-shadow: 0 4px 12px rgba(30, 27, 75, 0.03), inset 0 1px 1px #ffffff !important;
+      }
+      .light .vm-glass-card:not(.vm-checked) {
+        background: rgba(255, 255, 255, 0.5) !important;
+        opacity: 0.85 !important;
+      }
+      .light .vm-glass-card.vm-checked {
+        background: #ffffff !important;
+      }
+      .light .vm-glass-card.vm-card-passport {
+        border-color: rgba(245, 158, 11, 0.3) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-passport {
+        border-color: rgba(245, 158, 11, 0.6) !important;
+        box-shadow: 0 12px 28px rgba(245, 158, 11, 0.18), inset 0 1px 1px #ffffff !important;
+      }
+      .light .vm-glass-card.vm-card-dossier {
+        border-color: rgba(16, 185, 129, 0.3) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-dossier {
+        border-color: rgba(16, 185, 129, 0.6) !important;
+        box-shadow: 0 12px 28px rgba(16, 185, 129, 0.18), inset 0 1px 1px #ffffff !important;
+      }
+      .light .vm-glass-card.vm-card-letter {
+        border-color: rgba(6, 182, 212, 0.3) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-letter {
+        border-color: rgba(6, 182, 212, 0.6) !important;
+        box-shadow: 0 12px 28px rgba(6, 182, 212, 0.18), inset 0 1px 1px #ffffff !important;
+      }
+      .light .vm-glass-card.vm-card-payment {
+        border-color: rgba(217, 70, 239, 0.3) !important;
+      }
+      .light .vm-glass-card.vm-checked.vm-card-payment {
+        border-color: rgba(217, 70, 239, 0.6) !important;
+        box-shadow: 0 12px 28px rgba(217, 70, 239, 0.18), inset 0 1px 1px #ffffff !important;
+      }
+
+      .vm-glass-card:hover {
+        cursor: pointer;
+      }
+
+      /* Floating checked badge inside card */
+      .vm-checked-badge {
+        position: absolute;
+        bottom: -6px;
+        right: -6px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #10b981;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+        z-index: 12;
+      }
+
+      /* Checklist Floating Selection Items */
+      .vm-floating-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--vm-border);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .light .vm-floating-item {
+        background: #ffffff !important;
+        border-color: rgba(108, 92, 231, 0.1) !important;
+        box-shadow: 0 4px 10px rgba(30, 27, 75, 0.02), inset 0 1px 0 #ffffff !important;
+      }
+      .vm-floating-item:hover {
+        transform: translateY(-3px) scale(1.008);
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        box-shadow: 0 12px 28px -4px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+      }
+      .light .vm-floating-item:hover {
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 10px 24px -4px rgba(99, 102, 241, 0.08), inset 0 1px 0 #ffffff !important;
+      }
+      .vm-floating-item.vm-item-checked {
+        background: var(--vm-green-bg) !important;
+        border-color: var(--vm-green-border) !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.04) !important;
+      }
+      .light .vm-floating-item.vm-item-checked {
+        background: rgba(16, 185, 129, 0.04) !important;
+        border-color: rgba(16, 185, 129, 0.28) !important;
+      }
+
+      /* ── Embassy Prep FAQ — SiteFooter Grid-animation pattern ── */
+      .vm-faq-item {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--vm-border);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      }
+      .light .vm-faq-item {
+        background: #ffffff !important;
+        border-color: rgba(108, 92, 231, 0.1) !important;
+        box-shadow: 0 2px 8px rgba(30, 27, 75, 0.02), inset 0 1px 0 #ffffff !important;
+      }
+      .vm-faq-item:hover {
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+      }
+      .light .vm-faq-item:hover {
+        border-color: rgba(99, 102, 241, 0.25) !important;
+        box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.06), inset 0 1px 0 #ffffff !important;
+      }
+      .vm-faq-item.vm-faq-open {
+        background: rgba(99, 102, 241, 0.03) !important;
+        border-color: rgba(99, 102, 241, 0.25) !important;
+        box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.08) !important;
+      }
+      .light .vm-faq-item.vm-faq-open {
+        background: rgba(99, 102, 241, 0.03) !important;
+        border-color: rgba(99, 102, 241, 0.22) !important;
+        box-shadow: 0 6px 16px -4px rgba(99, 102, 241, 0.05) !important;
+      }
+
+      /* FAQ Trigger button — matches SiteFooter .vm-faq-trigger */
+      .vm-ep-faq-trigger {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: transparent;
+        border: none;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--vm-text);
+        cursor: pointer;
+        transition: color 0.2s;
+        font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+        line-height: 1.4;
+        gap: 12px;
+      }
+      .vm-ep-faq-trigger:hover { color: var(--vm-indigo-light); }
+      .vm-ep-faq-trigger svg {
+        color: var(--vm-trans-white-25);
+        transition: transform 0.25s ease;
+        flex-shrink: 0;
+      }
+      .vm-ep-faq-trigger.active { color: var(--vm-indigo-light); }
+      .vm-ep-faq-trigger.active svg {
+        transform: rotate(180deg);
+        color: var(--vm-purple-light);
+      }
+
+      /* CSS Grid Height animation — identical to SiteFooter .vm-faq-wrapper */
+      .vm-ep-faq-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease-in-out;
+      }
+      .vm-ep-faq-wrapper.active {
+        grid-template-rows: 1fr;
+      }
+      .vm-ep-faq-answer {
+        overflow: hidden;
+        min-height: 0;
+        font-size: 12px;
+        line-height: 1.6;
+        color: var(--vm-text);
+        opacity: 0;
+        padding: 0 14px;
+        transition: opacity 0.2s ease, padding 0.3s ease-in-out;
+        font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+      }
+      .vm-ep-faq-wrapper.active .vm-ep-faq-answer {
+        opacity: 0.78;
+        padding: 4px 14px 14px;
       }
     `}</style>
   );
