@@ -16,6 +16,14 @@
     "folder": "vietnam"
   },
   {
+    "code": "LK",
+    "name": "Sri Lanka",
+    "photo": "https://images.unsplash.com/photo-1546708973-b339540b5162?q=80&w=800",
+    "supported": true,
+    "visaTypeLabel": "E-Visa (Online)",
+    "folder": "srilanka"
+  },
+  {
     "code": "KR",
     "name": "South Korea",
     "photo": "https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800",

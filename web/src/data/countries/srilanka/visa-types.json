@@ -1,0 +1,67 @@
+{
+  "countryId": "COUNTRY_LK_001",
+  "countryCode": "LK",
+  "countryName": "Sri Lanka",
+  "process": {
+    "default": {
+      "applicationMode": "ONLINE",
+      "biometricRequired": false,
+      "biometricNote": "Exempt from biometric submission",
+      "interviewRequired": false,
+      "appointmentPolicy": "NO_APPOINTMENT"
+    },
+    "centerOverrides": []
+  },
+  "visaTypes": [
+    {
+      "id": "VISA_LK_TOURIST_001",
+      "code": "TOURIST",
+      "name": "Tourist ETA - Double Entry (30 Days)",
+      "category": "SHORT_STAY",
+      "maxStayDays": 30,
+      "fees": 0,
+      "currency": "USD",
+      "note": "Government fee is waived (0 USD) for Indian nationals. Processing service fee applies.",
+      "vfsCharges": {
+        "serviceCharge": {
+          "charge": 69,
+          "currency": "USD",
+          "refundable": false,
+          "note": "E-Visa Service Fee is non-refundable."
+        }
+      },
+      "process": {
+        "paymentInstructions": []
+      },
+      "metadata": {
+        "status": "active",
+        "lastUpdated": "2026-05-27"
+      }
+    },
+    {
+      "id": "VISA_LK_BUSINESS_001",
+      "code": "BUSINESS",
+      "name": "Business ETA - Multiple Entry (30 Days)",
+      "category": "SHORT_STAY",
+      "maxStayDays": 30,
+      "fees": 35,
+      "currency": "USD",
+      "note": "SAARC regional business ETA government fee is 35 USD. Processing service fee applies.",
+      "vfsCharges": {
+        "serviceCharge": {
+          "charge": 69,
+          "currency": "USD",
+          "refundable": false,
+          "note": "E-Visa Service Fee is non-refundable."
+        }
+      },
+      "process": {
+        "paymentInstructions": []
+      },
+      "metadata": {
+        "status": "active",
+        "lastUpdated": "2026-05-27"
+      }
+    }
+  ]
+}

@@ -35,6 +35,11 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(vn).toBeDefined();
       expect(vn?.supported).toBe(true);
 
+      // Sri Lanka should be supported
+      const lk = countries.find(c => c.code === 'LK');
+      expect(lk).toBeDefined();
+      expect(lk?.supported).toBe(true);
+
       // Korea should be in catalog but not active yet
       const kr = countries.find(c => c.code === 'KR');
       expect(kr).toBeDefined();
@@ -73,6 +78,14 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       const info = await getCountryInfo('VN');
       expect(info).toBeDefined();
       expect(info?.code).toBe('VN');
+      expect(Array.isArray(info?.supportedVfsLocationCodes)).toBe(true);
+      expect(info?.supportedVfsLocationCodes).toContain('ONLINE');
+    });
+
+    it('should fetch structured country info for Sri Lanka (LK)', async () => {
+      const info = await getCountryInfo('LK');
+      expect(info).toBeDefined();
+      expect(info?.code).toBe('LK');
       expect(Array.isArray(info?.supportedVfsLocationCodes)).toBe(true);
       expect(info?.supportedVfsLocationCodes).toContain('ONLINE');
     });
@@ -117,6 +130,29 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(touristMulti?.currency).toBe('USD');
     });
 
+    it('should fetch visa types for Sri Lanka', async () => {
+      const record = await getCountryVisaTypes('LK');
+      expect(record).toBeDefined();
+      expect(record?.countryCode).toBe('LK');
+      expect(Array.isArray(record?.visaTypes)).toBe(true);
+
+      const types = await getVisaTypes('LK');
+      expect(types.length).toBe(2);
+      expect(types[0].process?.default?.applicationMode).toBe(APPLICATION_MODE.ONLINE);
+
+      const tourist = await getVisaType('LK', 'TOURIST');
+      expect(tourist).toBeDefined();
+      expect(tourist?.code).toBe('TOURIST');
+      expect(tourist?.fees).toBe(0);
+      expect(tourist?.currency).toBe('USD');
+
+      const business = await getVisaType('LK', 'BUSINESS');
+      expect(business).toBeDefined();
+      expect(business?.code).toBe('BUSINESS');
+      expect(business?.fees).toBe(35);
+      expect(business?.currency).toBe('USD');
+    });
+
     it('should return null for non-existent countries', async () => {
       expect(await getCountryInfo('XX')).toBeNull();
       expect(await getCountryVisaTypes('XX')).toBeNull();
@@ -145,6 +181,12 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
 
     it('should fetch locations for Vietnam (VN)', async () => {
       const locations = await getLocationsForCountry('VN');
+      expect(locations.length).toBe(1);
+      expect(locations[0].code).toBe('ONLINE');
+    });
+
+    it('should fetch locations for Sri Lanka (LK)', async () => {
+      const locations = await getLocationsForCountry('LK');
       expect(locations.length).toBe(1);
       expect(locations[0].code).toBe('ONLINE');
     });
@@ -191,6 +233,18 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
       expect(reqVnMulti?.visaTypeCode).toBe('TOURIST_MULTI');
       expect(reqVnMulti?.locationCode).toBe('ONLINE');
 
+      const reqLk = await getRequirementsData('LK', 'TOURIST', 'ONLINE');
+      expect(reqLk).toBeDefined();
+      expect(reqLk?.countryCode).toBe('LK');
+      expect(reqLk?.visaTypeCode).toBe('TOURIST');
+      expect(reqLk?.locationCode).toBe('ONLINE');
+
+      const reqLkBiz = await getRequirementsData('LK', 'BUSINESS', 'ONLINE');
+      expect(reqLkBiz).toBeDefined();
+      expect(reqLkBiz?.countryCode).toBe('LK');
+      expect(reqLkBiz?.visaTypeCode).toBe('BUSINESS');
+      expect(reqLkBiz?.locationCode).toBe('ONLINE');
+
       // Invalid combination
       expect(await getRequirementsData('JP', 'TOURIST', 'HYDERABAD')).toBeNull();
     });
@@ -213,6 +267,12 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
 
       const fieldsVn = await getFormFillFields('VN_TOURIST_EVISA_FORM_FIELDS_V1');
       expect(fieldsVn.length).toBeGreaterThan(0);
+
+      const fieldsLk = await getFormFillFields('LK_TOURIST_EVISA_FORM_FIELDS_V1');
+      expect(fieldsLk.length).toBeGreaterThan(0);
+
+      const fieldsLkBiz = await getFormFillFields('LK_BUSINESS_EVISA_FORM_FIELDS_V1');
+      expect(fieldsLkBiz.length).toBeGreaterThan(0);
 
       // Verify structure of fields
       const field = fields[0];

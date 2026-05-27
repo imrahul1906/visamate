@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "id": "REQ_LK_TOURIST_ONLINE_001",
+  "countryId": "COUNTRY_LK_001",
+  "countryCode": "LK",
+  "visaTypeId": "VISA_LK_TOURIST_001",
+  "visaTypeCode": "TOURIST",
+  "locationId": "ONLINE",
+  "visaVariantId": "VISA_LK_TOURIST_ONLINE_001",
+  "locationCode": "ONLINE",
+  "processingDays": "4 business days",
+  "processingDaysExpress": "2 business days (Emergency) / 1 business day (Rush)",
+  "photoSpecifications": {
+    "portrait": {
+      "widthMm": 35,
+      "heightMm": 45,
+      "background": "Plain white background",
+      "colorFormat": "Colored",
+      "faceVisibilityPercent": "70-80",
+      "quality": "Recent color photograph, clear face, white background, no headwear unless for religious purposes",
+      "maxAgeMonths": 6,
+      "requirements": [
+        "Format must be JPG or JPEG (size < 2MB)",
+        "White background",
+        "Clear face, no spectacles or glasses"
+      ]
+    }
+  },
+  "documentSections": [
+    {
+      "sectionId": "COMMON",
+      "title": "ETA Application Documents",
+      "documents": [
+        {
+          "order": 1,
+          "id": "LK_TOURIST_EVISA_FORM_001",
+          "code": "VISA_APPLICATION_FORM",
+          "name": "ETA Application Form",
+          "isRequired": true,
+          "optionality": "required",
+          "form": {
+            "type": "ONLINE",
+            "downloadUrl": null,
+            "onlineUrl": "https://evisatravel.org/srilanka/apply-visa",
+            "requiresPrint": false,
+            "formFillDataKey": "LK_TOURIST_EVISA_FORM_FIELDS_V1"
+          },
+          "notes": "Fill out the official online ETA application form. Use our Form Fill Helper below for step-by-step guidance."
+        },
+        {
+          "order": 2,
+          "id": "LK_TOURIST_PASSPORT_SCAN_001",
+          "code": "PASSPORT_SCAN",
+          "name": "Passport Bio Page Scan",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Upload a clear, full scan of your passport's bio-data page in JPG/JPEG format.",
+          "acceptedFormats": ["jpg", "jpeg"],
+          "maxSizeBytes": 2097152,
+          "requirements": [
+            "Must show the full page including MRZ code at the bottom.",
+            "Format must be JPG/JPEG (less than 2MB).",
+            "Passport must be valid for at least 6 months from arrival date with at least 3 blank pages."
+          ]
+        },
+        {
+          "order": 3,
+          "id": "LK_TOURIST_PORTRAIT_001",
+          "code": "PORTRAIT_PHOTO",
+          "name": "Recent Portrait Photo",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Upload a recent color photograph with white background.",
+          "photoSpecRef": "portrait",
+          "acceptedFormats": ["jpg", "jpeg"],
+          "maxSizeBytes": 2097152
+        }
+      ]
+    }
+  ],
+  "importantNotes": [
+    "Government fee is waived (0 USD) for Indian nationals for Tourist ETA, but application must still be submitted and approved.",
+    "The ETA is valid for 6 months from date of issue, with double entry allowed. The stay is limited to 30 days from the date of first entry.",
+    "Make sure all details match your passport exactly. Incorrect details will lead to boarding rejection or entry denial.",
+    "A Yellow Fever vaccination certificate is required if you are arriving from a Yellow Fever infected area."
+  ],
+  "metadata": {
+    "sourceUrl": "https://evisatravel.org/srilanka/",
+    "lastVerified": "2026-05-27",
+    "verifiedBy": "admin",
+    "status": "verified",
+    "dataCollectionDate": "2026-05-27"
+  }
+}

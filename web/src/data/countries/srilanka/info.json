@@ -1,0 +1,16 @@
+{
+  "id": "COUNTRY_LK_001",
+  "code": "LK",
+  "name": "Sri Lanka",
+  "description": "Sri Lanka e-visa (ETA) information for Indian applicants",
+  "officialWebsite": "https://evisatravel.org/srilanka/apply-visa",
+  "trackingUrl": "https://evisatravel.org/srilanka/check-status",
+  "supportedVfsLocationCodes": [
+    "ONLINE"
+  ],
+  "metadata": {
+    "createdAt": "2026-05-27",
+    "lastUpdated": "2026-05-27",
+    "status": "active"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "key": "LK_BUSINESS_EVISA_FORM_FIELDS_V1",
+  "meta": {
+    "country": "SRI LANKA",
+    "visaType": "BUSINESS ETA",
+    "formTitle": "SRI LANKA - BUSINESS ETA APPLICATION FORM",
+    "issuingAuthority": "Department of Immigration and Emigration, Sri Lanka",
+    "requiresPrint": false,
+    "lastReviewed": "2026-05-27"
+  },
+  "sections": [
+    {
+      "id": "itinerary",
+      "label": "ITINERARY",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "arrival_date",
+          "label": "Date of Arrival",
+          "hint": "Select your planned arrival date in Sri Lanka in YYYY-MM-DD format (e.g. 2026-10-15). Ensure it matches your flight ticket.",
+          "example": "2026-10-15",
+          "warning": "You cannot enter Sri Lanka before this date. Ensure it is correct as it cannot be modified after submission."
+        },
+        {
+          "id": "special_request",
+          "label": "Special Request",
+          "hint": "Enter any special requests, additional comments, or specific travel notes if applicable (maximum 1000 characters). Leave blank if none.",
+          "example": "Traveling with a group under tour booking reference G-9821."
+        }
+      ]
+    },
+    {
+      "id": "passport_details",
+      "label": "PASSPORT DETAILS",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "fullname",
+          "label": "Full Name",
+          "hint": "Enter your full name EXACTLY as printed on the bio-data page of your passport. Use CAPITAL letters. Do not use initials unless they are printed in your passport.",
+          "example": "ROHIT KUMAR SHARMA",
+          "warning": "Spelling must be 100% identical to your passport. Any spelling or order mismatch will lead to boarding rejection or entry denial."
+        },
+        {
+          "id": "dob",
+          "label": "Date of Birth",
+          "hint": "Enter your date of birth in YYYY-MM-DD format matching your passport.",
+          "example": "1990-06-15",
+          "warning": "Verify the year, month, and day order carefully to match your passport bio page."
+        },
+        {
+          "id": "address",
+          "label": "Address",
+          "hint": "Enter your complete residential address in your home country. Include flat/house number, street name, city, state, and postal code.",
+          "example": "Flat 402, Sunrise Apartments, Sector 15, Rohini, New Delhi, 110089, India"
+        },
+        {
+          "id": "email",
+          "label": "Email Address",
+          "hint": "Enter your primary email address. The approved Sri Lanka ETA document and receipt will be sent here.",
+          "example": "rohit.sharma@example.com",
+          "warning": "Check for typos. An incorrect email address means you will not receive your approved ETA or reference number."
+        },
+        {
+          "id": "mobile_code",
+          "label": "Mobile/Cell Telephone - Country Code",
+          "hint": "Select your country code from the dropdown (e.g., +91 for India).",
+          "example": "+91"
+        },
+        {
+          "id": "mobile_number",
+          "label": "Mobile/Cell Telephone - Number",
+          "hint": "Enter your active mobile number in the text box without spaces or leading zeroes.",
+          "example": "9876543210",
+          "warning": "Provide a valid number where immigration authorities can contact you in case of any queries."
+        },
+        {
+          "id": "passport_number",
+          "label": "Passport Number",
+          "hint": "Enter your passport number exactly as shown in the top right of your passport bio page (e.g., Z1234567). Do not add spaces or special characters.",
+          "example": "Z1234567",
+          "warning": "Check character by character. Do not confuse '0' (number) with 'O' (letter), or '1' with 'I'. A mismatch will lead to boarding denial."
+        },
+        {
+          "id": "nationality",
+          "label": "Nationality",
+          "hint": "Select your current country of citizenship as printed in your passport.",
+          "example": "India"
+        },
+        {
+          "id": "type_of_eta",
+          "label": "Type of ETA",
+          "hint": "Select the specific type of ETA you are applying for (e.g., Business ETA - Multiple Entry 30 days).",
+          "example": "Business ETA - Multiple Entry 30 days"
+        }
+      ]
+    }
+  ]
+}
