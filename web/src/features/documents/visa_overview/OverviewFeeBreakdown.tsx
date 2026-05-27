@@ -23,6 +23,34 @@ interface FeeRowProps {
   optional?: boolean;
 }
 
+function renderTextWithLinks(text: string) {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s)]+)/g;
+  const parts = text.split(urlRegex);
+  return parts.map((part, i) => {
+    if (urlRegex.test(part)) {
+      return (
+        <a
+          key={i}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: "var(--vm-indigo, #6366f1)",
+            textDecoration: "underline",
+            wordBreak: "break-all",
+            cursor: "pointer",
+            fontWeight: 500,
+          }}
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 export function FeeRow({ label, amount, currency, refundable, note, optional }: FeeRowProps) {
   return (
     <div
@@ -63,7 +91,7 @@ export function FeeRow({ label, amount, currency, refundable, note, optional }: 
               lineHeight: 1.5,
             }}
           >
-            {note}
+            {renderTextWithLinks(note)}
           </p>
         )}
       </div>

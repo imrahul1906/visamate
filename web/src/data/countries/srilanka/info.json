@@ -3,8 +3,8 @@
   "code": "LK",
   "name": "Sri Lanka",
   "description": "Sri Lanka e-visa (ETA) information for Indian applicants",
-  "officialWebsite": "https://evisatravel.org/srilanka/apply-visa",
-  "trackingUrl": "https://evisatravel.org/srilanka/check-status",
+  "officialWebsite": "https://eta.gov.lk/etaslvisa/etaNavServ",
+  "trackingUrl": "https://eta.gov.lk/etaslvisa/pages/checkStatus.jsp",
   "supportedVfsLocationCodes": [
     "ONLINE"
   ],

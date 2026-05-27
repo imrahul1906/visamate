@@ -3,95 +3,306 @@
   "meta": {
     "country": "SRI LANKA",
     "visaType": "TOURIST ETA",
-    "formTitle": "SRI LANKA - ETA APPLICATION FORM",
+    "formTitle": "SRI LANKA - TOURIST ETA APPLICATION",
     "issuingAuthority": "Department of Immigration and Emigration, Sri Lanka",
     "requiresPrint": false,
     "lastReviewed": "2026-05-27"
   },
   "sections": [
     {
-      "id": "itinerary",
-      "label": "ITINERARY",
-      "icon": "document",
+      "id": "applicant_information",
+      "label": "Applicant Information",
+      "icon": "personal",
       "fields": [
         {
-          "id": "arrival_date",
-          "label": "Date of Arrival",
-          "hint": "Select your planned arrival date in Sri Lanka in YYYY-MM-DD format (e.g. 2026-10-15). Ensure it matches your flight ticket.",
-          "example": "2026-10-15",
-          "warning": "You cannot enter Sri Lanka before this date. Ensure it is correct as it cannot be modified after submission."
+          "id": "title",
+          "label": "Title",
+          "hint": "Select your title (e.g. MR, MRS, MISS, MS).",
+          "example": "MR",
+          "fieldType": "select",
+          "options": ["MR", "MRS", "MISS", "MS", "DR", "REV"]
         },
         {
-          "id": "special_request",
-          "label": "Special Request",
-          "hint": "Enter any special requests, additional comments, or specific travel notes if applicable (maximum 1000 characters). Leave blank if none.",
-          "example": "Traveling with a group under tour booking reference G-9821."
-        }
-      ]
-    },
-    {
-      "id": "passport_details",
-      "label": "PASSPORT DETAILS",
-      "icon": "document",
-      "fields": [
+          "id": "surname",
+          "label": "Surname / Family Name",
+          "hint": "Enter your family name exactly as shown in your passport.",
+          "example": "SHARMA",
+          "warning": "Must match passport exactly. Leave blank if you do not have a surname.",
+          "fieldType": "text"
+        },
         {
-          "id": "fullname",
-          "label": "Full Name",
-          "hint": "Enter your full name EXACTLY as printed on the bio-data page of your passport. Use CAPITAL letters. Do not use initials unless they are printed in your passport.",
-          "example": "ROHIT KUMAR SHARMA",
-          "warning": "Spelling must be 100% identical to your passport. Any spelling or order mismatch will lead to boarding rejection or entry denial."
+          "id": "given_names",
+          "label": "Other / Given Names",
+          "hint": "Enter your given names exactly as shown in your passport.",
+          "example": "ROHIT KUMAR",
+          "warning": "Must match passport exactly.",
+          "fieldType": "text"
         },
         {
           "id": "dob",
           "label": "Date of Birth",
           "hint": "Enter your date of birth in YYYY-MM-DD format matching your passport.",
           "example": "1990-06-15",
-          "warning": "Verify the year, month, and day order carefully to match your passport bio page."
+          "fieldType": "date"
         },
         {
-          "id": "address",
-          "label": "Address",
-          "hint": "Enter your complete residential address in your home country. Include flat/house number, street name, city, state, and postal code.",
-          "example": "Flat 402, Sunrise Apartments, Sector 15, Rohini, New Delhi, 110089, India"
+          "id": "dob_reenter",
+          "label": "Re-enter Date of Birth",
+          "hint": "Re-enter your date of birth for verification.",
+          "example": "1990-06-15",
+          "fieldType": "date"
         },
         {
-          "id": "email",
-          "label": "Email Address",
-          "hint": "Enter your primary email address. The approved Sri Lanka ETA document and receipt will be sent here.",
-          "example": "rohit.sharma@example.com",
-          "warning": "Check for typos. An incorrect email address means you will not receive your approved ETA or reference number."
-        },
-        {
-          "id": "mobile_code",
-          "label": "Mobile/Cell Telephone - Country Code",
-          "hint": "Select your country code from the dropdown (e.g., +91 for India).",
-          "example": "+91"
-        },
-        {
-          "id": "mobile_number",
-          "label": "Mobile/Cell Telephone - Number",
-          "hint": "Enter your active mobile number in the text box without spaces or leading zeroes.",
-          "example": "9876543210",
-          "warning": "Provide a valid number where immigration authorities can contact you in case of any queries."
-        },
-        {
-          "id": "passport_number",
-          "label": "Passport Number",
-          "hint": "Enter your passport number exactly as shown in the top right of your passport bio page (e.g., Z1234567). Do not add spaces or special characters.",
-          "example": "Z1234567",
-          "warning": "Check character by character. Do not confuse '0' (number) with 'O' (letter), or '1' with 'I'. A mismatch will lead to boarding denial."
+          "id": "gender",
+          "label": "Gender",
+          "hint": "Select your gender.",
+          "example": "Male",
+          "fieldType": "select",
+          "options": ["Male", "Female", "Other"]
         },
         {
           "id": "nationality",
           "label": "Nationality",
-          "hint": "Select your current country of citizenship as printed in your passport.",
-          "example": "India"
+          "hint": "Select your citizenship as shown in your passport.",
+          "example": "India",
+          "fieldType": "select"
         },
         {
-          "id": "type_of_eta",
-          "label": "Type of ETA",
-          "hint": "Select the specific type of ETA you are applying for (e.g., Tourist ETA - Double Entry 30 days).",
-          "example": "Tourist ETA - Double Entry 30 days"
+          "id": "country_of_birth",
+          "label": "Country or Region of Birth",
+          "hint": "Select your country of birth.",
+          "example": "India",
+          "fieldType": "select"
+        },
+        {
+          "id": "occupation",
+          "label": "Occupation",
+          "hint": "Enter your current profession or job title.",
+          "example": "Software Engineer",
+          "fieldType": "text"
+        },
+        {
+          "id": "passport_number",
+          "label": "Passport Number",
+          "hint": "Enter your passport number exactly as shown on the bio page.",
+          "example": "Z1234567",
+          "warning": "Must match passport number exactly.",
+          "fieldType": "text"
+        },
+        {
+          "id": "passport_number_reenter",
+          "label": "Re-enter Passport Number",
+          "hint": "Re-enter passport number to confirm.",
+          "example": "Z1234567",
+          "fieldType": "text"
+        },
+        {
+          "id": "passport_issue_date",
+          "label": "Passport Issued Date",
+          "hint": "Enter the date your passport was issued.",
+          "example": "2017-05-15",
+          "fieldType": "date"
+        },
+        {
+          "id": "passport_expiry_date",
+          "label": "Passport Expiry Date",
+          "hint": "Enter the expiration date of your passport.",
+          "example": "2027-05-15",
+          "warning": "Passport must be valid for at least 6 months from arrival.",
+          "fieldType": "date"
+        }
+      ]
+    },
+    {
+      "id": "travel_information",
+      "label": "Travel Information",
+      "icon": "itinerary",
+      "fields": [
+        {
+          "id": "countries_visited_14_days",
+          "label": "Where you have been during last 14 days before this travel?",
+          "hint": "Select the country/region you departed from or spent time in before traveling.",
+          "example": "India",
+          "fieldType": "select"
+        },
+        {
+          "id": "visa_required_days",
+          "label": "Visa Required Days",
+          "hint": "Select the number of days you need visa for (initial limit is 30).",
+          "example": "30",
+          "fieldType": "select",
+          "options": ["30"]
+        },
+        {
+          "id": "arrival_date",
+          "label": "Intended Arrival Date",
+          "hint": "Select your planned date of entry into Sri Lanka.",
+          "example": "2026-06-07",
+          "fieldType": "date"
+        },
+        {
+          "id": "purpose_of_visit",
+          "label": "Purpose of Visit",
+          "hint": "Select the primary reason for your visit.",
+          "example": "Sightseeing or Holidaying",
+          "fieldType": "select",
+          "options": [
+            "Sightseeing or Holidaying",
+            "Visiting friends and relatives",
+            "Medical treatment",
+            "Participation in sports, cultural performance"
+          ]
+        },
+        {
+          "id": "departure_port",
+          "label": "Port of Departure",
+          "hint": "Enter the city/airport from which you will depart.",
+          "example": "New Delhi (DEL)",
+          "fieldType": "text"
+        },
+        {
+          "id": "airline_vessel",
+          "label": "Airline / Vessel",
+          "hint": "Enter the name of the airline or cruise line.",
+          "example": "SriLankan Airlines",
+          "fieldType": "text"
+        },
+        {
+          "id": "flight_vessel_number",
+          "label": "Flight / Vessel Number",
+          "hint": "Enter your flight number.",
+          "example": "UL192",
+          "fieldType": "text"
+        }
+      ]
+    },
+    {
+      "id": "contact_details",
+      "label": "Contact Details",
+      "icon": "personal",
+      "fields": [
+        {
+          "id": "address_line_1",
+          "label": "Address Line 1",
+          "hint": "Enter your house/flat number, building name, and street.",
+          "example": "Flat 402, Sunrise Apartments",
+          "fieldType": "text"
+        },
+        {
+          "id": "address_line_2",
+          "label": "Address Line 2",
+          "hint": "Enter street extension or area name.",
+          "example": "Sector 15, Rohini",
+          "fieldType": "text"
+        },
+        {
+          "id": "city",
+          "label": "City",
+          "hint": "Enter your city of residence.",
+          "example": "New Delhi",
+          "fieldType": "text"
+        },
+        {
+          "id": "state",
+          "label": "State",
+          "hint": "Enter your state/province.",
+          "example": "Delhi",
+          "fieldType": "text"
+        },
+        {
+          "id": "zip_code",
+          "label": "Zip / Postal Code",
+          "hint": "Enter your postal code.",
+          "example": "110089",
+          "fieldType": "text"
+        },
+        {
+          "id": "country",
+          "label": "Country or Region",
+          "hint": "Select your country of residence.",
+          "example": "India",
+          "fieldType": "select"
+        },
+        {
+          "id": "address_in_sri_lanka",
+          "label": "Address in Sri Lanka",
+          "hint": "Enter the hotel name, address, or host address in Sri Lanka.",
+          "example": "Cinnamon Lakeside, 115 Sir Chittampalam A. Gardiner Mawatha, Colombo 00200",
+          "warning": "Provide a valid address where you will stay.",
+          "fieldType": "text"
+        },
+        {
+          "id": "email",
+          "label": "Email Address",
+          "hint": "Enter your email where the ETA approval notification will be sent.",
+          "example": "rahulyadav19.ry@gmail.com",
+          "fieldType": "text"
+        },
+        {
+          "id": "email_reenter",
+          "label": "Re-enter Email Address",
+          "hint": "Re-enter email to verify.",
+          "example": "rahulyadav19.ry@gmail.com",
+          "fieldType": "text"
+        },
+        {
+          "id": "telephone_number",
+          "label": "Telephone Number",
+          "hint": "Enter your landline or alternate contact number.",
+          "example": "4444444444",
+          "fieldType": "text"
+        },
+        {
+          "id": "mobile_number",
+          "label": "Mobile Number",
+          "hint": "Enter your primary mobile phone number.",
+          "example": "9876543210",
+          "fieldType": "text"
+        },
+        {
+          "id": "fax_number",
+          "label": "Fax Number",
+          "hint": "Enter fax number if applicable.",
+          "example": "N/A",
+          "fieldType": "text"
+        }
+      ]
+    },
+    {
+      "id": "declarations",
+      "label": "Declarations",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "residence_visa",
+          "label": "1. Do you have a valid residence visa to Sri Lanka?",
+          "hint": "Select Yes or No.",
+          "example": "No",
+          "fieldType": "radio",
+          "options": ["Yes", "No"]
+        },
+        {
+          "id": "in_srilanka_with_eta",
+          "label": "2. Are you currently in Sri Lanka with a valid ETA or obtained an extension of visa?",
+          "hint": "Select Yes or No.",
+          "example": "No",
+          "fieldType": "radio",
+          "options": ["Yes", "No"]
+        },
+        {
+          "id": "multiple_entry_visa",
+          "label": "3. Do you have a multiple entry visa to Sri Lanka?",
+          "hint": "Select Yes or No.",
+          "example": "No",
+          "fieldType": "radio",
+          "options": ["Yes", "No"]
+        },
+        {
+          "id": "confirm_correct",
+          "label": "I would like to confirm the above information is correct.",
+          "hint": "Check this box to confirm all details are true.",
+          "example": "Checked",
+          "fieldType": "checkbox"
         }
       ]
     }

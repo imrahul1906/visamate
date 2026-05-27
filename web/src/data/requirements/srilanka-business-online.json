@@ -41,7 +41,7 @@
           "form": {
             "type": "ONLINE",
             "downloadUrl": null,
-            "onlineUrl": "https://evisatravel.org/srilanka/apply-visa",
+            "onlineUrl": "https://eta.gov.lk/etaslvisa/etaNavServ",
             "requiresPrint": false,
             "formFillDataKey": "LK_BUSINESS_EVISA_FORM_FIELDS_V1"
           },
@@ -90,17 +90,41 @@
             "Must state the purpose and duration of the visit.",
             "Must be signed by an authorized representative of the company."
           ]
+        },
+        {
+          "order": 5,
+          "id": "LK_BUSINESS_RETURN_TICKET_001",
+          "code": "RETURN_TICKET",
+          "name": "Confirmed Return Ticket",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Prepare a confirmed return ticket or onward journey ticket.",
+          "requirements": [
+            "Must be a confirmed return or onward ticket to another destination."
+          ]
+        },
+        {
+          "order": 6,
+          "id": "LK_BUSINESS_SUFFICIENT_FUNDS_001",
+          "code": "SUFFICIENT_FUNDS",
+          "name": "Proof of Sufficient Funds",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Prepare proof of sufficient funds to meet the expenses during the stay (this might be needed at the port of entry).",
+          "requirements": [
+            "Can include cash, credit card statements, or traveler's cheques to cover expenses during the stay."
+          ]
         }
       ]
     }
   ],
   "importantNotes": [
-    "Government fee is 35 USD for SAARC (including Indian) nationals.",
+    "Government fee is 30 USD for SAARC (including Indian) nationals.",
     "Business ETA is valid for 6 months from date of issue, with multiple entries allowed. The stay is limited to 30 days per entry.",
     "Ensure all details match your passport exactly. Typos will lead to visa rejection."
   ],
   "metadata": {
-    "sourceUrl": "https://evisatravel.org/srilanka/",
+    "sourceUrl": "https://eta.gov.lk/etaslvisa/etaNavServ",
     "lastVerified": "2026-05-27",
     "verifiedBy": "admin",
     "status": "verified",

@@ -41,7 +41,7 @@
           "form": {
             "type": "ONLINE",
             "downloadUrl": null,
-            "onlineUrl": "https://evisatravel.org/srilanka/apply-visa",
+            "onlineUrl": "https://eta.gov.lk/etaslvisa/etaNavServ",
             "requiresPrint": false,
             "formFillDataKey": "LK_TOURIST_EVISA_FORM_FIELDS_V1"
           },
@@ -74,18 +74,42 @@
           "photoSpecRef": "portrait",
           "acceptedFormats": ["jpg", "jpeg"],
           "maxSizeBytes": 2097152
+        },
+        {
+          "order": 4,
+          "id": "LK_TOURIST_RETURN_TICKET_001",
+          "code": "RETURN_TICKET",
+          "name": "Confirmed Return Ticket",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Prepare a confirmed return ticket or onward journey ticket.",
+          "requirements": [
+            "Must be a confirmed return or onward ticket to another destination."
+          ]
+        },
+        {
+          "order": 5,
+          "id": "LK_TOURIST_SUFFICIENT_FUNDS_001",
+          "code": "SUFFICIENT_FUNDS",
+          "name": "Proof of Sufficient Funds",
+          "isRequired": true,
+          "optionality": "required",
+          "notes": "Prepare proof of sufficient funds to meet the expenses during the stay (this might be needed at the port of entry).",
+          "requirements": [
+            "Can include cash, credit card statements, or traveler's cheques to cover expenses during the stay."
+          ]
         }
       ]
     }
   ],
   "importantNotes": [
-    "Government fee is waived (0 USD) for Indian nationals for Tourist ETA, but application must still be submitted and approved.",
-    "The ETA is valid for 6 months from date of issue, with double entry allowed. The stay is limited to 30 days from the date of first entry.",
+    "Government fee is waived (0 USD) for 30 days for tourist visa.",
+    "The ETA is initially limited up to 30 days from the date of arrival and it can be extended up to six months (see: https://www.immigrationlanka.com/Info-2-15.html?locale=en_US).",
     "Make sure all details match your passport exactly. Incorrect details will lead to boarding rejection or entry denial.",
     "A Yellow Fever vaccination certificate is required if you are arriving from a Yellow Fever infected area."
   ],
   "metadata": {
-    "sourceUrl": "https://evisatravel.org/srilanka/",
+    "sourceUrl": "https://eta.gov.lk/etaslvisa/etaNavServ",
     "lastVerified": "2026-05-27",
     "verifiedBy": "admin",
     "status": "verified",
