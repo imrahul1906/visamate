@@ -1,0 +1,205 @@
+{
+    "schemaVersion": 1,
+    "id": "REQ_JP_TOURIST_ONLINE_001",
+    "countryId": "COUNTRY_JP_001",
+    "countryCode": "JP",
+    "visaTypeId": "VISA_JP_TOURIST_EVISA",
+    "visaTypeCode": "TOURIST_EVISA",
+    "locationId": "ONLINE",
+    "visaVariantId": "VISA_JP_TOURIST_SINGLE_ENTRY_001",
+    "locationCode": "ONLINE",
+    "processingDays": "5-7 working days",
+    "processingDaysExpress": null,
+    "fees": {
+        "visaFeeINR": 500,
+        "note": "E-Visa fee is paid online or upon notification. Non-refundable."
+    },
+    "photoSpecifications": {
+        "default": {
+            "widthMm": 35,
+            "heightMm": 45,
+            "background": "Plain white",
+            "colorFormat": "Colored",
+            "faceVisibilityPercent": "70-80",
+            "quality": "Good quality digital image",
+            "maxAgeMonths": 6,
+            "requirements": [
+                "Taken looking straight forward",
+                "Face clearly visible",
+                "Format must be JPG/JPEG format"
+            ]
+        }
+    },
+    "documentSections": [
+        {
+            "sectionId": "COMMON",
+            "title": "Common Upload Documents",
+            "documents": [
+                {
+                    "order": 1,
+                    "id": "JP_TOURIST_ONL_VISA_FORM_001",
+                    "code": "VISA_APPLICATION_FORM",
+                    "name": "E-Visa Online Form",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "form": {
+                        "type": "ONLINE",
+                        "downloadUrl": null,
+                        "onlineUrl": "https://www.evisa.mofa.go.jp/",
+                        "requiresPrint": false,
+                        "formFillDataKey": "JP_TOURIST_VISA_FORM_FIELDS_V1"
+                    },
+                    "notes": "Fill out the application online at the official Japan eVisa website."
+                },
+                {
+                    "order": 2,
+                    "id": "JP_TOURIST_ONL_PASSPORT_001",
+                    "code": "PASSPORT_SCAN",
+                    "name": "Passport Bio Page Scan",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "notes": "Clear, high-quality digital scan of passport page containing photo and signature.",
+                    "acceptedFormats": ["jpg", "jpeg", "pdf"],
+                    "requirements": [
+                        "Minimum 6 months validity from date of travel",
+                        "Must show full page details clearly"
+                    ]
+                },
+                {
+                    "order": 3,
+                    "id": "JP_TOURIST_ONL_JAPAN_ITINERARY_001",
+                    "code": "JAPAN_ITINERARY",
+                    "name": "Itinerary in Japan",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Detailed itinerary in Japan in official format",
+                    "notes": "Download the official template, fill, and upload it.",
+                    "formUrl": "https://www.mofa.go.jp/files/000262548.pdf",
+                    "requirements": [
+                        "Itinerary should be consistent with flight and hotel dates",
+                        "Include hotel check-in/out and flight info details"
+                    ]
+                },
+                {
+                    "order": 4,
+                    "id": "JP_TOURIST_ONL_PHOTOGRAPH_001",
+                    "code": "PHOTOGRAPH",
+                    "name": "Passport Size Photograph",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "One digital photo taken within last 6 months",
+                    "photoSpecRef": "default",
+                    "acceptedFormats": ["jpg", "jpeg"]
+                },
+                {
+                    "order": 5,
+                    "id": "JP_TOURIST_ONL_FLIGHT_ITINERARY_001",
+                    "code": "FLIGHT_ITINERARY",
+                    "name": "Flight Reservations",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Round trip flight details/itinerary reservation to/from Japan",
+                    "notes": "Upload confirmed flight schedule/reservation.",
+                    "requirements": [
+                        "Must match itinerary plan dates",
+                        "Applicant name must match passport"
+                    ]
+                },
+                {
+                    "order": 6,
+                    "id": "JP_TOURIST_ONL_HOTEL_RESERVATION_001",
+                    "code": "HOTEL_RESERVATION",
+                    "name": "Hotel Reservation",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Hotel booking reservation for the stay in Japan",
+                    "notes": "Reservation covering the entire stay in Japan.",
+                    "requirements": [
+                        "Accommodation address and contact details should be visible",
+                        "Must match itinerary dates"
+                    ]
+                }
+            ]
+        },
+        {
+            "sectionId": "SELF_SPONSORED",
+            "title": "Financial Documents (Self Sponsored)",
+            "applicableWhen": {
+                "sponsorship": "SELF"
+            },
+            "documents": [
+                {
+                    "order": 7,
+                    "id": "JP_TOURIST_ONL_INCOME_TAX_001",
+                    "code": "INCOME_TAX_RETURN",
+                    "name": "Latest Income Tax Return",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Latest Income Tax Return (ITR) for last 2 years",
+                    "notes": "Upload ITR or bank statements for last 6 months."
+                },
+                {
+                    "order": 8,
+                    "id": "JP_TOURIST_ONL_BANK_STATEMENT_001",
+                    "code": "BANK_STATEMENT",
+                    "name": "Bank Statement (Last 3 Months)",
+                    "isRequired": true,
+                    "optionality": "required",
+                    "description": "Personal bank statement for the last 3 months",
+                    "notes": "Must show sufficient balance and official bank seal."
+                }
+            ]
+        },
+        {
+            "sectionId": "SPONSORED",
+            "title": "Financial Documents (Sponsored)",
+            "applicableWhen": {
+                "sponsorship": "SPONSORED"
+            },
+            "documents": [
+                {
+                    "order": 9,
+                    "id": "JP_TOURIST_ONL_SPONSER_BANK_STATEMENT_001",
+                    "code": "SPONSER_BANK_STATEMENT",
+                    "name": "Sponsor Bank Statement (Last 3 Months)",
+                    "isRequired": false,
+                    "optionality": "conditional",
+                    "description": "Sponsor bank statement for the last 3 months",
+                    "applicableWhen": {
+                        "applicantRolesAnyOf": [
+                            "STUDENT",
+                            "DEPENDENT"
+                        ]
+                    }
+                },
+                {
+                    "order": 10,
+                    "id": "JP_TOURIST_ONL_DEPENDENT_CONSENT_001",
+                    "code": "DEPENDENT_CONSENT",
+                    "name": "Consent from Sponsor",
+                    "isRequired": false,
+                    "optionality": "conditional",
+                    "description": "Sponsor consent and financial guarantee letter",
+                    "applicableWhen": {
+                        "applicantRolesAnyOf": [
+                            "STUDENT",
+                            "DEPENDENT"
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "importantNotes": [
+        "Japan eVisa requires online file upload in PDF or JPG formats.",
+        "Ensure all document scans are clear and readable to prevent rejection.",
+        "Payment is done online once the visa application status is updated to 'Fee Payment Required'."
+    ],
+    "metadata": {
+        "sourceUrl": "https://www.evisa.mofa.go.jp/",
+        "lastVerified": "2026-05-27",
+        "verifiedBy": "admin",
+        "status": "verified",
+        "dataCollectionDate": "2026-05-27"
+    }
+}

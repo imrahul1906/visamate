@@ -89,7 +89,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const [uploads, setUploads] = useState<UploadsMap>({});
   const [downloadingZip, setDownloadingZip] = useState(false);
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
-  const [activePopover, setActivePopover] = useState<"money" | "time" | "biometrics" | "interview" | "vfs" | null>(null);
+  const [activePopover, setActivePopover] = useState<"money" | "time" | "biometrics" | "interview" | "vfs" | "vfs_appt" | null>(null);
   const [isMobile] = useState(() =>
     typeof window !== "undefined" && window.matchMedia("(max-width: 767px)").matches
   );
@@ -104,7 +104,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   }, []);
 
   // ── Custom hooks ──────────────────────────────────────────────
-  const { data, itineraryData, visaTypeData, requirementsData, loading, error } = useDocumentData({
+  const { data, itineraryData, visaTypeData, requirementsData, countryInfo, loading, error } = useDocumentData({
     country, visaType, location, sponsorship,
     countryName, visaTypeName, locationName,
   });
@@ -159,6 +159,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const overallPct = allDocs.length ? (totalDone / allDocs.length) * 100 : 0;
   const uploadCount = Object.keys(uploads).length;
   const uploadableCount = allDocs.filter(d => !d.noUpload).length;
+  const isOnline = visaTypeData?.process?.default?.applicationMode === "ONLINE";
 
   const activeDocIndex = allDocs.findIndex(d => d.id === activeDocId);
   const visibleDoc = allDocs.find(d => d.id === visibleDocId) ?? null;
@@ -254,15 +255,17 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             </svg>
             <span className="vm-tab-text">Documents</span>
           </button>
-          <button
-            className={`vm-folder-tab ${activeTab === "guide" ? "vm-active" : ""}`}
-            onClick={() => setActiveTab("guide")}
-          >
-            <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 10v6M2 10v6M12 2L2 7h20L12 2zM4 21h16M4 11v10M8 11v10M12 11v10M16 11v10M20 11v10" />
-            </svg>
-            <span className="vm-tab-text">Embassy Prep</span>
-          </button>
+          {!isOnline && (
+            <button
+              className={`vm-folder-tab ${activeTab === "guide" ? "vm-active" : ""}`}
+              onClick={() => setActiveTab("guide")}
+            >
+              <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 10v6M2 10v6M12 2L2 7h20L12 2zM4 21h16M4 11v10M8 11v10M12 11v10M16 11v10M20 11v10" />
+              </svg>
+              <span className="vm-tab-text">Embassy Prep</span>
+            </button>
+          )}
           <button
             className={`vm-folder-tab ${activeTab === "status" ? "vm-active" : ""}`}
             onClick={() => setActiveTab("status")}
@@ -273,20 +276,22 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
             </svg>
             <span className="vm-tab-text">Application Status</span>
           </button>
-          <button
-            className={`vm-folder-tab ${activeTab === "security" ? "vm-active" : ""}`}
-            onClick={() => setActiveTab("security")}
-          >
-            <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM12 8v4m0 4h.01" />
-            </svg>
-            <span className="vm-tab-text">Passport Collection</span>
-            {uploadCount > 0 && (
-              <span className={`vm-tab-badge vm-badge-secure ${activeTab === "security" ? "vm-badge-active" : ""}`}>
-                {uploadCount}
-              </span>
-            )}
-          </button>
+          {!isOnline && (
+            <button
+              className={`vm-folder-tab ${activeTab === "security" ? "vm-active" : ""}`}
+              onClick={() => setActiveTab("security")}
+            >
+              <svg className="vm-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM12 8v4m0 4h.01" />
+              </svg>
+              <span className="vm-tab-text">Passport Collection</span>
+              {uploadCount > 0 && (
+                <span className={`vm-tab-badge vm-badge-secure ${activeTab === "security" ? "vm-badge-active" : ""}`}>
+                  {uploadCount}
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Unified Visa Console Window */}
@@ -420,12 +425,21 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
 
               {/* Tab 2: Embassy Guide Pane */}
               <div className={`vm-tab-pane ${activeTab === "guide" ? "vm-active" : ""}`}>
-                <EmbassyInfoTab countryName={countryName} visaTypeName={visaTypeName} />
+                <EmbassyInfoTab
+                  countryName={countryName}
+                  visaTypeName={visaTypeName}
+                  appointmentUrl={countryInfo?.vfs?.appointmentUrl}
+                />
               </div>
 
               {/* Tab 3: Application Status Pane */}
               <div className={`vm-tab-pane ${activeTab === "status" ? "vm-active" : ""}`}>
-                <ApplicationStatusTab countryName={countryName} visaTypeName={visaTypeName} />
+                <ApplicationStatusTab
+                  countryName={countryName}
+                  visaTypeName={visaTypeName}
+                  isOnline={isOnline}
+                  trackingUrl={countryInfo?.trackingUrl ?? undefined}
+                />
               </div>
 
               {/* Tab 4: Passport Collection Pane */}

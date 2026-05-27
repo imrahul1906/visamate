@@ -8,6 +8,7 @@
 // matches the selected centre. If no centre is selected, none are shown —
 // they are centre-specific rules and showing them unconditionally is misleading.
 
+import { APPLICATION_MODE, APPOINTMENT_POLICY } from "@/lib/data/types";
 import type { VisaType, PaymentInstruction, RequirementsData } from "@/lib/data/types";
 import { parseRefundability, toTitleCase } from "./overviewUtils";
 import type { StatCardProps } from "./OverviewPrimitives";
@@ -15,6 +16,7 @@ import type { StatCardProps } from "./OverviewPrimitives";
 interface ProcessFlag {
   label: string;
   required: boolean;
+  status?: "required" | "optional" | "not_required" | "walk_in";
 }
 
 export interface OverviewData {
@@ -44,7 +46,20 @@ export function useOverviewData(
   /** Per-centre requirements data — processingDays is read from here when available. */
   requirementsData?: RequirementsData | null,
 ): OverviewData {
-  const proc = visaType.process?.default;
+  let proc = visaType.process?.default;
+
+  if (selectedLocationCode && visaType.process?.centerOverrides) {
+    const override = visaType.process.centerOverrides.find(
+      (cov) => cov.vfsCenterCode.trim().toUpperCase() === selectedLocationCode.trim().toUpperCase()
+    );
+    if (override) {
+      proc = {
+        ...proc,
+        ...override,
+      };
+    }
+  }
+
   const vfs  = visaType.vfsCharges;
 
   // ── Currency ─────────────────────────────────────────────────────────────
@@ -100,7 +115,7 @@ export function useOverviewData(
       ? [{ icon: "🏷️", label: "Category",   value: toTitleCase(visaType.category),      colorKey: "violet"  as const }]
       : []),
     ...(proc?.applicationMode
-      ? [{ icon: proc.applicationMode === "ONLINE" ? "🌐" : "🏛️",
+      ? [{ icon: proc.applicationMode === APPLICATION_MODE.ONLINE ? "🌐" : "🏛️",
            label: "Mode",        value: toTitleCase(proc.applicationMode),   colorKey: "emerald" as const }]
       : []),
     ...(processingTime
@@ -116,15 +131,35 @@ export function useOverviewData(
 
   // ── Process flags ─────────────────────────────────────────────────────────
   const processFlags: ProcessFlag[] = [
-    ...(proc?.biometricRequired != null
-      ? [{ label: "Biometrics", required: proc.biometricRequired }]
-      : []),
-    ...(proc?.interviewRequired != null
-      ? [{ label: "Interview",  required: proc.interviewRequired }]
-      : []),
-    ...(proc?.applicationMode != null
-      ? [{ label: "VFS appointment", required: proc.applicationMode !== "ONLINE" }]
-      : []),
+    {
+      label: proc?.applicationMode === APPLICATION_MODE.ONLINE ? "Application Submission" : "VFS Submission",
+      required: proc?.applicationMode === APPLICATION_MODE.OFFLINE,
+      status: proc?.applicationMode === APPLICATION_MODE.OFFLINE ? ("required" as const) : ("not_required" as const),
+    },
+    {
+      label: proc?.biometricNote ? `Biometrics (${proc.biometricNote})` : "Biometrics",
+      required: !!proc?.biometricRequired,
+      status: proc?.biometricRequired ? ("required" as const) : ("not_required" as const),
+    },
+    {
+      label: "Interview",
+      required: !!proc?.interviewRequired,
+      status: proc?.interviewRequired ? ("required" as const) : ("not_required" as const),
+    },
+    {
+      label: proc?.applicationMode === APPLICATION_MODE.ONLINE ? "Appointment" : "VFS Appointment",
+      required: proc?.appointmentPolicy === APPOINTMENT_POLICY.REQUIRED || (proc?.appointmentPolicy == null && proc?.applicationMode === APPLICATION_MODE.OFFLINE),
+      status:
+        proc?.appointmentPolicy === APPOINTMENT_POLICY.REQUIRED
+          ? ("required" as const)
+          : proc?.appointmentPolicy === APPOINTMENT_POLICY.WALK_IN_ALLOWED || proc?.appointmentPolicy === APPOINTMENT_POLICY.WALK_IN_ONLY
+          ? ("walk_in" as const)
+          : proc?.appointmentPolicy === APPOINTMENT_POLICY.NO_APPOINTMENT || proc?.appointmentPolicy === APPOINTMENT_POLICY.NOT_REQUIRED || proc?.applicationMode === APPLICATION_MODE.ONLINE
+          ? ("not_required" as const)
+          : proc?.applicationMode === APPLICATION_MODE.OFFLINE
+          ? ("required" as const)
+          : ("not_required" as const),
+    },
   ];
 
   // ── Payment instructions — centre-gated ───────────────────────────────────

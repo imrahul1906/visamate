@@ -3,6 +3,7 @@
 // VisaOverviewStrip.tsx
 
 import React, { useEffect } from "react";
+import { APPLICATION_MODE } from "@/lib/data/types";
 import type { VisaType } from "@/lib/data/types";
 
 import { OverviewFeeBreakdown } from "../visa_overview/OverviewFeeBreakdown";
@@ -26,8 +27,8 @@ interface VisaOverviewStripProps {
   visaType: VisaType | null;
   /** Processing time string from RequirementsData (e.g. "Minimum 6 working days") */
   processingDays?: string | number | null;
-  activePopover: "money" | "time" | "biometrics" | "interview" | "vfs" | null;
-  onActivePopoverChange: (popover: "money" | "time" | "biometrics" | "interview" | "vfs" | null) => void;
+  activePopover: "money" | "time" | "biometrics" | "interview" | "vfs" | "vfs_appt" | null;
+  onActivePopoverChange: (popover: "money" | "time" | "biometrics" | "interview" | "vfs" | "vfs_appt" | null) => void;
 }
 
 
@@ -268,7 +269,7 @@ export function VisaSummaryBar({
   } = useOverviewData(visaType ?? ({} as VisaType), locationCode);
 
   const fees = visaType?.fees;
-  const isOnline = visaType?.process?.default?.applicationMode === "ONLINE";
+  const isOnline = visaType?.process?.default?.applicationMode === APPLICATION_MODE.ONLINE;
   const isAnyActive = activePopover !== null;
 
   // Total fee string — prefer totalMin/Max (includes VFS), fall back to base fee
@@ -281,12 +282,18 @@ export function VisaSummaryBar({
   })();
 
   // Pull specific flags
-  const flagMap = Object.fromEntries(
-    (processFlags ?? []).map(f => [f.label.toLowerCase(), f.required])
+  const biometricsFlag = (processFlags ?? []).find(
+    f => f.label.toLowerCase().includes("biometrics") || f.label.toLowerCase().includes("biometric")
   );
-  const biometricsRequired = flagMap["biometrics"] ?? flagMap["biometric"] ?? null;
-  const interviewRequired = flagMap["interview"] ?? null;
-  const vfsRequired = flagMap["vfs appointment"] ?? flagMap["vfs"] ?? flagMap["in-person"] ?? null;
+  const biometricsRequired = biometricsFlag !== undefined ? biometricsFlag.required : null;
+
+  const interviewFlag = (processFlags ?? []).find(
+    f => f.label.toLowerCase().includes("interview")
+  );
+  const interviewRequired = interviewFlag !== undefined ? interviewFlag.required : null;
+
+  const vfsSubmissionFlag = (processFlags ?? []).find(f => f.label.toLowerCase().includes("submission"));
+  const vfsAppointmentFlag = (processFlags ?? []).find(f => f.label.toLowerCase().includes("appointment"));
 
   return (
     <>
@@ -642,7 +649,9 @@ export function VisaSummaryBar({
                 </div>
                 <div style={{ height: 1, background: "var(--vm-border)", margin: "4px 0" }} />
                 <p style={{ fontSize: 11, color: "var(--vm-muted)", margin: 0, lineHeight: 1.5, fontFamily: "'DM Sans', sans-serif" }}>
-                  * Timeline starts after submitting physical documents at the center. Subject to consulate workloads.
+                  {isOnline
+                    ? "* Timeline starts after online submission and fee payment. Subject to consulate workloads."
+                    : "* Timeline starts after submitting physical documents at the center. Subject to consulate workloads."}
                 </p>
               </div>
             </PopoverWrapper>
@@ -739,16 +748,16 @@ export function VisaSummaryBar({
           </div>
         )}
 
-        {/* 5. VFS / In-person (neutral if needed, green if not) */}
-        {vfsRequired !== null && (
+        {/* 5. VFS Submission (red = required, green = not required) */}
+        {vfsSubmissionFlag && (
           <div style={{ position: "relative" }}>
             <InfoTile
-              label="VFS appointment"
-              value={vfsRequired ? "Required" : "Not needed"}
-              variant={vfsRequired ? "neutral" : "ok"}
+              label={vfsSubmissionFlag.label}
+              value={vfsSubmissionFlag.status === "required" ? "Required" : "Online"}
+              variant={vfsSubmissionFlag.status === "required" ? "warn" : "ok"}
               icon={
                 <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 21V8.25a2.25 2.25 0 00-2.25-2.25h-10.5A2.25 2.25 0 004.5 8.25V21m15 0h-15m15 0h.75m-15.75 0H3m3-15h.008v.008H6V6.75zm0 3h.008v.008H6v-.008zm0 3h.008v.008H6v-.008zm3-6h.008v.008H9V6.75zm0 3h.008v.008H9v-.008zm0 3h.008v.008H9v-.008zm3-6h.008v.008h-.008V6.75zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm3-6h.008v.008h-.008V6.75zm0 3h.008v.008h-.008v-.008z" />
                 </svg>
               }
               onClick={() => onActivePopoverChange(activePopover === "vfs" ? null : "vfs")}
@@ -758,16 +767,18 @@ export function VisaSummaryBar({
             <PopoverWrapper isOpen={activePopover === "vfs"} align="right">
               <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, color: "var(--vm-muted)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "'DM Sans', sans-serif" }}>
-                  Appointment & Center Rules
+                  {isOnline ? "Submission details" : "Center Submission & Rules"}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                  <span style={{ fontSize: 20 }}>🏢</span>
+                  <span style={{ fontSize: 20 }}>{isOnline ? "💻" : "🏢"}</span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vm-text)", fontFamily: "'DM Sans', sans-serif" }}>
-                      {vfsRequired ? "In-Person Submission" : "Online Submission"}
+                      {vfsSubmissionFlag.status === "required" ? "Physical Submission Required" : "Online Application"}
                     </div>
                     <div style={{ fontSize: 10, color: "var(--vm-muted)", fontFamily: "'DM Sans', sans-serif" }}>
-                      {vfsRequired ? `Required at ${locationCode?.toUpperCase()} VFS` : "Apply & submit documents online"}
+                      {vfsSubmissionFlag.status === "required"
+                        ? `Must submit physical documents at ${locationCode?.toUpperCase()} VFS`
+                        : "Fully digital application process. No VFS center visit is needed."}
                     </div>
                   </div>
                 </div>
@@ -784,6 +795,63 @@ export function VisaSummaryBar({
                     </div>
                   </>
                 )}
+              </div>
+            </PopoverWrapper>
+          </div>
+        )}
+
+        {/* 6. VFS Appointment (red = required, yellow = walk-in, green = not required) */}
+        {vfsAppointmentFlag && (
+          <div style={{ position: "relative" }}>
+            <InfoTile
+              label={vfsAppointmentFlag.label}
+              value={
+                vfsAppointmentFlag.status === "required"
+                  ? "Required"
+                  : vfsAppointmentFlag.status === "walk_in"
+                  ? "Walk-in allowed"
+                  : "Not needed"
+              }
+              variant={
+                vfsAppointmentFlag.status === "required"
+                  ? "warn"
+                  : vfsAppointmentFlag.status === "walk_in"
+                  ? "neutral"
+                  : "ok"
+              }
+              icon={
+                <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+              }
+              onClick={() => onActivePopoverChange(activePopover === "vfs_appt" ? null : "vfs_appt")}
+              active={activePopover === "vfs_appt"}
+              dimmed={isAnyActive && activePopover !== "vfs_appt"}
+            />
+            <PopoverWrapper isOpen={activePopover === "vfs_appt"} align="right">
+              <div style={{ padding: "14px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: "var(--vm-muted)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "'DM Sans', sans-serif" }}>
+                  Appointment Policy
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                  <span style={{ fontSize: 20 }}>🗓️</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vm-text)", fontFamily: "'DM Sans', sans-serif" }}>
+                      {vfsAppointmentFlag.status === "required"
+                        ? "Booking Required"
+                        : vfsAppointmentFlag.status === "walk_in"
+                        ? "Walk-in Submission"
+                        : "No Booking Needed"}
+                    </div>
+                    <div style={{ fontSize: 10, color: "var(--vm-muted)", fontFamily: "'DM Sans', sans-serif" }}>
+                      {vfsAppointmentFlag.status === "required"
+                        ? "You must book a VFS appointment slot online in advance"
+                        : vfsAppointmentFlag.status === "walk_in"
+                        ? "You can walk in to the VFS center without prior booking"
+                        : "No appointment booking is required for this visa"}
+                    </div>
+                  </div>
+                </div>
               </div>
             </PopoverWrapper>
           </div>

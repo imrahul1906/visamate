@@ -174,7 +174,7 @@ export default function VisaOverviewPanel({
           <SectionLabel>Requirements</SectionLabel>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {processFlags.map((flag) => (
-              <OverviewRequirementBadge key={flag.label} label={flag.label} required={flag.required} />
+              <OverviewRequirementBadge key={flag.label} label={flag.label} required={flag.required} status={flag.status} />
             ))}
           </div>
         </div>

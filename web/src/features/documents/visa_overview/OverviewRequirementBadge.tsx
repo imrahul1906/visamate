@@ -8,15 +8,36 @@
 //   Green check = good news (not required); red cross = heads-up (required).
 
 import { PALETTE } from "./overviewPalette";
-import { CheckIcon, CrossIcon } from "./OverviewIcons";
+import { CheckIcon, CrossIcon, InfoIcon } from "./OverviewIcons";
 
 interface OverviewRequirementBadgeProps {
   label: string;
   required: boolean;
+  status?: "required" | "optional" | "not_required" | "walk_in";
 }
 
-export function OverviewRequirementBadge({ label, required }: OverviewRequirementBadgeProps) {
-  const palette = required ? PALETTE.red : PALETTE.green;
+export function OverviewRequirementBadge({ label, required, status }: OverviewRequirementBadgeProps) {
+  // Resolve resolvedStatus to map old required prop if status is missing
+  const resolvedStatus = status ?? (required ? "required" : "not_required");
+
+  let palette: { readonly text: string; readonly bg: string; readonly border: string } = PALETTE.green;
+  let IconComponent = CheckIcon;
+  let statusText = "Not Required";
+
+  if (resolvedStatus === "required") {
+    palette = PALETTE.red;
+    IconComponent = CrossIcon;
+    statusText = "Required";
+  } else if (resolvedStatus === "walk_in") {
+    palette = PALETTE.yellow;
+    IconComponent = InfoIcon;
+    statusText = "Walk-in";
+  } else if (resolvedStatus === "optional") {
+    palette = PALETTE.yellow;
+    IconComponent = InfoIcon;
+    statusText = "Optional";
+  }
+
   return (
     <span
       style={{
@@ -35,7 +56,7 @@ export function OverviewRequirementBadge({ label, required }: OverviewRequiremen
       }}
     >
       <span style={{ display: "flex", alignItems: "center" }}>
-        {required ? <CrossIcon /> : <CheckIcon />}
+        <IconComponent />
       </span>
       {label}
       <span
@@ -47,7 +68,7 @@ export function OverviewRequirementBadge({ label, required }: OverviewRequiremen
           opacity: 0.75,
         }}
       >
-        · {required ? "Required" : "Not Required"}
+        · {statusText}
       </span>
     </span>
   );

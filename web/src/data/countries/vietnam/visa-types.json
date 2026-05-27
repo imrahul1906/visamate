@@ -6,8 +6,11 @@
     "default": {
       "applicationMode": "ONLINE",
       "biometricRequired": false,
-      "interviewRequired": false
-    }
+      "biometricNote": "Exempt from biometric submission",
+      "interviewRequired": false,
+      "appointmentPolicy": "NO_APPOINTMENT"
+    },
+    "centerOverrides": []
   },
   "visaTypes": [
     {

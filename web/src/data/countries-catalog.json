@@ -1,0 +1,53 @@
+[
+  {
+    "code": "JP",
+    "name": "Japan",
+    "photo": "https://images.unsplash.com/photo-1549693578-d683be217e58?q=80&w=800",
+    "supported": true,
+    "visaTypeLabel": "VFS Submission",
+    "folder": "japan"
+  },
+  {
+    "code": "VN",
+    "name": "Vietnam",
+    "photo": "https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800",
+    "supported": true,
+    "visaTypeLabel": "E-Visa (Online)",
+    "folder": "vietnam"
+  },
+  {
+    "code": "KR",
+    "name": "South Korea",
+    "photo": "https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800",
+    "supported": false,
+    "folder": "korea"
+  },
+  {
+    "code": "US",
+    "name": "United States",
+    "photo": "https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=800",
+    "supported": false,
+    "folder": "usa"
+  },
+  {
+    "code": "AU",
+    "name": "Australia",
+    "photo": "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?q=80&w=800",
+    "supported": false,
+    "folder": "australia"
+  },
+  {
+    "code": "UK",
+    "name": "United Kingdom",
+    "photo": "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=800",
+    "supported": false,
+    "folder": "uk"
+  },
+  {
+    "code": "SG",
+    "name": "Singapore",
+    "photo": "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=800",
+    "supported": false,
+    "folder": "singapore"
+  }
+]

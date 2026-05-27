@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { APPLICATION_MODE } from './types';
 import {
   getAllCountries,
   getCountryCatalogEntry,
@@ -101,7 +102,7 @@ describe('repository.ts - Data Access Layer (DAL)', () => {
 
       const types = await getVisaTypes('VN');
       expect(types.length).toBeGreaterThan(0);
-      expect(types[0].process?.default?.applicationMode).toBe('ONLINE');
+      expect(types[0].process?.default?.applicationMode).toBe(APPLICATION_MODE.ONLINE);
 
       const tourist = await getVisaType('VN', 'TOURIST');
       expect(tourist).toBeDefined();

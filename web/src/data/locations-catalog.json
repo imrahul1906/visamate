@@ -1,0 +1,44 @@
+[
+  {
+    "code": "DELHI",
+    "city": "New Delhi",
+    "photo": "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=800",
+    "active": true
+  },
+  {
+    "code": "MUMBAI",
+    "city": "Mumbai",
+    "photo": "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=800",
+    "active": true
+  },
+  {
+    "code": "BENGALURU",
+    "city": "Bengaluru",
+    "photo": "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?q=80&w=800",
+    "active": true
+  },
+  {
+    "code": "CHENNAI",
+    "city": "Chennai",
+    "photo": "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=800",
+    "active": true
+  },
+  {
+    "code": "KOLKATA",
+    "city": "Kolkata",
+    "photo": "https://images.unsplash.com/photo-1558431382-27e303142255?q=80&w=800",
+    "active": true
+  },
+  {
+    "code": "HYDERABAD",
+    "city": "Hyderabad",
+    "photo": "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
+    "active": false
+  },
+  {
+    "code": "ONLINE",
+    "city": "Online Submission",
+    "photo": "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
+    "active": true
+  }
+]

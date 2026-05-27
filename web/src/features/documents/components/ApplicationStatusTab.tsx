@@ -6,9 +6,18 @@ import { font } from "@/lib/theme";
 interface ApplicationStatusTabProps {
   countryName?: string;
   visaTypeName?: string;
+  isOnline?: boolean;
+  trackingUrl?: string;
 }
 
-export default function ApplicationStatusTab({ countryName = "", visaTypeName = "" }: ApplicationStatusTabProps) {
+export default function ApplicationStatusTab({
+  countryName = "",
+  visaTypeName = "",
+  isOnline = false,
+  trackingUrl,
+}: ApplicationStatusTabProps) {
+  const defaultTrackingUrl = "https://www.vfsvisaonline.com/Global-Passporttracking/Track/";
+  const resolvedTrackingUrl = trackingUrl || defaultTrackingUrl;
   return (
     <div className="vm-status-container">
       {/* Nested CSS styles for centering, spacing, and hover scaling */}
@@ -229,131 +238,174 @@ export default function ApplicationStatusTab({ countryName = "", visaTypeName = 
            lineHeight: 1.4,
            maxWidth: 360,
          }}>
-           Check your live visa status directly on the official VFS Global tracking portal.
+           {isOnline
+             ? `Check your live visa status directly on the official ${countryName} Government e-visa portal.`
+             : "Check your live visa status directly on the official VFS Global tracking portal."}
          </p>
  
          <a
-           href="https://www.vfsvisaonline.com/Global-Passporttracking/Track/"
+           href={resolvedTrackingUrl}
            target="_blank"
            rel="noopener noreferrer"
            className="vm-track-btn"
          >
-           <span>Track on VFS Global</span>
+           <span>{isOnline ? "Track E-Visa Status" : "Track on VFS Global"}</span>
            <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
            </svg>
          </a>
        </div>
  
-       <div className="vm-status-divider" />
- 
-       {/* ── 2. VFS Gotchas Grid (Three Compact Cards) ── */}
-       <div style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
-         <h3 style={{
-           fontFamily: font.sans,
-           fontSize: 10.5,
-           fontWeight: 700,
-           color: "var(--vm-text)",
-           opacity: 0.4,
-           textTransform: "uppercase",
-           letterSpacing: "0.06em",
-           margin: 0,
-         }}>
-           Critical VFS Gotchas
-         </h3>
- 
-         <div className="vm-gotcha-grid">
-           {/* Card 1 */}
-           <div className="vm-gotcha-card">
-             <div className="vm-icon-box">⏳</div>
-             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-               <h4 style={{
-                 fontFamily: font.sans,
-                 fontSize: 12.5,
-                 fontWeight: 700,
-                 color: "var(--vm-text)",
-                 margin: 0,
-               }}>
-                 Scan Delay Panic
-               </h4>
-               <p style={{
-                 fontSize: 11.5,
-                 color: "var(--vm-text)",
-                 opacity: 0.55,
-                 margin: 0,
-                 fontFamily: font.sans,
-                 lineHeight: 1.4,
-               }}>
-                 VFS takes <strong>6–7 working days</strong> to scan your envelope. If you see &quot;Invalid Input&quot;, your package is simply awaiting scan.
-               </p>
-             </div>
-           </div>
- 
-           {/* Card 2 */}
-           <div className="vm-gotcha-card">
-             <div className="vm-icon-box" style={{ color: "#f59e0b" }}>⚠️</div>
-             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-               <h4 style={{
-                 fontFamily: font.sans,
-                 fontSize: 12.5,
-                 fontWeight: 700,
-                 color: "var(--vm-text)",
-                 margin: 0,
-               }}>
-                 On Hold deficiencies
-               </h4>
-               <p style={{
-                 fontSize: 11.5,
-                 color: "var(--vm-text)",
-                 opacity: 0.55,
-                 margin: 0,
-                 fontFamily: font.sans,
-                 lineHeight: 1.4,
-               }}>
-                 If your status shows &quot;On Hold&quot;, check your <strong>spam/junk email</strong> immediately for lists of missing documents.
-               </p>
-             </div>
-           </div>
- 
-           {/* Card 3 */}
-           <div className="vm-gotcha-card">
-             <div className="vm-icon-box">📦</div>
-             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-               <h4 style={{
-                 fontFamily: font.sans,
-                 fontSize: 12.5,
-                 fontWeight: 700,
-                 color: "var(--vm-text)",
-                 margin: 0,
-               }}>
-                 Courier UPS Label
-               </h4>
-               <p style={{
-                 fontSize: 11.5,
-                 color: "var(--vm-text)",
-                 opacity: 0.55,
-                 margin: 0,
-                 fontFamily: font.sans,
-                 lineHeight: 1.4,
-               }}>
-                 If returning via self-courier, VFS strictly accepts prepaid <strong>UPS labels only</strong>. Other labels cause delays.
-               </p>
-             </div>
-           </div>
+       {isOnline ? (
+         <div
+           style={{
+             background: "rgba(99, 102, 241, 0.05)",
+             border: "1px dashed var(--vm-tile-ok-border)",
+             borderRadius: 12,
+             padding: "16px 20px",
+             width: "100%",
+             maxWidth: 500,
+             textAlign: "center",
+             boxSizing: "border-box",
+           }}
+         >
+           <p style={{
+             fontSize: 12,
+             color: "var(--vm-tile-ok-val)",
+             fontWeight: 600,
+             margin: "0 0 6px",
+             display: "flex",
+             alignItems: "center",
+             justifyContent: "center",
+             gap: 6,
+           }}>
+             <span>💡</span> Friendly Reminder
+           </p>
+           <p style={{
+             fontSize: 11.5,
+             color: "var(--vm-text)",
+             opacity: 0.7,
+             margin: 0,
+             lineHeight: 1.5,
+           }}>
+             Official notifications and your approved PDF E-Visa will be sent directly to the email address used in your application. Please check your <strong>spam or junk folders</strong> regularly.
+           </p>
          </div>
-       </div>
+       ) : (
+         <>
+           <div className="vm-status-divider" />
+     
+           {/* ── 2. VFS Gotchas Grid (Three Compact Cards) ── */}
+           <div style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
+             <h3 style={{
+               fontFamily: font.sans,
+               fontSize: 10.5,
+               fontWeight: 700,
+               color: "var(--vm-text)",
+               opacity: 0.4,
+               textTransform: "uppercase",
+               letterSpacing: "0.06em",
+               margin: 0,
+             }}>
+               Critical VFS Gotchas
+             </h3>
+ 
+             <div className="vm-gotcha-grid">
+               {/* Card 1 */}
+               <div className="vm-gotcha-card">
+                 <div className="vm-icon-box">⏳</div>
+                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                   <h4 style={{
+                     fontFamily: font.sans,
+                     fontSize: 12.5,
+                     fontWeight: 700,
+                     color: "var(--vm-text)",
+                     margin: 0,
+                   }}>
+                     Scan Delay Panic
+                   </h4>
+                   <p style={{
+                     fontSize: 11.5,
+                     color: "var(--vm-text)",
+                     opacity: 0.55,
+                     margin: 0,
+                     fontFamily: font.sans,
+                     lineHeight: 1.4,
+                   }}>
+                     VFS takes <strong>6–7 working days</strong> to scan your envelope. If you see &quot;Invalid Input&quot;, your package is simply awaiting scan.
+                   </p>
+                 </div>
+               </div>
+ 
+               {/* Card 2 */}
+               <div className="vm-gotcha-card">
+                 <div className="vm-icon-box" style={{ color: "#f59e0b" }}>⚠️</div>
+                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                   <h4 style={{
+                     fontFamily: font.sans,
+                     fontSize: 12.5,
+                     fontWeight: 700,
+                     color: "var(--vm-text)",
+                     margin: 0,
+                   }}>
+                     On Hold deficiencies
+                   </h4>
+                   <p style={{
+                     fontSize: 11.5,
+                     color: "var(--vm-text)",
+                     opacity: 0.55,
+                     margin: 0,
+                     fontFamily: font.sans,
+                     lineHeight: 1.4,
+                   }}>
+                     If your status shows &quot;On Hold&quot;, check your <strong>spam/junk email</strong> immediately for lists of missing documents.
+                   </p>
+                 </div>
+               </div>
+ 
+               {/* Card 3 */}
+               <div className="vm-gotcha-card">
+                 <div className="vm-icon-box">📦</div>
+                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                   <h4 style={{
+                     fontFamily: font.sans,
+                     fontSize: 12.5,
+                     fontWeight: 700,
+                     color: "var(--vm-text)",
+                     margin: 0,
+                   }}>
+                     Courier UPS Label
+                   </h4>
+                   <p style={{
+                     fontSize: 11.5,
+                     color: "var(--vm-text)",
+                     opacity: 0.55,
+                     margin: 0,
+                     fontFamily: font.sans,
+                     lineHeight: 1.4,
+                   }}>
+                     If returning via self-courier, VFS strictly accepts prepaid <strong>UPS labels only</strong>. Other labels cause delays.
+                   </p>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </>
+       )}
  
        {/* ── 3. Stay Updated Footer Row ── */}
-       <div className="vm-status-footer">
-         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-           <span>💬</span>
-           <span><strong>SMS Alerts:</strong> Purchased during online payment stage.</span>
+       {!isOnline && (
+         <div className="vm-status-footer">
+           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+             <span>💬</span>
+             <span><strong>SMS Alerts:</strong> Purchased during online payment stage.</span>
+           </div>
+           <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+             <span>🕒</span>
+             <span><strong>Intervals:</strong> Track online after 72 Business Hours.</span>
+           </div>
          </div>
-         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-           <span>🕒</span>
-           <span><strong>Intervals:</strong> Track online after 72 Business Hours.</span>
-         </div>
-       </div>
+       )}
      </div>
    );
  }

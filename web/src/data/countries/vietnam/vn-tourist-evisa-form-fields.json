@@ -3,174 +3,444 @@
   "meta": {
     "country": "VIETNAM",
     "visaType": "TOURIST E-Visa",
-    "formTitle": "E-Visa Application - VIETNAM",
-    "issuingAuthority": "Vietnam Immigration Department",
+    "formTitle": "VIETNAM - VISA APPLICATION FORM",
+    "issuingAuthority": "Vietnam Immigration Department - Ministry of Public Security",
     "requiresPrint": false,
-    "lastReviewed": "2026-05-24"
+    "lastReviewed": "2026-05-27"
   },
   "sections": [
     {
-      "id": "personal_details",
-      "label": "Personal Details",
+      "id": "personal_information",
+      "label": "1. PERSONAL INFORMATION",
       "icon": "document",
       "fields": [
         {
-          "id": "full_name",
-          "label": "Full name (as in passport)",
-          "hint": "Enter your full name exactly as printed in your passport's bio-data page. Avoid symbols or punctuation.",
-          "example": "ROHIT SHARMA",
-          "warning": "Spelling must match your passport exactly. Discrepancies will lead to rejection at boarding/entry.",
-          "fieldType": "text"
+          "id": "surname",
+          "label": "Surname(Family)",
+          "hint": "Enter your family name or surname exactly as printed on the bio-data page of your passport. Use CAPITAL letters only (e.g. SHARMA, not Sharma).",
+          "example": "SHARMA",
+          "warning": "Spelling must match your passport exactly. Even one wrong letter will lead to entry refusal at Vietnamese immigration checkpoints."
         },
         {
-          "id": "gender",
-          "label": "Sex / Gender",
-          "hint": "Select your gender matching the passport value.",
-          "example": "Male",
-          "warning": null,
-          "fieldType": "radio"
+          "id": "given_names",
+          "label": "Given name in passport(First Name)",
+          "hint": "Enter all your given names (first name and any middle names) exactly as printed in your passport. Use CAPITAL letters only. Include all middle names if they appear in your passport.",
+          "example": "ROHIT KUMAR",
+          "warning": "Do not omit middle names if they appear in the passport. Spelling must be identical."
         },
         {
           "id": "dob",
           "label": "Date of birth",
-          "hint": "Enter your date of birth in DD/MM/YYYY format.",
+          "hint": "Enter your date of birth in DD/MM/YYYY format (e.g. 15/06/1990). This must match the date in your passport.",
           "example": "15/06/1990",
-          "warning": "Make sure year, month, and day are entered in correct fields.",
-          "fieldType": "text"
+          "warning": "Make sure day, month, and year are entered in the correct order to match your passport exactly."
         },
         {
-          "id": "current_nationality",
-          "label": "Current nationality",
-          "hint": "Select your current nationality as in your passport.",
-          "example": "India",
-          "warning": null,
-          "fieldType": "select"
+          "id": "gender",
+          "label": "Sex",
+          "hint": "Select your gender (Male / Female) matching the sex indicator printed on your passport's bio-data page.",
+          "example": "Male"
+        },
+        {
+          "id": "nationality",
+          "label": "Nationality",
+          "hint": "Select your current country of citizenship/nationality as printed in your passport.",
+          "example": "India"
+        },
+        {
+          "id": "identity_card_no",
+          "label": "Identity card no.",
+          "hint": "Enter your government-issued national identity number (e.g. Aadhaar number for Indian citizens, SSN for US citizens, National ID Card number for other countries). If your country does not issue a national ID, write 'None'.",
+          "example": "123456789012",
+          "warning": "Do not enter your passport number here. This must be your national ID card number."
+        },
+        {
+          "id": "place_of_birth",
+          "label": "Place of birth",
+          "hint": "Enter the place of birth exactly as printed on your passport's bio-data page (e.g. 'NEW DELHI' or 'NEW DELHI, INDIA'). Do not add or remove details — copy it verbatim from your passport.",
+          "example": "NEW DELHI, INDIA"
+        },
+        {
+          "id": "nationality_at_birth",
+          "label": "Nationality at birth",
+          "hint": "If your nationality at birth is the same as your current nationality, simply enter the same value (e.g. 'Indian'). Only provide a different value if you changed citizenship after birth (e.g. through naturalization).",
+          "example": "Indian"
         },
         {
           "id": "religion",
           "label": "Religion",
-          "hint": "Enter your religion. You must enter a value; if none, write 'None' or 'No'.",
+          "hint": "Enter your religion (e.g. Hinduism, Christianity, Islam, Buddhism). The Vietnamese immigration portal requires a value for this field. If you are non-religious or do not wish to specify, you MUST write 'None' or 'No'. Leaving it blank will cause application rejection.",
           "example": "None",
-          "warning": "Do not leave this field blank. Write 'None' if you do not want to specify.",
-          "fieldType": "text"
+          "warning": "Do not leave this field empty. Type 'None' if you do not want to specify a religion."
+        },
+        {
+          "id": "passport_number_personal",
+          "label": "Passport",
+          "hint": "Enter your passport number exactly as shown on the bio-data page of your passport, including all prefix/suffix letters and numbers. Verify it character by character against your physical passport.",
+          "example": "Z1234567",
+          "warning": "Do not confuse '0' (zero) with 'O' (letter O), or '1' (one) with 'I' (letter I). Even one wrong character will result in entry denial."
         },
         {
           "id": "email",
-          "label": "Email Address",
-          "hint": "Enter an email address you have access to. The registration code and approval letter will be sent here.",
+          "label": "National Email",
+          "hint": "Despite the label 'National Email', this is simply your regular personal email address (Gmail, Yahoo, Outlook, etc.). Your registration code and approved visa PDF will be sent here — use an email you check frequently.",
           "example": "rohit.sharma@example.com",
-          "warning": "Verify spelling carefully. If you enter an incorrect email, you will not receive your visa code.",
-          "fieldType": "text"
+          "warning": "Verify spelling carefully. An incorrect email means you will NOT receive your registration code and cannot retrieve your approved visa."
+        },
+        {
+          "id": "re_enter_email",
+          "label": "Re-enter Email",
+          "hint": "Re-enter your email address exactly as above to confirm it is correct. Both fields must match.",
+          "example": "rohit.sharma@example.com",
+          "warning": "If this field shows an error, it means the two email addresses don't match. Go back and check for typos."
+        },
+        {
+          "id": "agree_receive_notification",
+          "label": "Agree to receive notification by email",
+          "hint": "Check this box to receive email notifications about your visa status (approval, rejection, or additional document requests). Always check this — otherwise you won't know when your visa is ready.",
+          "example": "Checked"
+        },
+        {
+          "id": "other_passport_use",
+          "label": "Have you ever used any other passport to enter Viet Nam?",
+          "hint": "Select 'Yes' if you have previously entered Vietnam using a different passport number or nationality. Select 'No' if you have never entered Vietnam before, or only used the current passport.",
+          "example": "No"
+        },
+        {
+          "id": "multi_nationality",
+          "label": "Do you have multi-nationality?",
+          "hint": "Select 'Yes' if you hold dual or multiple citizenships of different countries. Otherwise, select 'No'.",
+          "example": "No"
+        },
+        {
+          "id": "vietnam_law_violation",
+          "label": "Violation of Viet Nam laws (if any, please detailed)",
+          "hint": "Declare if you have ever violated Vietnamese laws, overstayed a visa, or been deported from Vietnam. Enter 'None' if not applicable.",
+          "example": "None",
+          "warning": "Providing false declarations or concealing past violations is a serious offense that will result in visa denial and potential long-term entry bans."
         }
       ]
     },
     {
-      "id": "passport_details",
-      "label": "Passport Details",
+      "id": "requested_information",
+      "label": "2. REQUESTED INFORMATION",
       "icon": "document",
       "fields": [
         {
-          "id": "passport_number",
-          "label": "Passport Number",
-          "hint": "Enter your passport number exactly as shown on the details page, including letters and numbers.",
-          "example": "Z1234567",
-          "warning": "Do not confuse the number '0' with letter 'O'.",
-          "fieldType": "text"
+          "id": "visa_entries_type",
+          "label": "To obtain visa valid for",
+          "hint": "Select 'Single entry' if you will enter and exit Vietnam exactly once. Select 'Multiple entry' if you intend to exit and re-enter Vietnam during your visa's validity period (e.g. taking a side trip to Cambodia or Laos and returning to Vietnam).",
+          "example": "Single entry",
+          "warning": "Ensure you select Multiple entry if you plan to exit and return. Single entry visas become invalid immediately upon exiting Vietnam."
         },
         {
-          "id": "passport_type",
-          "label": "Passport Type",
-          "hint": "Select the type of passport you hold. Most tourists travel on an 'Ordinary' passport.",
-          "example": "Ordinary",
-          "warning": null,
-          "fieldType": "radio"
+          "id": "visa_valid_from",
+          "label": "From (DD/MM/YYYY)",
+          "hint": "Enter the start date of your visa's validity period in DD/MM/YYYY format. This should be the earliest possible date you plan to enter Vietnam. Tip: set this 1–2 days before your actual flight in case of travel changes.",
+          "example": "15/10/2026",
+          "warning": "You CANNOT enter Vietnam before the approved start date. You may enter on or after this date."
         },
         {
-          "id": "date_of_issue",
-          "label": "Date of issue",
-          "hint": "Enter the date your passport was issued (DD/MM/YYYY).",
-          "example": "20/05/2024",
-          "warning": null,
-          "fieldType": "text"
-        },
-        {
-          "id": "date_of_expiry",
-          "label": "Date of expiry",
-          "hint": "Enter the expiration date of your passport (DD/MM/YYYY).",
-          "example": "19/05/2034",
-          "warning": "Your passport must have at least 6 months of validity remaining from the date of arrival in Vietnam.",
-          "fieldType": "text"
-        },
-        {
-          "id": "issuing_authority",
-          "label": "Issuing authority",
-          "hint": "Enter the authority that issued your passport (e.g., 'IPS', 'GOVERNMENT OF INDIA', 'MINISTRY OF EXTERNAL AFFAIRS').",
-          "example": "GOVERNMENT OF INDIA",
-          "warning": null,
-          "fieldType": "text"
+          "id": "visa_valid_to",
+          "label": "To (DD/MM/YYYY)",
+          "hint": "Enter the end date of your visa's validity period in DD/MM/YYYY format. Vietnam tourist e-visas can be issued for up to 90 days from the start date.",
+          "example": "14/11/2026",
+          "warning": "You must exit Vietnam on or before this date. Overstaying will lead to severe fines (USD $10–25 per day), detention, or deportation."
         }
       ]
     },
     {
-      "id": "travel_details",
-      "label": "Travel & Accommodation Details",
+      "id": "passport_information",
+      "label": "3. PASSPORT INFORMATION",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "passport",
+          "label": "Passport",
+          "hint": "Enter your passport number exactly as shown on the bio-data page, including all prefix/suffix letters and numbers. Do not include spaces or hyphens.",
+          "example": "Z1234567",
+          "warning": "Check character by character. Do not confuse the number '0' with the letter 'O', or the number '1' with the letter 'I'. Typos here will lead to denied boarding or entry."
+        },
+        {
+          "id": "passport_issuing_country",
+          "label": "Issuing authority/Country/State",
+          "hint": "Select the country or authority that issued your passport (e.g., India, United States, United Kingdom). This should match the issuing authority printed on your passport.",
+          "example": "India",
+          "warning": "Must match the issuing country printed on your passport's bio-data page."
+        },
+        {
+          "id": "passport_type",
+          "label": "Type",
+          "hint": "Select the type of passport you hold. Options: Ordinary, Diplomatic, Official, Laissez-Passer. Most tourists travel on an 'Ordinary' passport.",
+          "example": "Ordinary"
+        },
+        {
+          "id": "passport_date_of_issue",
+          "label": "Date of issue",
+          "hint": "Enter the date your passport was issued in DD/MM/YYYY format. This is found on the bio-data page.",
+          "example": "20/05/2024"
+        },
+        {
+          "id": "passport_date_of_expiry",
+          "label": "Expiry date",
+          "hint": "Enter the expiration date of your passport in DD/MM/YYYY format.",
+          "example": "19/05/2034",
+          "warning": "Your passport must have at least 6 months of validity remaining from the date of arrival in Vietnam. If it expires sooner, you must renew your passport before applying."
+        },
+        {
+          "id": "another_valid_passport",
+          "label": "Do you have another valid passport?",
+          "hint": "Select 'Yes' if you currently hold another active/valid passport (e.g., from dual citizenship). Select 'No' if you only have the one passport you are applying with.",
+          "example": "No"
+        }
+      ]
+    },
+    {
+      "id": "contact_information",
+      "label": "4. CONTACT INFORMATION",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "permanent_address",
+          "label": "Permanent residential address",
+          "hint": "Enter your full permanent home address in your home country. Include house/flat number, street name, city, state/province, ZIP/postal code, and country.",
+          "example": "Flat 402, Sunrise Apartments, Sector 15, Rohini, New Delhi, 110089, India"
+        },
+        {
+          "id": "current_contact_address",
+          "label": "Contact address",
+          "hint": "Enter your current contact address if different from your permanent address. If they are the same, re-enter your permanent address here.",
+          "example": "Flat 402, Sunrise Apartments, Sector 15, Rohini, New Delhi, 110089, India"
+        },
+        {
+          "id": "telephone_number",
+          "label": "Telephone number",
+          "hint": "Enter your primary contact phone number, including country code (e.g., +91-9876543210).",
+          "example": "+919876543210"
+        },
+        {
+          "id": "emergency_fullname",
+          "label": "Full name (Primary contact method)",
+          "hint": "Enter the full name of your emergency contact person or next of kin — someone who can be reached if needed during your trip.",
+          "example": "Suresh Sharma"
+        },
+        {
+          "id": "emergency_address",
+          "label": "Current residential address (Primary contact method)",
+          "hint": "Enter the current residential address of your emergency contact person.",
+          "example": "Flat 303, Green Park Colony, Sector 10, Rohini, New Delhi, 110085, India"
+        },
+        {
+          "id": "emergency_telephone",
+          "label": "Telephone number (Primary contact method)",
+          "hint": "Enter the contact telephone number of your emergency contact person, including country code.",
+          "example": "+919876512345"
+        },
+        {
+          "id": "emergency_relationship",
+          "label": "Relationship (Primary contact method)",
+          "hint": "Enter your relationship to the emergency contact person (e.g., Father, Mother, Spouse, Brother, Sister, Friend).",
+          "example": "Father"
+        }
+      ]
+    },
+    {
+      "id": "occupation",
+      "label": "5. OCCUPATION",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "occupation",
+          "label": "Occupation",
+          "hint": "Select or enter your current profession or job title (e.g., Software Engineer, Student, Retired, Homemaker, Business Owner, Self-Employed).",
+          "example": "Software Engineer"
+        },
+        {
+          "id": "occupation_info",
+          "label": "Occupation/Info",
+          "hint": "Enter the industry or department you work in (e.g., 'Information Technology', 'Healthcare', 'Education', 'Manufacturing'). If you are a student, enter your field of study (e.g., 'Computer Science'). Write 'N/A' if not applicable.",
+          "example": "Information Technology"
+        },
+        {
+          "id": "occupation_employer_school",
+          "label": "Name and Company/Agency/School",
+          "hint": "Enter the full legal name of your current employer, company, organization, or school. Write 'N/A' or 'None' if you are retired, unemployed, or a homemaker.",
+          "example": "Tata Consultancy Services"
+        },
+        {
+          "id": "occupation_position",
+          "label": "Position/Course of study",
+          "hint": "Enter your current job title/designation or your field/course of study if you are a student. Write 'N/A' if not applicable.",
+          "example": "Senior Developer"
+        },
+        {
+          "id": "occupation_address",
+          "label": "Address of Employer/Company/Agency/School",
+          "hint": "Enter the complete address of your workplace or school, including street, city, state, postal code, and country. Write 'N/A' if not applicable.",
+          "example": "123 Business Bay, Phase 2, Electronic City, Bengaluru, Karnataka, 560100, India"
+        },
+        {
+          "id": "occupation_phone_number",
+          "label": "Phone number",
+          "hint": "Enter the telephone number of your employer or school, including country and area codes. Write 'N/A' if not applicable.",
+          "example": "+918067890123"
+        }
+      ]
+    },
+    {
+      "id": "information_about_the_trip",
+      "label": "6. INFORMATION ABOUT THE TRIP",
       "icon": "document",
       "fields": [
         {
           "id": "purpose_of_entry",
           "label": "Purpose of entry",
-          "hint": "Select the reason for your visit. For tourism, select 'Tourism'.",
-          "example": "Tourism",
-          "warning": null,
-          "fieldType": "select"
+          "hint": "Select the primary reason for your visit to Vietnam. For a tourist visa, select 'Tourism'. Other options include Business, Transit, Study, etc.",
+          "example": "Tourism"
         },
         {
           "id": "intended_duration_of_stay",
-          "label": "Intended duration of stay (days)",
-          "hint": "Enter the number of days you intend to stay, up to 90 days.",
-          "example": "15",
-          "warning": "Your visa will be issued matching this duration. Overstaying will lead to fines or deportations.",
-          "fieldType": "text"
+          "label": "Intended length of stay (days)",
+          "hint": "Enter the number of days you intend to stay in Vietnam (maximum 90 days for e-visa). Tip: Many travelers request the full 90 days for flexibility, even if their trip is shorter.",
+          "example": "30"
         },
         {
           "id": "intended_date_of_entry",
           "label": "Intended date of entry",
-          "hint": "Enter the date you plan to enter Vietnam (DD/MM/YYYY).",
-          "example": "10/10/2026",
-          "warning": "You cannot enter Vietnam before the date approved on your e-visa. You can enter on or after that date.",
-          "fieldType": "text"
+          "hint": "Enter your planned date of entry into Vietnam in DD/MM/YYYY format. This date must be on or after your visa's validity start date.",
+          "example": "15/10/2026",
+          "warning": "You cannot enter Vietnam before this date. Set it to the earliest date you might arrive."
         },
         {
-          "id": "port_of_entry",
-          "label": "Allowed to entry through checkpoint",
-          "hint": "Select the specific airport, land border, or seaport through which you will enter Vietnam.",
-          "example": "Noi Bai Int Airport (Hanoi) or Tan Son Nhat Int Airport (Ho Chi Minh City)",
-          "warning": "You MUST enter through the exact checkpoint selected on your e-visa. You will be denied boarding/entry if you attempt to enter through a different checkpoint.",
-          "fieldType": "select"
-        },
-        {
-          "id": "port_of_exit",
-          "label": "Allowed to exit through checkpoint",
-          "hint": "Select the checkpoint through which you will leave Vietnam.",
-          "example": "Noi Bai Int Airport (Hanoi)",
-          "warning": null,
-          "fieldType": "select"
-        },
-        {
-          "id": "temporary_address",
-          "label": "Intended temporary residential address in Vietnam",
-          "hint": "Enter the name and complete physical address of your first hotel or accommodation.",
+          "id": "intended_temporary_address",
+          "label": "Intended temporary residential address in Viet Nam",
+          "hint": "Enter the name and complete physical address of your first hotel or accommodation in Vietnam. Include the hotel name, street number, street name, ward, district, and city.",
           "example": "Hanoi Golden Lake Hotel, B7 Giang Vo, Ba Dinh, Hanoi",
-          "warning": "Do not write just the hotel name. You must write the full street address, ward, and district.",
-          "fieldType": "text"
+          "warning": "A complete address including the hotel name, street address, and district is required. Writing just a hotel name without address details can lead to processing delays."
         },
         {
-          "id": "temporary_address_city",
-          "label": "City / Province of temporary address",
-          "hint": "Select the province or city corresponding to your hotel from the dropdown list.",
-          "example": "Thanh pho Ha Noi (Hanoi)",
-          "warning": "This city/province selection must match the address entered in the field above.",
-          "fieldType": "select"
+          "id": "temporary_address_phone",
+          "label": "Phone number (in Viet Nam)",
+          "hint": "Enter the contact phone number of your hotel or host in Vietnam, including the country code (+84). You can find this on your hotel booking confirmation.",
+          "example": "+842439998888"
+        },
+        {
+          "id": "temporary_address_province",
+          "label": "Province/City",
+          "hint": "Select the province or city in Vietnam where your hotel/accommodation is located from the dropdown list (e.g., Thanh pho Ha Noi, Thanh pho Ho Chi Minh, Thanh pho Da Nang).",
+          "example": "Thanh pho Ha Noi",
+          "warning": "This selection must match the city/province of the address entered above."
+        },
+        {
+          "id": "temporary_address_district",
+          "label": "District",
+          "hint": "Select the district corresponding to your hotel address from the dropdown list.",
+          "example": "Ba Dinh"
+        },
+        {
+          "id": "temporary_address_ward",
+          "label": "Ward/Commune",
+          "hint": "Select the ward or commune corresponding to your hotel address from the dropdown list.",
+          "example": "Giang Vo"
+        },
+        {
+          "id": "intended_entry_checkpoint",
+          "label": "Intended entry checkpoint",
+          "hint": "Select the specific airport, land border crossing, or seaport through which you will enter Vietnam. Check your flight ticket carefully. Common airports: Noi Bai (Hanoi), Tan Son Nhat (Ho Chi Minh City), Da Nang.",
+          "example": "Noi Bai Int Airport (Hanoi)",
+          "warning": "You MUST enter Vietnam through this exact checkpoint. If you attempt to enter through a different checkpoint, you will be denied entry. This cannot be changed after the visa is issued."
+        },
+        {
+          "id": "intended_exit_checkpoint",
+          "label": "Intended exit checkpoint",
+          "hint": "Select the checkpoint through which you plan to depart Vietnam. This is generally more flexible than the entry checkpoint.",
+          "example": "Tan Son Nhat Int Airport (Ho Chi Minh City)"
+        },
+        {
+          "id": "guarantee_by_provisions",
+          "label": "Guarantee by agency/organization/company/relative according to the provisions of Viet Nam visa law?",
+          "hint": "Most tourists select 'No'. Select 'Yes' only if a Vietnamese company, travel agency, or relative in Vietnam is officially sponsoring or guaranteeing your visit. If you booked your trip independently, select 'No'.",
+          "example": "No"
+        },
+        {
+          "id": "agency_organization_name",
+          "label": "Agency/Organization name (if you have an inviting/guarantee agency/organization in Viet Nam)?",
+          "hint": "If you selected 'Yes' for the guarantee question above, enter the full name of the sponsoring Vietnamese organization here. If you selected 'No', type 'None' or leave this field blank.",
+          "example": "None"
+        },
+        {
+          "id": "visited_vietnam_last_year",
+          "label": "Have you been to Viet Nam in the last 1 year?",
+          "hint": "Select 'Yes' if you have visited Vietnam within the last 12 months. Otherwise, select 'No'.",
+          "example": "No"
+        },
+        {
+          "id": "relative_reside_vietnam",
+          "label": "Do you have relative who currently reside in Viet Nam?",
+          "hint": "Select 'Yes' if you have immediate family members or relatives currently living in Vietnam. Otherwise, select 'No'.",
+          "example": "No"
+        }
+      ]
+    },
+    {
+      "id": "accompany_children",
+      "label": "7. ACCOMPANY CHILD(REN) UNDER 14 YEARS OLD WHO ARE ISSUED WITH THE SAME PASSPORT REQUEST TO BE ISSUED THE SAME E-VISA (IF ANY)",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "accompany_children_note",
+          "label": "Note",
+          "hint": "This section is only for children under 14 years old who are listed on the SAME passport as the applicant. Children who have their own separate passport must submit their own individual e-visa application.",
+          "example": "N/A"
+        },
+        {
+          "id": "child_fullname",
+          "label": "Fullname",
+          "hint": "Enter the child's full name exactly as printed in the parent's passport.",
+          "example": "BABY SHARMA"
+        },
+        {
+          "id": "child_sex",
+          "label": "Sex",
+          "hint": "Select the child's gender (Male / Female).",
+          "example": "Male"
+        },
+        {
+          "id": "child_dob",
+          "label": "Date of birth (DD/MM/YYYY)",
+          "hint": "Enter the child's date of birth in DD/MM/YYYY format. The child must be under 14 years old.",
+          "example": "12/12/2020"
+        },
+        {
+          "id": "child_photo",
+          "label": "Photo",
+          "hint": "Upload a recent passport-sized photo of the child in JPG format. Same requirements as the adult portrait: white background, straight face, no hat.",
+          "example": "child_photo.jpg"
+        }
+      ]
+    },
+    {
+      "id": "trip_expenses_insurance",
+      "label": "8. TRIP EXPENSES, INSURANCE",
+      "icon": "document",
+      "fields": [
+        {
+          "id": "sponsor_name",
+          "label": "Name of sponsor (if any)",
+          "hint": "Enter the name of the person or organization sponsoring your trip expenses. If you are funding the trip yourself, write 'Self' or 'N/A'.",
+          "example": "Self"
+        },
+        {
+          "id": "expense_coverage",
+          "label": "Expense coverage",
+          "hint": "Describe how your trip expenses will be covered (e.g., 'Self-funded', 'Sponsored by company', 'Family member').",
+          "example": "Self-funded"
+        },
+        {
+          "id": "has_trip_insurance",
+          "label": "Does applicant has trip expense/medical insurance?",
+          "hint": "Select 'Yes' if you have travel or medical insurance covering your stay in Vietnam. Travel insurance is strongly recommended but not mandatory for e-visa.",
+          "example": "Yes"
         }
       ]
     }

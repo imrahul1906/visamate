@@ -1,11 +1,36 @@
 // lib/data/types.ts
 
+export const APPLICATION_MODE = {
+  ONLINE: "ONLINE",
+  OFFLINE: "OFFLINE",
+} as const;
+
+export type ApplicationMode = typeof APPLICATION_MODE[keyof typeof APPLICATION_MODE];
+
+export const APPOINTMENT_POLICY = {
+  REQUIRED: "APPOINTMENT_REQUIRED",
+  WALK_IN_ALLOWED: "WALK_IN_ALLOWED",
+  WALK_IN_ONLY: "WALK_IN_ONLY",
+  NO_APPOINTMENT: "NO_APPOINTMENT",
+  NOT_REQUIRED: "NOT_REQUIRED",
+} as const;
+
+export type AppointmentPolicy = typeof APPOINTMENT_POLICY[keyof typeof APPOINTMENT_POLICY];
+
+export const VISA_CATEGORY = {
+  SHORT_STAY: "SHORT_STAY",
+  LONG_STAY: "LONG_STAY",
+} as const;
+
+export type VisaCategory = typeof VISA_CATEGORY[keyof typeof VISA_CATEGORY];
+
 export interface CountryInfo {
   id: string;
   code: string;
   name: string;
   description?: string;
   officialWebsite?: string;
+  trackingUrl?: string;
   supportedVfsLocationCodes?: string[];
   vfs?: {
     website?: string;
@@ -79,10 +104,23 @@ export interface PaymentInstruction {
 export interface VisaProcess {
   /** Default process settings (applies to all centres unless overridden) */
   default?: {
-    applicationMode?: string;
+    applicationMode?: ApplicationMode;
     biometricRequired?: boolean;
+    biometricNote?: string;
     interviewRequired?: boolean;
+    appointmentRequired?: boolean;
+    appointmentPolicy?: AppointmentPolicy;
   };
+  /** Center-specific overrides */
+  centerOverrides?: Array<{
+    vfsCenterCode: string;
+    applicationMode?: ApplicationMode;
+    biometricRequired?: boolean;
+    biometricNote?: string;
+    interviewRequired?: boolean;
+    appointmentRequired?: boolean;
+    appointmentPolicy?: AppointmentPolicy;
+  }>;
   /** Centre-specific payment rules — only shown when the selected centre matches */
   paymentInstructions?: PaymentInstruction[];
 }
@@ -93,7 +131,7 @@ export interface VisaType {
   id: string;
   code: string;
   name: string;
-  category?: string;
+  category?: VisaCategory;
   variants?: VisaVariant[];
 
   /** Government visa fee (e.g. 500 for INR 500) */

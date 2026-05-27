@@ -294,9 +294,31 @@ function CountryRow({
         }}>
           {c.name}
         </div>
-        {!c.supported && (
+        {!c.supported ? (
           <div style={{ color: "var(--vm-trans-white-35)", fontSize: 10.5, marginTop: 1 }}>Coming soon</div>
-        )}
+        ) : c.visaTypeLabel ? (
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            marginTop: 3,
+            fontSize: 9.5,
+            fontWeight: 600,
+            padding: "1px 6px",
+            borderRadius: 6,
+            background: c.visaTypeLabel.toLowerCase().includes("e-visa") || c.visaTypeLabel.toLowerCase().includes("online")
+              ? "var(--vm-tile-ok-bg)"
+              : "var(--vm-tile-neutral-bg)",
+            color: c.visaTypeLabel.toLowerCase().includes("e-visa") || c.visaTypeLabel.toLowerCase().includes("online")
+              ? "var(--vm-tile-ok-val)"
+              : "var(--vm-tile-neutral-val)",
+            border: c.visaTypeLabel.toLowerCase().includes("e-visa") || c.visaTypeLabel.toLowerCase().includes("online")
+              ? "1px solid var(--vm-tile-ok-border)"
+              : "1px solid var(--vm-tile-neutral-border)",
+            fontFamily: font.sans,
+          }}>
+            {c.visaTypeLabel}
+          </div>
+        ) : null}
       </div>
 
       {/* Right: checkmark or arrow */}

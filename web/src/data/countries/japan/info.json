@@ -4,6 +4,7 @@
   "name": "Japan",
   "description": "Japan visa information for Indian applicants",
   "officialWebsite": "https://www.mofa.go.jp",
+  "trackingUrl": "https://www.vfsvisaonline.com/Global-Passporttracking/Track/",
   "supportedVfsLocationCodes": [
     "DELHI",
     "MUMBAI",

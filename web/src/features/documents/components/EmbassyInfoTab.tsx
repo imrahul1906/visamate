@@ -95,9 +95,10 @@ const APPOINTMENT_CHECKLIST: AppointmentItem[] = [
 interface EmbassyInfoTabProps {
   countryName?: string;
   visaTypeName?: string;
+  appointmentUrl?: string;
 }
 
-export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: EmbassyInfoTabProps) {
+export default function EmbassyInfoTab({ countryName = "", visaTypeName = "", appointmentUrl }: EmbassyInfoTabProps) {
   // Suitcase Checklist checked state
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
@@ -553,7 +554,7 @@ export default function EmbassyInfoTab({ countryName = "", visaTypeName = "" }: 
         </div>
 
         <a
-          href="https://www.vfsglobal.com"
+          href={appointmentUrl || "https://www.vfsglobal.com"}
           target="_blank"
           rel="noopener noreferrer"
           className="vm-btn vm-btn--primary"

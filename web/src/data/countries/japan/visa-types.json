@@ -6,8 +6,56 @@
     "default": {
       "applicationMode": "OFFLINE",
       "biometricRequired": false,
-      "interviewRequired": false
-    }
+      "biometricNote": "Documents drop-off only",
+      "interviewRequired": false,
+      "appointmentPolicy": "WALK_IN_ALLOWED"
+    },
+    "centerOverrides": [
+      {
+        "vfsCenterCode": "MUMBAI",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "BENGALURU",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "CHENNAI",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "KOLKATA",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "COCHIN",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "HYDERABAD",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "PUDUCHERRY",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "AHMEDABAD",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "PUNE",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "GOA",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      },
+      {
+        "vfsCenterCode": "BHUBANESWAR",
+        "appointmentPolicy": "APPOINTMENT_REQUIRED"
+      }
+    ]
   },
   "visaTypes": [
     {
@@ -19,7 +67,6 @@
       "fees": 500,
       "currency": "INR",
       "note": "Visa Fee is refunded only if the visa is not approved by the Embassy.",
-
       "vfsCharges": {
         "serviceCharge": {
           "charge": 800,
@@ -34,16 +81,13 @@
           "note": "Charges are only applicable if you want your passport delivered."
         }
       },
-
       "process": {
         "paymentInstructions": [
           {
             "vfsCenterCode": "DELHI",
             "dropOffOffices": ["GURUGRAM", "CHANDIGARH", "LUCKNOW"],
-
             "paymentMode": "DEMAND_DRAFT",
             "payableTo": "VFS Global Services Pvt. Ltd.",
-
             "rules": [
               {
                 "type": "VISA_FEE",
@@ -65,7 +109,6 @@
                 "refundable": false
               }
             ],
-
             "notes": [
               "Each applicant must submit separate demand drafts.",
               "Visa fee and service charges cannot be combined into one draft."
@@ -73,10 +116,9 @@
           }
         ]
       },
-
       "metadata": {
         "status": "active",
-        "lastUpdated": "2026-04-25"
+        "lastUpdated": "2026-05-27"
       }
     }
   ]

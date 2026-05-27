@@ -45,99 +45,27 @@ export interface CountryCatalogEntry {
   name: string;
   photo: string;
   supported: boolean; // false → show as "coming soon"
+  visaTypeLabel?: string;
+  folder?: string;
 }
 
 export interface LocationCatalogEntry {
   code: string;  // uppercase; must match the locationCode in VFS_CENTER_STORE
   city: string;  // display name (e.g. "New Delhi")
   photo: string;
+  active?: boolean;
 }
 
-const COUNTRY_CATALOG: CountryCatalogEntry[] = [
-  {
-    code: "JP",
-    name: "Japan",
-    photo: "https://images.unsplash.com/photo-1549693578-d683be217e58?q=80&w=800",
-    supported: true,
-  },
-  {
-    code: "VN",
-    name: "Vietnam",
-    photo: "https://images.unsplash.com/photo-1528127269322-539801943592?q=80&w=800",
-    supported: true,
-  },
-  {
-    code: "KR",
-    name: "South Korea",
-    photo: "https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=800",
-    supported: false,
-  },
-  {
-    code: "US",
-    name: "United States",
-    photo: "https://images.unsplash.com/photo-1534430480872-3498386e7856?q=80&w=800",
-    supported: false,
-  },
-  {
-    code: "AU",
-    name: "Australia",
-    photo: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?q=80&w=800",
-    supported: false,
-  },
-  {
-    code: "UK",
-    name: "United Kingdom",
-    photo: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?q=80&w=800",
-    supported: false,
-  },
-  {
-    code: "SG",
-    name: "Singapore",
-    photo: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=800",
-    supported: false,
-  },
-];
+import COUNTRY_CATALOG_JSON from "../../data/countries-catalog.json";
+import LOCATION_CATALOG_JSON from "../../data/locations-catalog.json";
 
-const LOCATION_CATALOG: LocationCatalogEntry[] = [
-  {
-    code: "DELHI",
-    city: "New Delhi",
-    photo: "https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=800",
-  },
-  {
-    code: "MUMBAI",
-    city: "Mumbai",
-    photo: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?q=80&w=800",
-  },
-  {
-    code: "BENGALURU",
-    city: "Bengaluru",
-    photo: "https://images.unsplash.com/photo-1596176530529-78163a4f7af2?q=80&w=800",
-  },
-  {
-    code: "CHENNAI",
-    city: "Chennai",
-    photo: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?q=80&w=800",
-  },
-  {
-    code: "KOLKATA",
-    city: "Kolkata",
-    photo: "https://images.unsplash.com/photo-1558431382-27e303142255?q=80&w=800",
-  },
-  {
-    code: "HYDERABAD",
-    city: "Hyderabad",
-    photo: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
-  },
-  {
-    code: "ONLINE",
-    city: "Online Submission",
-    photo: "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?q=80&w=800",
-  },
-];
+const COUNTRY_CATALOG = COUNTRY_CATALOG_JSON as CountryCatalogEntry[];
+const LOCATION_CATALOG = LOCATION_CATALOG_JSON as LocationCatalogEntry[];
 
-// Statically define the active VFS codes to avoid bundler bloating.
-const ACTIVE_VFS_CODES = new Set(["DELHI", "MUMBAI", "BENGALURU", "CHENNAI", "KOLKATA", "ONLINE"]);
+// Dynamically define active VFS codes from the catalog configurations
+const ACTIVE_VFS_CODES = new Set(
+  LOCATION_CATALOG.filter((loc) => loc.active).map((loc) => normalizeCode(loc.code))
+);
 
 interface FormFieldsJsonRaw {
   key: string;
@@ -170,6 +98,18 @@ function assertParam(value: string | undefined | null, name: string): void {
   if (!value || value.trim() === "") {
     throw new Error(`[repository] Missing required parameter: "${name}"`);
   }
+}
+
+function getCountryFolder(cc: string): string {
+  const code = normalizeCode(cc);
+  const country = COUNTRY_CATALOG.find((c) => c.code === code);
+  return country?.folder ?? code.toLowerCase();
+}
+
+function getCountryNameSlug(cc: string): string {
+  const code = normalizeCode(cc);
+  const country = COUNTRY_CATALOG.find((c) => c.code === code);
+  return country?.folder ?? code.toLowerCase();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -211,15 +151,13 @@ export async function getCountryInfo(
 ): Promise<CountryInfo | null> {
   assertParam(countryCode, "countryCode");
   const cc = normalizeCode(countryCode);
-  if (cc === "JP") {
-    return (await import("../../data/countries/japan/info.json")).default as CountryInfo;
+  const folder = getCountryFolder(cc);
+  try {
+    return (await import(`../../data/countries/${folder}/info.json`)).default as CountryInfo;
+  } catch (err) {
+    console.warn(`[repository] getCountryInfo: failed to load countryCode="${countryCode}" at folder="${folder}":`, err);
+    return null;
   }
-  if (cc === "VN") {
-    return (await import("../../data/countries/vietnam/info.json")).default as CountryInfo;
-  }
-
-  console.warn(`[repository] getCountryInfo: no data found for countryCode="${countryCode}"`);
-  return null;
 }
 
 /**
@@ -232,6 +170,7 @@ export async function getVisaTypes(countryCode: string): Promise<VisaType[]> {
     ...v,
     process: {
       default: v.process?.default ?? record.process?.default,
+      centerOverrides: v.process?.centerOverrides ?? record.process?.centerOverrides ?? [],
       paymentInstructions: v.process?.paymentInstructions ?? record.process?.paymentInstructions ?? [],
     },
   }));
@@ -245,15 +184,13 @@ export async function getCountryVisaTypes(
 ): Promise<CountryVisaTypes | null> {
   assertParam(countryCode, "countryCode");
   const cc = normalizeCode(countryCode);
-  if (cc === "JP") {
-    return (await import("../../data/countries/japan/visa-types.json")).default as CountryVisaTypes;
+  const folder = getCountryFolder(cc);
+  try {
+    return (await import(`../../data/countries/${folder}/visa-types.json`)).default as CountryVisaTypes;
+  } catch (err) {
+    console.warn(`[repository] getCountryVisaTypes: failed to load countryCode="${countryCode}" at folder="${folder}":`, err);
+    return null;
   }
-  if (cc === "VN") {
-    return (await import("../../data/countries/vietnam/visa-types.json")).default as CountryVisaTypes;
-  }
-
-  console.warn(`[repository] getCountryVisaTypes: no record found for countryCode="${countryCode}"`);
-  return null;
 }
 
 /**
@@ -316,22 +253,11 @@ export async function getVfsCenterInfo(
   assertParam(locationCode, "locationCode");
   const lc = normalizeCode(locationCode);
 
-  switch (lc) {
-    case "DELHI":
-      return (await import("../../data/vfs_center/delhi.json")).default as VfsCenterInfo;
-    case "MUMBAI":
-      return (await import("../../data/vfs_center/mumbai.json")).default as VfsCenterInfo;
-    case "BENGALURU":
-      return (await import("../../data/vfs_center/bengaluru.json")).default as VfsCenterInfo;
-    case "CHENNAI":
-      return (await import("../../data/vfs_center/chennai.json")).default as VfsCenterInfo;
-    case "KOLKATA":
-      return (await import("../../data/vfs_center/kolkata.json")).default as VfsCenterInfo;
-    default:
-      console.warn(
-        `[repository] getVfsCenterInfo: no VFS center found for locationCode="${locationCode}"`
-      );
-      return null;
+  try {
+    return (await import(`../../data/vfs_center/${lc.toLowerCase()}.json`)).default as VfsCenterInfo;
+  } catch (err) {
+    console.warn(`[repository] getVfsCenterInfo: failed to load locationCode="${locationCode}":`, err);
+    return null;
   }
 }
 
@@ -347,15 +273,17 @@ export async function getRoutingEntry(
 
   const cc = normalizeCode(countryCode);
   const lc = normalizeCode(locationCode);
+  const folder = getCountryFolder(cc);
 
-  if (cc === "JP" && lc === "DELHI") {
-    return (await import("../../data/countries/japan/routing/delhi.json")).default as RoutingEntry;
+  try {
+    return (await import(`../../data/countries/${folder}/routing/${lc.toLowerCase()}.json`)).default as RoutingEntry;
+  } catch (err) {
+    console.warn(
+      `[repository] getRoutingEntry: failed to load routing for countryCode="${countryCode}" at folder="${folder}", locationCode="${locationCode}":`,
+      err
+    );
+    return null;
   }
-
-  console.warn(
-    `[repository] getRoutingEntry: no routing found for countryCode="${countryCode}", locationCode="${locationCode}"`
-  );
-  return null;
 }
 
 /**
@@ -373,34 +301,27 @@ export async function getRequirementsData(
   const cc = normalizeCode(countryCode);
   const vc = normalizeCode(visaTypeCode);
   const lc = normalizeCode(locationCode);
+  const countrySlug = getCountryNameSlug(cc);
 
-  if (cc === "JP" && vc === "TOURIST") {
-    switch (lc) {
-      case "DELHI":
-        return (await import("../../data/requirements/japan-tourist-delhi.json")).default as RequirementsData;
-      case "MUMBAI":
-        return (await import("../../data/requirements/japan-tourist-mumbai.json")).default as RequirementsData;
-      case "BENGALURU":
-        return (await import("../../data/requirements/japan-tourist-bengaluru.json")).default as RequirementsData;
-      case "CHENNAI":
-        return (await import("../../data/requirements/japan-tourist-chennai.json")).default as RequirementsData;
-      case "KOLKATA":
-        return (await import("../../data/requirements/japan-tourist-kolkata.json")).default as RequirementsData;
+  const fileVc = (cc === "VN" && vc === "TOURIST_MULTI") ? "TOURIST" : vc;
+
+  try {
+    const data = (await import(`../../data/requirements/${countrySlug}-${fileVc.toLowerCase()}-${lc.toLowerCase()}.json`)).default;
+    if (cc === "VN" && vc === "TOURIST_MULTI") {
+      return {
+        ...data,
+        visaTypeCode: vc,
+        visaTypeId: "VISA_VN_TOURIST_MULTI_001",
+      } as RequirementsData;
     }
+    return data as RequirementsData;
+  } catch (err) {
+    console.warn(
+      `[repository] getRequirementsData: failed to load requirements for countryCode="${countryCode}", visaTypeCode="${visaTypeCode}", locationCode="${locationCode}":`,
+      err
+    );
+    return null;
   }
-  if (cc === "VN" && (vc === "TOURIST" || vc === "TOURIST_MULTI") && lc === "ONLINE") {
-    const data = (await import("../../data/requirements/vietnam-tourist-online.json")).default;
-    return {
-      ...data,
-      visaTypeCode: vc,
-      visaTypeId: vc === "TOURIST_MULTI" ? "VISA_VN_TOURIST_MULTI_001" : "VISA_VN_TOURIST_001",
-    } as RequirementsData;
-  }
-
-  console.warn(
-    `[repository] getRequirementsData: no requirements found for countryCode="${countryCode}", visaTypeCode="${visaTypeCode}", locationCode="${locationCode}"`
-  );
-  return null;
 }
 
 /**
@@ -411,43 +332,12 @@ export async function getItineraryPlaces(
 ): Promise<ItineraryPlacesData | null> {
   assertParam(countryCode, "countryCode");
   const cc = normalizeCode(countryCode);
-
-  const countryKeys: Record<string, string> = {
-    JP: "japan",
-    FR: "france",
-    IN: "india",
-    TH: "thailand",
-    IT: "italy",
-    US: "usa",
-    AE: "uae",
-  };
-
-  const key = countryKeys[cc];
-  if (!key) {
-    return null;
-  }
+  const folder = getCountryFolder(cc);
 
   try {
-    switch (key) {
-      case "japan":
-        return (await import("../../data/countries/japan/itinerary-places.json")).default as ItineraryPlacesData;
-      // case "france":
-      //   return (await import("../../data/countries/france/itinerary-places.json")).default as ItineraryPlacesData;
-      // case "india":
-      //   return (await import("../../data/countries/india/itinerary-places.json")).default as ItineraryPlacesData;
-      // case "thailand":
-      //   return (await import("../../data/countries/thailand/itinerary-places.json")).default as ItineraryPlacesData;
-      // case "italy":
-      //   return (await import("../../data/countries/italy/itinerary-places.json")).default as ItineraryPlacesData;
-      // case "usa":
-      //   return (await import("../../data/countries/usa/itinerary-places.json")).default as ItineraryPlacesData;
-      // case "uae":
-      //   return (await import("../../data/countries/uae/itinerary-places.json")).default as ItineraryPlacesData;
-      default:
-        return null;
-    }
+    return (await import(`../../data/countries/${folder}/itinerary-places.json`)).default as ItineraryPlacesData;
   } catch (err) {
-    console.warn(`[repository] getItineraryPlaces: failed to import data for country="${key}":`, err);
+    console.warn(`[repository] getItineraryPlaces: failed to import data for countryCode="${countryCode}" at folder="${folder}":`, err);
     return null;
   }
 }
@@ -473,33 +363,33 @@ export async function getFormFillFields(
   if (!dataKey || dataKey.trim() === "") return [];
 
   const key = dataKey.trim();
-  let record: FormFieldsJsonRaw | null = null;
+  const parts = key.split("_");
+  const cc = parts[0];
+  const folder = getCountryFolder(cc);
+  const fileStem = parts.slice(0, -1).join("-").toLowerCase();
 
-  if (key === "JP_TOURIST_VISA_FORM_FIELDS_V1") {
-    record = (await import("../../data/countries/japan/jp-tourist-visa-form-fields.json")).default as FormFieldsJsonRaw;
-  } else if (key === "VN_TOURIST_EVISA_FORM_FIELDS_V1") {
-    record = (await import("../../data/countries/vietnam/vn-tourist-evisa-form-fields.json")).default as FormFieldsJsonRaw;
-  }
+  try {
+    const record = (await import(`../../data/countries/${folder}/${fileStem}.json`)).default as FormFieldsJsonRaw;
 
-  if (!record) {
+    // Flatten sections → FormFillField[]
+    return record.sections.flatMap((sec) =>
+      sec.fields.map((f) => ({
+        id: f.id,
+        section: sec.label,
+        label: f.label,
+        hint: f.hint,
+        example: f.example,
+        warning: f.warning ?? null,
+        formRef: f.formRef ?? null,
+      }))
+    );
+  } catch (err) {
     console.warn(
-      `[repository] getFormFillFields: no form fields found for dataKey="${dataKey}".`
+      `[repository] getFormFillFields: no form fields found for dataKey="${dataKey}" inside folder="${folder}", fileStem="${fileStem}":`,
+      err
     );
     return [];
   }
-
-  // Flatten sections → FormFillField[]
-  return record.sections.flatMap((sec) =>
-    sec.fields.map((f) => ({
-      id: f.id,
-      section: sec.label,
-      label: f.label,
-      hint: f.hint,
-      example: f.example,
-      warning: f.warning ?? null,
-      formRef: f.formRef ?? null,
-    }))
-  );
 }
 
 /**
@@ -534,6 +424,7 @@ export async function getVisaType(
     ...found,
     process: {
       default: found.process?.default ?? record.process?.default,
+      centerOverrides: found.process?.centerOverrides ?? record.process?.centerOverrides ?? [],
       paymentInstructions: found.process?.paymentInstructions ?? record.process?.paymentInstructions ?? [],
     },
   };
