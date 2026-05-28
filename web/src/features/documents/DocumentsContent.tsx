@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useApplicant } from "@/lib/context/ApplicantContext";
 
 import { T } from "@/lib/theme";
-import type { UploadsMap } from "../../types/document";
+import type { UploadsMap, AiResultsMap } from "../../types/document";
 
 import { useDocumentData } from "./hooks/useDocumentData";
 import { useDrawerAnimation } from "./hooks/useDrawerAnimation";
@@ -87,6 +87,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   // ── State ─────────────────────────────────────────────────────
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [uploads, setUploads] = useState<UploadsMap>({});
+  const [aiResults, setAiResults] = useState<AiResultsMap>({});
   const [downloadingZip, setDownloadingZip] = useState(false);
   const [activeDocId, setActiveDocId] = useState<string | null>(null);
   const [activePopover, setActivePopover] = useState<"money" | "time" | "biometrics" | "interview" | "vfs" | "vfs_appt" | null>(null);
@@ -100,6 +101,7 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   const handleClearSession = useCallback(() => {
     setChecked({});
     setUploads({});
+    setAiResults({});
     setActiveDocId(null);
   }, []);
 
@@ -108,6 +110,8 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     country, visaType, location, sponsorship,
     countryName, visaTypeName, locationName,
   });
+
+  const allDocs = data?.categories.flatMap(c => c.documents) ?? [];
 
   const { visibleDocId, drawerOpacity, drawerTranslateY } = useDrawerAnimation(activeDocId);
 
@@ -128,20 +132,118 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
     setChecked(prev => ({ ...prev, [id]: !prev[id] }));
   }, []);
 
-  const handleUpload = useCallback((docId: string, file: File) => {
+  const analyzeFile = useCallback(async (docId: string, file: File, docName: string) => {
+    const isPhoto =
+      docId.toLowerCase().includes("photo") ||
+      docName.toLowerCase().includes("photo") ||
+      docName.toLowerCase().includes("photograph");
+
+    const isPassport =
+      !isPhoto &&
+      (docId.toLowerCase().includes("passport") ||
+        docName.toLowerCase().includes("passport"));
+
+    // Only run AI Doctor for Passports and Photos. Other documents bypass and auto-pass.
+    if (!isPhoto && !isPassport) {
+      setAiResults(prev => ({
+        ...prev,
+        [docId]: { passed: true, reason: "Document uploaded successfully.", loading: false }
+      }));
+      return;
+    }
+
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const isImageOrPdf = ["jpg", "jpeg", "png", "webp", "pdf"].includes(ext);
+
+    if (!isImageOrPdf) {
+      setAiResults(prev => ({
+        ...prev,
+        [docId]: { passed: true, reason: "Document format accepted.", loading: false }
+      }));
+      return;
+    }
+
+    setAiResults(prev => ({
+      ...prev,
+      [docId]: { passed: false, loading: true }
+    }));
+
+    try {
+      const docItem = allDocs.find(d => d.id === docId);
+      const docTips = docItem?.tips || [];
+
+      let specToSend = null;
+      if (docItem?.photoSpecRef && requirementsData?.photoSpecifications) {
+        specToSend = requirementsData.photoSpecifications[docItem.photoSpecRef] || null;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("docId", docId);
+      formData.append("docName", docName);
+      if (docTips.length > 0) formData.append("tips", JSON.stringify(docTips));
+      if (specToSend) formData.append("photoSpec", JSON.stringify(specToSend));
+      if (ctx.applicantName) formData.append("applicantName", ctx.applicantName);
+      if (ctx.travelStartDate) formData.append("travelStartDate", ctx.travelStartDate);
+
+      const res = await fetch("/api/analyze-document", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to analyze document");
+      }
+
+      const auditResult = await res.json();
+      setAiResults(prev => ({
+        ...prev,
+        [docId]: {
+          passed: auditResult.passed,
+          reason: auditResult.reason,
+          checks: auditResult.checks,
+          loading: false,
+        }
+      }));
+    } catch (err: any) {
+      console.error("AI Analysis error:", err);
+      setAiResults(prev => ({
+        ...prev,
+        [docId]: {
+          passed: false,
+          reason: "AI review temporarily unavailable.",
+          error: err.message || "Failed to analyze document",
+          loading: false,
+        }
+      }));
+    }
+  }, [ctx.applicantName, ctx.travelStartDate, allDocs, requirementsData]);
+
+  const handleUpload = useCallback((docId: string, file: File, docName: string) => {
     setUploads(prev => ({ ...prev, [docId]: file }));
-  }, []);
+    analyzeFile(docId, file, docName);
+  }, [analyzeFile]);
 
   const handleRemove = useCallback((docId: string) => {
     setUploads(prev => { const n = { ...prev }; delete n[docId]; return n; });
+    setAiResults(prev => { const n = { ...prev }; delete n[docId]; return n; });
   }, []);
 
   const handleItineraryReady = useCallback((docId: string, file: File) => {
     setUploads(prev => ({ ...prev, [docId]: file }));
+    setAiResults(prev => ({
+      ...prev,
+      [docId]: { passed: true, reason: "Automatically verified template.", loading: false }
+    }));
   }, []);
 
   const handleSponsorConsentReady = useCallback((docId: string, file: File) => {
     setUploads(prev => ({ ...prev, [docId]: file }));
+    setAiResults(prev => ({
+      ...prev,
+      [docId]: { passed: true, reason: "Automatically verified template.", loading: false }
+    }));
   }, []);
 
   const handleDownloadAll = async () => {
@@ -152,7 +254,6 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
   };
 
   // ── Derived values ────────────────────────────────────────────
-  const allDocs = data?.categories.flatMap(c => c.documents) ?? [];
   const requiredDocs = allDocs.filter(d => d.status === "required");
   const totalDone = allDocs.filter(d => checked[d.id]).length;
   const requiredDone = requiredDocs.filter(d => checked[d.id]).length;
@@ -402,12 +503,13 @@ export default function DocumentsContent(props: DocumentsContentProps = {}) {
                         itineraryData={itineraryData}
                         photoSpec={photoSpec}
                         onClose={() => setActiveDocId(null)}
-                        onUpload={(file) => handleUpload(visibleDoc.id, file)}
+                        onUpload={(file) => handleUpload(visibleDoc.id, file, visibleDoc.name)}
                         onRemove={() => handleRemove(visibleDoc.id)}
                         onItineraryReady={(file) => handleItineraryReady(visibleDoc.id, file)}
-                        onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file)}
+                        onCoverLetterReady={(file) => handleUpload(visibleDoc.id, file, visibleDoc.name)}
                         onSponsorConsentReady={(file) => handleSponsorConsentReady(visibleDoc.id, file)}
                         sponsorConsentPrefill={sponsorConsentPrefill}
+                        aiResult={aiResults[visibleDoc.id]}
                         isOnline={visaTypeData?.process?.default?.applicationMode === "ONLINE"}
                         onPrev={() => {
                           const prev = allDocs[activeDocIndex - 1];

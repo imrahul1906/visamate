@@ -17,8 +17,6 @@ export const SECTION_META: Record<string, { icon: string; color: string }> = {
 
 // Doc codes that must NOT have an upload slot.
 export const NO_UPLOAD_CODES = new Set([
-  "PASSPORT",
-  "PHOTOGRAPH",
   "VISA_APPLICATION_FORM",
 ]);
 

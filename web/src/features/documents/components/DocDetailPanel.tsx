@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { T } from "@/lib/theme";
-import type { DocumentItem, UploadsMap, DocumentCategory } from "../../../types/document";
+import type { DocumentItem, UploadsMap, DocumentCategory, AiAuditResult } from "../../../types/document";
 import type { ItineraryPlacesData } from "@/lib/data/types";
 import { DocHelper } from "./DocHelper";
 import type { PhotoSpec } from "./DocHelper";
@@ -40,6 +40,7 @@ interface FocusDrawerProps {
   visibleDoc: DocumentItem;
   activeCategory: DocumentCategory | null | undefined;
   uploads: UploadsMap;
+  aiResult?: AiAuditResult;
   activeDocIndex: number;
   totalDocs: number;
   isMobile: boolean;
@@ -65,6 +66,7 @@ export function DocDetailPanel({
   visibleDoc,
   activeCategory,
   uploads,
+  aiResult,
   activeDocIndex,
   totalDocs,
   isMobile,
@@ -458,6 +460,7 @@ export function DocDetailPanel({
                     docName={visibleDoc.name}
                     color={getCategoryStyles(activeCategory?.id).color}
                     uploads={uploads}
+                    aiResult={aiResult}
                     onUpload={(...args) => onUpload(args[1])}
                     onRemove={() => onRemove()}
                     acceptedFormats={visibleDoc.acceptedFormats}
@@ -550,6 +553,7 @@ export function DocDetailPanel({
                 docName={visibleDoc.name}
                 color={getCategoryStyles(activeCategory?.id).color}
                 uploads={uploads}
+                aiResult={aiResult}
                 onUpload={(...args) => onUpload(args[1])}
                 onRemove={() => onRemove()}
                 noBorder

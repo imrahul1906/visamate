@@ -72,3 +72,13 @@ export interface DocumentData {
 
 // Uploaded files store: docId → File
 export type UploadsMap = Record<string, File>;
+
+export interface AiAuditResult {
+  passed: boolean;
+  reason?: string;
+  checks?: Record<string, boolean>;
+  loading: boolean;
+  error?: string;
+}
+
+export type AiResultsMap = Record<string, AiAuditResult>;

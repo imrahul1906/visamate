@@ -3,7 +3,7 @@
 // web/src/features/documents/components/UploadSlot.tsx
 
 import { useRef, useState, useEffect } from "react";
-import type { UploadsMap } from "@/types/document";
+import type { UploadsMap, AiAuditResult } from "@/types/document";
 
 // ─────────────────────────────────────────────────────────────
 // UploadSlot — premium, attention-commanding upload CTA.
@@ -14,6 +14,7 @@ export default function UploadSlot({
   docId,
   color,
   uploads,
+  aiResult,
   onUpload,
   onRemove,
   noBorder = false,
@@ -24,6 +25,7 @@ export default function UploadSlot({
   docName?: string;
   color?: string;
   uploads: UploadsMap;
+  aiResult?: AiAuditResult;
   onUpload: (docId: string, file: File) => void;
   onRemove: (docId: string) => void;
   noBorder?: boolean;
@@ -77,9 +79,296 @@ export default function UploadSlot({
 
   // ── Uploaded state ────────────────────────────────────────
   if (uploaded) {
+    const removeBtn = <RemoveButton onClick={() => onRemove(docId)} />;
+
+    // 1. AI Analysis Loading State
+    if (aiResult?.loading) {
+      return (
+        <div
+          key="ai-loading"
+          onClick={e => e.stopPropagation()}
+          style={{
+            marginTop: noBorder ? 0 : 12,
+            padding: "12px 14px",
+            background: "var(--vm-trans-white-03)",
+            border: "1px dashed var(--vm-border)",
+            borderRadius: 12,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            animation: "vm-pulse-ring 2.4s ease-out infinite"
+          }}
+        >
+          <style dangerouslySetInnerHTML={{ __html: `
+            @keyframes vm-spin {
+              to { transform: rotate(360deg); }
+            }
+            @keyframes vm-sweep {
+              0% { left: -100%; }
+              100% { left: 200%; }
+            }
+            @keyframes vm-pulse-ring {
+              0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
+              70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+              100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+            }
+          `}} />
+          <div style={{
+            width: 26, height: 26, borderRadius: "50%",
+            border: "2.5px solid var(--vm-indigo)",
+            borderTopColor: "transparent",
+            animation: "vm-spin 0.8s linear infinite",
+            flexShrink: 0
+          }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{
+              fontSize: 12, fontWeight: 700, margin: "0 0 4px",
+              color: "var(--vm-indigo)", fontFamily: "'DM Sans', sans-serif",
+            }}>
+              AI Doctor is auditing your file...
+            </p>
+            <div style={{
+              height: 4, background: "var(--vm-trans-white-05)", borderRadius: 2, overflow: "hidden", position: "relative"
+            }}>
+              <div style={{
+                position: "absolute", top: 0, bottom: 0, left: 0, width: "35%", background: "var(--vm-indigo)",
+                borderRadius: 2, animation: "vm-sweep 1.4s infinite ease-in-out"
+              }} />
+            </div>
+          </div>
+          {removeBtn}
+        </div>
+      );
+    }
+
+    // 2. AI Analysis Failed / Warning State
+    if (aiResult && !aiResult.passed && !aiResult.error) {
+      return (
+        <div
+          key="ai-failed"
+          onClick={e => e.stopPropagation()}
+          style={{
+            marginTop: noBorder ? 0 : 12,
+            paddingTop: noBorder ? 0 : 12,
+            borderTop: noBorder ? "none" : "1px solid var(--vm-border)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* Orange caution icon */}
+            <div style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+              background: "var(--vm-amber-bg)",
+              border: "1px solid var(--vm-amber-border)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="18" height="18" fill="none" stroke="var(--vm-amber)" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{
+                fontSize: 12, fontWeight: 700, margin: "0 0 2px",
+                color: "var(--vm-amber)", fontFamily: "'DM Sans', sans-serif",
+              }}>
+                ⚠ AI Doctor Audit Warnings
+              </p>
+              <p style={{
+                fontSize: 10.5, margin: 0, fontFamily: "'DM Sans', sans-serif",
+                color: "var(--vm-trans-white-45)",
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>
+                {uploaded.name} · {(uploaded.size / 1024).toFixed(0)} KB
+              </p>
+            </div>
+            {removeBtn}
+          </div>
+
+          <div style={{
+            background: "var(--vm-amber-bg)",
+            border: "1px solid var(--vm-amber-border)",
+            borderRadius: 8,
+            padding: "9px 12px",
+            fontSize: 11.5,
+            color: "var(--vm-amber)",
+            fontFamily: "'DM Sans', sans-serif",
+            lineHeight: 1.45
+          }}>
+            <strong>Recommendation:</strong> {aiResult.reason || "We found compliance issues with this file."}
+          </div>
+
+          {aiResult.checks && (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))",
+              gap: 8,
+              background: "var(--vm-trans-white-02)",
+              border: "1px solid var(--vm-border)",
+              borderRadius: 8,
+              padding: "8px 10px"
+            }}>
+              {Object.entries(aiResult.checks).map(([checkKey, checkVal]) => {
+                const label = checkKey
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, str => str.toUpperCase());
+                return (
+                  <div key={checkKey} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    {checkVal ? (
+                      <svg width="12" height="12" fill="none" stroke="var(--vm-green-dark)" strokeWidth={2.8} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    ) : (
+                      <svg width="12" height="12" fill="none" stroke="var(--vm-red)" strokeWidth={2.8} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    )}
+                    <span style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: checkVal ? "var(--vm-green-dark)" : "var(--vm-red)",
+                      fontFamily: "'DM Sans', sans-serif"
+                    }}>
+                      {label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // 3. AI Analysis Success State
+    if (aiResult && aiResult.passed) {
+      return (
+        <div
+          key="ai-passed"
+          onClick={e => e.stopPropagation()}
+          style={{
+            marginTop: noBorder ? 0 : 12,
+            paddingTop: noBorder ? 0 : 12,
+            borderTop: noBorder ? "none" : "1px solid var(--vm-border)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {/* Green verified icon */}
+            <div style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+              background: "var(--vm-green-bg)",
+              border: "1px solid var(--vm-green-border)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="18" height="18" fill="none" stroke="#4ade80" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+              </svg>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{
+                fontSize: 12, fontWeight: 700, margin: "0 0 2px",
+                color: "var(--vm-green-dark)", fontFamily: "'DM Sans', sans-serif",
+              }}>
+                ✓ AI Doctor Approved
+              </p>
+              <p style={{
+                fontSize: 10.5, margin: 0, fontFamily: "'DM Sans', sans-serif",
+                color: "var(--vm-trans-white-45)",
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>
+                {uploaded.name} · {(uploaded.size / 1024).toFixed(0)} KB
+              </p>
+            </div>
+            {removeBtn}
+          </div>
+
+          <div style={{
+            background: "var(--vm-green-bg)",
+            border: "1px solid var(--vm-green-border)",
+            borderRadius: 8,
+            padding: "8px 12px",
+            fontSize: 11,
+            color: "var(--vm-green-dark)",
+            fontFamily: "'DM Sans', sans-serif",
+            lineHeight: 1.45
+          }}>
+            {aiResult.reason || "This document meets all format, quality, and validity checks."}
+          </div>
+        </div>
+      );
+    }
+
+    // 4. AI Analysis Error/Bypassed State
+    if (aiResult?.error) {
+      return (
+        <div
+          key="ai-error"
+          onClick={e => e.stopPropagation()}
+          style={{
+            marginTop: noBorder ? 0 : 12,
+            paddingTop: noBorder ? 0 : 12,
+            borderTop: noBorder ? "none" : "1px solid var(--vm-border)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+              background: "var(--vm-trans-white-05)",
+              border: "1px solid var(--vm-border)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <svg width="18" height="18" fill="none" stroke="var(--vm-text-muted)" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{
+                fontSize: 12, fontWeight: 700, margin: "0 0 2px",
+                color: "var(--vm-text)", fontFamily: "'DM Sans', sans-serif",
+              }}>
+                AI Verification Bypassed
+              </p>
+              <p style={{
+                fontSize: 10.5, margin: 0, fontFamily: "'DM Sans', sans-serif",
+                color: "var(--vm-trans-white-45)",
+                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              }}>
+                {uploaded.name} · {(uploaded.size / 1024).toFixed(0)} KB
+              </p>
+            </div>
+            {removeBtn}
+          </div>
+
+          <div style={{
+            background: "var(--vm-trans-white-03)",
+            border: "1px solid var(--vm-border)",
+            borderRadius: 8,
+            padding: "8px 10px",
+            fontSize: 10.5,
+            color: "var(--vm-trans-white-45)",
+            fontFamily: "'DM Sans', sans-serif",
+            lineHeight: 1.4
+          }}>
+            AI review was bypassed ({aiResult.error}). Your file is still attached and ready for download.
+          </div>
+        </div>
+      );
+    }
+
+    // 5. Default Fallback Uploaded State (e.g. if aiResult is not defined yet, but file is uploaded)
     return (
       <div
-        key="uploaded"
+        key="uploaded-fallback"
         onClick={e => e.stopPropagation()}
         style={{
           marginTop: noBorder ? 0 : 12,
@@ -91,8 +380,6 @@ export default function UploadSlot({
           animation: "uploadSuccess 400ms cubic-bezier(0.34,1.56,0.64,1) both",
         }}
       >
-
-
         {/* Green file icon */}
         <div style={{
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,
@@ -126,8 +413,7 @@ export default function UploadSlot({
             </span>
           </p>
         </div>
-
-        <RemoveButton onClick={() => onRemove(docId)} />
+        {removeBtn}
       </div>
     );
   }
