@@ -336,8 +336,8 @@ export async function getItineraryPlaces(
 
   try {
     return (await import(`../../data/countries/${folder}/itinerary-places.json`)).default as ItineraryPlacesData;
-  } catch (err) {
-    console.warn(`[repository] getItineraryPlaces: failed to import data for countryCode="${countryCode}" at folder="${folder}":`, err);
+  } catch {
+    // Itinerary data is optional — most countries don't have it.
     return null;
   }
 }

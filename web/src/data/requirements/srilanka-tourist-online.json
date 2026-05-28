@@ -10,22 +10,6 @@
   "locationCode": "ONLINE",
   "processingDays": "4 business days",
   "processingDaysExpress": "2 business days (Emergency) / 1 business day (Rush)",
-  "photoSpecifications": {
-    "portrait": {
-      "widthMm": 35,
-      "heightMm": 45,
-      "background": "Plain white background",
-      "colorFormat": "Colored",
-      "faceVisibilityPercent": "70-80",
-      "quality": "Recent color photograph, clear face, white background, no headwear unless for religious purposes",
-      "maxAgeMonths": 6,
-      "requirements": [
-        "Format must be JPG or JPEG (size < 2MB)",
-        "White background",
-        "Clear face, no spectacles or glasses"
-      ]
-    }
-  },
   "documentSections": [
     {
       "sectionId": "COMMON",
@@ -62,18 +46,6 @@
             "Format must be JPG/JPEG (less than 2MB).",
             "Passport must be valid for at least 6 months from arrival date with at least 3 blank pages."
           ]
-        },
-        {
-          "order": 3,
-          "id": "LK_TOURIST_PORTRAIT_001",
-          "code": "PORTRAIT_PHOTO",
-          "name": "Recent Portrait Photo",
-          "isRequired": true,
-          "optionality": "required",
-          "notes": "Upload a recent color photograph with white background.",
-          "photoSpecRef": "portrait",
-          "acceptedFormats": ["jpg", "jpeg"],
-          "maxSizeBytes": 2097152
         },
         {
           "order": 4,

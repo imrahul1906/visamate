@@ -21,15 +21,7 @@
       "maxStayDays": 30,
       "fees": 0,
       "currency": "USD",
-      "note": "Government fee is waived (0 USD) for 30 days. The ETA is initially limited up to 30 days from the date of arrival and can be extended up to six months (see: https://www.immigrationlanka.com/Info-2-15.html?locale=en_US). Service fee applies.",
-      "vfsCharges": {
-        "serviceCharge": {
-          "charge": 69,
-          "currency": "USD",
-          "refundable": false,
-          "note": "E-Visa Service Fee is non-refundable."
-        }
-      },
+      "note": "Government fee is waived (0 USD) for 30 days. The ETA is initially limited up to 30 days from the date of arrival and can be extended up to six months (see: https://www.immigrationlanka.com/Info-2-15.html?locale=en_US).",
       "process": {
         "paymentInstructions": []
       },
@@ -46,15 +38,7 @@
       "maxStayDays": 30,
       "fees": 30,
       "currency": "USD",
-      "note": "SAARC regional business ETA government fee is 30 USD. Processing service fee applies.",
-      "vfsCharges": {
-        "serviceCharge": {
-          "charge": 69,
-          "currency": "USD",
-          "refundable": false,
-          "note": "E-Visa Service Fee is non-refundable."
-        }
-      },
+      "note": "SAARC regional business ETA government fee is 30 USD.",
       "process": {
         "paymentInstructions": []
       },
